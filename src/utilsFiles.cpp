@@ -2,10 +2,10 @@
 // Created by andrei on 26.08.21.
 //
 
-#include <utilsFiles.h>
+#include <andrei_utils/utilsFiles.h>
+#include <andrei_utils/utilsString.h>
 #include <iostream>
 #include <sys/stat.h>
-#include <utilsString.h>
 
 using namespace std;
 

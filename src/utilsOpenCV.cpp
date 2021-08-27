@@ -2,7 +2,7 @@
 // Created by andrei on 26.11.20.
 //
 
-#include <utilsOpenCV.h>
+#include <andrei_utils/utilsOpenCV.h>
 
 using namespace cv;
 using namespace std;
@@ -27,7 +27,7 @@ void imageRotation(Mat *image, RotationType rotation) {
     }
 }
 
-void matWriteBinary(ofstream *fs, const Mat &mat, const unsigned long long &index) {
+void matWriteBinary(ofstream *fs, const Mat &mat) {
     // Header
     int type = mat.type();
     int channels = mat.channels();
@@ -96,7 +96,7 @@ void printImage(Mat *image, const char *title, bool verbose) {
 void printImages(const vector<Mat *> &images, const vector<string> &titles) {
     assert (images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
-        printImage(images[i], titles[i]);
+        printImage(images[i], titles[i].c_str());
     }
     cout << "Printed!" << endl;
 }

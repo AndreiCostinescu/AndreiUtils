@@ -2,7 +2,7 @@
 // Created by andrei on 27.08.21.
 //
 
-#include <utilsEigen.h>
+#include <andrei_utils/utilsEigen.h>
 
 using namespace Eigen;
 using namespace std;

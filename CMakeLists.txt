@@ -58,11 +58,11 @@ include_directories("include")
 
 SET(UTILS_GENERAL src/utils.cpp)
 
-SET(UTILS_TEMPLATE include/utils.hpp)
+SET(UTILS_TEMPLATE include/andrei_utils/utils.hpp)
 
 SET(UTILS_NETWORK src/NetworkIncludes.cpp src/NetworkData.cpp)
 
-# depends on UTILS_TEMPLATE (utils.hpp)
+# depends on UTILS_TEMPLATE (andrei_utils.hpp)
 SET(UTILS_STRINGS src/utilsString.cpp)
 
 SET(UTILS_THREAD src/utilsThread.cpp)
@@ -72,7 +72,7 @@ SET(UTILS_TIME src/utilsTime.cpp)
 # depends on UTILS_STRINGS (utilsStrings.h)
 SET(UTILS_FILES src/utilsFiles.cpp)
 
-SET(UTILS_CLASSES src/classes/Buffer.cpp include/classes/CircularArray.hpp include/classes/FifoQueue.hpp include/classes/ForkSharedVariable.hpp include/classes/PriorityQueue.hpp)
+SET(UTILS_CLASSES src/classes/Buffer.cpp include/andrei_utils/classes/CircularArray.hpp include/andrei_utils/classes/FifoQueue.hpp include/andrei_utils/classes/ForkSharedVariable.hpp include/andrei_utils/classes/PriorityQueue.hpp)
 
 SET(UTILS_EIGEN)
 if (USE_EIGEN AND USE_OPENCV)
@@ -89,13 +89,13 @@ endif ()
 SET(UTILS_JSON)
 if (USE_JSON)
     # depends on json
-    SET(UTILS_JSON src/utilsJson.cpp json/json.hpp)
+    SET(UTILS_JSON src/utilsJson.cpp json/andrei_utils/json.hpp)
 endif ()
 
 SET(UTILS_OPENCV)
 if (USE_OPENCV)
     # depends on opencv
-    SET(UTILS_OPENCV src/utilsOpenCV.cpp include/utilsOpenCV.hpp)
+    SET(UTILS_OPENCV src/utilsOpenCV.cpp include/andrei_utils/utilsOpenCV.hpp)
 endif ()
 
 SET(UTILS_REALSENSE)

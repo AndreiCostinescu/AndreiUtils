@@ -2,9 +2,8 @@
 // Created by ga78cat on 24.03.2021.
 //
 
-#include <classes/Buffer.h>
-#include <NetworkData.h>
-#include <NetworkIncludes.h>
+#include <andrei_utils/classes/Buffer.h>
+#include <andrei_utils/NetworkData.h>
 #include <cassert>
 #include <cstring>
 #include <iostream>

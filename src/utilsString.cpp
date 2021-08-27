@@ -2,10 +2,10 @@
 // Created by andrei on 26.08.21.
 //
 
-#include <utilsString.h>
+#include <andrei_utils/utilsString.h>
 #include <algorithm>
 // #include <iostream>
-#include <utils.hpp>
+#include <andrei_utils/utils.hpp>
 
 using namespace std;
 

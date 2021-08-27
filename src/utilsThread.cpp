@@ -2,7 +2,7 @@
 // Created by andrei on 27.08.21.
 //
 
-#include <utilsThread.h>
+#include <andrei_utils/utilsThread.h>
 #include <chrono>
 #include <thread>
 

@@ -2,13 +2,11 @@
 // Created by andrei on 11.11.20.
 //
 
-#include <utils.h>
+#include <andrei_utils/utils.h>
 #include <iostream>
 #include <sstream>
 
 using namespace std;
-
-string configDirectoryLocation = "../config/";
 
 bool stringIsInteger(const string &s) {
     if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;

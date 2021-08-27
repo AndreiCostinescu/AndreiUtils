@@ -2,7 +2,7 @@
 // Created by andrei on 13.11.20.
 //
 
-#include <utils/utilsCubemos.h>
+#include <andrei_utils/utilsCubemos.h>
 
 using namespace std;
 
