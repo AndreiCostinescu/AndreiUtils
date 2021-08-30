@@ -75,7 +75,7 @@ SET(UTILS_FILES src/utilsFiles.cpp)
 SET(UTILS_CLASSES src/classes/Buffer.cpp include/andrei_utils/classes/CircularArray.hpp include/andrei_utils/classes/FifoQueue.hpp include/andrei_utils/classes/ForkSharedVariable.hpp include/andrei_utils/classes/PriorityQueue.hpp)
 
 SET(UTILS_EIGEN)
-if (USE_EIGEN AND USE_OPENCV)
+if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp)
 endif ()
