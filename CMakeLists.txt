@@ -126,5 +126,5 @@ set(UTILS
 message("Utils = ${UTILS}")
 
 add_library(AndreiUtils ${UTILS})
-target_link_libraries(AndreiUtils ${EXTERNAL_LIBS})
+target_link_libraries(AndreiUtils PRIVATE ${EXTERNAL_LIBS})
 message("External libs = ${EXTERNAL_LIBS}")
