@@ -15,7 +15,7 @@ endmacro()
 macro(append what to)
     if (NOT DEFINED ${to})
         set(${to} ${what})
-    else()
+    else ()
         set(${to} "${${to}}_${what}")
     endif ()
 endmacro()
@@ -36,15 +36,15 @@ message("Use opencv set to ${USE_OPENCV}")
 message("Use realsense set to ${USE_REALSENSE}")
 
 if (UNIX)
-    set(EXTERNAL_LIBS pthread ${EXTERNAL_LIBS})
+    set(EXTERNAL_GENERAL_LIBS pthread ${EXTERNAL_GENERAL_LIBS})
 else ()
-    set(EXTERNAL_LIBS wsock32 ws2_32 ${EXTERNAL_LIBS})
+    set(EXTERNAL_GENERAL_LIBS wsock32 ws2_32 ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 if (USE_EIGEN)
     find_package(Eigen3 REQUIRED)
     include_directories(${EIGEN3_INCLUDE_DIRS})
-    set(EXTERNAL_LIBS Eigen3::Eigen ${EXTERNAL_LIBS})
+    set(EXTERNAL_EIGEN_LIBS Eigen3::Eigen ${EXTERNAL_EIGEN_LIBS})
 endif ()
 
 if (USE_JSON)
@@ -54,13 +54,15 @@ endif ()
 if (USE_OPENCV)
     find_package(OpenCV REQUIRED)
     include_directories(${OpenCV_INCLUDE_DIRS})
-    set(EXTERNAL_LIBS ${OpenCV_LIBS} ${EXTERNAL_LIBS})
+    set(EXTERNAL_OPENCV_LIBS ${OpenCV_LIBS} ${EXTERNAL_OPENCV_LIBS})
 endif ()
 
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
-    set(EXTERNAL_LIBS ${realsense2_LIBRARY} ${EXTERNAL_LIBS})
+    set(EXTERNAL_REALSENSE_LIBS ${realsense2_LIBRARY} ${EXTERNAL_REALSENSE_LIBS})
 endif ()
+
+set(EXTERNAL_LIBS ${EXTERNAL_GENERAL_LIBS} ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_REALSENSE_LIBS})
 
 include_directories("include")
 
@@ -70,7 +72,7 @@ SET(UTILS_TEMPLATE include/andrei_utils/utils.hpp)
 
 SET(UTILS_NETWORK src/NetworkIncludes.cpp src/NetworkData.cpp)
 
-# depends on UTILS_TEMPLATE (andrei_utils.hpp)
+# depends on UTILS_TEMPLATE (utils.hpp)
 SET(UTILS_STRINGS src/utilsString.cpp)
 
 SET(UTILS_THREAD src/utilsThread.cpp)
@@ -80,7 +82,13 @@ SET(UTILS_TIME src/utilsTime.cpp)
 # depends on UTILS_STRINGS (utilsStrings.h)
 SET(UTILS_FILES src/utilsFiles.cpp)
 
-SET(UTILS_CLASSES src/classes/Buffer.cpp include/andrei_utils/classes/CircularArray.hpp include/andrei_utils/classes/FifoQueue.hpp include/andrei_utils/classes/ForkSharedVariable.hpp include/andrei_utils/classes/PriorityQueue.hpp)
+SET(UTILS_CLASSES
+        src/classes/Buffer.cpp
+        include/andrei_utils/classes/CircularArray.hpp
+        include/andrei_utils/classes/FifoQueue.hpp
+        include/andrei_utils/classes/ForkSharedVariable.hpp
+        include/andrei_utils/classes/PriorityQueue.hpp
+        )
 
 SET(UTILS_EIGEN)
 if (USE_EIGEN)
@@ -97,13 +105,13 @@ endif ()
 SET(UTILS_JSON)
 if (USE_JSON)
     # depends on json
-    SET(UTILS_JSON src/utilsJson.cpp json/andrei_utils/json.hpp)
+    SET(UTILS_JSON src/utilsJson.cpp)
 endif ()
 
 SET(UTILS_OPENCV)
 if (USE_OPENCV)
     # depends on opencv
-    SET(UTILS_OPENCV src/utilsOpenCV.cpp include/andrei_utils/utilsOpenCV.hpp)
+    SET(UTILS_OPENCV src/utilsOpenCV.cpp)
 endif ()
 
 SET(UTILS_REALSENSE)
@@ -112,7 +120,7 @@ if (USE_REALSENSE)
     SET(UTILS_REALSENSE src/utilsRealsense.cpp)
 endif ()
 
-set(UTILS
+set(GENERAL_UTILS
         ${UTILS_GENERAL}
         ${UTILS_TEMPLATE}
 
@@ -124,16 +132,68 @@ set(UTILS
         ${UTILS_FILES}
 
         ${UTILS_CLASSES}
+        )
 
-        ${UTILS_EIGEN}
-        ${UTILS_EIGEN_OPENCV}
-        ${UTILS_JSON}
-        ${UTILS_OPENCV}
-        ${UTILS_REALSENSE}
+set(EIGEN_UTILS ${UTILS_EIGEN})
+set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
+set(JSON_UTILS ${UTILS_JSON})
+set(OPENCV_UTILS ${UTILS_OPENCV})
+set(REALSENSE_UTILS ${UTILS_REALSENSE})
+
+set(LIBRARY_NAME "AndreiUtils")
+
+# GENERAL_UTILS
+set(LIB_NAME "${LIBRARY_NAME}_GENERAL")
+add_library(${LIB_NAME} ${GENERAL_UTILS})
+target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_GENERAL_LIBS})
+set(EXTERNAL_GENERAL_LIBS ${LIB_NAME} ${EXTERNAL_GENERAL_LIBS})
+
+if (USE_JSON)
+    # JSON_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_JSON")
+    add_library(${LIB_NAME} ${JSON_UTILS})
+    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_GENERAL_LIBS})
+endif ()
+
+if (USE_EIGEN)
+    # EIGEN_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_EIGEN")
+    add_library(${LIB_NAME} ${EIGEN_UTILS})
+    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_GENERAL_LIBS})
+endif ()
+
+if (USE_OPENCV)
+    # OPENCV_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_OPENCV")
+    add_library(${LIB_NAME} ${OPENCV_UTILS})
+    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
+endif ()
+
+if (USE_REALSENSE)
+    # REALSENSE_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_REALSENSE")
+    add_library(${LIB_NAME} ${REALSENSE_UTILS})
+    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_REALSENSE_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
+endif ()
+
+if (USE_EIGEN AND USE_OPENCV)
+    # EIGEN_OPENCV_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_EIGEN_OPENCV")
+    add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
+    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
+endif ()
+
+# UTILS
+set(UTILS
+        ${GENERAL_UTILS}
+        ${EIGEN_UTILS}
+        ${EIGEN_OPENCV_UTILS}
+        ${JSON_UTILS}
+        ${OPENCV_UTILS}
+        ${REALSENSE_UTILS}
         )
 message("Utils = ${UTILS}")
 
-set(LIBRARY_NAME "AndreiUtils")
 append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")

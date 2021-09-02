@@ -2,11 +2,11 @@
 // Created by andrei on 27.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSOPENCV_HPP
-#define ANDREIUTILS_UTILSOPENCV_HPP
+#ifndef ANDREIUTILS_UTILSJSONOPENCV_HPP
+#define ANDREIUTILS_UTILSJSONOPENCV_HPP
 
 #include <opencv2/opencv.hpp>
-#include <utils/json.hpp>
+#include <andrei_utils/json.hpp>
 
 template<class T>
 void to_json(nlohmann::json &j, const cv::Point_<T> &p) {
@@ -80,4 +80,4 @@ namespace nlohmann {
     };
 }
 
-#endif //ANDREIUTILS_UTILSOPENCV_HPP
+#endif //ANDREIUTILS_UTILSJSONOPENCV_HPP

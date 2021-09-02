@@ -3,9 +3,9 @@
 //
 
 #include <andrei_utils/utilsRealsense.h>
+#include <andrei_utils/utils.hpp>
 #include <librealsense2/rsutil.h>
 #include <iostream>
-#include <andrei_utils/utils.hpp>
 
 using namespace cv;
 using namespace rs2;
