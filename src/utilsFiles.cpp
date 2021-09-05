@@ -2,19 +2,19 @@
 // Created by andrei on 26.08.21.
 //
 
-#include <andrei_utils/utilsFiles.h>
-#include <andrei_utils/utilsString.h>
+#include <AndreiUtils/utilsFiles.h>
+#include <AndreiUtils/utilsString.h>
 #include <iostream>
 #include <sys/stat.h>
 
 using namespace std;
 
-bool fileExists(const string &name) {
+bool AndreiUtils::fileExists(const string &name) {
     struct stat buffer{};
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-bool createDirectory(const string &path) {
+bool AndreiUtils::createDirectory(const string &path) {
     bool res;
 #if defined(WIN32) || defined(WIN64)
     res = (mkdir(path.c_str()) != -1);
@@ -28,7 +28,7 @@ bool createDirectory(const string &path) {
     return true;
 }
 
-bool createDirectories(const string &path) {
+bool AndreiUtils::createDirectories(const string &path) {
     string dirPath = replace(path, "\\", "/"), tmpPath;
     int subdirs = stringCount(dirPath, "/");
     bool res;
@@ -39,6 +39,6 @@ bool createDirectories(const string &path) {
     return res;
 }
 
-bool deleteFile(const string &fileName) {
+bool AndreiUtils::deleteFile(const string &fileName) {
     return remove(fileName.c_str()) == 0;
 }

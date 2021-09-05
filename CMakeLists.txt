@@ -68,7 +68,7 @@ include_directories("include")
 
 SET(UTILS_GENERAL src/utils.cpp)
 
-SET(UTILS_TEMPLATE include/andrei_utils/utils.hpp)
+SET(UTILS_TEMPLATE include/AndreiUtils/utils.hpp)
 
 SET(UTILS_NETWORK src/NetworkIncludes.cpp src/NetworkData.cpp)
 
@@ -84,10 +84,10 @@ SET(UTILS_FILES src/utilsFiles.cpp)
 
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
-        include/andrei_utils/classes/CircularArray.hpp
-        include/andrei_utils/classes/FifoQueue.hpp
-        include/andrei_utils/classes/ForkSharedVariable.hpp
-        include/andrei_utils/classes/PriorityQueue.hpp
+        include/AndreiUtils/classes/CircularArray.hpp
+        include/AndreiUtils/classes/FifoQueue.hpp
+        include/AndreiUtils/classes/ForkSharedVariable.hpp
+        include/AndreiUtils/classes/PriorityQueue.hpp
         )
 
 SET(UTILS_EIGEN)

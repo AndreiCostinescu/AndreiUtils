@@ -5,7 +5,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cert-err58-cpp"
 
-#include <andrei_utils/utilsSkeletons.h>
+#include <AndreiUtils/utilsSkeletons.h>
 
 using namespace op;
 using namespace std;

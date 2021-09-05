@@ -2,16 +2,16 @@
 // Created by andrei on 26.08.21.
 //
 
-#include <andrei_utils/utilsString.h>
+#include <AndreiUtils/utilsString.h>
 #include <algorithm>
 // #include <iostream>
-#include <andrei_utils/utils.hpp>
+#include <AndreiUtils/utils.hpp>
 
 using namespace std;
 
-string tab = "    ";
+string AndreiUtils::tab = "    ";
 
-void myError(const string &message) {
+void AndreiUtils::myError(const string &message) {
     auto v = splitString(message, "\n");
     for (auto &line: v) {
         cerr << "Error: " + line << endl;
@@ -19,21 +19,21 @@ void myError(const string &message) {
     exit(-1);
 }
 
-void myWarning(const string &message) {
+void AndreiUtils::myWarning(const string &message) {
     auto v = splitString(message, "\n");
     for (auto &line: v) {
         cerr << "Warning: " + line << endl;
     }
 }
 
-void myAssert(bool cond, const string &message) {
+void AndreiUtils::myAssert(bool cond, const string &message) {
     if (!cond) {
         cout << "Assertion failed with message: " + message << endl;
         assert(false);
     }
 }
 
-vector<string> splitString(const string &message, const string &splitter) {
+vector<string> AndreiUtils::splitString(const string &message, const string &splitter) {
     // cout << "Message length: " << message.size() << endl;
     vector<string> res;
     size_t start = 0;
@@ -48,7 +48,7 @@ vector<string> splitString(const string &message, const string &splitter) {
     return res;
 }
 
-string firstParts(const string &message, const string &partSplitter, int partCount) {
+string AndreiUtils::firstParts(const string &message, const string &partSplitter, int partCount) {
     vector<string> split = splitString(message, partSplitter);
     string res;
     for (int i = 0; i < fastMin(split.size(), (size_t) partCount); i++) {
@@ -60,7 +60,7 @@ string firstParts(const string &message, const string &partSplitter, int partCou
     return res;
 }
 
-string lastParts(const string &message, const string &partSplitter, int partCount) {
+string AndreiUtils::lastParts(const string &message, const string &partSplitter, int partCount) {
     vector<string> split = splitString(message, partSplitter);
     int n = split.size(), start = fastMax(0, n - partCount);
     string res;
@@ -73,7 +73,7 @@ string lastParts(const string &message, const string &partSplitter, int partCoun
     return res;
 }
 
-string withoutFirstParts(const string &message, const string &partSplitter, int partCount) {
+string AndreiUtils::withoutFirstParts(const string &message, const string &partSplitter, int partCount) {
     vector<string> split = splitString(message, partSplitter);
     string res;
     for (int i = partCount; i < split.size(); i++) {
@@ -85,7 +85,7 @@ string withoutFirstParts(const string &message, const string &partSplitter, int 
     return res;
 }
 
-string withoutLastParts(const string &message, const string &partSplitter, int partCount) {
+string AndreiUtils::withoutLastParts(const string &message, const string &partSplitter, int partCount) {
     vector<string> split = splitString(message, partSplitter);
     string res;
     int n = (int) split.size() - partCount;
@@ -98,24 +98,24 @@ string withoutLastParts(const string &message, const string &partSplitter, int p
     return res;
 }
 
-string toLowerString(const string &s) {
+string AndreiUtils::toLowerString(const string &s) {
     string res = s;
     transform(res.begin(), res.end(), res.begin(), [](unsigned char c) { return tolower(c); });
     return res;
 }
 
-bool startsWith(const string &str, const string &startQuery) {
+bool AndreiUtils::startsWith(const string &str, const string &startQuery) {
     return (str.rfind(startQuery, 0) == 0);
 }
 
-bool endsWith(const string &str, const string &endQuery) {
+bool AndreiUtils::endsWith(const string &str, const string &endQuery) {
     if (str.length() >= endQuery.length()) {
         return (0 == str.compare(str.length() - endQuery.length(), endQuery.length(), endQuery));
     }
     return false;
 }
 
-string trim(const string &str, const string &whitespace) {
+string AndreiUtils::trim(const string &str, const string &whitespace) {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {
         return "";
@@ -126,7 +126,7 @@ string trim(const string &str, const string &whitespace) {
     return str.substr(strBegin, strEnd - strBegin + 1);
 }
 
-string reduce(const string &str, const string &fill, const string &whitespace) {
+string AndreiUtils::reduce(const string &str, const string &fill, const string &whitespace) {
     string res = trim(str, whitespace);
 
     // replace sub ranges
@@ -144,12 +144,12 @@ string reduce(const string &str, const string &fill, const string &whitespace) {
     return res;
 }
 
-string removeComments(const string &s, const string &comment) {
+string AndreiUtils::removeComments(const string &s, const string &comment) {
     size_t find_comment = s.find_first_of(comment);
     return s.substr(0, find_comment);
 }
 
-string replace(const string &s, const string &oldString, const string &newString) {
+string AndreiUtils::replace(const string &s, const string &oldString, const string &newString) {
     size_t startIndex = 0;
     string result = s;
     while ((startIndex = result.find(oldString, startIndex)) != std::string::npos) {
@@ -159,7 +159,7 @@ string replace(const string &s, const string &oldString, const string &newString
     return result;
 }
 
-size_t stringCount(const string &referenceString, const string &subString) {
+size_t AndreiUtils::stringCount(const string &referenceString, const string &subString) {
     const size_t step = subString.size();
 
     size_t count(0);
@@ -173,7 +173,7 @@ size_t stringCount(const string &referenceString, const string &subString) {
     return count;
 }
 
-pair<string, string> getKeyAndValue(string &line) {
+pair<string, string> AndreiUtils::getKeyAndValue(string &line) {
     size_t equal_pos = line.find('=');
     string key = trim(line.substr(0, equal_pos));
     string val = trim(line.substr(equal_pos + 1, string::npos));

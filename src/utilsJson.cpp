@@ -2,14 +2,14 @@
 // Created by Andrei on 13.08.2021.
 //
 
-#include <andrei_utils/utilsJson.h>
+#include <AndreiUtils/utilsJson.h>
 #include <fstream>
 #include <iostream>
 
 using namespace nlohmann;
 using namespace std;
 
-json readJsonFile(const string &path) {
+json AndreiUtils::readJsonFile(const string &path) {
     ifstream fin(path);
     if (!fin.is_open()) {
         throw runtime_error("Can not open file " + path);
@@ -19,7 +19,7 @@ json readJsonFile(const string &path) {
     return content;
 }
 
-void writeJsonFile(const string &path, const json &content) {
+void AndreiUtils::writeJsonFile(const string &path, const json &content) {
     ofstream fout(path);
     if (!fout.is_open()) {
         throw runtime_error("Can not open file " + path);

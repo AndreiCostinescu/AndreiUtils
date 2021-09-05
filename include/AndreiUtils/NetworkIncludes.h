@@ -71,8 +71,8 @@ typedef socklen_t SocketAddressLength;
 
 typedef struct sockaddr_in SocketAddress;
 
-#include <iostream>
-
-extern bool socketsStarted;
+namespace AndreiUtils {
+    extern bool socketsStarted;
+}
 
 #endif //ANDREIUTILS_NETWORKINCLUDES_H

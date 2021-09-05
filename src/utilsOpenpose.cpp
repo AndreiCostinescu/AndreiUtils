@@ -2,7 +2,7 @@
 // Created by andrei on 12.11.20.
 //
 
-#include <andrei_utils/utilsOpenpose.h>
+#include <AndreiUtils/utilsOpenpose.h>
 #include <openpose/flags.hpp>
 #include <iostream>
 

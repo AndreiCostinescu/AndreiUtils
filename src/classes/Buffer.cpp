@@ -2,12 +2,13 @@
 // Created by ga78cat on 24.03.2021.
 //
 
-#include <andrei_utils/classes/Buffer.h>
-#include <andrei_utils/NetworkData.h>
+#include <AndreiUtils/classes/Buffer.h>
+#include <AndreiUtils/NetworkData.h>
 #include <cassert>
 #include <cstring>
 #include <iostream>
 
+using namespace AndreiUtils;
 using namespace std;
 
 Buffer::Buffer(uint64_t bufferSize) :

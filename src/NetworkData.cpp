@@ -2,8 +2,11 @@
 // Created by andrei on 27.08.21.
 //
 
-#include <andrei_utils/NetworkData.h>
-#include <andrei_utils/NetworkIncludes.h>
+#include <AndreiUtils/NetworkData.h>
+#include <AndreiUtils/NetworkIncludes.h>
+#include <cstdint>
+
+using namespace AndreiUtils;
 
 int NetworkData::bigEndian = -1;
 

@@ -7,13 +7,14 @@
 
 #include <string>
 
-std::string default_log_dir();
+namespace AndreiUtils {
+    std::string default_log_dir();
 
-std::string default_license_dir();
+    std::string default_license_dir();
 
-std::string default_model_dir();
+    std::string default_model_dir();
 
-std::string default_res_dir();
+    std::string default_res_dir();
 
 #define CHECK_HANDLE_CREATION(retCode)                                                                                 \
     {                                                                                                                  \
@@ -43,6 +44,6 @@ std::string default_res_dir();
         std::cin.get();                                                                                                \
         return -1;                                                                                                     \
     }
-
+}
 
 #endif //ANDREIUTILS_UTILSCUBEMOS_H

@@ -2,8 +2,8 @@
 // Created by andrei on 13.11.20.
 //
 
-#include <andrei_utils/utilsRealsense.h>
-#include <andrei_utils/utils.hpp>
+#include <AndreiUtils/utilsRealsense.h>
+#include <AndreiUtils/utils.hpp>
 #include <librealsense2/rsutil.h>
 #include <iostream>
 
@@ -15,7 +15,7 @@ using namespace std;
 #pragma ide diagnostic ignored "hicpp-signed-bitwise"
 
 // Convert frame to Mat
-Mat frame_to_mat(const frame &f) {
+Mat AndreiUtils::frame_to_mat(const frame &f) {
     auto vf = f.as<video_frame>();
     const int w = vf.get_width();
     const int h = vf.get_height();
@@ -41,15 +41,15 @@ Mat frame_to_mat(const frame &f) {
 #pragma clang diagnostic pop
 
 // Converts depth frame to a matrix of doubles with distances in meters
-Mat depth_frame_to_meters(const depth_frame &f) {
+Mat AndreiUtils::depth_frame_to_meters(const depth_frame &f) {
     Mat dm = frame_to_mat(f);
     dm.convertTo(dm, CV_64F);
     dm = dm * f.get_units();
     return dm;
 }
 
-void getRealsenseDepthPointFromImagePixel(void *depthData, DepthDataType dataType, float x, float y,
-                                          float (&point)[3], int windowSize, bool forceWindowUsage) {
+void AndreiUtils::getRealsenseDepthPointFromImagePixel(void *depthData, DepthDataType dataType, float x, float y,
+                                                       float (&point)[3], int windowSize, bool forceWindowUsage) {
     if (depthData == nullptr) {
         return;
     }
@@ -116,7 +116,7 @@ void getRealsenseDepthPointFromImagePixel(void *depthData, DepthDataType dataTyp
 }
 
 
-void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
     // project pixel from point in 3D
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }

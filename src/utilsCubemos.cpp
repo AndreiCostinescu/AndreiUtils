@@ -2,11 +2,11 @@
 // Created by andrei on 13.11.20.
 //
 
-#include <andrei_utils/utilsCubemos.h>
+#include <AndreiUtils/utilsCubemos.h>
 
 using namespace std;
 
-string default_log_dir() {
+string AndreiUtils::default_log_dir() {
     string cubemosLogDir;
 #ifdef _WINDOWS
     cubemosLogDir = string(getenv("LOCALAPPDATA")) + "\\Cubemos\\SkeletonTracking\\logs";
@@ -16,7 +16,7 @@ string default_log_dir() {
     return cubemosLogDir;
 }
 
-string default_license_dir() {
+string AndreiUtils::default_license_dir() {
     string cubemosLicenseDir;
 #ifdef _WINDOWS
     cubemosLicenseDir = string(getenv("LOCALAPPDATA")) + "\\Cubemos\\SkeletonTracking\\license";
@@ -26,7 +26,7 @@ string default_license_dir() {
     return cubemosLicenseDir;
 }
 
-string default_model_dir() {
+string AndreiUtils::default_model_dir() {
     string cubemosModelDir;
 #ifdef _WINDOWS
     cubemosModelDir = string(getenv("LOCALAPPDATA")) + "\\Cubemos\\SkeletonTracking\\models";
@@ -36,7 +36,7 @@ string default_model_dir() {
     return cubemosModelDir;
 }
 
-string default_res_dir() {
+string AndreiUtils::default_res_dir() {
     string cubemosResDir;
 #ifdef _WINDOWS
     cubemosResDir = string(getenv("LOCALAPPDATA")) + "\\Cubemos\\SkeletonTracking\\res";

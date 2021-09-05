@@ -2,12 +2,12 @@
 // Created by andrei on 26.11.20.
 //
 
-#include <andrei_utils/utilsOpenCV.h>
+#include <AndreiUtils/utilsOpenCV.h>
 
 using namespace cv;
 using namespace std;
 
-void imageRotation(Mat *image, RotationType rotation) {
+void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
     switch (rotation) {
         case LEFT_90: {
             cv::rotate(*image, *image, cv::ROTATE_90_COUNTERCLOCKWISE);
@@ -27,7 +27,7 @@ void imageRotation(Mat *image, RotationType rotation) {
     }
 }
 
-void matWriteBinary(ofstream *fs, const Mat &mat) {
+void AndreiUtils::matWriteBinary(ofstream *fs, const Mat &mat) {
     // Header
     int type = mat.type();
     int channels = mat.channels();
@@ -47,7 +47,7 @@ void matWriteBinary(ofstream *fs, const Mat &mat) {
     }
 }
 
-bool matReadBinary(ifstream *fs, Mat *result) {
+bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     // Header
     int rows, cols, type, channels;
     if (fs->peek() == EOF) {
@@ -78,7 +78,7 @@ bool matReadBinary(ifstream *fs, Mat *result) {
     return true;
 }
 
-void printImage(Mat *image, const char *title, bool verbose) {
+void AndreiUtils::printImage(Mat *image, const char *title, bool verbose) {
     if (verbose) {
         cout << "Printing " << title << "... " << image << endl;
     }
@@ -93,7 +93,7 @@ void printImage(Mat *image, const char *title, bool verbose) {
     }
 }
 
-void printImages(const vector<Mat *> &images, const vector<string> &titles) {
+void AndreiUtils::printImages(const vector<Mat *> &images, const vector<string> &titles) {
     assert (images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
         printImage(images[i], titles[i].c_str());

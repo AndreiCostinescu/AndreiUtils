@@ -5,9 +5,11 @@
 #ifndef ANDREIUTILS_ENUMS_DEPTHDATATYPE_H
 #define ANDREIUTILS_ENUMS_DEPTHDATATYPE_H
 
-enum DepthDataType {
-    DEPTH_FRAME,
-    DEPTH_MATRIX_INTRINSICS,
-};
+namespace AndreiUtils {
+    enum DepthDataType {
+        DEPTH_FRAME,
+        DEPTH_MATRIX_INTRINSICS,
+    };
+}
 
 #endif //ANDREIUTILS_ENUMS_DEPTHDATATYPE_H
