@@ -34,52 +34,52 @@ namespace AndreiUtils {
         p.y = j["y"].get<T>();
         p.z = j["z"].get<T>();
     }
+}
 
-    namespace nlohmann {
-        template<class T>
-        struct adl_serializer<cv::Point_<T>> {
-            static void to_json(nlohmann::json &j, const cv::Point_<T> &p) {
-                /*
-                j["x"] = p.x;
-                j["y"] = p.y;
-                /*/
-                ::to_json(j, p);
-                //*/
-            }
+namespace nlohmann {
+    template<class T>
+    struct adl_serializer<cv::Point_<T>> {
+        static void to_json(nlohmann::json &j, const cv::Point_<T> &p) {
+            /*
+            j["x"] = p.x;
+            j["y"] = p.y;
+            /*/
+            AndreiUtils::to_json(j, p);
+            //*/
+        }
 
-            static void from_json(const nlohmann::json &j, cv::Point_<T> &p) {
-                /*
-                p.x = j["x"].get<T>();
-                p.y = j["y"].get<T>();
-                /*/
-                ::from_json(j, p);
-                //*/
-            }
-        };
+        static void from_json(const nlohmann::json &j, cv::Point_<T> &p) {
+            /*
+            p.x = j["x"].get<T>();
+            p.y = j["y"].get<T>();
+            /*/
+            AndreiUtils::from_json(j, p);
+            //*/
+        }
+    };
 
-        template<class T>
-        struct adl_serializer<cv::Point3_<T>> {
-            static void to_json(nlohmann::json &j, const cv::Point3_<T> &p) {
-                /*
-                j["x"] = p.x;
-                j["y"] = p.y;
-                j["z"] = p.z;
-                /*/
-                ::to_json(j, p);
-                //*/
-            }
+    template<class T>
+    struct adl_serializer<cv::Point3_<T>> {
+        static void to_json(nlohmann::json &j, const cv::Point3_<T> &p) {
+            /*
+            j["x"] = p.x;
+            j["y"] = p.y;
+            j["z"] = p.z;
+            /*/
+            AndreiUtils::to_json(j, p);
+            //*/
+        }
 
-            static void from_json(const nlohmann::json &j, cv::Point3_<T> &p) {
-                /*
-                p.x = j["x"].get<T>();
-                p.y = j["y"].get<T>();
-                p.z = j["z"].get<T>();
-                /*/
-                ::from_json(j, p);
-                //*/
-            }
-        };
-    }
+        static void from_json(const nlohmann::json &j, cv::Point3_<T> &p) {
+            /*
+            p.x = j["x"].get<T>();
+            p.y = j["y"].get<T>();
+            p.z = j["z"].get<T>();
+            /*/
+            AndreiUtils::from_json(j, p);
+            //*/
+        }
+    };
 }
 
 #endif //ANDREIUTILS_UTILSJSONOPENCV_HPP
