@@ -93,7 +93,7 @@ SET(UTILS_CLASSES
 SET(UTILS_EIGEN)
 if (USE_EIGEN)
     # depends on eigen
-    SET(UTILS_EIGEN src/utilsEigen.cpp)
+    SET(UTILS_EIGEN src/utilsEigen.cpp include/AndreiUtils/utilsEigen.hpp)
 endif ()
 
 SET(UTILS_EIGEN_OPENCV)

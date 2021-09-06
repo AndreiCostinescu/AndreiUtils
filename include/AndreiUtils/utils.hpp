@@ -116,6 +116,17 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    void printMatrix(T *x, int rows, int cols) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                std::cout << x[i * cols + j] << ", ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    template<class T>
     void printVector(T *x, int size) {
         for (int i = 0; i < size; i++) {
             std::cout << x[i] << ", ";
