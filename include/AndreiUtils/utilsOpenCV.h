@@ -20,6 +20,14 @@ namespace AndreiUtils {
     void printImage(cv::Mat *image, const char *title, bool verbose = false);
 
     void printImages(const std::vector<cv::Mat *> &images, const std::vector<std::string> &titles);
+
+    void convertDepthToMillimetersUInt16(const cv::Mat *depthMat, cv::Mat &output);
+
+    void convertDepthToMillimetersUInt16(cv::Mat *depthMat);
+
+    void convertDepthToMetersDouble64(const cv::Mat *depthMat, cv::Mat &output);
+
+    void convertDepthToMetersDouble64(cv::Mat *depthMat);
 }
 
 #endif //ANDREIUTILS_UTILSOPENCV_H

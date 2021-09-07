@@ -100,3 +100,19 @@ void AndreiUtils::printImages(const vector<Mat *> &images, const vector<string> 
     }
     cout << "Printed!" << endl;
 }
+
+void AndreiUtils::convertDepthToMillimetersUInt16(const Mat *depthMat, Mat &output) {
+    depthMat->convertTo(output, CV_16U, 1000);
+}
+
+void AndreiUtils::convertDepthToMillimetersUInt16(Mat *depthMat) {
+    depthMat->convertTo(*depthMat, CV_16U, 1000);
+}
+
+void AndreiUtils::convertDepthToMetersDouble64(const Mat *depthMat, Mat &output) {
+    depthMat->convertTo(output, CV_64F, 0.001);
+}
+
+void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
+    depthMat->convertTo(*depthMat, CV_64F, 0.001);
+}
