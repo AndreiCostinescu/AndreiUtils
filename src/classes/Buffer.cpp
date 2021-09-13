@@ -1,5 +1,5 @@
 //
-// Created by ga78cat on 24.03.2021.
+// Created by Andrei on 24.03.2021.
 //
 
 #include <AndreiUtils/classes/Buffer.h>

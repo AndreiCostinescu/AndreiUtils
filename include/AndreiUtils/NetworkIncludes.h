@@ -1,5 +1,5 @@
 //
-// Created by ga78cat on 11.03.2021.
+// Created by Andrei on 11.03.2021.
 //
 
 #ifndef ANDREIUTILS_NETWORKINCLUDES_H
