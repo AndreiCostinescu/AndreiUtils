@@ -84,6 +84,7 @@ SET(UTILS_FILES src/utilsFiles.cpp)
 
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
+        src/classes/Timer.cpp
         include/AndreiUtils/classes/CircularArray.hpp
         include/AndreiUtils/classes/FifoQueue.hpp
         include/AndreiUtils/classes/ForkSharedVariable.hpp
