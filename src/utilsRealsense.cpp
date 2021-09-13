@@ -43,8 +43,7 @@ Mat AndreiUtils::frame_to_mat(const frame &f) {
 // Converts depth frame to a matrix of doubles with distances in meters
 Mat AndreiUtils::depth_frame_to_meters(const depth_frame &f) {
     Mat dm = frame_to_mat(f);
-    dm.convertTo(dm, CV_64F);
-    dm = dm * f.get_units();
+    dm.convertTo(dm, CV_64F, f.get_units());
     return dm;
 }
 
@@ -91,8 +90,8 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(void *depthData, DepthDat
     auto isDepthInvalid = [](float x) { return lessEqual(x, 0.1f) || lessEqual(10.0f, x); };
     if (forceWindowUsage || isDepthInvalid(depth)) {
         int nrPoints = 0;
-        for (int i = max(-int_x, -windowSize); i < min(windowSize, height - int_x); i++) {
-            for (int j = max(-int_y, -windowSize); j < min(windowSize, width - int_y); j++) {
+        for (int i = max(-int_x, -windowSize); i <= min(windowSize, height - int_x - 1); i++) {
+            for (int j = max(-int_y, -windowSize); j <= min(windowSize, width - int_y - 1); j++) {
                 depth = getDepth(int_x + i, int_y + j);
                 if (isDepthInvalid(depth)) {
                     continue;
