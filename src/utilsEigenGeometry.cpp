@@ -24,6 +24,63 @@ Matrix3d AndreiUtils::zRotation(double angle) {
     return z;
 }
 
+Matrix4d AndreiUtils::quaternionConjugateDerivative() {
+    Matrix4d J = Matrix4d::Zero();
+    J(0, 0) = 1;
+    J(1, 1) = -1;
+    J(2, 2) = -1;
+    J(3, 3) = -1;
+    return J;
+}
+
+Matrix4d AndreiUtils::quaternionProductDerivativeWRTFirst(const Quaterniond &q1, const Quaterniond &q2) {
+    Matrix4d J;
+    J(0, 0) = q2.w();
+    J(0, 1) = -q2.x();
+    J(0, 2) = -q2.y();
+    J(0, 3) = -q2.z();
+
+    J(1, 0) = q2.x();
+    J(1, 1) = q2.w();
+    J(1, 2) = q2.z();
+    J(1, 3) = -q2.y();
+
+    J(2, 0) = q2.y();
+    J(2, 1) = -q2.z();
+    J(2, 2) = q2.w();
+    J(2, 3) = q2.x();
+
+    J(3, 0) = q2.z();
+    J(3, 1) = q2.y();
+    J(3, 2) = -q2.x();
+    J(3, 3) = q2.w();
+    return J;
+}
+
+Matrix4d AndreiUtils::quaternionProductDerivativeWRTSecond(const Quaterniond &q1, const Quaterniond &q2) {
+    Matrix4d J;
+    J(0, 0) = q1.w();
+    J(0, 1) = -q1.x();
+    J(0, 2) = -q1.y();
+    J(0, 3) = -q1.z();
+
+    J(1, 0) = q1.x();
+    J(1, 1) = q1.w();
+    J(1, 2) = -q1.z();
+    J(1, 3) = q1.y();
+
+    J(2, 0) = q1.y();
+    J(2, 1) = q1.z();
+    J(2, 2) = q1.w();
+    J(2, 3) = -q1.x();
+
+    J(3, 0) = q1.z();
+    J(3, 1) = -q1.y();
+    J(3, 2) = q1.x();
+    J(3, 3) = q1.w();
+    return J;
+}
+
 Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderXYZ(const Vector3d &euler) {
     double cx = cos(euler(0) / 2);
     double sx = sin(euler(0) / 2);
@@ -62,7 +119,7 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
     J(2, 2) = -cx * sy * sz - sx * cy * cz;
 
     J(3, 0) = -sx * cy * sz + cx * sy * cz;
-    J(3, 1) = - cx * sy * sz + sx * cy * cz;
+    J(3, 1) = -cx * sy * sz + sx * cy * cz;
     J(3, 2) = -cx * cy * cz - sx * sy * sz;
 
     return J / 2;
