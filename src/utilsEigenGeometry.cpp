@@ -33,6 +33,24 @@ Matrix4d AndreiUtils::quaternionConjugateDerivative() {
     return J;
 }
 
+Vector3d AndreiUtils::quaternionLogarithm(const Quaterniond &q) {
+    return q.vec() * q.w();
+}
+
+Matrix<double, 3, 4> AndreiUtils::quaternionLogarithmDerivative(const Quaterniond &q) {
+    Matrix<double, 3, 4> J;
+    J.setZero();
+    J(0, 0) = q.x();
+    J(0, 1) = q.w();
+
+    J(1, 0) = q.y();
+    J(1, 2) = q.w();
+
+    J(2, 0) = q.z();
+    J(2, 3) = q.w();
+    return J;
+}
+
 Matrix4d AndreiUtils::quaternionProductDerivativeWRTFirst(const Quaterniond &q1, const Quaterniond &q2) {
     Matrix4d J;
     J(0, 0) = q2.w();

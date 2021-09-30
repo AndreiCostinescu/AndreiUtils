@@ -16,6 +16,10 @@ namespace AndreiUtils {
 
     Eigen::Matrix4d quaternionConjugateDerivative();
 
+    Eigen::Vector3d quaternionLogarithm(const Eigen::Quaterniond &q);
+
+    Eigen::Matrix<double, 3, 4> quaternionLogarithmDerivative(const Eigen::Quaterniond &q);
+
     Eigen::Matrix4d quaternionProductDerivativeWRTFirst(const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2);
 
     Eigen::Matrix4d quaternionProductDerivativeWRTSecond(const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2);
