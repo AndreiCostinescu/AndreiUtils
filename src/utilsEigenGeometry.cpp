@@ -33,7 +33,7 @@ Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderXYZ(const Vector3
     double sz = sin(euler(2) / 2);
 
     Quaterniond q;
-    q.w() = cx * cy * cz + sx * sy * sz;
+    q.w() = cx * cy * cz - sx * sy * sz;
     q.x() = sx * cy * cz + cx * sy * sz;
     q.y() = cx * sy * cz - sx * cy * sz;
     q.z() = cx * cy * sz + sx * sy * cz;
@@ -49,9 +49,9 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
     double sz = sin(euler(2) / 2);
 
     Matrix<double, 4, 3> J;
-    J(0, 0) = -sx * cy * cz + cx * sy * sz;
-    J(0, 1) = -cx * sy * cz + sx * cy * sz;
-    J(0, 2) = -cx * cy * sz + sx * sy * cz;
+    J(0, 0) = -sx * cy * cz - cx * sy * sz;
+    J(0, 1) = -cx * sy * cz - sx * cy * sz;
+    J(0, 2) = -cx * cy * sz - sx * sy * cz;
 
     J(1, 0) = cx * cy * cz - sx * sy * sz;
     J(1, 1) = -sx * sy * cz + cx * cy * sz;
