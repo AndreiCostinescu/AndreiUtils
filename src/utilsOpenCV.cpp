@@ -1,5 +1,5 @@
 //
-// Created by andrei on 26.11.20.
+// Created by Andrei on 26.11.20.
 //
 
 #include <AndreiUtils/utilsOpenCV.h>

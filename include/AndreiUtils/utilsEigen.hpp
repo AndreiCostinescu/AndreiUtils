@@ -1,5 +1,5 @@
 //
-// Created by andrei on 06.09.21.
+// Created by Andrei on 06.09.21.
 //
 
 #ifndef ANDREIUTILS_UTILSEIGEN_HPP

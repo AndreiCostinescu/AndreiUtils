@@ -1,5 +1,5 @@
 //
-// Created by andrei on 27.08.21.
+// Created by Andrei on 27.08.21.
 //
 
 #ifndef ANDREIUTILS_UTILSEIGENOPENCV_H

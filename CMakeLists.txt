@@ -25,6 +25,7 @@ option(WITH_JSON "Build the code with json" ON)
 option(WITH_OPENCV "Build the code with opencv" OFF)
 option(WITH_REALSENSE "Build the code with librealsense" OFF)
 
+# used only when using AndreiUtils as a submodule/subdirectory in the upper project
 cumulative_or(USE_EIGEN WITH_EIGEN)
 cumulative_or(USE_JSON WITH_JSON)
 cumulative_or(USE_OPENCV WITH_OPENCV)
@@ -35,16 +36,9 @@ message("Use json set to ${USE_JSON}")
 message("Use opencv set to ${USE_OPENCV}")
 message("Use realsense set to ${USE_REALSENSE}")
 
-if (UNIX)
-    set(EXTERNAL_GENERAL_LIBS pthread ${EXTERNAL_GENERAL_LIBS})
-else ()
-    set(EXTERNAL_GENERAL_LIBS wsock32 ws2_32 ${EXTERNAL_GENERAL_LIBS})
-endif ()
-
 if (USE_EIGEN)
     find_package(Eigen3 REQUIRED)
     include_directories(${EIGEN3_INCLUDE_DIRS})
-    set(EXTERNAL_EIGEN_LIBS Eigen3::Eigen ${EXTERNAL_EIGEN_LIBS})
 endif ()
 
 if (USE_JSON)
@@ -54,15 +48,11 @@ endif ()
 if (USE_OPENCV)
     find_package(OpenCV REQUIRED)
     include_directories(${OpenCV_INCLUDE_DIRS})
-    set(EXTERNAL_OPENCV_LIBS ${OpenCV_LIBS} ${EXTERNAL_OPENCV_LIBS})
 endif ()
 
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
-    set(EXTERNAL_REALSENSE_LIBS ${realsense2_LIBRARY} ${EXTERNAL_REALSENSE_LIBS})
 endif ()
-
-set(EXTERNAL_LIBS ${EXTERNAL_GENERAL_LIBS} ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_REALSENSE_LIBS})
 
 include_directories("include")
 
@@ -146,42 +136,35 @@ set(LIBRARY_NAME "AndreiUtils")
 # GENERAL_UTILS
 set(LIB_NAME "${LIBRARY_NAME}_GENERAL")
 add_library(${LIB_NAME} ${GENERAL_UTILS})
-target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_GENERAL_LIBS})
-set(EXTERNAL_GENERAL_LIBS ${LIB_NAME} ${EXTERNAL_GENERAL_LIBS})
 
 if (USE_JSON)
     # JSON_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_JSON")
     add_library(${LIB_NAME} ${JSON_UTILS})
-    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 if (USE_EIGEN)
     # EIGEN_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_EIGEN")
     add_library(${LIB_NAME} ${EIGEN_UTILS})
-    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 if (USE_OPENCV)
     # OPENCV_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_OPENCV")
     add_library(${LIB_NAME} ${OPENCV_UTILS})
-    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 if (USE_REALSENSE)
     # REALSENSE_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_REALSENSE")
     add_library(${LIB_NAME} ${REALSENSE_UTILS})
-    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_REALSENSE_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
     # EIGEN_OPENCV_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_EIGEN_OPENCV")
     add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
-    target_link_libraries(${LIB_NAME} PRIVATE ${EXTERNAL_EIGEN_LIBS} ${EXTERNAL_OPENCV_LIBS} ${EXTERNAL_GENERAL_LIBS})
 endif ()
 
 # UTILS
@@ -199,5 +182,4 @@ append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
 add_library(${TARGET_LIBRARY} ${UTILS})
-target_link_libraries(${TARGET_LIBRARY} PRIVATE ${EXTERNAL_LIBS})
 message("External libs = ${EXTERNAL_LIBS}")

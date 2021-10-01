@@ -1,5 +1,5 @@
 //
-// Created by andrei on 12.11.20.
+// Created by Andrei on 12.11.20.
 //
 
 #include <AndreiUtils/utilsOpenpose.h>

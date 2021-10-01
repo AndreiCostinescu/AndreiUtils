@@ -1,5 +1,5 @@
 //
-// Created by andrei on 11.11.20.
+// Created by Andrei on 11.11.20.
 //
 
 #include <AndreiUtils/utils.h>

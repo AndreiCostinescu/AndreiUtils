@@ -1,5 +1,5 @@
 //
-// Created by andrei on 13.11.20.
+// Created by Andrei on 13.11.20.
 //
 
 #ifndef ANDREIUTILS_UTILS_HPP

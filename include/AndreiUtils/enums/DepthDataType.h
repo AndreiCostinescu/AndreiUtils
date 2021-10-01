@@ -1,5 +1,5 @@
 //
-// Created by andrei on 17.12.20.
+// Created by Andrei on 17.12.20.
 //
 
 #ifndef ANDREIUTILS_ENUMS_DEPTHDATATYPE_H

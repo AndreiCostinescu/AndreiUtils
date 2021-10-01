@@ -1,5 +1,5 @@
 //
-// Created by andrei on 26.08.21.
+// Created by Andrei on 26.08.21.
 //
 
 #ifndef ANDREIUTILS_UTILSSTRING_H
