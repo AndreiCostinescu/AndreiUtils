@@ -74,11 +74,14 @@ SET(UTILS_FILES src/utilsFiles.cpp)
 
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
+        src/classes/CrossBilateralFilter.cpp
+        src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
         include/AndreiUtils/classes/CircularArray.hpp
         include/AndreiUtils/classes/FifoQueue.hpp
         include/AndreiUtils/classes/ForkSharedVariable.hpp
         include/AndreiUtils/classes/PriorityQueue.hpp
+        include/AndreiUtils/classes/SlidingWindow.hpp
         )
 
 SET(UTILS_EIGEN)
