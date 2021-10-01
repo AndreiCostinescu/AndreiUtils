@@ -14,6 +14,8 @@ namespace AndreiUtils {
 
     int stringToInteger(const std::string &s);
 
+    bool stringIsBool(const std::string &s);
+
     bool stringToBool(const std::string &s);
 
     double stringToDouble(const std::string &s);

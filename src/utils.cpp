@@ -24,6 +24,11 @@ int AndreiUtils::stringToInteger(const string &s) {
     return stoi(s);
 }
 
+bool AndreiUtils::stringIsBool(const string &s) {
+    return ((s == "t" || s == "T" || s == "true" || s == "True" || s == "1") ||
+            (s == "f" || s == "F" || s == "false" || s == "False" || s == "0"));
+}
+
 bool AndreiUtils::stringToBool(const string &s) {
     if (s == "t" || s == "T" || s == "true" || s == "True" || s == "1" || s.empty()) {
         return true;
