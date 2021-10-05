@@ -28,17 +28,6 @@ namespace nlohmann {
             v.imag(j["i"].get<T>());
         }
     };
-
-    template<typename T>
-    struct adl_serializer<std::vector<std::complex<T>>> {
-        static void to_json(nlohmann::json &j, const std::vector<std::complex<T>> &v) {
-            j = v;
-        }
-
-        static void from_json(const nlohmann::json &j, std::vector<std::complex<T>> &v) {
-            v = j.get<std::vector<std::complex<T>>>();
-        }
-    };
 }
 
 #endif //ANDREIUTILS_JSON_H

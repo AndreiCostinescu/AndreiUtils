@@ -31,10 +31,10 @@ namespace AndreiUtils {
 #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
-    class EigenMatrixSerializer {
+    class EigenMatrixJsonSerializer {
     public:
         static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(const nlohmann::json &j) {
-            EigenMatrixSerializer serializer;
+            EigenMatrixJsonSerializer serializer;
             serializer.fromJson(j);
             return serializer.getMatrix();
         };
@@ -55,13 +55,13 @@ namespace AndreiUtils {
             }
         }
 
-        EigenMatrixSerializer() : matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(), options(),
-                                  maxRows(), maxCols() {}
+        EigenMatrixJsonSerializer() : matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(), options(),
+                                      maxRows(), maxCols() {}
 
-        explicit EigenMatrixSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m)
-                : EigenMatrixSerializer() {
+        explicit EigenMatrixJsonSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m)
+                : EigenMatrixJsonSerializer() {
             this->matrix = &m;
-            this->type = EigenMatrixSerializer::getStringFromType();
+            this->type = EigenMatrixJsonSerializer::getStringFromType();
             this->rows = Rows;
             this->cols = Cols;
             this->currentRows = m.rows();
@@ -95,11 +95,11 @@ namespace AndreiUtils {
         void fromJson(const nlohmann::json &j) {
             if (!(j.template contains("type") && j.template contains("rows") && j.template contains("cols") &&
                   j.template contains("curRows") && j.template contains("curCols") && j.template contains("options") &&
-                  j.template contains("maxRows") && j.template contains("maxCols"))) {
-                throw std::runtime_error("Poorly formatted json data for EigenMatrixSerializer: " + j.dump());
+                  j.template contains("maxRows") && j.template contains("maxCols") && j.template contains("data"))) {
+                throw std::runtime_error("Poorly formatted json data for EigenMatrixJsonSerializer: " + j.dump());
             }
             this->type = j["type"].get<std::string>();
-            if (EigenMatrixSerializer::getStringFromType() != this->type) {
+            if (EigenMatrixJsonSerializer::getStringFromType() != this->type) {
                 throw std::runtime_error("Requested matrix type is different than the stored matrix type");
             }
             this->rows = j["rows"].get<int>();
@@ -210,7 +210,7 @@ namespace nlohmann {
                                       EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
 #endif
                                     Rows, Cols> &m) {
-            AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols,
+            AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols,
                     Eigen::AutoAlign |
                     #if EIGEN_GNUC_AT(3, 4)
                     // workaround a bug in at least gcc 3.4.6
@@ -249,7 +249,7 @@ namespace nlohmann {
                             EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
 #endif
                           Rows, Cols> &v) {
-            v = AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols,
+            v = AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols,
                     Eigen::AutoAlign |
                     #if EIGEN_GNUC_AT(3, 4)
                     // workaround a bug in at least gcc 3.4.6
@@ -272,39 +272,39 @@ namespace nlohmann {
     template<typename Scalar, int Rows, int Cols, int Options>
     struct adl_serializer<Eigen::Matrix<Scalar, Rows, Cols, Options>> {
         static void to_json(nlohmann::json &j, const Eigen::Matrix<Scalar, Rows, Cols, Options, Rows, Cols> &m) {
-            AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, Rows, Cols> serializer(m);
+            AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, Rows, Cols> serializer(m);
             serializer.toJson(j);
         }
 
         static void
         from_json(const nlohmann::json &j, Eigen::Matrix<Scalar, Rows, Cols, Options, Rows, Cols> &v) {
-            v = AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, Rows, Cols>::getMatrix(j);
+            v = AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, Rows, Cols>::getMatrix(j);
         }
     };
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows>
     struct adl_serializer<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows>> {
         static void to_json(nlohmann::json &j, const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, Cols> &m) {
-            AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, MaxRows, Cols> serializer(m);
+            AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, MaxRows, Cols> serializer(m);
             serializer.toJson(j);
         }
 
         static void
         from_json(const nlohmann::json &j, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, Cols> &v) {
-            v = AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, MaxRows, Cols>::getMatrix(j);
+            v = AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, MaxRows, Cols>::getMatrix(j);
         }
     };
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
     struct adl_serializer<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> {
         static void to_json(nlohmann::json &j, const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
-            AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols> serializer(m);
+            AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols> serializer(m);
             serializer.toJson(j);
         }
 
         static void
         from_json(const nlohmann::json &j, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &v) {
-            v = AndreiUtils::EigenMatrixSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols>::getMatrix(j);
+            v = AndreiUtils::EigenMatrixJsonSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols>::getMatrix(j);
         }
     };
 }
