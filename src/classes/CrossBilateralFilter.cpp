@@ -3,9 +3,12 @@
 //
 
 #include <AndreiUtils/classes/CrossBilateralFilter.h>
+#include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsEigenOpenCV.h>
 
 using namespace AndreiUtils;
 using namespace cv;
+using namespace Eigen;
 using namespace std;
 
 CrossBilateralFilter::CrossBilateralFilter(unsigned int windowSize) :
@@ -35,4 +38,28 @@ void CrossBilateralFilter::filter(const float posX, const float posY, const Mat 
     res /= coefficientSum;
     resX = res.x;
     resY = res.y;
+}
+
+void CrossBilateralFilter::filter(const float posX, const float posY, const MatrixXd &depthData, float &resX,
+                                  float &resY) const {
+    Vector2f res, newP;
+    Vector2i p((int) round(posX), (int) round(posY));
+    double coefficientSum = 0.0, coefficient, depth, refDepth = depthData(p.x(), p.y());
+    int shift = (int) this->windowSize / 2;
+    int startI = -fastMin(shift, p.x()), endI = fastMin(shift, (int) (depthData.rows() - p.x()));
+    int startJ = -fastMin(shift, p.y()), endJ = fastMin(shift, (int) (depthData.cols() - p.y()));
+    for (int i = startI; i < endI; i++) {
+        for (int j = startJ; j < endJ; j++) {
+            newP.x() = posX + (double) i;
+            newP.y() = posY + (double) j;
+            depth = depthData((int) round(newP.x()), (int) round(newP.y()));
+            coefficient = this->spatial.coefficient({(double) (i + shift), (double) (j + shift)}) *
+                          this->cross.coefficient(depth - refDepth);
+            res += newP * coefficient;
+            coefficientSum += coefficient;
+        }
+    }
+    res /= coefficientSum;
+    resX = res.x();
+    resY = res.y();
 }

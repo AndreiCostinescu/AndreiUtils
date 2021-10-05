@@ -5,8 +5,9 @@
 #ifndef ANDREIUTILS_CROSSBILATERALFILTER_H
 #define ANDREIUTILS_CROSSBILATERALFILTER_H
 
-#include <opencv2/opencv.hpp>
 #include <AndreiUtils/classes/GaussianKernel.h>
+#include <Eigen/Dense>
+#include <opencv2/opencv.hpp>
 
 namespace AndreiUtils {
     class CrossBilateralFilter {
@@ -16,6 +17,8 @@ namespace AndreiUtils {
         virtual ~CrossBilateralFilter();
 
         void filter(float posX, float posY, const cv::Mat &depthData, float &resX, float &resY) const;
+
+        void filter(float posX, float posY, const Eigen::MatrixXd &depthData, float &resX, float &resY) const;
 
     private:
         unsigned int windowSize;
