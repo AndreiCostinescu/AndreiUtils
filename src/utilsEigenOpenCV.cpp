@@ -19,6 +19,18 @@ cv::Point3f AndreiUtils::eigenArrayToCVPoint(const Array3f &array) {
     return {array.x(), array.y(), array.z()};
 }
 
+Vector3f AndreiUtils::cvPointToEigenVector(const cv::Point3f &point) {
+    Vector3f x;
+    x.x() = point.x;
+    x.y() = point.y;
+    x.z() = point.z;
+    return x;
+}
+
+cv::Point3f AndreiUtils::eigenVectorToCVPoint(const Vector3f &vector) {
+    return {vector.x(), vector.y(), vector.z()};
+}
+
 void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
     fs << "{";
     int size = x.size();

@@ -191,7 +191,11 @@ namespace AndreiUtils {
 
     Eigen::Array3f cvPointToEigenArray(const cv::Point3f &point);
 
-    cv::Point3f eigenArrayToCVPoint(const Eigen::Array3f &array);
+    cv::Point3f eigenArrayToCVPoint(const Eigen::Array3f &vector);
+
+    Eigen::Vector3f cvPointToEigenVector(const cv::Point3f &point);
+
+    cv::Point3f eigenVectorToCVPoint(const Eigen::Vector3f &vector);
 
     void writeEigenArray(cv::FileStorage &fs, const Eigen::ArrayXf &x);
 
