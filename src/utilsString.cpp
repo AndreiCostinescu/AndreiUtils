@@ -103,6 +103,12 @@ string AndreiUtils::toLowerString(const string &s) {
     return res;
 }
 
+string AndreiUtils::toUpperString(const string &s) {
+    string res = s;
+    transform(res.begin(), res.end(), res.begin(), [](unsigned char c) { return toupper(c); });
+    return res;
+}
+
 bool AndreiUtils::startsWith(const string &str, const string &startQuery) {
     return (str.rfind(startQuery, 0) == 0);
 }

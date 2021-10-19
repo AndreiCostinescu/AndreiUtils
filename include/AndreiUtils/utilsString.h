@@ -29,6 +29,8 @@ namespace AndreiUtils {
 
     std::string toLowerString(const std::string &s);
 
+    std::string toUpperString(const std::string &s);
+
     bool startsWith(const std::string &str, const std::string &startQuery);
 
     bool endsWith(const std::string &str, const std::string &endQuery);
