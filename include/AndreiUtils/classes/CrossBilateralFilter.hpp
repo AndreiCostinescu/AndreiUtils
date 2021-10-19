@@ -6,8 +6,6 @@
 #define ANDREIUTILS_CROSSBILATERALFILTER_HPP
 
 #include <AndreiUtils/classes/GaussianKernel.h>
-#include <Eigen/Dense>
-#include <opencv2/opencv.hpp>
 
 namespace AndreiUtils {
     template<class T>
