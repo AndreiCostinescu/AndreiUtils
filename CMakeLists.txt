@@ -85,7 +85,6 @@ SET(UTILS_FILES src/utilsFiles.cpp)
 
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
-        src/classes/CrossBilateralFilter.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
         include/AndreiUtils/classes/CircularArray.hpp
@@ -99,6 +98,7 @@ SET(UTILS_EIGEN)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp include/AndreiUtils/utilsEigen.hpp)
+    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
 endif ()
 
 SET(UTILS_EIGEN_OPENCV)
@@ -117,6 +117,7 @@ SET(UTILS_OPENCV)
 if (USE_OPENCV)
     # depends on opencv
     SET(UTILS_OPENCV src/utilsOpenCV.cpp)
+    SET(UTILS_CLASSES src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
 endif ()
 
 SET(UTILS_REALSENSE)
