@@ -95,32 +95,35 @@ SET(UTILS_CLASSES
         )
 
 SET(UTILS_EIGEN)
+SET(UTILS_EIGEN_OPENCV)
+SET(UTILS_JSON)
+SET(UTILS_OPENCV)
+SET(UTILS_REALSENSE)
+
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp include/AndreiUtils/utilsEigen.hpp)
     SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
+    SET(UTILS_JSON include/AndreiUtils/utilsJsonEigen.hpp ${UTILS_JSON})
 endif ()
 
-SET(UTILS_EIGEN_OPENCV)
 if (USE_EIGEN AND USE_OPENCV)
     # depends on eigen and opencv
     SET(UTILS_EIGEN_OPENCV src/utilsEigenOpenCV.cpp)
 endif ()
 
-SET(UTILS_JSON)
 if (USE_JSON)
     # depends on json
-    SET(UTILS_JSON src/utilsJson.cpp)
+    SET(UTILS_JSON src/utilsJson.cpp ${UTILS_JSON})
 endif ()
 
-SET(UTILS_OPENCV)
 if (USE_OPENCV)
     # depends on opencv
     SET(UTILS_OPENCV src/utilsOpenCV.cpp)
     SET(UTILS_CLASSES src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
+    SET(UTILS_JSON include/AndreiUtils/utilsJsonOpenCV.hpp ${UTILS_JSON})
 endif ()
 
-SET(UTILS_REALSENSE)
 if (USE_REALSENSE)
     # depends on librealsense
     SET(UTILS_REALSENSE src/utilsRealsense.cpp)
@@ -139,7 +142,6 @@ set(GENERAL_UTILS
 
         ${UTILS_CLASSES}
         )
-
 set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
 set(JSON_UTILS ${UTILS_JSON})
