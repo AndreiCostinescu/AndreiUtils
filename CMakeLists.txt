@@ -63,6 +63,9 @@ endif ()
 
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
+    if (WIN32)
+        include_directories("C:/Program Files (x86)/librealsense2/include")
+    endif ()
 endif ()
 
 include_directories("include")
