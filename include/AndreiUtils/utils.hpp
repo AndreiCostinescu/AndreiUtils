@@ -15,6 +15,21 @@
 
 namespace AndreiUtils {
     template<typename T>
+    void swap(T *a, T *b) {
+        if (a == nullptr || b == nullptr) {
+            throw std::runtime_error("Can not swap null pointer data");
+        }
+        T tmp = *a;
+        *a = *b;
+        *b = tmp;
+    }
+
+    template<typename T>
+    void swap(T &a, T &b) {
+        swap(&a, &b);
+    }
+
+    template<typename T>
     inline int intRound(const T a) {
         return lround(a);
     }
