@@ -103,7 +103,7 @@ SET(UTILS_REALSENSE)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp include/AndreiUtils/utilsEigen.hpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES include/AndreiUtils/classes/SlidingWindowEigen.hpp src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
     SET(UTILS_JSON include/AndreiUtils/utilsJsonEigen.hpp ${UTILS_JSON})
 endif ()
 
@@ -120,7 +120,7 @@ endif ()
 if (USE_OPENCV)
     # depends on opencv
     SET(UTILS_OPENCV src/utilsOpenCV.cpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES include/AndreiUtils/classes/SlidingWindowOpenCV.hpp src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
     SET(UTILS_JSON include/AndreiUtils/utilsJsonOpenCV.hpp ${UTILS_JSON})
 endif ()
 
