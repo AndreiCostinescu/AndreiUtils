@@ -124,6 +124,10 @@ if (USE_OPENCV)
     SET(UTILS_JSON include/AndreiUtils/utilsJsonOpenCV.hpp ${UTILS_JSON})
 endif ()
 
+if (USE_OPENCV AND USE_REALSENSE)
+    SET(UTILS_OPENCV_REALSENSE src/utilsOpenCVRealsense.cpp)
+endif ()
+
 if (USE_REALSENSE)
     # depends on librealsense
     SET(UTILS_REALSENSE src/utilsRealsense.cpp)
@@ -146,6 +150,7 @@ set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
 set(JSON_UTILS ${UTILS_JSON})
 set(OPENCV_UTILS ${UTILS_OPENCV})
+set(OPENCV_REALSENSE_UTILS ${UTILS_OPENCV_REALSENSE})
 set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
 set(LIBRARY_NAME "AndreiUtils")
@@ -184,6 +189,12 @@ if (USE_EIGEN AND USE_OPENCV)
     add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
 endif ()
 
+if (USE_OPENCV AND USE_REALSENSE)
+    # OPENCV_REALSENSE_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_OPENCV_REALSENSE")
+    add_library(${LIB_NAME} ${OPENCV_REALSENSE_UTILS})
+endif ()
+
 # UTILS
 set(UTILS
         ${GENERAL_UTILS}
@@ -191,6 +202,7 @@ set(UTILS
         ${EIGEN_OPENCV_UTILS}
         ${JSON_UTILS}
         ${OPENCV_UTILS}
+        ${OPENCV_REALSENSE_UTILS}
         ${REALSENSE_UTILS}
         )
 message("Utils = ${UTILS}")
