@@ -72,11 +72,18 @@ endif ()
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
     set(ANDREI_UTILS_REQUIRED_LIBS ${realsense2_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
+    if (WIN32)
+        include_directories("C:/Program Files (x86)/librealsense2/include")
+    endif ()
 endif ()
 
 include_directories("include")
 
 SET(UTILS_GENERAL src/utils.cpp)
+
+SET(UTILS_ENUMS src/enums/StandardTypes.cpp)
+
+SET(UTILS_IMAGES src/utilsImages.cpp)
 
 SET(UTILS_TEMPLATE include/AndreiUtils/utils.hpp)
 
@@ -112,7 +119,7 @@ SET(UTILS_REALSENSE)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp include/AndreiUtils/utilsEigen.hpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES include/AndreiUtils/classes/SlidingWindowEigen.hpp src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
     SET(UTILS_JSON include/AndreiUtils/utilsJsonEigen.hpp ${UTILS_JSON})
 endif ()
 
@@ -129,8 +136,12 @@ endif ()
 if (USE_OPENCV)
     # depends on opencv
     SET(UTILS_OPENCV src/utilsOpenCV.cpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES include/AndreiUtils/classes/SlidingWindowOpenCV.hpp src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
     SET(UTILS_JSON include/AndreiUtils/utilsJsonOpenCV.hpp ${UTILS_JSON})
+endif ()
+
+if (USE_OPENCV AND USE_REALSENSE)
+    SET(UTILS_OPENCV_REALSENSE src/utilsOpenCVRealsense.cpp)
 endif ()
 
 if (USE_REALSENSE)
@@ -140,7 +151,9 @@ endif ()
 
 set(GENERAL_UTILS
         ${UTILS_GENERAL}
+        ${UTILS_ENUMS}
         ${UTILS_TEMPLATE}
+        ${UTILS_IMAGES}
 
         ${UTILS_NETWORK}
         ${UTILS_STRINGS}
@@ -155,6 +168,7 @@ set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
 set(JSON_UTILS ${UTILS_JSON})
 set(OPENCV_UTILS ${UTILS_OPENCV})
+set(OPENCV_REALSENSE_UTILS ${UTILS_OPENCV_REALSENSE})
 set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
 set(LIBRARY_NAME "AndreiUtils")
@@ -193,6 +207,12 @@ if (USE_EIGEN AND USE_OPENCV)
     add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
 endif ()
 
+if (USE_OPENCV AND USE_REALSENSE)
+    # OPENCV_REALSENSE_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_OPENCV_REALSENSE")
+    add_library(${LIB_NAME} ${OPENCV_REALSENSE_UTILS})
+endif ()
+
 # UTILS
 set(UTILS
         ${GENERAL_UTILS}
@@ -200,6 +220,7 @@ set(UTILS
         ${EIGEN_OPENCV_UTILS}
         ${JSON_UTILS}
         ${OPENCV_UTILS}
+        ${OPENCV_REALSENSE_UTILS}
         ${REALSENSE_UTILS}
         )
 message("Utils = ${UTILS}")
