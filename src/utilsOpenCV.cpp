@@ -54,19 +54,19 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
         return false;
     }
     fs->read((char *) &rows, sizeof(int));         // rows
-    if (fs->peek() == EOF) {
+    if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
     fs->read((char *) &cols, sizeof(int));         // cols
-    if (fs->peek() == EOF) {
+    if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
     fs->read((char *) &type, sizeof(int));         // type
-    if (fs->peek() == EOF) {
+    if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
     fs->read((char *) &channels, sizeof(int));     // channels
-    if (fs->peek() == EOF) {
+    if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
 
@@ -75,7 +75,7 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     fs->read((char *) mat.data, CV_ELEM_SIZE(type) * rows * cols);
 
     *result = mat;
-    return true;
+    return !fs->fail();
 }
 
 void AndreiUtils::printImage(Mat *image, const char *title, bool verbose) {
