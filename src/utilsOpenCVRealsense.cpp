@@ -30,9 +30,8 @@ Mat AndreiUtils::frame_to_mat(const frame &f) {
 
     Mat m(Size(w, h), matType, (void *) f.get_data(), Mat::AUTO_STEP);
     if (f.get_profile().format() == RS2_FORMAT_RGB8) {
-        auto r_rgb = Mat(Size(w, h), CV_8UC3, (void *) f.get_data(), Mat::AUTO_STEP);
         Mat r_bgr;
-        cvtColor(r_rgb, r_bgr, COLOR_RGB2BGR);
+        cvtColor(m, r_bgr, COLOR_RGB2BGR);
         return r_bgr;
     }
     return m;
