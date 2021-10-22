@@ -17,9 +17,9 @@
 
 namespace AndreiUtils {
     template<class T>
-    void fastMemCopy(T *dst, T *src, size_t size) {
+    void fastMemCopy(T *const dst, T *const src, size_t size) {
         // memcpy(dst, src, sizeof(T) * size);
-        #pragma omp parallel for default(none)
+        #pragma omp parallel for shared(size) default(none)
         for (size_t i = 0; i < size; i++) {
             dst[i] = src[i];
         }
