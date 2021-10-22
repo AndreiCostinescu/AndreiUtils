@@ -5,11 +5,14 @@
 #ifndef ANDREIUTILS_UTILSIMAGES_H
 #define ANDREIUTILS_UTILSIMAGES_H
 
+#include <AndreiUtils/enums/RotationType.h>
 #include <AndreiUtils/enums/StandardTypes.h>
 #include <cstdint>
 #include <fstream>
 
 namespace AndreiUtils {
+    void imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType);
+
     bool readImageHeader(std::ifstream *fin, int &height, int &width, StandardTypes &type, int &channels);
 
     bool readImageData(std::ifstream *fin, uint8_t *image, int nrBytes);
