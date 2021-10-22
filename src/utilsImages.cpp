@@ -3,9 +3,67 @@
 //
 
 #include <AndreiUtils/utilsImages.h>
-#include <AndreiUtils/enums/StandardTypes.h>
+#include <AndreiUtils/utils.hpp>
+#include <functional>
 
 using namespace std;
+
+void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
+                                    int width, int channels) {
+    if (rotation == RotationType::NO_ROTATION) {
+        return;
+    }
+
+    int nrBytesPerElement = getStandardTypeByteAmount(imageType);
+    int rowIncrement = width * channels;
+    int nrElements = height * rowIncrement * nrBytesPerElement;
+    auto *copy = new uint8_t[nrElements];
+    fastMemCopy(copy, data, nrElements);
+
+    int newHeight, newWidth;
+    function<int(int, int, int)> getCopyIndex;
+    switch (rotation) {
+        case LEFT_90: {
+            newHeight = width;
+            newWidth = height;
+            getCopyIndex = [width, channels, rowIncrement](int i, int j, int k) {
+                return j * rowIncrement + (width - 1 - i) * channels + k;
+            };
+            break;
+        }
+        case LEFT_180: {
+            newHeight = height;
+            newWidth = width;
+            getCopyIndex = [height, width, channels, rowIncrement](int i, int j, int k) {
+                return (height - 1 - i) * rowIncrement + (width - 1 - j) * channels + k;
+            };
+            break;
+        }
+        case LEFT_270: {
+            newHeight = width;
+            newWidth = height;
+            getCopyIndex = [height, channels, rowIncrement](int i, int j, int k) {
+                return (height - 1 - j) * rowIncrement + i * channels + k;
+            };
+            break;
+        }
+        default : {
+            throw runtime_error("Unknown rotation type " + to_string(rotation));
+            break;
+        }
+    }
+
+    int dataIndex, copyIndex, newRowIncrement = newWidth * channels;
+    for (int i = 0; i < newHeight; i++) {
+        for (int j = 0; j < newWidth; j++) {
+            for (int k = 0; k < channels; k++) {
+                dataIndex = i * newRowIncrement + j * channels + k;
+                copyIndex = getCopyIndex(i, j, k);
+                memcpy(data + dataIndex, copy + copyIndex, nrBytesPerElement);
+            }
+        }
+    }
+}
 
 bool AndreiUtils::readImageHeader(ifstream *fin, int &height, int &width, AndreiUtils::StandardTypes &type,
                                   int &channels) {
