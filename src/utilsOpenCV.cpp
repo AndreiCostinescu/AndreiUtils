@@ -7,6 +7,13 @@
 using namespace cv;
 using namespace std;
 
+size_t AndreiUtils::matByteSize(const Mat &mat) {
+    if (mat.isContinuous()) {
+        return (mat.dataend - mat.datastart);
+    }
+    return mat.rows * CV_ELEM_SIZE(mat.type()) * mat.cols;
+}
+
 void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
     switch (rotation) {
         case LEFT_90: {

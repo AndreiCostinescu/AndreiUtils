@@ -12,6 +12,8 @@
 #include <vector>
 
 namespace AndreiUtils {
+    size_t matByteSize(const cv::Mat &mat);
+
     void imageRotation(cv::Mat *image, RotationType rotation = RotationType::NO_ROTATION);
 
     void matWriteBinary(std::ofstream *fs, const cv::Mat &mat);
