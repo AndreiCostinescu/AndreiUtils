@@ -7,13 +7,24 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <omp.h>
 #include <utility>
 #include <vector>
 
 namespace AndreiUtils {
+    template<class T>
+    void fastMemCopy(T *dst, T *src, size_t size) {
+        // memcpy(dst, src, sizeof(T) * size);
+        #pragma omp parallel for default(none)
+        for (size_t i = 0; i < size; i++) {
+            dst[i] = src[i];
+        }
+    }
+
     template<typename T>
     void swap(T *a, T *b) {
         if (a == nullptr || b == nullptr) {
@@ -87,7 +98,7 @@ namespace AndreiUtils {
     template<typename T>
     inline T average(std::vector<T> a) {
         T avg;
-        for (const T &val : a) {
+        for (const T &val: a) {
             avg += val;
         }
         avg /= (double) a.size();
@@ -151,7 +162,7 @@ namespace AndreiUtils {
 
     template<class T>
     void printVector(std::vector<T> x) {
-        for (const auto &y : x) {
+        for (const auto &y: x) {
             std::cout << y << ", ";
         }
         std::cout << std::endl;

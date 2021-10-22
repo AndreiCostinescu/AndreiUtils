@@ -43,6 +43,11 @@ message("Use json set to ${USE_JSON}")
 message("Use opencv set to ${USE_OPENCV}")
 message("Use realsense set to ${USE_REALSENSE}")
 
+find_package(OpenMP REQUIRED)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+
 if (WIN32)
     set(ANDREI_UTILS_REQUIRED_LIBS wsock32 ws2_32 ${ANDREI_UTILS_REQUIRED_LIBS})
 else (WIN32)
