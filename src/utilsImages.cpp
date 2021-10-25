@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsImages.h>
 #include <AndreiUtils/utilsOpenMP.hpp>
+#include <cstring>
 #include <functional>
 
 using namespace std;
