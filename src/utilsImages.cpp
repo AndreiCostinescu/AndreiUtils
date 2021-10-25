@@ -3,7 +3,7 @@
 //
 
 #include <AndreiUtils/utilsImages.h>
-#include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsOpenMP.hpp>
 #include <functional>
 
 using namespace std;

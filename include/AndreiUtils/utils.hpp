@@ -11,20 +11,10 @@
 #include <cmath>
 #include <iostream>
 #include <map>
-#include <omp.h>
 #include <utility>
 #include <vector>
 
 namespace AndreiUtils {
-    template<class T>
-    void fastMemCopy(T *const dst, T *const src, size_t size) {
-        // memcpy(dst, src, sizeof(T) * size);
-        #pragma omp parallel for shared(size) default(none)
-        for (size_t i = 0; i < size; i++) {
-            dst[i] = src[i];
-        }
-    }
-
     template<typename T>
     void swap(T *a, T *b) {
         if (a == nullptr || b == nullptr) {
