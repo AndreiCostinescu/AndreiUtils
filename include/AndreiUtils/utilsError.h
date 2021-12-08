@@ -1,0 +1,8 @@
+//
+// Created by andrei on 06.12.21.
+//
+
+#ifndef ANDREIUTILS_UTILSERROR_H
+#define ANDREIUTILS_UTILSERROR_H
+
+#endif //ANDREIUTILS_UTILSERROR_H
