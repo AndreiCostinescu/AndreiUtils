@@ -25,10 +25,14 @@ void AndreiUtils::threadBarrier(volatile atomic<int> &threadVariable, bool yield
 #pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
     while (atomic_load(&threadVariable)) {
         if (yieldOrSleep) {
-            this_thread::yield();
+            threadYield();
         } else {
             sleepMSec(threadSleepTime);
         }
     }
 #pragma clang diagnostic pop
+}
+
+void AndreiUtils::threadYield() {
+    this_thread::yield();
 }

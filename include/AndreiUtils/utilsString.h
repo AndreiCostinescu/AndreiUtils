@@ -31,6 +31,8 @@ namespace AndreiUtils {
 
     std::string toUpperString(const std::string &s);
 
+    bool contains(const std::string &who, const std::string &what);
+
     bool startsWith(const std::string &str, const std::string &startQuery);
 
     bool endsWith(const std::string &str, const std::string &endQuery);

@@ -109,6 +109,10 @@ string AndreiUtils::toUpperString(const string &s) {
     return res;
 }
 
+bool AndreiUtils::contains(const string &who, const string &what) {
+    return (who.find(what) != string::npos);
+}
+
 bool AndreiUtils::startsWith(const string &str, const string &startQuery) {
     return (str.rfind(startQuery, 0) == 0);
 }

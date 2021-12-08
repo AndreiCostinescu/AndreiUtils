@@ -15,6 +15,8 @@ namespace AndreiUtils {
     void sleepUSec(int uSec);
 
     void threadBarrier(volatile std::atomic<int> &threadVariable, bool yieldOrSleep = false);
+
+    void threadYield();
 }
 
 #endif //ANDREIUTILS_UTILSTHREAD_H
