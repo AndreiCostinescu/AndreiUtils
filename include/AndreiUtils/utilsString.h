@@ -52,6 +52,12 @@ namespace AndreiUtils {
     size_t stringCount(const std::string &referenceString, const std::string &subString);
 
     std::pair<std::string, std::string> getKeyAndValue(std::string &line);
+
+    std::string padLeftUntil(const std::string &s, const std::string &pad, int stringSizeLimit = -1,
+                             long padTimes = -1);
+
+    std::string padRightUntil(const std::string &s, const std::string &pad, int stringSizeLimit = -1,
+                              long padTimes = -1);
 }
 
 #endif //ANDREIUTILS_UTILSSTRING_H

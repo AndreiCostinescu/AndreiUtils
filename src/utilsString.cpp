@@ -205,3 +205,37 @@ pair<string, string> AndreiUtils::getKeyAndValue(string &line) {
     string val = trim(line.substr(equal_pos + 1, string::npos));
     return {key, val};
 }
+
+string AndreiUtils::padLeftUntil(const string &s, const string &pad, int stringSizeLimit, long padTimes) {
+    long nrRepeats;
+    if (stringSizeLimit == -1) {
+        if (padTimes < 0) {
+            nrRepeats = 1;
+        } else {
+            nrRepeats = padTimes;
+        }
+    } else {
+        nrRepeats = (stringSizeLimit - (long) s.size()) / (long) pad.size();
+        if (padTimes >= 0) {
+            nrRepeats = AndreiUtils::fastMin(nrRepeats, padTimes);
+        }
+    }
+    return (pad * nrRepeats) + s;
+}
+
+string AndreiUtils::padRightUntil(const string &s, const string &pad, int stringSizeLimit, long padTimes) {
+    long nrRepeats;
+    if (stringSizeLimit == -1) {
+        if (padTimes < 0) {
+            nrRepeats = 1;
+        } else {
+            nrRepeats = padTimes;
+        }
+    } else {
+        nrRepeats = (stringSizeLimit - (long) s.size()) / (long) pad.size();
+        if (padTimes >= 0) {
+            nrRepeats = AndreiUtils::fastMin(nrRepeats, padTimes);
+        }
+    }
+    return s + (pad * nrRepeats);
+}
