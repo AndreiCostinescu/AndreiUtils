@@ -17,6 +17,8 @@ namespace AndreiUtils {
 
     void myAssert(bool cond, const std::string &message = "");
 
+    std::string operator *(const std::string &s, long long i);
+
     std::vector<std::string> splitString(const std::string &message, const std::string &splitter);
 
     std::string firstParts(const std::string &message, const std::string &partSplitter, int partCount);

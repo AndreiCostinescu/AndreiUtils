@@ -32,6 +32,14 @@ void AndreiUtils::myAssert(bool cond, const string &message) {
     }
 }
 
+std::string AndreiUtils::operator*(const std::string &s, long long i) {
+    string res;
+    for (int j = 0; j < i; j++) {
+        res += s;
+    }
+    return res;
+}
+
 vector<string> AndreiUtils::splitString(const string &message, const string &splitter) {
     // cout << "Message length: " << message.size() << endl;
     vector<string> res;
