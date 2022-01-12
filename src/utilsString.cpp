@@ -176,6 +176,15 @@ string AndreiUtils::replace(const string &s, const string &oldString, const stri
     return result;
 }
 
+string AndreiUtils::replaceFirst(const string &s, const string &oldString, const string &newString) {
+    string result = s;
+    size_t startIndex = result.find(oldString, 0);
+    if (startIndex != std::string::npos) {
+        result.replace(startIndex, oldString.length(), newString);
+    }
+    return result;
+}
+
 size_t AndreiUtils::stringCount(const string &referenceString, const string &subString) {
     const size_t step = subString.size();
 

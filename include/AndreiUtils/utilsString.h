@@ -47,6 +47,8 @@ namespace AndreiUtils {
 
     std::string replace(const std::string &s, const std::string &oldString, const std::string &newString);
 
+    std::string replaceFirst(const std::string &s, const std::string &oldString, const std::string &newString);
+
     size_t stringCount(const std::string &referenceString, const std::string &subString);
 
     std::pair<std::string, std::string> getKeyAndValue(std::string &line);
