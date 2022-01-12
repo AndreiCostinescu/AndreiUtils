@@ -16,7 +16,7 @@ namespace AndreiUtils {
     // Returns the 3D point at the requested (x, y) position of the depth data
     void getRealsenseDepthPointFromImagePixel(std::function<float(int, int)> &getDepth, rs2_intrinsics &intrinsics,
                                               float x, float y, float (&point)[3], int windowSize = 1,
-                                              bool forceWindowUsage = false);
+                                              bool forceWindowUsage = false, float farthestAllowedDepth = 10);
 
     // Returns the image pixel at the requested 3D position
     void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);

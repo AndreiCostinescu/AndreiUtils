@@ -79,7 +79,7 @@ void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *data, co
 
 void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)> &getDepth, rs2_intrinsics &intrinsics,
                                                        float x, float y, float (&point)[3], int windowSize,
-                                                       bool forceWindowUsage) {
+                                                       bool forceWindowUsage, float farthestAllowedDepth) {
     int width = intrinsics.width, height = intrinsics.height;
     int int_x = int(x), int_y = int(y);
     float position[2] = {x, y};
@@ -87,7 +87,9 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)>
     // return;
 
     float depth = getDepth(int_x, int_y), avgDepth = 0;
-    auto isDepthInvalid = [](float x) { return lessEqual(x, 0.1f) || lessEqual(10.0f, x); };
+    auto isDepthInvalid = [farthestAllowedDepth](float x) {
+        return isnan(x) || lessEqual(x, 0.1f) || lessEqual(farthestAllowedDepth, x);
+    };
     if (forceWindowUsage || isDepthInvalid(depth)) {
         int nrPoints = 0;
         for (int i = max(-int_x, -windowSize); i <= min(windowSize, height - int_x - 1); i++) {
