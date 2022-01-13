@@ -9,6 +9,8 @@
 #include <unistd.h>
 
 namespace AndreiUtils {
+    std::string getCurrentDirectory(bool withTrainingSeparator = false);
+
     bool fileExists(const std::string &name);
 
     bool createDirectory(const std::string &path);

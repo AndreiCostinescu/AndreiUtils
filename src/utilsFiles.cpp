@@ -4,10 +4,29 @@
 
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsString.h>
+#include <climits>
 #include <iostream>
 #include <sys/stat.h>
 
 using namespace std;
+
+string AndreiUtils::getCurrentDirectory(bool withTrainingSeparator) {
+    char buff[PATH_MAX];
+    #if defined(WIN32) || defined(WIN64)
+    _getcwd(buff, PATH_MAX);
+    #else
+    getcwd(buff, PATH_MAX);
+    #endif
+    string dir(buff);
+    if (withTrainingSeparator) {
+        #if defined(WIN32) || defined(WIN64)
+        dir += "\\";
+        #else
+        dir += "/";
+        #endif
+    }
+    return dir;
+}
 
 bool AndreiUtils::fileExists(const string &name) {
     struct stat buffer{};
@@ -30,7 +49,7 @@ bool AndreiUtils::createDirectory(const string &path) {
 
 bool AndreiUtils::createDirectories(const string &path) {
     string dirPath = replace(path, "\\", "/"), tmpPath;
-    int subdirs = stringCount(dirPath, "/");
+    size_t subdirs = stringCount(dirPath, "/");
     bool res;
     for (int i = 0; i < subdirs; i++) {
         tmpPath = firstParts(dirPath, "/", i + 1);
