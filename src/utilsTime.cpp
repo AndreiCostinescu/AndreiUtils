@@ -12,7 +12,7 @@
 using namespace std;
 using namespace std::chrono;
 
-string AndreiUtils::convertChronoToString(const time_point<system_clock> &time, const string &format) {
+string AndreiUtils::convertChronoToString(const SystemTimePoint &time, const string &format) {
     time_t timeStruct;
     stringstream ss;
     timeStruct = system_clock::to_time_t(time);
@@ -32,7 +32,7 @@ time_point<system_clock> AndreiUtils::convertStringToChrono(const string &time, 
     return system_clock::from_time_t(mktime(&tm));
 }
 
-string AndreiUtils::convertChronoToStringWithSubseconds(const time_point<system_clock> &time, const string &format,
+string AndreiUtils::convertChronoToStringWithSubseconds(const SystemTimePoint &time, const string &format,
                                                         const string &subsecondFormat, const string &joiner) {
     if (joiner.empty()) {
         AndreiUtils::myWarning("The subsecond joiner string is empty... "
@@ -129,7 +129,7 @@ time_point<system_clock> AndreiUtils::convertStringToChronoWithSubseconds(
         } else if (subsecondFormat[formatIndex + 1] == 'u' && subsecondFormat[formatIndex + 2] == 's' &&
                    timeIndex + 5 < timeSize) {
             // microseconds: expecting at six characters more in timeString string
-            res += std::chrono::microseconds (stoi(timeString.substr(timeIndex, 6)));
+            res += std::chrono::microseconds(stoi(timeString.substr(timeIndex, 6)));
             timeIndex += 5;  // 6 - 1 because there's the timeIndex++ performed in the for-loop
             formatIndex += 2;
         } else if (subsecondFormat[formatIndex + 1] == 'n' && subsecondFormat[formatIndex + 2] == 's' &&
@@ -219,7 +219,7 @@ void AndreiUtils::updateTime(const clock_t &newTime, clock_t &prevTime, bool upd
 
 clock_t AndreiUtils::createDeltaTime(double fps, double deltaSec) {
     if (fps > 0) {
-        return (clock_t) (CLOCKS_PER_SEC * 1 / fps);
+        return (clock_t)(CLOCKS_PER_SEC * 1 / fps);
     }
-    return (clock_t) (CLOCKS_PER_SEC * deltaSec);
+    return (clock_t)(CLOCKS_PER_SEC * deltaSec);
 }
