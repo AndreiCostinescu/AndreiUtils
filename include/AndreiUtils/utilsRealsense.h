@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <AndreiUtils/enums/ImageDistortionModel.h>
 #include <cstdint>
 #include <librealsense2/rs.hpp>
 
@@ -20,4 +21,8 @@ namespace AndreiUtils {
 
     // Returns the image pixel at the requested 3D position
     void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);
+
+    ImageDistortionModel convertRealsenseDistortionToImageDistortionModel(const rs2_distortion &distortion);
+
+    rs2_distortion convertImageDistortionModelToRealsenseDistortion(const ImageDistortionModel &distortion);
 }

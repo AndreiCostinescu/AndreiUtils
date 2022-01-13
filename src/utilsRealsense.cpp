@@ -120,3 +120,59 @@ void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsic
     // project pixel from point in 3D
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
+
+AndreiUtils::ImageDistortionModel AndreiUtils::convertRealsenseDistortionToImageDistortionModel(
+        const rs2_distortion &distortion) {
+    switch (distortion) {
+        case RS2_DISTORTION_NONE: {
+            return ImageDistortionModel::DISTORTION_NONE;
+        }
+        case RS2_DISTORTION_MODIFIED_BROWN_CONRADY: {
+            return ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY;
+        }
+        case RS2_DISTORTION_INVERSE_BROWN_CONRADY: {
+            return ImageDistortionModel::DISTORTION_INVERSE_BROWN_CONRADY;
+        }
+        case RS2_DISTORTION_FTHETA: {
+            return ImageDistortionModel::DISTORTION_FTHETA;
+        }
+        case RS2_DISTORTION_BROWN_CONRADY: {
+            return ImageDistortionModel::DISTORTION_BROWN_CONRADY;
+        }
+        case RS2_DISTORTION_KANNALA_BRANDT4: {
+            return ImageDistortionModel::DISTORTION_KANNALA_BRANDT4;
+        }
+        case RS2_DISTORTION_COUNT: {
+            throw runtime_error("RS2_DISTORTION_COUNT is not a valid distortion model");
+        }
+        default: {
+            throw runtime_error("Unknown rs2_distortion type: " + to_string(distortion));
+        }
+    }
+}
+
+rs2_distortion AndreiUtils::convertImageDistortionModelToRealsenseDistortion(const ImageDistortionModel &distortion) {
+    switch (distortion) {
+        case ImageDistortionModel::DISTORTION_NONE: {
+            return RS2_DISTORTION_NONE;
+        }
+        case ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY: {
+            return RS2_DISTORTION_MODIFIED_BROWN_CONRADY;
+        }
+        case ImageDistortionModel::DISTORTION_INVERSE_BROWN_CONRADY: {
+            return RS2_DISTORTION_INVERSE_BROWN_CONRADY;
+        }
+        case ImageDistortionModel::DISTORTION_FTHETA: {
+            return RS2_DISTORTION_FTHETA;
+        }
+        case ImageDistortionModel::DISTORTION_BROWN_CONRADY: {
+            return RS2_DISTORTION_BROWN_CONRADY;
+        }
+        case ImageDistortionModel::DISTORTION_KANNALA_BRANDT4: {
+            return RS2_DISTORTION_KANNALA_BRANDT4;
+        }
+        default: {
+            throw runtime_error("Unknown or incompatible distortion type: " + to_string(distortion));
+        }
+    }
+}
