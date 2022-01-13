@@ -83,6 +83,7 @@ endif ()
 
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
+    include_directories(${realsense2_INCLUDE_DIR})
     set(ANDREI_UTILS_REQUIRED_LIBS ${realsense2_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
     if (WIN32)
         include_directories("C:/Program Files (x86)/librealsense2/include")
