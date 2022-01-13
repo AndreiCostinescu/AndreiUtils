@@ -17,12 +17,12 @@ namespace AndreiUtils {
 
     std::string convertChronoToStringWithSubseconds(
             const std::chrono::time_point<std::chrono::system_clock> &time,
-            const std::string &format = "%Y-%m-%d-%H-%M-%S", const std::string &subsecondFormat = "%fns",
+            const std::string &format = "%Y-%m-%d-%H-%M-%S", const std::string &subsecondFormat = "%ns",
             const std::string &joiner = ":");
 
     std::chrono::time_point<std::chrono::system_clock> convertStringToChronoWithSubseconds(
             const std::string &time, const std::string &format = "%Y-%m-%d-%H-%M-%S",
-            const std::string &subsecondFormat = "%fns", const std::string &joiner = ":");
+            const std::string &subsecondFormat = "%ns", const std::string &joiner = ":");
 
     void getDateFromTime(struct tm *&t, time_t time, int &year);
 
