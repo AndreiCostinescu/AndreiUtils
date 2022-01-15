@@ -56,7 +56,7 @@ int AndreiUtils::convertStandardTypesToOpenCVType(AndreiUtils::StandardTypes typ
     throw runtime_error("Can not convert " + to_string(type) + " to opencv type...");
 }
 
-AndreiUtils::StandardTypes AndreiUtils::convertStandardTypesToOpenCVType(int type) {
+AndreiUtils::StandardTypes AndreiUtils::convertOpenCVTypeToStandardTypes(int type) {
     type = type & 7;
     if (type == 0) {
         return StandardTypes::TYPE_UINT_8;

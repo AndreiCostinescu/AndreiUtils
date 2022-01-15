@@ -27,7 +27,7 @@ namespace AndreiUtils {
 
     int convertStandardTypesToOpenCVType(StandardTypes type);
 
-    StandardTypes convertStandardTypesToOpenCVType(int type);
+    StandardTypes convertOpenCVTypeToStandardTypes(int type);
 }
 
 #endif //ANDREIUTILS_STANDARDTYPES_H
