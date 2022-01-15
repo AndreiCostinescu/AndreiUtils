@@ -7,6 +7,7 @@
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
+#include <librealsense2/rs.hpp>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -39,6 +40,20 @@ void eigenTesting() {
 
 void fileTesting() {
     cout << getCurrentDirectory(true) << endl;
+}
+
+void realsenseDistortionString() {
+    cout << rs2_distortion_to_string(RS2_DISTORTION_NONE) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_MODIFIED_BROWN_CONRADY) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_INVERSE_BROWN_CONRADY) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_FTHETA) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_BROWN_CONRADY) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_KANNALA_BRANDT4) << endl;
+    cout << rs2_distortion_to_string(RS2_DISTORTION_COUNT) << endl;
+}
+
+void realsenseToCameraIntrinsicParameters () {
+    ;
 }
 
 void timeTesting() {
@@ -82,7 +97,8 @@ void timeTesting() {
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
-    fileTesting();
+    // fileTesting();
+    realsenseDistortionString();
     // timeTesting();
     return 0;
 }
