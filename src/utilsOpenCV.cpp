@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/utilsOpenCV.h>
+#include <AndreiUtils/utilsOpenMP.hpp>
 
 using namespace cv;
 using namespace std;
@@ -32,6 +33,19 @@ void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
             break;
         }
     }
+}
+
+uchar *AndreiUtils::copyMatData(const Mat &mat) {
+    auto *dataPtr = new uchar[matByteSize(mat)];
+    if (mat.isContinuous()) {
+        fastMemCopy(dataPtr, mat.ptr(0), (mat.dataend - mat.datastart));
+    } else {
+        int rowSize = CV_ELEM_SIZE(mat.type()) * mat.cols;
+        for (int r = 0; r < mat.rows; ++r) {
+            fastMemCopy(dataPtr + r * rowSize, mat.ptr(r), rowSize);
+        }
+    }
+    return dataPtr;
 }
 
 void AndreiUtils::matWriteBinary(ofstream *fs, const Mat &mat) {

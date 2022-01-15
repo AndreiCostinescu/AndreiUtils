@@ -16,6 +16,8 @@ namespace AndreiUtils {
 
     void imageRotation(cv::Mat *image, RotationType rotation = RotationType::NO_ROTATION);
 
+    uchar *copyMatData(const cv::Mat &image);
+
     void matWriteBinary(std::ofstream *fs, const cv::Mat &mat);
 
     bool matReadBinary(std::ifstream *fs, cv::Mat *result);
