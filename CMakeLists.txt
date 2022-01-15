@@ -113,6 +113,7 @@ SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
+	src/classes/CameraIntrinsicParameters.cpp
         )
 
 SET(UTILS_EIGEN)

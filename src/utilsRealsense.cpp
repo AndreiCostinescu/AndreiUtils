@@ -121,6 +121,29 @@ void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsic
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
 
+rs2_intrinsics AndreiUtils::convertCameraIntrinsicParametersToRealsenseIntrinsics(
+        const AndreiUtils::CameraIntrinsicParameters &intrinsics) {
+    rs2_intrinsics i;
+    i.width = intrinsics.w;
+    i.height = intrinsics.h;
+    i.fx = (float) intrinsics.fx;
+    i.fy = (float) intrinsics.fy;
+    i.ppx = (float) intrinsics.ppx;
+    i.ppy = (float) intrinsics.ppy;
+    i.ppy = (float) intrinsics.ppy;
+    i.model = convertImageDistortionModelToRealsenseDistortion(intrinsics.distortionModel);
+    for (int index = 0; index < intrinsics.nrDistortionCoefficients; index++) {
+        i.coeffs[index] = intrinsics.distortionCoefficients[index];
+    }
+    return i;
+}
+
+AndreiUtils::CameraIntrinsicParameters AndreiUtils::convertRealsenseIntrinsicsToCameraIntrinsicParameters(
+        const rs2_intrinsics &intrinsics) {
+    return {intrinsics.height, intrinsics.width, intrinsics.fx, intrinsics.fy, intrinsics.ppx, intrinsics.ppy,
+            convertRealsenseDistortionToImageDistortionModel(intrinsics.model), intrinsics.coeffs};
+}
+
 AndreiUtils::ImageDistortionModel AndreiUtils::convertRealsenseDistortionToImageDistortionModel(
         const rs2_distortion &distortion) {
     switch (distortion) {

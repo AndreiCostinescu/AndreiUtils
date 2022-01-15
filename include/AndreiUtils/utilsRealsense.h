@@ -1,8 +1,10 @@
-// License: Apache 2.0. See LICENSE file in root directory.
-// Copyright(c) 2017 Intel Corporation. All Rights Reserved.
+//
+// Created by Andrei on 26.11.20.
+//
 
 #pragma once
 
+#include <AndreiUtils/classes/CameraIntrinsicParameters.h>
 #include <AndreiUtils/enums/ImageDistortionModel.h>
 #include <cstdint>
 #include <librealsense2/rs.hpp>
@@ -21,6 +23,10 @@ namespace AndreiUtils {
 
     // Returns the image pixel at the requested 3D position
     void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);
+
+    rs2_intrinsics convertCameraIntrinsicParametersToRealsenseIntrinsics(const CameraIntrinsicParameters &intrinsics);
+
+    CameraIntrinsicParameters convertRealsenseIntrinsicsToCameraIntrinsicParameters(const rs2_intrinsics &intrinsics);
 
     ImageDistortionModel convertRealsenseDistortionToImageDistortionModel(const rs2_distortion &distortion);
 
