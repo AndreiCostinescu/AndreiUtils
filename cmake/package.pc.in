@@ -1,0 +1,17 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+includedir=${prefix}/include
+#TODO: libdir=${exec_prefix}/lib@MULTI_ARCH_SUFFIX@
+libdir= ${prefix}/lib/x86_64-linux-gnu
+
+Name: @PROJECT_NAME@
+Description: @PROJECT_DESCRIPTION@
+Version: @PROJECT_VERSION_STRING@
+URL: @PROJECT_URL@
+Requires.private: @PROJECT_DEPS@
+Libs: -L${libdir} -l@PROJECT_TARGET@
+Libs.private: @PROJECT_LIBS@
+Cflags: -I${includedir}
+
+#TODO check -Wl -Bdynamic
+#Libs: -L${libdir} -Wl,-Bdynamic -l@PROJECT_TARGET@

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
-project(AndreiUtils)
+
+project(AndreiUtils)  # sets PROJECT_NAME variable
+set(PROJECT_VERSION_STRING "1.0.0")
+set(PROJECT_TARGET ${PROJECT_NAME})
+set(PROJECT_INCLUDE_PREFIX ${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -113,7 +117,7 @@ SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
-	src/classes/CameraIntrinsicParameters.cpp
+        src/classes/CameraIntrinsicParameters.cpp
         )
 
 SET(UTILS_EIGEN)
@@ -182,7 +186,7 @@ set(OPENCV_REALSENSE_UTILS ${UTILS_OPENCV_REALSENSE})
 set(OPENMP_UTILS ${UTILS_OPENMP})
 set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
-set(LIBRARY_NAME "AndreiUtils")
+set(LIBRARY_NAME ${PROJECT_NAME})
 
 # GENERAL_UTILS
 set(LIB_NAME "${LIBRARY_NAME}_GENERAL")
@@ -246,9 +250,18 @@ message("Utils = ${UTILS}")
 append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
+
 add_library(${TARGET_LIBRARY} ${UTILS})
+# needed for cmake to correctly generate AndreiUtilsConfig.cmake to include the include directory of the libary :)
+target_include_directories(${TARGET_LIBRARY}
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        )
 set(ANDREI_UTILS_REQUIRED_LIBS ${TARGET_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
 
 message(${ANDREI_UTILS_REQUIRED_LIBS})
 add_executable(TestAndreiUtils main.cpp)
 target_link_libraries(TestAndreiUtils ${ANDREI_UTILS_REQUIRED_LIBS})
+
+include(cmake/installConfig.cmake)
