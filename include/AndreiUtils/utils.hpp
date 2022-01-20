@@ -171,6 +171,26 @@ namespace AndreiUtils {
         merged.insert(merged.end(), v2.begin(), v2.end());
         return merged;
     }
+
+    template<class T1, class T2>
+    std::vector<T1> getMapKeys(const std::map<T1, T2> &container) {
+        std::vector<T1> keys(container.size());
+        int i = 0;
+        for (const auto &elem: container) {
+            keys[i++] = elem.first;
+        }
+        return keys;
+    }
+
+    template<class T1, class T2>
+    std::vector<T2> getMapValues(const std::map<T1, T2> &container) {
+        std::vector<T2> values(container.size());
+        int i = 0;
+        for (const auto &elem: container) {
+            values[i++] = elem.second;
+        }
+        return values;
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
