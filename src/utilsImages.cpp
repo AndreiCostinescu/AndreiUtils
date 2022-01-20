@@ -261,9 +261,7 @@ void AndreiUtils::writeDepthImageBinary(std::ofstream *fout, const uint16_t *dep
 void AndreiUtils::writeDepthImageBinary(std::ofstream *fout, const double *depth, int height, int width) {
     size_t nrElements = height * width;
     auto *tmpData = new uint16_t[nrElements];
-    for (size_t i = 0; i < nrElements; i++) {
-        tmpData[i] = (uint16_t) (depth[i] * 1000);
-    }
+    fastSrcOp<double, uint16_t>(tmpData, depth, nrElements, [](const double &x) { return (uint16_t) (x * 1000); });
     writeImageBinary(fout, (uint8_t *) tmpData, height, width, StandardTypes::TYPE_UINT_16, 1);
     delete[] tmpData;
 }

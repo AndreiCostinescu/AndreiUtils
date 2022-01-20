@@ -71,9 +71,7 @@ void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *data, co
     int dataType;
     frameToBytes(f, (uint8_t *) tmpData, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
-    for (size_t i = 0; i < dataElements; i++) {
-        data[i] = tmpData[i] / 1000.0;  // convert to meters
-    }
+    fastSrcOp<uint16_t, double>(data, tmpData, dataElements, [](const uint16_t &x) { return (double) (x / 1000.0); });
     delete[] tmpData;
 }
 
