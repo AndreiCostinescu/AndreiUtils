@@ -72,4 +72,12 @@ void CameraIntrinsicParameters::setDistortionParameters(ImageDistortionModel _di
             }
         }
 
+vector<float> CameraIntrinsicParameters::getDistortionCoefficientsAsVector() const {
+    vector<float> coefficients(this->nrDistortionCoefficients);
+    for (int i=0; i<this->nrDistortionCoefficients; i++) {
+        coefficients[i] = this->distortionCoefficients[i];
+    }
+    return coefficients;
+}
+
 

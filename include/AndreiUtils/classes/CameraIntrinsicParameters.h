@@ -28,6 +28,8 @@ namespace AndreiUtils {
         void setDistortionParameters(ImageDistortionModel _distortionModel,
                                      const std::vector<float> &_distortionCoefficients);
 
+        std::vector<float> getDistortionCoefficientsAsVector() const;
+
         int h, w, nrDistortionCoefficients;
         double fx, fy, ppx, ppy;
         float *distortionCoefficients;
