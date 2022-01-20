@@ -160,7 +160,7 @@ namespace AndreiUtils {
 
     template<class T1, class T2>
     void printMap(const std::map<T1, T2> &container) {
-        for (const auto &containerItem : container) {
+        for (const auto &containerItem: container) {
             std::cout << containerItem.first << " -> " << containerItem.second << std::endl;
         }
     }

@@ -14,6 +14,10 @@ namespace AndreiUtils {
     void imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height, int width,
                            int channels = 1);
 
+    void imageDataRotationWithDesiredParameters(
+            uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
+            int channels = 1);
+
     bool readImageHeader(std::ifstream *fin, int &height, int &width, StandardTypes &type, int &channels);
 
     bool readImageData(std::ifstream *fin, uint8_t *image, int nrBytes);

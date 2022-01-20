@@ -16,6 +16,9 @@ namespace AndreiUtils {
     // Converts depth frame to a double data with distances in meters
     void depthFrameToMeters(const rs2::depth_frame &f, double *data, size_t dataElements);
 
+    // Converts depth frame to a uint16_t data with distances in meters
+    void depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *data, size_t dataElements);
+
     // Returns the 3D point at the requested (x, y) position of the depth data
     void getRealsenseDepthPointFromImagePixel(std::function<float(int, int)> &getDepth, rs2_intrinsics &intrinsics,
                                               float x, float y, float (&point)[3], int windowSize = 1,

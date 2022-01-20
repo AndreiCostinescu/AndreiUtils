@@ -75,6 +75,12 @@ void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *data, co
     delete[] tmpData;
 }
 
+void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *data, const size_t dataElements) {
+    int dataType;
+    frameToBytes(f, (uint8_t *) data, dataType, dataElements * sizeof(uint16_t));
+    assert (dataType == convertFrameTypeToDataType(2, 1));
+}
+
 void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)> &getDepth, rs2_intrinsics &intrinsics,
                                                        float x, float y, float (&point)[3], int windowSize,
                                                        bool forceWindowUsage, float farthestAllowedDepth) {

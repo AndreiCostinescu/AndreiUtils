@@ -66,6 +66,15 @@ void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, Standa
     }
 }
 
+void AndreiUtils::imageDataRotationWithDesiredParameters(
+        uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
+        int channels) {
+    return imageDataRotation(data, applyRotation, imageType,
+                             (applyRotation == LEFT_90 || applyRotation == RIGHT_90) ? desiredWidth : desiredHeight,
+                             (applyRotation == LEFT_90 || applyRotation == RIGHT_90) ? desiredHeight : desiredWidth,
+                             channels);
+}
+
 bool AndreiUtils::readImageHeader(ifstream *fin, int &height, int &width, AndreiUtils::StandardTypes &type,
                                   int &channels) {
     if (fin->peek() == EOF) {
