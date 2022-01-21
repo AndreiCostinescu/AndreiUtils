@@ -6,6 +6,7 @@
 #define ANDREIUTILS_CAMERAINTRINSICPARAMETERS_HPP
 
 #include <AndreiUtils/enums/ImageDistortionModel.h>
+#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsOpenMP.hpp>
 #include <vector>
 
@@ -14,14 +15,14 @@ namespace AndreiUtils {
     public:
         CameraIntrinsicParameters();
 
-        CameraIntrinsicParameters(int h, int w, double fx, double fy, double ppx, double ppy,
-                                  ImageDistortionModel distortionModel, const float *distortionCoefficients);
+        CameraIntrinsicParameters(double fx, double fy, double ppx, double ppy, ImageDistortionModel distortionModel,
+                                  const float *distortionCoefficients);
 
         ~CameraIntrinsicParameters();
 
         std::string toString() const;
 
-        void setImageParameters(int _h, int _w, double _fx, double _fy, double _ppx, double _ppy);
+        void setImageParameters(double _fx, double _fy, double _ppx, double _ppy);
 
         void setDistortionParameters(ImageDistortionModel _distortionModel, const float *_distortionCoefficients);
 
@@ -30,10 +31,27 @@ namespace AndreiUtils {
 
         std::vector<float> getDistortionCoefficientsAsVector() const;
 
-        int h, w, nrDistortionCoefficients;
+        void toJson(nlohmann::json &j) const;
+
+        void fromJson(const nlohmann::json &j);
+
+        int nrDistortionCoefficients;
         double fx, fy, ppx, ppy;
         float *distortionCoefficients;
         ImageDistortionModel distortionModel;
+    };
+}
+
+namespace nlohmann {
+    template<>
+    struct adl_serializer<AndreiUtils::CameraIntrinsicParameters> {
+        static void to_json(nlohmann::json &j, const AndreiUtils::CameraIntrinsicParameters &p) {
+            p.toJson(j);
+        }
+
+        static void from_json(const nlohmann::json &j, AndreiUtils::CameraIntrinsicParameters &p) {
+            p.fromJson(j);
+        }
     };
 }
 

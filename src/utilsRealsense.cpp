@@ -126,10 +126,10 @@ void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsic
 }
 
 rs2_intrinsics AndreiUtils::convertCameraIntrinsicParametersToRealsenseIntrinsics(
-        const AndreiUtils::CameraIntrinsicParameters &intrinsics) {
+        const AndreiUtils::ImageParameters &size, const AndreiUtils::CameraIntrinsicParameters &intrinsics) {
     rs2_intrinsics i;
-    i.width = intrinsics.w;
-    i.height = intrinsics.h;
+    i.width = size.w;
+    i.height = size.h;
     i.fx = (float) intrinsics.fx;
     i.fy = (float) intrinsics.fy;
     i.ppx = (float) intrinsics.ppx;
@@ -142,10 +142,13 @@ rs2_intrinsics AndreiUtils::convertCameraIntrinsicParametersToRealsenseIntrinsic
     return i;
 }
 
-AndreiUtils::CameraIntrinsicParameters AndreiUtils::convertRealsenseIntrinsicsToCameraIntrinsicParameters(
-        const rs2_intrinsics &intrinsics) {
-    return {intrinsics.height, intrinsics.width, intrinsics.fx, intrinsics.fy, intrinsics.ppx, intrinsics.ppy,
-            convertRealsenseDistortionToImageDistortionModel(intrinsics.model), intrinsics.coeffs};
+void AndreiUtils::convertRealsenseIntrinsicsToCameraIntrinsicParameters(
+        const rs2_intrinsics &rsIntrinsics, AndreiUtils::ImageParameters &size,
+        AndreiUtils::CameraIntrinsicParameters &intrinsics) {
+    size.setImageParameters(rsIntrinsics.height, rsIntrinsics.width);
+    intrinsics.setImageParameters(rsIntrinsics.fx, rsIntrinsics.fy, rsIntrinsics.ppx, rsIntrinsics.ppy);
+    intrinsics.setDistortionParameters(convertRealsenseDistortionToImageDistortionModel(rsIntrinsics.model),
+                                       rsIntrinsics.coeffs);
 }
 
 AndreiUtils::ImageDistortionModel AndreiUtils::convertRealsenseDistortionToImageDistortionModel(

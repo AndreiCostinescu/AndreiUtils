@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include <AndreiUtils/classes/CameraIntrinsicParameters.h>
+#include <AndreiUtils/classes/camera/CameraIntrinsicParameters.h>
+#include <AndreiUtils/classes/camera/ImageParameters.h>
 #include <AndreiUtils/enums/ImageDistortionModel.h>
 #include <cstdint>
 #include <librealsense2/rs.hpp>
@@ -27,9 +28,11 @@ namespace AndreiUtils {
     // Returns the image pixel at the requested 3D position
     void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);
 
-    rs2_intrinsics convertCameraIntrinsicParametersToRealsenseIntrinsics(const CameraIntrinsicParameters &intrinsics);
+    rs2_intrinsics convertCameraIntrinsicParametersToRealsenseIntrinsics(
+            const ImageParameters &size, const CameraIntrinsicParameters &intrinsics);
 
-    CameraIntrinsicParameters convertRealsenseIntrinsicsToCameraIntrinsicParameters(const rs2_intrinsics &intrinsics);
+    void convertRealsenseIntrinsicsToCameraIntrinsicParameters(
+            const rs2_intrinsics &rsIntrinsics, ImageParameters &size, CameraIntrinsicParameters &intrinsics);
 
     ImageDistortionModel convertRealsenseDistortionToImageDistortionModel(const rs2_distortion &distortion);
 

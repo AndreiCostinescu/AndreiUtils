@@ -113,11 +113,18 @@ SET(UTILS_TIME src/utilsTime.cpp)
 # depends on UTILS_STRINGS (utilsStrings.h)
 SET(UTILS_FILES src/utilsFiles.cpp)
 
+set(UTILS_CLASSES_CAMERA
+        src/classes/camera/ImageParameters.cpp
+        src/classes/camera/CameraIntrinsicParameters.cpp
+        src/classes/camera/ImageCaptureParameters.cpp
+        src/classes/camera/ImageCaptureParametersWithIntrinsics.cpp
+        )
+
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
-        src/classes/CameraIntrinsicParameters.cpp
+        ${UTILS_CLASSES_CAMERA}
         )
 
 SET(UTILS_EIGEN)
