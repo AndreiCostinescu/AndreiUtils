@@ -22,14 +22,14 @@ list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
 list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
 list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
 
-configure_package_config_file(CMake/packageConfig.cmake.in ${PROJECT_NAME}Config.cmake
+configure_package_config_file(cmake/packageConfig.cmake.in ${PROJECT_NAME}Config.cmake
         INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
         INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/bin
         PATH_VARS CMAKE_INSTALL_INCLUDEDIR
         )
 
-configure_file("CMake/cmakeUninstall.cmake" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-configure_file("CMake/package.pc.in" "${PROJECT_NAME}.pc" @ONLY)
+configure_file("cmake/cmakeUninstall.cmake" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+configure_file("cmake/package.pc.in" "${PROJECT_NAME}.pc" @ONLY)
 
 install(TARGETS ${PROJECT_TARGET}
         EXPORT ${PROJECT_NAME}Targets
