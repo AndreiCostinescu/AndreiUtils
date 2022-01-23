@@ -72,6 +72,10 @@ namespace AndreiUtils {
             // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
             this->registerTypeCreator(typeId, typeCreator);
         }
+
+        void registerTypeCreator(const std::string &typeId, std::function<Type *()> typeCreator) override {
+            TypeCreatorWithID<std::string, Type>::registerTypeCreator(typeId, typeCreator);
+        }
     };
 }
 
