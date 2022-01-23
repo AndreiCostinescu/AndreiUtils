@@ -64,6 +64,10 @@ void CameraIntrinsicParameters::setDistortionParameters(ImageDistortionModel _di
     this->distortionModel = _distortionModel;
     delete[] this->distortionCoefficients;
     this->nrDistortionCoefficients = getNumberOfDistortionCoefficients(_distortionModel);
+    this->distortionCoefficients = nullptr;
+    if (this->nrDistortionCoefficients == 0) {
+        return;
+    }
     this->distortionCoefficients = new float[this->nrDistortionCoefficients];
     for (int i = 0; i < this->nrDistortionCoefficients; i++) {
         this->distortionCoefficients[i] = _distortionCoefficients[i];
