@@ -18,7 +18,11 @@ namespace AndreiUtils {
         CameraIntrinsicParameters(double fx, double fy, double ppx, double ppy, ImageDistortionModel distortionModel,
                                   const float *distortionCoefficients);
 
+        CameraIntrinsicParameters(const CameraIntrinsicParameters &other);
+
         ~CameraIntrinsicParameters();
+
+        CameraIntrinsicParameters &operator=(const CameraIntrinsicParameters &other);
 
         std::string toString() const;
 
@@ -39,6 +43,9 @@ namespace AndreiUtils {
         double fx, fy, ppx, ppy;
         float *distortionCoefficients;
         ImageDistortionModel distortionModel;
+
+    protected:
+        void copyDataFromOther(const CameraIntrinsicParameters &other);
     };
 }
 

@@ -17,8 +17,21 @@ CameraIntrinsicParameters::CameraIntrinsicParameters(
     }
 }
 
+CameraIntrinsicParameters::CameraIntrinsicParameters(const CameraIntrinsicParameters &other) :
+        CameraIntrinsicParameters() {
+    this->copyDataFromOther(other);
+}
+
 CameraIntrinsicParameters::~CameraIntrinsicParameters() {
     delete[] this->distortionCoefficients;
+}
+
+CameraIntrinsicParameters &CameraIntrinsicParameters::operator=(const CameraIntrinsicParameters &other) {
+    if (&other == this) {
+        return *this;
+    }
+    this->copyDataFromOther(other);
+    return *this;
 }
 
 string CameraIntrinsicParameters::toString() const {
@@ -97,4 +110,21 @@ void CameraIntrinsicParameters::fromJson(const nlohmann::json &j) {
                              j.at("ppy").get<double>());
     this->setDistortionParameters(convertStringToImageDistortionModel(j.at("distortionModel").get<string>()),
                                   j.at("distortionCoefficients").get<vector<float>>());
+}
+
+void CameraIntrinsicParameters::copyDataFromOther(const CameraIntrinsicParameters &other) {
+    this->fx = other.fx;
+    this->fy = other.fy;
+    this->ppx = other.ppx;
+    this->ppy = other.ppy;
+    this->distortionModel = other.distortionModel;
+    this->nrDistortionCoefficients = other.nrDistortionCoefficients;
+    delete[] this->distortionCoefficients;
+    this->distortionCoefficients = nullptr;
+    if (this->nrDistortionCoefficients > 0) {
+        this->distortionCoefficients = new float[this->nrDistortionCoefficients];
+        for (int i = 0; i < this->nrDistortionCoefficients; i++) {
+            this->distortionCoefficients[i] = other.distortionCoefficients[i];
+        }
+    }
 }
