@@ -2,6 +2,8 @@
 // Created by andrei on 05.10.21.
 //
 
+#include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
@@ -12,6 +14,13 @@
 using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
+
+class Test {
+public:
+    explicit Test(int &data) : a(&data) {}
+
+    int *a;
+};
 
 void eigenTesting() {
     Matrix2i m = Matrix2i::Identity();
@@ -43,6 +52,7 @@ void fileTesting() {
 }
 
 void realsenseDistortionString() {
+    /*
     cout << rs2_distortion_to_string(RS2_DISTORTION_NONE) << endl;
     cout << rs2_distortion_to_string(RS2_DISTORTION_MODIFIED_BROWN_CONRADY) << endl;
     cout << rs2_distortion_to_string(RS2_DISTORTION_INVERSE_BROWN_CONRADY) << endl;
@@ -50,10 +60,19 @@ void realsenseDistortionString() {
     cout << rs2_distortion_to_string(RS2_DISTORTION_BROWN_CONRADY) << endl;
     cout << rs2_distortion_to_string(RS2_DISTORTION_KANNALA_BRANDT4) << endl;
     cout << rs2_distortion_to_string(RS2_DISTORTION_COUNT) << endl;
+    //*/
 }
 
-void realsenseToCameraIntrinsicParameters () {
+void realsenseToCameraIntrinsicParameters() {
     ;
+}
+
+void testPointerReference() {
+    int b = 5;
+    auto t = Test(b);
+    cout << "b = " << b << "; t = " << *t.a << endl;
+    b = 4;
+    cout << "b = " << b << "; t = " << *t.a << endl;
 }
 
 void timeTesting() {
@@ -69,7 +88,7 @@ void timeTesting() {
     auto x = AndreiUtils::convertStringToChronoWithSubseconds(time, "%Y-%m-%d-%H-%M-%S", "%ms-%pus-%pns", ":");
 
     auto d = x.time_since_epoch();
-    /* UTC: +1:00 */
+    // UTC: +1:00
     using Days = std::chrono::duration<int, std::ratio_multiply<std::chrono::hours::period, std::ratio<24>>::type>;
     Days days = std::chrono::duration_cast<Days>(d);
     d -= days;
@@ -94,11 +113,44 @@ void timeTesting() {
     cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ms", ":") << endl;
 }
 
+void testMapKeys() {
+    map<string, int> x{
+            {"72", 1},
+            {"60", 2},
+            {"48", 3},
+            {"36", 4},
+            {"24", 5},
+            {"12", 6},
+    };
+    printVector(getMapKeys(x));
+}
+
+void testJsonNull() {
+    nlohmann::json j = nullptr;
+    cout << "JSON CONTENT: " << j.dump() << endl;
+}
+
+function<void()> testLambdaCaptureScopeFunction() {
+    int x = 42;
+    return [x]() {
+        cout << "x = " << x << endl;
+    };
+}
+
+void testLambdaCaptureScope() {
+    auto f = testLambdaCaptureScopeFunction();
+    f();
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
     // fileTesting();
-    realsenseDistortionString();
+    // realsenseDistortionString();
     // timeTesting();
+    // testPointerReference();
+    // testMapKeys();
+    // testJsonNull();
+    testLambdaCaptureScope();
     return 0;
 }
