@@ -81,9 +81,9 @@ void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *d
     assert (dataType == convertFrameTypeToDataType(2, 1));
 }
 
-void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)> &getDepth, rs2_intrinsics &intrinsics,
-                                                       float x, float y, float (&point)[3], int windowSize,
-                                                       bool forceWindowUsage, float farthestAllowedDepth) {
+void AndreiUtils::getRealsenseDepthPointFromImagePixel(
+        function<float(int, int)> &getDepth, const rs2_intrinsics &intrinsics, float x, float y, float (&point)[3],
+        int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
     int width = intrinsics.width, height = intrinsics.height;
     int int_x = int(x), int_y = int(y);
     float position[2] = {x, y};
@@ -123,6 +123,20 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)>
 void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
     // project pixel from point in 3D
     rs2_project_point_to_pixel(pixel, intrinsics, point);
+}
+
+void AndreiUtils::getRealsenseDepthPointFromImagePixel(
+        function<float(int, int)> &getDepth, const ImageParameters &size, const CameraIntrinsicParameters &intrinsics,
+        float x, float y, float (&point)[3], int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
+    return getRealsenseDepthPointFromImagePixel(
+            getDepth, convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics), x, y, point, windowSize,
+            forceWindowUsage, farthestAllowedDepth);
+}
+
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(
+        const ImageParameters &size, const CameraIntrinsicParameters &intrinsics, float point[3], float (&pixel)[2]) {
+    rs2_intrinsics i = convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics);
+    getImagePixelFromRealsenseDepthPoint(&i, point, pixel);
 }
 
 rs2_intrinsics AndreiUtils::convertCameraIntrinsicParametersToRealsenseIntrinsics(
