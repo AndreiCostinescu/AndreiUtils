@@ -22,9 +22,9 @@ list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
 list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
 list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
 
-configure_package_config_file(cmake/packageConfig.cmake.in ${PROJECT_NAME}Config.cmake
-        INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
-        INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/bin
+configure_package_config_file("cmake/packageConfig.cmake.in" "${PROJECT_NAME}Config.cmake"
+        INSTALL_DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/bin"
         PATH_VARS CMAKE_INSTALL_INCLUDEDIR
         )
 
