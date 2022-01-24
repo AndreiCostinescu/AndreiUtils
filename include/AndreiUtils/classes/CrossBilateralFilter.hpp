@@ -18,6 +18,10 @@ namespace AndreiUtils {
 
         virtual void filter(float posX, float posY, const T &depthData, float &resX, float &resY) const = 0;
 
+        unsigned int getWindowSize() const {
+            return this->windowSize;
+        }
+
     protected:
         unsigned int windowSize;
         const AndreiUtils::GaussianKernel spatial, cross;
