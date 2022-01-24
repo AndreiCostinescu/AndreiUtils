@@ -11,6 +11,9 @@ CrossBilateralFilterOpenCV::CrossBilateralFilterOpenCV(unsigned int windowSize) 
         CrossBilateralFilter<Mat>(windowSize) {}
 
 void CrossBilateralFilterOpenCV::filter(float posX, float posY, const Mat &depthData, float &resX, float &resY) const {
+    if (depthData.rows <= (int) posY || posY < 0 || depthData.cols <= (int) posX || posX < 0) {
+        return;
+    }
     Point2d res, newP;
     Point2i p((int) round(posX), (int) round(posY));
     double coefficientSum = 0.0, coefficient, depth, refDepth = depthData.at<double>(p.x, p.y);

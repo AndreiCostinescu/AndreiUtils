@@ -13,8 +13,11 @@ CrossBilateralFilterEigen::CrossBilateralFilterEigen(unsigned int windowSize)
 
 void CrossBilateralFilterEigen::filter(float posX, float posY, const MatrixXd &depthData,
                                        float &resX, float &resY) const {
+    if (depthData.rows() <= (int) posY || posY < 0 || depthData.cols() <= (int) posX || posX < 0) {
+        return;
+    }
     Vector2d res, newP;
-    Vector2i p((int) round(posX), (int) round(posY));
+    Vector2i p((int) round((double) posX), (int) round((double) posY));
     double coefficientSum = 0.0, coefficient, depth, refDepth = depthData(p.x(), p.y());
     int shift = (int) this->windowSize / 2;
     int startI = -fastMin(shift, p.x()), endI = fastMin(shift, (int) (depthData.rows() - p.x()));
