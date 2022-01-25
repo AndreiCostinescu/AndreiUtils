@@ -5,22 +5,13 @@
 #ifndef ANDREIUTILS_TIMER_HPP
 #define ANDREIUTILS_TIMER_HPP
 
+#include <AndreiUtils/enums/TimeUnit.h>
 #include <chrono>
 #include <string>
 
 namespace AndreiUtils {
     class Timer {
     public:
-        enum TimerTimeUnit {
-            DAY,
-            HOUR,
-            MINUTE,
-            SECOND,
-            MILLISECOND,
-            MICROSECOND,
-            NANOSECOND,
-        };
-
         explicit Timer(bool startTiming = true);
 
         void start();
@@ -29,18 +20,16 @@ namespace AndreiUtils {
 
         double measure(const std::string &timeUnit = "s") const;
 
-        double measure(TimerTimeUnit timeUnit) const;
+        double measure(TimeUnit timeUnit) const;
 
-        template<class TimeUnit>
+        template<class TimerTimeUnit>
         double measure() {
-            return std::chrono::duration_cast<TimeUnit>(clockType::now() - this->startTime).count();
+            return std::chrono::duration_cast<TimerTimeUnit>(clockType::now() - this->startTime).count();
         }
 
     private:
         typedef std::chrono::high_resolution_clock clockType;
         typedef std::chrono::time_point<clockType> timePoint;
-
-        static double getMultiplicationFactor(TimerTimeUnit timeUnit);
 
         timePoint startTime;
     };

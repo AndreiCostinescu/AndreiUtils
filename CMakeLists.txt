@@ -95,7 +95,7 @@ include_directories("include")
 
 SET(UTILS_GENERAL src/utils.cpp)
 
-SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp)
+SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp src/enums/TimeUnit.cpp)
 
 SET(UTILS_ERROR src/utilsError.cpp)
 
@@ -124,6 +124,7 @@ SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
+        src/classes/TimePoint.cpp
         ${UTILS_CLASSES_CAMERA}
         )
 
