@@ -124,7 +124,6 @@ SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/Timer.cpp
-        src/classes/TimePoint.cpp
         ${UTILS_CLASSES_CAMERA}
         )
 

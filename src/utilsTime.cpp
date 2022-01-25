@@ -7,10 +7,14 @@
 #include <cassert>
 #include <iomanip>
 #include <sstream>
-#include <vector>
 
+using namespace AndreiUtils;
 using namespace std;
 using namespace std::chrono;
+
+typedef ratio<3600 * 24> daysRatio;
+typedef ratio<3600> hoursRatio;
+typedef ratio<60> minutesRatio;
 
 string AndreiUtils::convertChronoToString(const SystemTimePoint &time, const string &format) {
     time_t timeStruct;
@@ -144,6 +148,48 @@ time_point<system_clock> AndreiUtils::convertStringToChronoWithSubseconds(
         }
     }
     return res;
+}
+
+SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const string &timeUnit) {
+    return addDeltaTime(timePoint, deltaT, convertStringToTimeUnit(timeUnit));
+}
+
+SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit) {
+    chrono::duration<double> t{};
+    switch (timeUnit) {
+        case DAY: {
+            t = chrono::duration<double, daysRatio>(deltaT);
+            break;
+        }
+        case HOUR: {
+            t = chrono::duration<double, hoursRatio>(deltaT);
+            break;
+        }
+        case MINUTE: {
+            t = chrono::duration<double, minutesRatio>(deltaT);
+            break;
+        }
+        case SECOND: {
+            t = chrono::duration<double>(deltaT);
+            break;
+        }
+        case MILLISECOND: {
+            t = chrono::duration<double, milli>(deltaT);
+            break;
+        }
+        case MICROSECOND: {
+            t = chrono::duration<double, micro>(deltaT);
+            break;
+        }
+        case NANOSECOND: {
+            t = chrono::duration<double, nano>(deltaT);
+            break;
+        }
+        default : {
+            throw runtime_error("Unknown TimeUnit " + to_string(timeUnit));
+        }
+    }
+    return timePoint + chrono::duration_cast<nanoseconds>(t);
 }
 
 void AndreiUtils::getDateFromTime(struct tm *&t, time_t time, int &year) {

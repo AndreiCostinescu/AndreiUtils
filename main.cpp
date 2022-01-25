@@ -113,6 +113,40 @@ void timeTesting() {
     cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ms", ":") << endl;
 }
 
+void timeAddingTesting() {
+    SystemTimePoint now = SystemClock::now();
+    auto d = now.time_since_epoch();
+    auto nanoseconds = chrono::duration_cast<chrono::nanoseconds>(d);
+    d -= nanoseconds;
+
+    SystemTimePoint t(d);
+
+    SystemTimePoint stD(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<86400, 1>>(1.5)));
+    SystemTimePoint stH(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<3600, 1>>(1.5)));
+    SystemTimePoint stM(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<60, 1>>(1.5)));
+    SystemTimePoint stS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(1.5)));
+    SystemTimePoint stMS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, milli>(1.5)));
+    SystemTimePoint stUS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, micro>(1.5)));
+    SystemTimePoint stNS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, nano>(1.5)));
+    cout << convertChronoToStringWithSubseconds(stD) << endl;
+    cout << convertChronoToStringWithSubseconds(stH) << endl;
+    cout << convertChronoToStringWithSubseconds(stM) << endl;
+    cout << convertChronoToStringWithSubseconds(stS) << endl;
+    cout << convertChronoToStringWithSubseconds(stMS) << endl;
+    cout << convertChronoToStringWithSubseconds(stUS) << endl;
+    cout << convertChronoToStringWithSubseconds(stNS) << endl;
+
+    cout << convertChronoToStringWithSubseconds(now) << endl;
+    cout << convertChronoToStringWithSubseconds(t) << endl;
+    cout << "d  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "d")) << endl;
+    cout << "h  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "h")) << endl;
+    cout << "min: " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "min")) << endl;
+    cout << "s  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "s")) << endl;
+    cout << "ms : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ms")) << endl;
+    cout << "us : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "us")) << endl;
+    cout << "ns : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ns")) << endl;
+}
+
 void testMapKeys() {
     map<string, int> x{
             {"72", 1},
@@ -148,9 +182,10 @@ int main() {
     // fileTesting();
     // realsenseDistortionString();
     // timeTesting();
+    timeAddingTesting();
     // testPointerReference();
     // testMapKeys();
     // testJsonNull();
-    testLambdaCaptureScope();
+    // testLambdaCaptureScope();
     return 0;
 }

@@ -5,11 +5,13 @@
 #ifndef ANDREIUTILS_UTILSTIME_H
 #define ANDREIUTILS_UTILSTIME_H
 
+#include <AndreiUtils/enums/TimeUnit.h>
 #include <chrono>
 #include <string>
 
 namespace AndreiUtils {
-    using SystemTimePoint = std::chrono::time_point<std::chrono::system_clock>;
+    using SystemClock = std::chrono::system_clock;
+    using SystemTimePoint = std::chrono::time_point<SystemClock>;
 
     std::string convertChronoToString(const SystemTimePoint &time, const std::string &format = "%Y-%m-%d-%H-%M-%S");
 
@@ -22,6 +24,10 @@ namespace AndreiUtils {
     SystemTimePoint convertStringToChronoWithSubseconds(
             const std::string &time, const std::string &format = "%Y-%m-%d-%H-%M-%S",
             const std::string &subsecondFormat = "%ns", const std::string &joiner = ":");
+
+    SystemTimePoint addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const std::string &timeUnit);
+
+    SystemTimePoint addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit);
 
     void getDateFromTime(struct tm *&t, time_t time, int &year);
 
