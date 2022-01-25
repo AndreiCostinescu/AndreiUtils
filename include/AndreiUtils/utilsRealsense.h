@@ -7,10 +7,15 @@
 #include <AndreiUtils/classes/camera/CameraIntrinsicParameters.h>
 #include <AndreiUtils/classes/camera/ImageParameters.h>
 #include <AndreiUtils/enums/ImageDistortionModel.h>
+#include <AndreiUtils/enums/StandardTypes.h>
 #include <cstdint>
 #include <librealsense2/rs.hpp>
 
 namespace AndreiUtils {
+    // Convert rs2::frame to data
+    void frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &w, int &c, StandardTypes &dataType,
+                      bool copyData);
+
     // Convert rs2::frame to data
     void frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType, size_t dataElements);
 

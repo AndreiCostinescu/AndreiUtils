@@ -12,7 +12,7 @@ using namespace rs2;
 using namespace std;
 
 int convertFrameTypeToDataType(const size_t elementSize, const int nrChannels) {
-    int dataType = 3 * (nrChannels - 1);
+    int dataType = (nrChannels - 1) << 3;
     if (elementSize == 1) {
         dataType += 0;
     } else if (elementSize == 2) {
@@ -23,47 +23,66 @@ int convertFrameTypeToDataType(const size_t elementSize, const int nrChannels) {
     return dataType;
 }
 
-void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType, const size_t dataElements) {
-    if (data == nullptr) {
+void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &w, int &c, StandardTypes &dataType,
+                               bool copyData) {
+    if (copyData && data == nullptr) {
         throw runtime_error("Data container of realsense-frame-data is nullptr...");
     }
 
     auto vf = f.as<video_frame>();
-    const int w = vf.get_width();
-    const int h = vf.get_height();
+    w = vf.get_width();
+    h = vf.get_height();
 
     size_t elementSize;
-    int nrChannels;
     if (f.get_profile().format() == RS2_FORMAT_BGR8 || f.get_profile().format() == RS2_FORMAT_RGB8) {
         elementSize = sizeof(uint8_t);
-        nrChannels = 3;
+        dataType = StandardTypes::TYPE_UINT_8;
+        c = 3;
     } else if (f.get_profile().format() == RS2_FORMAT_Z16) {
         elementSize = sizeof(uint16_t);
-        nrChannels = 1;
+        dataType = StandardTypes::TYPE_UINT_16;
+        c = 1;
     } else if (f.get_profile().format() == RS2_FORMAT_Y8) {
         elementSize = sizeof(uint8_t);
-        nrChannels = 1;
+        dataType = StandardTypes::TYPE_UINT_8;
+        c = 1;
     } else if (f.get_profile().format() == RS2_FORMAT_DISPARITY32) {
         elementSize = sizeof(uint32_t);
-        nrChannels = 1;
+        dataType = StandardTypes::TYPE_UINT_32;
+        c = 1;
     } else {
         throw runtime_error("Frame format is not supported yet!");
     }
 
-    size_t frameElements = w * h * nrChannels;
-    if (dataElements != frameElements * elementSize) {
-        throw runtime_error("The container data and the frame data do not have the same amount of elements: " +
-                            to_string(dataElements) + " vs. " + to_string(frameElements));
+    // size_t frameElements = w * h * c;
+    size_t nrBytes = w * h * c * elementSize;
+    if (vf.get_bytes_per_pixel() != c * elementSize) {
+        int dataElements = w * h * vf.get_bytes_per_pixel();
+        throw runtime_error("The container data and the frame data do not have the same amount of bytes: " +
+                            to_string(dataElements) + " vs. " + to_string(nrBytes));
     }
-    memcpy(data, f.get_data(), frameElements * elementSize);
-    if (f.get_profile().format() == RS2_FORMAT_BGR8) {
-        size_t nrBytes = frameElements * elementSize;
-        for (size_t i = 0; i < nrBytes; i += 3) {
-            // Switch BGR to RGB format
-            swap(data[i], data[i + 2]);
+    if (copyData) {
+        fastMemCopy(data, (const uint8_t *) f.get_data(), nrBytes);
+        if (f.get_profile().format() == RS2_FORMAT_BGR8) {
+            // TODO: maybe parallelize this loop as well
+            for (size_t i = 0; i < nrBytes; i += 3) {
+                // Switch BGR to RGB format
+                swap(data[i], data[i + 2]);
+            }
         }
     }
-    dataType = convertFrameTypeToDataType(elementSize, nrChannels);
+}
+
+void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType, const size_t dataElements) {
+    int h, w, c, elementSize;
+    StandardTypes type;
+    frameToBytes(f, data, h, w, c, type, true);
+    elementSize = getStandardTypeByteAmount(type);
+    if (dataElements != h * w * c * elementSize) {
+        throw runtime_error("The container data and the frame data do not have the same amount of bytes: " +
+                            to_string(dataElements) + " vs. " + to_string(h * w * c * elementSize));
+    }
+    dataType = convertFrameTypeToDataType(elementSize, c);
 }
 
 void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *data, const size_t dataElements) {
