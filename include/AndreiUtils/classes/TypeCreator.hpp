@@ -34,8 +34,7 @@ namespace AndreiUtils {
 
         virtual void mergeTypeCreators(const TypeCreatorWithID<TypeID, Type> &other, bool withOverwrite) {
             for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
-                std::function<Type *()> typeCreator;
-                if (!mapGetIfContains(this->typeCreators, otherTypeCreator.first, typeCreator) || withOverwrite) {
+                if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
                     this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
                 }
             }
