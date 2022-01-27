@@ -105,8 +105,8 @@ namespace AndreiUtils {
         return avg;
     }
 
-    template<class T1, class T2>
-    bool mapContains(const std::map<T1, T2> &container, const T1 &key, T2 *value = nullptr) {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    bool mapContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 *value = nullptr) {
         const auto &data = container.find(key);
         if (data != container.end()) {
             if (value != nullptr) {
@@ -117,13 +117,13 @@ namespace AndreiUtils {
         return false;
     }
 
-    template<class T1, class T2>
-    bool mapGetIfContains(const std::map<T1, T2> &container, const T1 &key, T2 &value) {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    bool mapGetIfContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 &value) {
         return mapContains(container, key, &value);
     }
 
-    template<class T1, class T2>
-    T2 mapGet(const std::map<T1, T2> &container, const T1 &key) {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 mapGet(const std::map<T1, T2, C, A> &container, const T1 &key) {
         T2 value;
         if (!mapContains(container, key, &value)) {
             assert(false);
@@ -145,21 +145,51 @@ namespace AndreiUtils {
     template<class T>
     void printVector(T *x, int size) {
         for (int i = 0; i < size; i++) {
-            std::cout << x[i] << ", ";
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << x[i];
         }
         std::cout << std::endl;
     }
 
     template<class T>
+    std::string printVectorToString(T *x, int size) {
+        std::string s;
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                s += ", ";
+            }
+            s += std::string(x[i]);
+        }
+        return s;
+    }
+
+    template<class T>
     void printVector(std::vector<T> x) {
-        for (const auto &y: x) {
-            std::cout << y << ", ";
+        for (int i = 0; i < x.size(); i++) {
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << x[i];
         }
         std::cout << std::endl;
     }
 
-    template<class T1, class T2>
-    void printMap(const std::map<T1, T2> &container) {
+    template<class T>
+    std::string printVectorToString(std::vector<T> x) {
+        std::string s;
+        for (int i = 0; i < x.size(); i++) {
+            if (i > 0) {
+                s += ", ";
+            }
+            s += std::string(x[i]);
+        }
+        return s;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMap(const std::map<T1, T2, C, A> &container) {
         for (const auto &containerItem: container) {
             std::cout << containerItem.first << " -> " << containerItem.second << std::endl;
         }
@@ -172,8 +202,8 @@ namespace AndreiUtils {
         return merged;
     }
 
-    template<class T1, class T2>
-    std::vector<T1> getMapKeys(const std::map<T1, T2> &container) {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::vector<T1> getMapKeys(const std::map<T1, T2, C, A> &container) {
         std::vector<T1> keys(container.size());
         int i = 0;
         for (const auto &elem: container) {
@@ -182,8 +212,8 @@ namespace AndreiUtils {
         return keys;
     }
 
-    template<class T1, class T2>
-    std::vector<T2> getMapValues(const std::map<T1, T2> &container) {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::vector<T2> getMapValues(const std::map<T1, T2, C, A> &container) {
         std::vector<T2> values(container.size());
         int i = 0;
         for (const auto &elem: container) {
