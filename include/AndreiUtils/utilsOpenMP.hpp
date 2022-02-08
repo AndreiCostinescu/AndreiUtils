@@ -41,6 +41,15 @@ namespace AndreiUtils {
             dst[i] = op(src[i]);
         }
     }
+
+    template<class T>
+    void fastForLoop(T *const array, size_t size, std::function<void(T *const, size_t, size_t)> op,
+                     size_t increment = 1) {
+        #pragma omp parallel for shared(size, increment)
+        for (size_t i = 0; i < size; i += increment) {
+            op(array, i, increment);
+        }
+    }
 }
 
 #endif //ANDREIUTILS_UTILSOPENMP_HPP

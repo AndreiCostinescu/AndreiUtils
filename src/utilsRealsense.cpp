@@ -65,11 +65,10 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int 
     if (copyData) {
         fastMemCopy(*data, (const uint8_t *) f.get_data(), nrBytes);
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
-            // TODO: maybe parallelize this loop as well
-            for (size_t i = 0; i < nrBytes; i += 3) {
-                // Switch BGR to RGB format
-                swap(data[i], data[i + 2]);
-            }
+            // Switch BGR to RGB format
+            fastForLoop<uint8_t>(*data, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
+                swap(array[i], array[i + 2]);
+            }, 3);
         }
     } else {
         *data = (uint8_t *) f.get_data();

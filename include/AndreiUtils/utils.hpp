@@ -221,6 +221,21 @@ namespace AndreiUtils {
         }
         return values;
     }
+
+    template<class T>
+    void forLoop(T *const array, size_t size, std::function<void(T *const, size_t, size_t)> op, size_t increment = 1) {
+        for (size_t i = 0; i < size; i += increment) {
+            op(array, i, increment);
+        }
+    }
+
+    template<class T>
+    void forLoop(const std::vector<T> &array, size_t size,
+                 std::function<void(const std::vector<T> &, size_t, size_t)> op, size_t increment = 1) {
+        for (size_t i = 0; i < size; i += increment) {
+            op(array, i, increment);
+        }
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
