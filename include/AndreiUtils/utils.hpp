@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <utility>
