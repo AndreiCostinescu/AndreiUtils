@@ -13,17 +13,17 @@
 
 namespace AndreiUtils {
     // Convert rs2::frame to data
-    void frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &w, int &c, StandardTypes &dataType,
+    void frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int &w, int &c, StandardTypes &dataType,
                       bool copyData);
 
     // Convert rs2::frame to data
-    void frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType, size_t dataElements);
+    void frameToBytes(const rs2::frame &f, uint8_t **data, int &dataType, size_t dataElements);
 
     // Converts depth frame to a double data with distances in meters
-    void depthFrameToMeters(const rs2::depth_frame &f, double *data, size_t dataElements);
+    void depthFrameToMeters(const rs2::depth_frame &f, double *&data, size_t dataElements);
 
     // Converts depth frame to a uint16_t data with distances in meters
-    void depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *data, size_t dataElements);
+    void depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&data, size_t dataElements);
 
     // Returns the 3D point at the requested (x, y) position of the depth data
     void getRealsenseDepthPointFromImagePixel(

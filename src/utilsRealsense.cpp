@@ -23,9 +23,10 @@ int convertFrameTypeToDataType(const size_t elementSize, const int nrChannels) {
     return dataType;
 }
 
-void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &w, int &c, StandardTypes &dataType,
+void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int &w, int &c, StandardTypes &dataType,
                                bool copyData) {
-    if (copyData && data == nullptr) {
+    // This could be replaced by making data a reference pointer (uint8_t *&data), but casting would become problematic
+    if (data == nullptr || (copyData && *data == nullptr)) {
         throw runtime_error("Data container of realsense-frame-data is nullptr...");
     }
 
@@ -62,7 +63,7 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &
                             to_string(dataElements) + " vs. " + to_string(nrBytes));
     }
     if (copyData) {
-        fastMemCopy(data, (const uint8_t *) f.get_data(), nrBytes);
+        fastMemCopy(*data, (const uint8_t *) f.get_data(), nrBytes);
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
             // TODO: maybe parallelize this loop as well
             for (size_t i = 0; i < nrBytes; i += 3) {
@@ -70,10 +71,12 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &h, int &
                 swap(data[i], data[i + 2]);
             }
         }
+    } else {
+        *data = (uint8_t *) f.get_data();
     }
 }
 
-void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType, const size_t dataElements) {
+void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &dataType, const size_t dataElements) {
     int h, w, c, elementSize;
     StandardTypes type;
     frameToBytes(f, data, h, w, c, type, true);
@@ -85,18 +88,21 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t *data, int &dataType
     dataType = convertFrameTypeToDataType(elementSize, c);
 }
 
-void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *data, const size_t dataElements) {
+void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *&data, const size_t dataElements) {
     auto *tmpData = new uint16_t[dataElements];
     int dataType;
-    frameToBytes(f, (uint8_t *) tmpData, dataType, dataElements * sizeof(uint16_t));
+    frameToBytes(f, (uint8_t **) &tmpData, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
-    fastSrcOp<uint16_t, double>(data, tmpData, dataElements, [](const uint16_t &x) { return (double) (x / 1000.0); });
+    if (data != nullptr) {
+        fastSrcOp<uint16_t, double>(data, (uint16_t *) tmpData, dataElements,
+                                    [](const uint16_t &x) { return (double) (x / 1000.0); });
+    }
     delete[] tmpData;
 }
 
-void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *data, const size_t dataElements) {
+void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&data, const size_t dataElements) {
     int dataType;
-    frameToBytes(f, (uint8_t *) data, dataType, dataElements * sizeof(uint16_t));
+    frameToBytes(f, (uint8_t **) &data, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
 }
 
