@@ -102,6 +102,30 @@ namespace AndreiUtils {
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     */
     template<class T>
+    Eigen::Quaternion<T> qFromEulerAngles(const Eigen::Matrix<T, 3, 1> &angles, const std::string &format = "xyz") {
+        Eigen::Quaternion<T> q = Eigen::Quaternion<T>::Identity();
+        if (3 > format.size()) {
+            throw std::runtime_error("Not all angles have the format specified!");
+        }
+        for (int i = 0; i < 3; i++) {
+            if (format[i] == 'x') {
+                q = qxRotation(angles.row(i)) * q;
+            } else if (format[i] == 'y') {
+                q = qyRotation(angles.row(i)) * q;
+            } else if (format[i] == 'z') {
+                q = qzRotation(angles.row(i)) * q;
+            } else {
+                throw std::runtime_error(
+                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
+            }
+        }
+        return q;
+    }
+
+    /**
+    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
+    */
+    template<class T>
     Eigen::Matrix<T, 3, 1> eulerAnglesFromQ(const Eigen::Quaternion<T> &q, const std::string &format = "xyz") {
         if (format.size() < 3) {
             throw std::runtime_error("Format " + format + " does not specify axis for each euler angle value");
