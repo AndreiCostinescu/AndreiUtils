@@ -27,6 +27,110 @@ namespace AndreiUtils {
         }
         return svd.matrixV() * singularValuesInv * svd.matrixU().adjoint();
     }
+
+    template<class T>
+    Eigen::Quaternion<T> qxRotation(const T &angle) {
+        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qyRotation(const T &angle) {
+        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitY()));
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qzRotation(const T &angle) {
+        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitZ()));
+    }
+
+    Eigen::Matrix4d yRotation(double angle);
+
+    Eigen::Matrix3d zRotation(double angle);
+
+    template<class T>
+    Eigen::Quaternion<T> qMulScalar(const Eigen::Quaternion<T> &q, const T &scalar) {
+        return Eigen::Quaternion<T>(q.coeffs() * scalar);
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qDivScalar(const Eigen::Quaternion<T> &q, const T &scalar) {
+        return Eigen::Quaternion<T>(q.coeffs() / scalar);
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qAdd(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
+        return Eigen::Quaternion<T>(q1.coeffs() + q2.coeffs());
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qNeg(const Eigen::Quaternion<T> &q) {
+        return Eigen::Quaternion<T>(-q.coeffs());
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> vToQ(const Eigen::Matrix<T, 3, 1> &v) {
+        Eigen::Quaternion<T> q;
+        q.vec() = v;
+        return q;
+    }
+
+    /**
+    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
+    */
+    template<class T>
+    Eigen::Quaternion<T> qFromEulerAngles(const std::vector<T> &angles, const std::string &format = "xyz") {
+        Eigen::Quaternion<T> q = Eigen::Quaternion<T>::Identity();
+        if (angles.size() > format.size()) {
+            throw std::runtime_error("Not all angles have the format specified!");
+        }
+        for (int i = 0; i < angles.size(); i++) {
+            if (format[i] == 'x') {
+                q = qxRotation(angles[i]) * q;
+            } else if (format[i] == 'y') {
+                q = qyRotation(angles[i]) * q;
+            } else if (format[i] == 'z') {
+                q = qzRotation(angles[i]) * q;
+            } else {
+                throw std::runtime_error(
+                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
+            }
+        }
+        return q;
+    }
+
+    /**
+    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
+    */
+    template<class T>
+    Eigen::Matrix<T, 3, 1> eulerAnglesFromQ(const Eigen::Quaternion<T> &q, const std::string &format = "xyz") {
+        if (format.size() < 3) {
+            throw std::runtime_error("Format " + format + " does not specify axis for each euler angle value");
+        }
+        int indices[3];
+        for (int i = 2; i >= 0; i--) {
+            if (format[i] == 'x') {
+                indices[2 - i] = 0;
+            } else if (format[i] == 'y') {
+                indices[2 - i] = 1;
+            } else if (format[i] == 'z') {
+                indices[2 - i] = 2;
+            } else {
+                throw std::runtime_error(
+                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
+            }
+        }
+        auto e = q.toRotationMatrix().eulerAngles(indices[0], indices[1], indices[2]);
+        std::swap(e.x(), e.z());
+        return e;
+    }
+}
+
+namespace std {
+    template<class T>
+    ostream& operator<<(ostream& os, const Eigen::Quaternion<T>& q) {
+        os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
+        return os;
+    }
 }
 
 #endif //ANDREIUTILS_UTILSEIGEN_HPP
