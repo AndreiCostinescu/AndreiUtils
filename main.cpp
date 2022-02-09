@@ -2,8 +2,10 @@
 // Created by andrei on 05.10.21.
 //
 
+#include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/json.hpp>
+#include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
@@ -176,16 +178,31 @@ void testLambdaCaptureScope() {
     f();
 }
 
+void testDualQuaternions() {
+    Vector3d t(1, 2, 3);
+    Vector3d p(4, 2, 3);
+    vector<double> angles = {M_PI_2, 0, M_PI};
+    Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
+    DualQuaternion<double> q(r, t);
+    cout << q << endl;
+    cout << printVectorToString(angles) << endl;
+    cout << q.getTranslation().transpose() << endl;
+    cout << q.transform(p).transpose() << endl;
+    cout << q.getTransformationMatrix() << endl;
+    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
     // fileTesting();
     // realsenseDistortionString();
     // timeTesting();
-    timeAddingTesting();
+    // timeAddingTesting();
     // testPointerReference();
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
+    testDualQuaternions();
     return 0;
 }
