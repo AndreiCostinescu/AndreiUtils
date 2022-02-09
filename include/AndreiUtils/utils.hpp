@@ -12,6 +12,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -156,14 +157,14 @@ namespace AndreiUtils {
 
     template<class T>
     std::string printVectorToString(T *x, int size) {
-        std::string s;
+        std::stringstream s;
         for (int i = 0; i < size; i++) {
             if (i > 0) {
-                s += ", ";
+                s << ", ";
             }
-            s += std::string(x[i]);
+            s << x[i];
         }
-        return s;
+        return s.str();
     }
 
     template<class T>
@@ -179,14 +180,14 @@ namespace AndreiUtils {
 
     template<class T>
     std::string printVectorToString(std::vector<T> x) {
-        std::string s;
+        std::stringstream s;
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
-                s += ", ";
+                s << ", ";
             }
-            s += std::string(x[i]);
+            s << x[i];
         }
-        return s;
+        return s.str();
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
