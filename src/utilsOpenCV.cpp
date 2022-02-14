@@ -99,7 +99,7 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     return !fs->fail();
 }
 
-void AndreiUtils::printImage(Mat *image, const char *title, bool verbose) {
+void AndreiUtils::printImage(const Mat *const image, const char *title, bool verbose) {
     if (verbose) {
         cout << "Printing " << title << "... " << image << endl;
     }
@@ -114,7 +114,7 @@ void AndreiUtils::printImage(Mat *image, const char *title, bool verbose) {
     }
 }
 
-void AndreiUtils::printImages(const vector<Mat *> &images, const vector<string> &titles) {
+void AndreiUtils::printImages(const vector<const Mat *> &images, const vector<string> &titles) {
     assert (images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
         printImage(images[i], titles[i].c_str());
