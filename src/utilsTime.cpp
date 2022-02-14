@@ -150,46 +150,56 @@ time_point<system_clock> AndreiUtils::convertStringToChronoWithSubseconds(
     return res;
 }
 
-SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const string &timeUnit) {
-    return addDeltaTime(timePoint, deltaT, convertStringToTimeUnit(timeUnit));
-}
-
-SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit) {
-    chrono::duration<double> t{};
+chrono::duration<double> convertDurationFromTimeUnit(double t, TimeUnit timeUnit) {
     switch (timeUnit) {
         case DAY: {
-            t = chrono::duration<double, daysRatio>(deltaT);
+            return chrono::duration<double, daysRatio>(t);
             break;
         }
         case HOUR: {
-            t = chrono::duration<double, hoursRatio>(deltaT);
+            return chrono::duration<double, hoursRatio>(t);
             break;
         }
         case MINUTE: {
-            t = chrono::duration<double, minutesRatio>(deltaT);
+            return chrono::duration<double, minutesRatio>(t);
             break;
         }
         case SECOND: {
-            t = chrono::duration<double>(deltaT);
+            return chrono::duration<double>(t);
             break;
         }
         case MILLISECOND: {
-            t = chrono::duration<double, milli>(deltaT);
+            return chrono::duration<double, milli>(t);
             break;
         }
         case MICROSECOND: {
-            t = chrono::duration<double, micro>(deltaT);
+            return chrono::duration<double, micro>(t);
             break;
         }
         case NANOSECOND: {
-            t = chrono::duration<double, nano>(deltaT);
+            return chrono::duration<double, nano>(t);
             break;
         }
         default : {
             throw runtime_error("Unknown TimeUnit " + to_string(timeUnit));
         }
     }
-    return timePoint + chrono::duration_cast<nanoseconds>(t);
+}
+
+SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const string &timeUnit) {
+    return addDeltaTime(timePoint, deltaT, convertStringToTimeUnit(timeUnit));
+}
+
+SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit) {
+    return timePoint + chrono::duration_cast<nanoseconds>(convertDurationFromTimeUnit(deltaT, timeUnit));
+}
+
+SystemTimePoint AndreiUtils::getTimePoint(double t, const string &timeUnit) {
+    return getTimePoint(t, convertStringToTimeUnit(timeUnit));
+}
+
+SystemTimePoint AndreiUtils::getTimePoint(double t, TimeUnit timeUnit) {
+    return SystemTimePoint(chrono::duration_cast<nanoseconds>(convertDurationFromTimeUnit(t, timeUnit)));
 }
 
 void AndreiUtils::getDateFromTime(struct tm *&t, time_t time, int &year) {

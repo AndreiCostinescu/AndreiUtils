@@ -13,6 +13,12 @@ namespace AndreiUtils {
         return timePoint + std::chrono::duration_cast<std::chrono::nanoseconds>(
                 std::chrono::duration<double, TimeUnitRatio>(deltaT));
     }
+
+    template<class TimeUnitRatio>
+    SystemTimePoint getTimePoint(double t) {
+        return SystemTimePoint(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double, TimeUnitRatio>(t)));
+    }
 }
 
 #endif //ANDREIUTILS_UTILSTIME_HPP

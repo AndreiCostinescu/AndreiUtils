@@ -29,6 +29,10 @@ namespace AndreiUtils {
 
     SystemTimePoint addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit);
 
+    SystemTimePoint getTimePoint(double t, const std::string &timeUnit);
+
+    SystemTimePoint getTimePoint(double t, TimeUnit timeUnit);
+
     void getDateFromTime(struct tm *&t, time_t time, int &year);
 
     void getDateFromTime(struct tm *&t, time_t time, int &year, int &month);
