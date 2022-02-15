@@ -6,6 +6,8 @@
 #define ANDREIUTILS_UTILSEIGEN_HPP
 
 #include <Eigen/Dense>
+#include <string>
+#include <vector>
 
 namespace AndreiUtils {
     // https://gist.github.com/javidcf/25066cf85e71105d57b6
@@ -42,10 +44,6 @@ namespace AndreiUtils {
     Eigen::Quaternion<T> qzRotation(const T &angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitZ()));
     }
-
-    Eigen::Matrix4d yRotation(double angle);
-
-    Eigen::Matrix3d zRotation(double angle);
 
     template<class T>
     Eigen::Quaternion<T> qMulScalar(const Eigen::Quaternion<T> &q, const T &scalar) {
