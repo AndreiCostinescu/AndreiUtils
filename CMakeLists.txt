@@ -138,7 +138,7 @@ SET(UTILS_REALSENSE_EIGEN)
 
 if (USE_EIGEN)
     # depends on eigen
-    SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp)
+    SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp)
     SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
 endif ()
 
