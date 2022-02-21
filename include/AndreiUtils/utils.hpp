@@ -38,16 +38,6 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T fastMin(const T a, const T b) {
-        return (a < b ? a : b);
-    }
-
-    template<typename T>
-    inline T fastMax(const T a, const T b) {
-        return (a > b ? a : b);
-    }
-
-    template<typename T>
     inline bool equal(const T a, const T b, double tol = 1e-9) {
         return (abs(a - b) < tol);
     }
@@ -70,6 +60,21 @@ namespace AndreiUtils {
     template<typename T>
     inline bool greaterEqual(const T a, const T b, double tol = 1e-9) {
         return (a - b) > -tol;
+    }
+
+    template<typename T>
+    inline T fastAbs(const T x) {
+        return (less<T>(x, 0) ? -x : x);
+    }
+
+    template<typename T>
+    inline T fastMin(const T a, const T b) {
+        return (less<T>(a, b) ? a : b);
+    }
+
+    template<typename T>
+    inline T fastMax(const T a, const T b) {
+        return (greater<T>(a, b) ? a : b);
     }
 
     template<typename T>
