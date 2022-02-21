@@ -51,3 +51,19 @@ void AndreiUtils::writeEigenData(const string &file, const MatrixXd &m) {
         fout << endl;
     }
 }
+
+vector<VectorXd> AndreiUtils::getMatrixRowsAsVector(const Eigen::MatrixXd &m) {
+    vector<VectorXd> res(m.rows());
+    for (int i = 0; i < m.rows(); i++) {
+        res[i] = m.row(i);
+    }
+    return res;
+}
+
+vector<VectorXd> AndreiUtils::getMatrixColsAsVector(const Eigen::MatrixXd &m) {
+    vector<VectorXd> res(m.cols());
+    for (int i = 0; i < m.cols(); i++) {
+        res[i] = m.col(i);
+    }
+    return res;
+}

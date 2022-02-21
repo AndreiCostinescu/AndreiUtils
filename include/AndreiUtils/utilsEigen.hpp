@@ -31,6 +31,14 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    void qSetZero(Eigen::Quaternion<T> &q) {
+        q.w() = 0;
+        q.x() = 0;
+        q.y() = 0;
+        q.z() = 0;
+    }
+
+    template<class T>
     Eigen::Quaternion<T> qxRotation(const T &angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
     }
@@ -61,6 +69,21 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    void qIncrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
+        q1.coeffs() += q2.coeffs();
+    }
+
+    template<class T>
+    Eigen::Quaternion<T> qDiff(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
+        return Eigen::Quaternion<T>(q1.coeffs() - q2.coeffs());
+    }
+
+    template<class T>
+    void qDecrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
+        q1.coeffs() -= q2.coeffs();
+    }
+
+    template<class T>
     Eigen::Quaternion<T> qNeg(const Eigen::Quaternion<T> &q) {
         return Eigen::Quaternion<T>(-q.coeffs());
     }
@@ -68,6 +91,7 @@ namespace AndreiUtils {
     template<class T>
     Eigen::Quaternion<T> vToQ(const Eigen::Matrix<T, 3, 1> &v) {
         Eigen::Quaternion<T> q;
+        q.w() = 0;
         q.vec() = v;
         return q;
     }
@@ -150,11 +174,38 @@ namespace AndreiUtils {
         std::swap(e.x(), e.z());
         return e;
     }
+
+    template<class T, int N>
+    Eigen::Matrix<T, -1, N> convertVectorsToMatrixRows(const std::vector<Eigen::Matrix<T, N, 1>> &rows) {
+        Eigen::Matrix<T, -1, N> m = Eigen::Matrix<T, -1, N>::Zero(rows.size(), N);
+        for (int i = 0; i < m.rows(); i++) {
+            m.row(i) = rows[i];
+        }
+        return m;
+    }
+
+    template<class T>
+    Eigen::Matrix<T, -1, 1> convertValuesToVector(const std::vector<T> &values) {
+        Eigen::Matrix<T, -1, 1> v = Eigen::Matrix<T, -1, 1>::Zero(values.size(), 1);
+        for (int i = 0; i < values.size(); i++) {
+            v[i] = values[i];
+        }
+        return v;
+    }
+
+    template<class T>
+    Eigen::Matrix<T, 1, -1> convertValuesToRowVector(const std::vector<T> &values) {
+        Eigen::Matrix<T, 1, -1> v = Eigen::Matrix<T, 1, -1>::Zero(1, values.size());
+        for (int i = 0; i < values.size(); i++) {
+            v[i] = values[i];
+        }
+        return v;
+    }
 }
 
 namespace std {
     template<class T>
-    ostream& operator<<(ostream& os, const Eigen::Quaternion<T>& q) {
+    ostream &operator<<(ostream &os, const Eigen::Quaternion<T> &q) {
         os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
         return os;
     }
