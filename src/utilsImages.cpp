@@ -274,3 +274,16 @@ void AndreiUtils::writeDepthImageBinary(std::ofstream *fout, const double *depth
     writeImageBinary(fout, (uint8_t *) tmpData, height, width, StandardTypes::TYPE_UINT_16, 1);
     delete[] tmpData;
 }
+
+void AndreiUtils::swapColorImageChannels(uint8_t *image, int nrElements, int channels,
+                                         const std::vector<std::pair<int, int>> &channelSwaps) {
+    for (const auto &channelSwap: channelSwaps) {
+        if (channelSwap.first >= channels || channelSwap.second >= channels || channelSwap.first < 0 ||
+            channelSwap.second < 0) {
+            continue;
+        }
+        fastForLoop<uint8_t>(image, nrElements, [&channelSwap](uint8_t *const image, size_t i, size_t) {
+            swap(image[i + channelSwap.first], image[i + channelSwap.second]);
+        }, channels);
+    }
+}

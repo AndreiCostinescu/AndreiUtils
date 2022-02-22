@@ -9,6 +9,8 @@
 #include <AndreiUtils/enums/StandardTypes.h>
 #include <cstdint>
 #include <fstream>
+#include <tuple>
+#include <vector>
 
 namespace AndreiUtils {
     void imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height, int width,
@@ -49,6 +51,9 @@ namespace AndreiUtils {
     void writeDepthImageBinary(std::ofstream *fout, const uint16_t *depth, int height, int width);
 
     void writeDepthImageBinary(std::ofstream *fout, const double *depth, int height, int width);
+
+    void swapColorImageChannels(uint8_t *image, int nrElements, int channels,
+                                const std::vector<std::pair<int, int>> &channelSwaps);
 }
 
 #endif //ANDREIUTILS_UTILSIMAGES_H
