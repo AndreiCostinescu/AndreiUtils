@@ -139,7 +139,7 @@ SET(UTILS_REALSENSE_EIGEN)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp ${UTILS_CLASSES})
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
