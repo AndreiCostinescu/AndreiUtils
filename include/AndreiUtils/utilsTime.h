@@ -33,6 +33,18 @@ namespace AndreiUtils {
 
     SystemTimePoint getTimePoint(double t, TimeUnit timeUnit);
 
+    double getTime(const SystemTimePoint &t, const std::string &timeUnit);
+
+    double getTime(const SystemTimePoint &t, TimeUnit timeUnit);
+
+    double getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, const std::string &timeUnit);
+
+    double getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, TimeUnit timeUnit);
+
+    double getTime(double t, const std::string &timeUnit);
+
+    double getTime(double t, TimeUnit timeUnit);
+
     void getDateFromTime(struct tm *&t, time_t time, int &year);
 
     void getDateFromTime(struct tm *&t, time_t time, int &year, int &month);

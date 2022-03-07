@@ -184,6 +184,10 @@ chrono::duration<double> convertDurationFromTimeUnit(double t, TimeUnit timeUnit
             throw runtime_error("Unknown TimeUnit " + to_string(timeUnit));
         }
     }
+    /*
+    chrono::duration<double> time = chrono::duration<double>(t / getMultiplicationFactorRelativeToSeconds(timeUnit));
+    return time;
+    //*/
 }
 
 SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const string &timeUnit) {
@@ -200,6 +204,30 @@ SystemTimePoint AndreiUtils::getTimePoint(double t, const string &timeUnit) {
 
 SystemTimePoint AndreiUtils::getTimePoint(double t, TimeUnit timeUnit) {
     return SystemTimePoint(chrono::duration_cast<nanoseconds>(convertDurationFromTimeUnit(t, timeUnit)));
+}
+
+double AndreiUtils::getTime(const SystemTimePoint &t, const std::string &timeUnit) {
+    return getTime(t, convertStringToTimeUnit(timeUnit));
+}
+
+double AndreiUtils::getTime(const SystemTimePoint &t, TimeUnit timeUnit) {
+    return chrono::duration<double>(t.time_since_epoch()).count() * getMultiplicationFactorRelativeToSeconds(timeUnit);
+}
+
+double AndreiUtils::getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, const std::string &timeUnit) {
+    return getTimeDiff(t1, t2, convertStringToTimeUnit(timeUnit));
+}
+
+double AndreiUtils::getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, TimeUnit timeUnit) {
+    return chrono::duration<double>(t1 - t2).count() * getMultiplicationFactorRelativeToSeconds(timeUnit);
+}
+
+double AndreiUtils::getTime(double t, const std::string &timeUnit) {
+    return getTime(t, convertStringToTimeUnit(timeUnit));
+}
+
+double AndreiUtils::getTime(double t, TimeUnit timeUnit) {
+    return t * getMultiplicationFactorRelativeToSeconds(timeUnit);
 }
 
 void AndreiUtils::getDateFromTime(struct tm *&t, time_t time, int &year) {
