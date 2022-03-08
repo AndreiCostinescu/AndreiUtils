@@ -99,6 +99,8 @@ SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp s
 
 SET(UTILS_ERROR src/utilsError.cpp)
 
+SET(UTILS_GEOMETRY src/utilsGeometry.cpp)
+
 SET(UTILS_IMAGES src/utilsImages.cpp)
 
 SET(UTILS_NETWORK src/NetworkIncludes.cpp src/NetworkData.cpp)
@@ -180,6 +182,7 @@ set(GENERAL_UTILS
         ${UTILS_GENERAL}
         ${UTILS_ENUMS}
         ${UTILS_ERROR}
+        ${UTILS_GEOMETRY}
         ${UTILS_IMAGES}
 
         ${UTILS_NETWORK}
