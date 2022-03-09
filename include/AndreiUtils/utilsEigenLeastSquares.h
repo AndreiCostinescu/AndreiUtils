@@ -5,16 +5,10 @@
 #ifndef ANDREIUTILS_UTILSEIGENLEASTSQUARES_H
 #define ANDREIUTILS_UTILSEIGENLEASTSQUARES_H
 
+#include <AndreiUtils/enums/EigenLeastSquaresSolver.h>
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
-    enum EigenLeastSquaresSolver {
-        NORMAL_EQUATIONS,
-        QR_DECOMPOSITION,
-        COMPUTE_ORTHOGONAL_DECOMPOSITION,
-        SVD,
-    };
-
     Eigen::MatrixXd leastSquares(const Eigen::MatrixXd &a, const Eigen::MatrixXd &b,
                                  EigenLeastSquaresSolver method = NORMAL_EQUATIONS);
 
