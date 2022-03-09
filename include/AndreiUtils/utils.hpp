@@ -38,11 +38,6 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool equal(const T a, const T b, double tol = 1e-9) {
-        return (abs(a - b) < tol);
-    }
-
-    template<typename T>
     inline bool less(const T a, const T b, double tol = 1e-9) {
         return (b - a) > tol;
     }
@@ -65,6 +60,11 @@ namespace AndreiUtils {
     template<typename T>
     inline T fastAbs(const T x) {
         return (less<T>(x, 0) ? -x : x);
+    }
+
+    template<typename T>
+    inline bool equal(const T a, const T b, double tol = 1e-9) {
+        return (fastAbs(a - b) < tol);
     }
 
     template<typename T>
