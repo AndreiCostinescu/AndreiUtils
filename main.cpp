@@ -192,6 +192,18 @@ void testDualQuaternions() {
     cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << endl;
 }
 
+void testStringAllocation() {
+    char *data = new char[100];
+    memcpy(data, "This is a house!", 17);
+    string s(data);
+    data[2] = 'a';
+    data[3] = 't';
+    delete[] data;
+    cout << s << endl;
+    s[15] = '?';
+    cout << s << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -203,6 +215,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    testDualQuaternions();
+    // testDualQuaternions();
+    testStringAllocation();
     return 0;
 }
