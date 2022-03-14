@@ -112,6 +112,16 @@ namespace AndreiUtils {
         return avg;
     }
 
+    template<class T>
+    bool vectorContains(const std::vector<T> &container, const T &key) {
+        for (const auto &value : container) {
+            if (key == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 *value = nullptr) {
         const auto &data = container.find(key);
