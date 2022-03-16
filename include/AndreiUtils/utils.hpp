@@ -124,7 +124,7 @@ namespace AndreiUtils {
 
     template<class T>
     void vectorRemoveFirstValueMatch(std::vector<T> &container, const T &value) {
-        for (auto i = containter.begin(); i != container.end(); ++i) {
+        for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
                 container.erase(i);
                 return;
@@ -134,7 +134,7 @@ namespace AndreiUtils {
 
     template<class T>
     void vectorRemoveAllValueMatches(std::vector<T> &container, const T &value) {
-        for (auto i = containter.begin(); i != container.end(); ++i) {
+        for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
                 container.erase(i);
                 i--;
