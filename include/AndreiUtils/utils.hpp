@@ -114,12 +114,32 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T> &container, const T &key) {
-        for (const auto &value : container) {
+        for (const auto &value: container) {
             if (key == value) {
                 return true;
             }
         }
         return false;
+    }
+
+    template<class T>
+    void vectorRemoveFirstValueMatch(std::vector<T> &container, const T &value) {
+        for (auto i = containter.begin(); i != container.end(); ++i) {
+            if (*i == value) {
+                container.erase(i);
+                return;
+            }
+        }
+    }
+
+    template<class T>
+    void vectorRemoveAllValueMatches(std::vector<T> &container, const T &value) {
+        for (auto i = containter.begin(); i != container.end(); ++i) {
+            if (*i == value) {
+                container.erase(i);
+                i--;
+            }
+        }
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
