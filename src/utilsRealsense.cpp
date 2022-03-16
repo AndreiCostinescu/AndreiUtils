@@ -105,9 +105,22 @@ void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&
     assert (dataType == convertFrameTypeToDataType(2, 1));
 }
 
+void AndreiUtils::fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, const float position[2], float depth,
+                                          float (&point)[3]) {
+    rs2_deproject_pixel_to_point(point, &intrinsics, position, depth);
+}
+
+void AndreiUtils::fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, float x, float y, float depth,
+                                          float (&point)[3]) {
+    float position[2];
+    position[0] = x;
+    position[1] = y;
+    fromImagePixelTo3dPoint(intrinsics, position, depth, point);
+}
+
 void AndreiUtils::getRealsenseDepthPointFromImagePixel(
-        function<float(int, int)> &getDepth, const rs2_intrinsics &intrinsics, float x, float y, float (&point)[3],
-        int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
+        const function<float(int, int)> &getDepth, const rs2_intrinsics &intrinsics, float x, float y,
+        float (&point)[3], int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
     int width = intrinsics.width, height = intrinsics.height;
     int int_x = int(x), int_y = int(y);
     float position[2] = {x, y};
@@ -141,7 +154,7 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
     }
 
     // De-project from pixel to point in 3D: Get the distance at the given pixel
-    rs2_deproject_pixel_to_point(point, &intrinsics, position, avgDepth);
+    fromImagePixelTo3dPoint(intrinsics, position, avgDepth, point);
 }
 
 void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
@@ -150,8 +163,9 @@ void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsic
 }
 
 void AndreiUtils::getRealsenseDepthPointFromImagePixel(
-        function<float(int, int)> &getDepth, const ImageParameters &size, const CameraIntrinsicParameters &intrinsics,
-        float x, float y, float (&point)[3], int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
+        const function<float(int, int)> &getDepth, const ImageParameters &size,
+        const CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3], int windowSize,
+        bool forceWindowUsage, float farthestAllowedDepth) {
     return getRealsenseDepthPointFromImagePixel(
             getDepth, convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics), x, y, point, windowSize,
             forceWindowUsage, farthestAllowedDepth);

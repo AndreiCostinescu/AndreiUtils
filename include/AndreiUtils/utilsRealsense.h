@@ -27,16 +27,21 @@ namespace AndreiUtils {
 
     // Returns the 3D point at the requested (x, y) position of the depth data
     void getRealsenseDepthPointFromImagePixel(
-            std::function<float(int, int)> &getDepth, const rs2_intrinsics &intrinsics, float x, float y,
+            const std::function<float(int, int)> &getDepth, const rs2_intrinsics &intrinsics, float x, float y,
             float (&point)[3], int windowSize = 1, bool forceWindowUsage = false, float farthestAllowedDepth = 10);
 
     // Returns the image pixel at the requested 3D position
     void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);
 
     void getRealsenseDepthPointFromImagePixel(
-            std::function<float(int, int)> &getDepth, const AndreiUtils::ImageParameters &size,
+            const std::function<float(int, int)> &getDepth, const AndreiUtils::ImageParameters &size,
             const AndreiUtils::CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3],
             int windowSize = 1, bool forceWindowUsage = false, float farthestAllowedDepth = 10);
+
+    void fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, const float position[2], float depth,
+                                 float (&point)[3]);
+
+    void fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, float x, float y, float depth, float (&point)[3]);
 
     void getImagePixelFromRealsenseDepthPoint(
             const AndreiUtils::ImageParameters &size, const AndreiUtils::CameraIntrinsicParameters &intrinsics,
