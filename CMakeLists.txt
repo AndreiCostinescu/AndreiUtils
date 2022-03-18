@@ -95,7 +95,7 @@ include_directories("include")
 
 SET(UTILS_GENERAL src/utils.cpp)
 
-SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp src/enums/TimeUnit.cpp)
+SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp src/enums/TimeUnit.cpp src/enums/InvalidValuesHandlingMode.cpp)
 
 SET(UTILS_ERROR src/utilsError.cpp)
 
