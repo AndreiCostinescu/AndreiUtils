@@ -203,7 +203,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(std::vector<T> x) {
+    void printVector(const std::vector<T> &x) {
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
                 std::cout << ", ";
@@ -214,13 +214,60 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    std::string printVectorToString(std::vector<T> x) {
+    std::string printVectorToString(const std::vector<T> &x) {
         std::stringstream s;
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
                 s << ", ";
             }
             s << x[i];
+        }
+        return s.str();
+    }
+
+    template<class T>
+    void printVector(T *x, int size, const std::function<std::string(T const &)> &stringConversion) {
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << stringConversion(x[i]);
+        }
+        std::cout << std::endl;
+    }
+
+    template<class T>
+    std::string printVectorToString(T *x, int size, const std::function<std::string(T const &)> &stringConversion) {
+        std::stringstream s;
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                s << ", ";
+            }
+            s << stringConversion(x[i]);
+        }
+        return s.str();
+    }
+
+    template<class T>
+    void printVector(const std::vector<T> &x, const std::function<std::string(T const &)> &stringConversion) {
+        for (int i = 0; i < x.size(); i++) {
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << stringConversion(x[i]);
+        }
+        std::cout << std::endl;
+    }
+
+    template<class T>
+    std::string printVectorToString(const std::vector<T> &x,
+                                    const std::function<std::string(T const &)> &stringConversion) {
+        std::stringstream s;
+        for (int i = 0; i < x.size(); i++) {
+            if (i > 0) {
+                s << ", ";
+            }
+            s << stringConversion(x[i]);
         }
         return s.str();
     }
