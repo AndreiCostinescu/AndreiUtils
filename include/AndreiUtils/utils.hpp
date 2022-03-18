@@ -78,7 +78,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T median(std::vector<T> a) {
+    inline T median(const std::vector<T> &a) {
         int n = a.size();
         // Applying nth_element on n/2th index
         std::nth_element(a.begin(), a.begin() + n / 2, a.end());
@@ -93,7 +93,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T average(std::vector<T> a) {
+    inline T average(const std::vector<T> &a) {
         T avg;
         for (const T &val: a) {
             avg += val;
@@ -114,6 +114,46 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T> &container, const T &key) {
+        for (const auto &value: container) {
+            if (key == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, T *&key) {
+        for (const auto &value: container) {
+            if (key == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, T *const &key) {
+        for (const auto &value: container) {
+            if (key == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, T const *&key) {
+        for (const auto &value: container) {
+            if (key == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, T const *const &key) {
         for (const auto &value: container) {
             if (key == value) {
                 return true;
