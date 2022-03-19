@@ -77,8 +77,9 @@ namespace AndreiUtils {
         return (greater<T>(a, b) ? a : b);
     }
 
+    // Don't have 'a' be a (const) reference, because std::nth_element changes the data inside 'a'!
     template<typename T>
-    inline T median(const std::vector<T> &a) {
+    inline T median(std::vector<T> a) {
         int n = a.size();
         // Applying nth_element on n/2th index
         std::nth_element(a.begin(), a.begin() + n / 2, a.end());
@@ -95,6 +96,9 @@ namespace AndreiUtils {
     template<typename T>
     inline T average(const std::vector<T> &a) {
         T avg;
+        if (a.empty()) {
+            return avg;
+        }
         for (const T &val: a) {
             avg += val;
         }
@@ -105,6 +109,9 @@ namespace AndreiUtils {
     template<typename T>
     inline T average(T *a, int start, int size) {
         T avg;
+        if (size == 0) {
+            return avg;
+        }
         for (int i = start; i < start + size; i++) {
             avg += a[i];
         }

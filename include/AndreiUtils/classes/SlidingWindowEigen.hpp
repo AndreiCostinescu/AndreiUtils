@@ -94,8 +94,8 @@ namespace AndreiUtils {
     class SlidingWindowWithInvalidValues<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> :
             public SlidingWindow<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> {
     public:
-        explicit SlidingWindowWithInvalidValues(unsigned size = 0)
-                : SlidingWindow<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>(size), validData(size) {}
+        explicit SlidingWindowWithInvalidValues(unsigned size = 0) :
+                SlidingWindow<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>(size), validData(size) {}
 
         void addData(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> newData, bool valid = true) {
             assert(this->size > 0);
@@ -103,8 +103,8 @@ namespace AndreiUtils {
             SlidingWindow<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>::addData(newData);
         }
 
-        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        convolve(const std::vector<double> &parameters, InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> convolve(
+                const std::vector<double> &parameters, InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             bool average = false;
             if (parameters.size() != this->dataSize) {
                 average = true;
@@ -136,13 +136,13 @@ namespace AndreiUtils {
             return res;
         }
 
-        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        getMedian(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMedian(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             return AndreiUtils::median(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
-        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        getAverage(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getAverage(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             return AndreiUtils::average(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
@@ -151,8 +151,8 @@ namespace AndreiUtils {
         }
 
     protected:
-        std::vector<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>
-        getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        std::vector<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> getDataInCorrectOrder(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             std::vector<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> a(this->dataSize);
             int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
             for (unsigned int i = this->dataSize; i >= 1; i--) {
@@ -259,8 +259,8 @@ namespace AndreiUtils {
     class SlidingWindowWithInvalidValues<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> :
             public SlidingWindow<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> {
     public:
-        explicit SlidingWindowWithInvalidValues(unsigned size = 0)
-                : SlidingWindow<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>(size), validData(size) {}
+        explicit SlidingWindowWithInvalidValues(unsigned size = 0) :
+                SlidingWindow<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>(size), validData(size) {}
 
         void addData(Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> newData, bool valid = true) {
             assert(this->size > 0);
@@ -268,8 +268,8 @@ namespace AndreiUtils {
             SlidingWindow<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>::addData(newData);
         }
 
-        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        convolve(const std::vector<double> &parameters, InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> convolve(
+                const std::vector<double> &parameters, InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             bool average = false;
             if (parameters.size() != this->dataSize) {
                 average = true;
@@ -301,13 +301,13 @@ namespace AndreiUtils {
             return res;
         }
 
-        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        getMedian(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMedian(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             return AndreiUtils::median(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
-        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
-        getAverage(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getAverage(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             return AndreiUtils::average(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
@@ -316,8 +316,8 @@ namespace AndreiUtils {
         }
 
     protected:
-        std::vector<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>
-        getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        std::vector<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> getDataInCorrectOrder(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             std::vector<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> a(this->dataSize);
             int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
             for (unsigned int i = this->dataSize; i >= 1; i--) {

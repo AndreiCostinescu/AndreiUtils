@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/SlidingWindowEigen.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
@@ -204,6 +205,14 @@ void testStringAllocation() {
     cout << s << endl;
 }
 
+void testFloatSlidingWindow() {
+    SlidingWindow<float> sw(10);
+    for (int i = 0; i < 20; i++) {
+        sw.addData((float) (i * i));
+        cout << "At i = " << i << ": median = " << sw.getMedian() << ", average = " << sw.getAverage() << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -216,6 +225,7 @@ int main() {
     // testJsonNull();
     // testLambdaCaptureScope();
     // testDualQuaternions();
-    testStringAllocation();
+    // testStringAllocation();
+    testFloatSlidingWindow();
     return 0;
 }
