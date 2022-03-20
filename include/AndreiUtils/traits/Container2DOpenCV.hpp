@@ -28,7 +28,7 @@ namespace AndreiUtils {
     public:
         static const bool isContainer2D = true;
 
-        Container2D(const TypeMat<Scalar> &data) : data(data) {}
+        explicit Container2D(const TypeMat<Scalar> &data) : data(data) {}
 
         inline int height() const {
             return this->data.rows;
@@ -57,7 +57,7 @@ namespace AndreiUtils {
     template<typename Scalar>
     class ModifiableContainer2D<TypeMat<Scalar>> : public Container2D<TypeMat<Scalar>> {
     public:
-        ModifiableContainer2D(TypeMat<Scalar> &data) : Container2D<TypeMat<Scalar>>(data), data(data) {}
+        explicit ModifiableContainer2D(TypeMat<Scalar> &data) : Container2D<TypeMat<Scalar>>(data), data(data) {}
 
         void setValueAt(int row, int col, const Scalar &value) {
             this->modifiabledata.atType(row, col) = value;

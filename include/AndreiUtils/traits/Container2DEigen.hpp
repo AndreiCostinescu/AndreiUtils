@@ -14,7 +14,7 @@ namespace AndreiUtils {
     public:
         static const bool isContainer2D = true;
 
-        Container2D(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &data) : data(data) {}
+        explicit Container2D(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &data) : data(data) {}
 
         inline int height() const {
             return this->data.rows();
@@ -44,7 +44,7 @@ namespace AndreiUtils {
     class ModifiableContainer2D<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> :
             public Container2D<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> {
     public:
-        ModifiableContainer2D(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &data) :
+        explicit ModifiableContainer2D(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &data) :
                 Container2D<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>(data), modifiableData(data) {}
 
         void setValueAt(int row, int col, const Scalar &value) {
