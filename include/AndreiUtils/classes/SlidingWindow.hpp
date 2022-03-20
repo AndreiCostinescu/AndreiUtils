@@ -83,7 +83,7 @@ namespace AndreiUtils {
     };
 
     template<class T>
-    class SlidingWindowWithInvalidValues : SlidingWindow<T> {
+    class SlidingWindowWithInvalidValues : public SlidingWindow<T> {
     public:
         explicit SlidingWindowWithInvalidValues(unsigned size = 0) : SlidingWindow<T>(size), validData(size) {}
 
