@@ -234,7 +234,7 @@ void testCrossBilateralFilter() {
     CrossBilateralFilter filter(5);
     float x, y;
     filter.filter(11, 11, m, x, y);
-    // filter
+    cout << "x = " << x << ", y = " << y << endl;
 }
 
 int main() {

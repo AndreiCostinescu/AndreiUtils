@@ -10,11 +10,25 @@
 
 namespace AndreiUtils {
     template<typename Scalar>
-    class Container2D<cv::Mat> {
+    class TypeMat : public cv::Mat {
+    public:
+        explicit TypeMat(const cv::Mat &mat) : cv::Mat(mat) {}
+
+        const Scalar &atType(int row, int col) const {
+            return ((cv::Mat) (*this)).at<Scalar>(row, col);
+        }
+
+        Scalar &atType(int row, int col) {
+            return ((cv::Mat) (*this)).at<Scalar>(row, col);
+        }
+    };
+
+    template<typename Scalar>
+    class Container2D<TypeMat<Scalar>> {
     public:
         static const bool isContainer2D = true;
 
-        Container2D(const cv::Mat &data) : data(data) {}
+        Container2D(const TypeMat<Scalar> &data) : data(data) {}
 
         inline int height() const {
             return this->data.rows;
@@ -25,7 +39,7 @@ namespace AndreiUtils {
         }
 
         Scalar valueAt(int row, int col) const {
-            return this->data.at<Scalar>(row, col);
+            return this->data.atType(row, col);
         }
 
         bool checkPointInsideContainer(int row, int col) const {
@@ -37,20 +51,20 @@ namespace AndreiUtils {
         }
 
     protected:
-        const cv::Mat &data;
+        const TypeMat<Scalar> &data;
     };
 
     template<typename Scalar>
-    class ModifiableContainer2D<cv::Mat> : public Container2D<cv::Mat> {
+    class ModifiableContainer2D<TypeMat<Scalar>> : public Container2D<TypeMat<Scalar>> {
     public:
-        ModifiableContainer2D(cv::Mat &data) : Container2D(data), data(data) {}
+        ModifiableContainer2D(TypeMat<Scalar> &data) : Container2D<TypeMat<Scalar>>(data), data(data) {}
 
         void setValueAt(int row, int col, const Scalar &value) {
-            this->modifiabledata.at<Scalar>(row, col) = value;
+            this->modifiabledata.atType(row, col) = value;
         }
 
     protected:
-        const cv::Mat &data;
+        const TypeMat<Scalar> &data;
     };
 }
 
