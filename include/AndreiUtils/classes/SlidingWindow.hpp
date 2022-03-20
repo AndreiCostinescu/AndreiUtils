@@ -6,6 +6,8 @@
 #define ANDREIUTILS_SLIDINGWINDOW_HPP
 
 #include <AndreiUtils/enums/InvalidValuesHandlingMode.h>
+#include <AndreiUtils/traits/get_vector_type_for_convolution.hpp>
+#include <AndreiUtils/traits/median_computer.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <cassert>
 #include <iostream>
@@ -36,26 +38,27 @@ namespace AndreiUtils {
             this->dataSize = 0;
         }
 
-        T convolve(const std::vector<double> &parameters) const {
-            bool average = false;
+        T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters) const {
             if (parameters.size() != this->dataSize) {
-                average = true;
+                throw std::runtime_error("Can not convolve with different parameter sizes!");
             }
-            T res;
-            double parameter;
+            T res, value;
+            int dataIndex;
+            // travel backwards because this->index points to the next free position => this->index - 1 is the last elem
             for (int i = 1; i <= this->dataSize; i++) {
-                parameter = (average) ? 1.0 / this->size : parameters[this->dataSize - i];
-                if (i == 0) {
-                    res = parameter * this->data[(this->index + this->size - i) % this->size];
+                dataIndex = (this->index + this->size - i) % this->size;
+                value = parameters[this->dataSize - i] * this->data[dataIndex];
+                if (i == 1) {
+                    res = value;
                 } else {
-                    res += parameter * this->data[(this->index + this->size - i) % this->size];
+                    res += value;
                 }
             }
             return res;
         }
 
         T getMedian() const {
-            return AndreiUtils::median(this->getDataInCorrectOrder());
+            return median_computer<T>::medianComputer(this->getDataInCorrectOrder());
         }
 
         T getAverage() const {
@@ -90,14 +93,14 @@ namespace AndreiUtils {
             SlidingWindow<T>::addData(newData);
         }
 
-        T convolve(const std::vector<double> &parameters, InvalidValuesHandlingMode invalidValuesHandlingMode) const {
-            bool average = false;
+        T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters,
+                   InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             if (parameters.size() != this->dataSize) {
-                average = true;
+                throw std::runtime_error("Can not convolve with different parameter sizes!");
             }
-            T res;
-            double parameter;
-            int dataIndex, nrValidData = 0;
+            T res, value;
+            int dataIndex;
+            // travel backwards because this->index points to the next free position => this->index - 1 is the last elem
             for (int i = 1; i <= this->dataSize; i++) {
                 dataIndex = (this->index + this->size - i) % this->size;
                 if (!this->validData[dataIndex] &&
@@ -108,22 +111,18 @@ namespace AndreiUtils {
                         throw std::runtime_error("FAIL_UPON_INVALID mode selected");
                     }
                 }
-                parameter = (average) ? 1.0 : parameters[this->dataSize - i];
+                value = parameters[this->dataSize - i] * this->data[dataIndex];
                 if (i == 0) {
-                    res = parameter * this->data[dataIndex];
+                    res = value;
                 } else {
-                    res += parameter * this->data[dataIndex];
+                    res += value;
                 }
-                nrValidData++;
-            }
-            if (average && nrValidData > 0) {
-                res = res / nrValidData;
             }
             return res;
         }
 
         T getMedian(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
-            return AndreiUtils::median(this->getDataInCorrectOrder(invalidValuesHandlingMode));
+            return median_computer<T>::medianComputer(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
         T getAverage(InvalidValuesHandlingMode invalidValuesHandlingMode) const {

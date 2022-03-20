@@ -3,10 +3,11 @@
 //
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
-#include <AndreiUtils/classes/SlidingWindowEigen.hpp>
+#include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
+#include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/json.hpp>
-#include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
@@ -210,6 +211,13 @@ void testFloatSlidingWindow() {
     for (int i = 0; i < 20; i++) {
         sw.addData((float) (i * i));
         cout << "At i = " << i << ": median = " << sw.getMedian() << ", average = " << sw.getAverage() << endl;
+    }
+
+    SlidingWindow<Eigen::Vector3d> swEigen(11);
+    for (int i = 0; i < 20; i++) {
+        swEigen.addData(Vector3d((double) i, (double) i * i, (double) i * i * i));
+        cout << "At i = " << i << ": median = " << swEigen.getMedian() << ", average = " << swEigen.getAverage()
+             << endl;
     }
 }
 
