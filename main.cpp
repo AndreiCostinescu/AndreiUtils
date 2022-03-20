@@ -2,9 +2,11 @@
 // Created by andrei on 05.10.21.
 //
 
+#include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/json.hpp>
@@ -221,6 +223,20 @@ void testFloatSlidingWindow() {
     }
 }
 
+void testCrossBilateralFilter() {
+    cout << ModifiableContainer2D<int>::isContainer2D << endl;
+    cout << ModifiableContainer2D<double>::isContainer2D << endl;
+    cout << ModifiableContainer2D<cv::Mat>::isContainer2D << endl;
+    cout << ModifiableContainer2D<Eigen::Matrix3d>::isContainer2D << endl;
+    cout << ModifiableContainer2D<Eigen::MatrixXf>::isContainer2D << endl;
+    cout << ModifiableContainer2D<Eigen::Vector2d>::isContainer2D << endl;
+    Eigen::MatrixXd m = Eigen::MatrixXd::Identity(21, 21);
+    CrossBilateralFilter filter(5);
+    float x, y;
+    filter.filter(11, 11, m, x, y);
+    // filter
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -234,6 +250,7 @@ int main() {
     // testLambdaCaptureScope();
     // testDualQuaternions();
     // testStringAllocation();
-    testFloatSlidingWindow();
+    // testFloatSlidingWindow();
+    testCrossBilateralFilter();
     return 0;
 }

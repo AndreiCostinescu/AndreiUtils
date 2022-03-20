@@ -141,7 +141,7 @@ SET(UTILS_REALSENSE_EIGEN)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterEigen.cpp src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp ${UTILS_CLASSES})
+    SET(UTILS_CLASSES src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp ${UTILS_CLASSES})
     SET(UTILS_ENUMS src/enums/EigenLeastSquaresSolver.cpp ${UTILS_ENUMS})
 endif ()
 
@@ -158,7 +158,6 @@ endif ()
 if (USE_OPENCV)
     # depends on opencv
     SET(UTILS_OPENCV src/utilsOpenCV.cpp)
-    SET(UTILS_CLASSES src/classes/CrossBilateralFilterOpenCV.cpp ${UTILS_CLASSES})
 endif ()
 
 if (USE_OPENCV AND USE_REALSENSE)

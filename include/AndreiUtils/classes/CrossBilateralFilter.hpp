@@ -6,9 +6,10 @@
 #define ANDREIUTILS_CROSSBILATERALFILTER_HPP
 
 #include <AndreiUtils/classes/GaussianKernel.h>
+#include <AndreiUtils/traits/Container2D.hpp>
+#include <cmath>
 
 namespace AndreiUtils {
-    template<class T>
     class CrossBilateralFilter {
     public:
         explicit CrossBilateralFilter(unsigned int windowSize) :
@@ -16,7 +17,35 @@ namespace AndreiUtils {
 
         virtual ~CrossBilateralFilter() = default;
 
-        virtual void filter(float posX, float posY, const T &depthData, float &resX, float &resY) const = 0;
+        template<class T>
+        void filter(float posX, float posY, const T &data, float &resX, float &resY) const {
+            typedef Container2D<T> Container2D;
+            static_assert(Container2D::isContainer2D, "Data is not a 2d container...");
+            Container2D dataContainer(data);
+            if (!dataContainer.checkPointInsideContainer(posY, posX)) {
+                return;
+            }
+            double sumX, sumY, newX, newY;
+            int pX = (int) std::round(posX), pY = (int) std::round(posY);
+            double coefficientSum = 0.0, coefficient, dataPoint, refDataPoint = dataContainer.valueAt(pY, pX);
+            int shift = (int) this->windowSize / 2;
+            int startI = -std::min(shift, pX), endI = std::min(shift, dataContainer.height() - pX);
+            int startJ = -std::min(shift, pY), endJ = std::min(shift, dataContainer.width() - pY);
+            for (int i = startI; i < endI; i++) {
+                for (int j = startJ; j < endJ; j++) {
+                    newX = posX + (double) i;
+                    newY = posY + (double) j;
+                    dataPoint = dataContainer.valueAt((int) std::round(newY), (int) std::round(newX));
+                    coefficient = this->spatial.coefficient({(double) (i + shift), (double) (j + shift)}) *
+                                  this->cross.coefficient(dataPoint - refDataPoint);
+                    sumX += newX * coefficient;
+                    sumY += newY * coefficient;
+                    coefficientSum += coefficient;
+                }
+            }
+            resX = (float) (sumX / coefficientSum);
+            resY = (float) (sumY / coefficientSum);
+        }
 
         unsigned int getWindowSize() const {
             return this->windowSize;
