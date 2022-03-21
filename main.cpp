@@ -10,12 +10,14 @@
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/json.hpp>
+#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 #include <librealsense2/rs.hpp>
+#include <random>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -237,6 +239,33 @@ void testCrossBilateralFilter() {
     cout << "x = " << x << ", y = " << y << endl;
 }
 
+void testSortMultipleVectorsBasedOnOneCriterion() {
+    vector<double> x(10);
+    std::iota(x.begin(), x.end(), 10);
+    vector<int> y(10);
+    std::iota(y.begin(), y.end(), 4);
+    shuffle(y.begin(), y.end(), std::mt19937(std::random_device()()));
+    vector<string> z(10);
+    for (int i = 0; i < z.size(); i++) {
+        if (i == 0) {
+            z[i] = "1";
+        } else {
+            z[i] = z[i - 1] + "1";
+        }
+    }
+    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) {
+        return a < b;
+    });
+    printVector(x);
+    printVector(y);
+    printVector(z);
+    printVector(permutation);
+    sortMultipleVectorsBasedOnPermutation(permutation, x, y, z);
+    printVector(x);
+    printVector(y);
+    printVector(z);
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -251,6 +280,7 @@ int main() {
     // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
-    testCrossBilateralFilter();
+    // testCrossBilateralFilter();
+    testSortMultipleVectorsBasedOnOneCriterion();
     return 0;
 }

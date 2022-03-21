@@ -12,6 +12,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <sstream>
 #include <utility>
 #include <vector>
@@ -366,6 +367,53 @@ namespace AndreiUtils {
         for (size_t i = 0; i < size; i += increment) {
             op(array, i, increment);
         }
+    }
+
+    template<typename T, typename Compare>
+    std::vector<std::size_t> getSortedIndicesOfVector(const std::vector<T> &v, const Compare &compare) {
+        std::vector<std::size_t> indices(v.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        std::sort(indices.begin(), indices.end(), [&](std::size_t i, std::size_t j) { return compare(v[i], v[j]); });
+        return indices;
+    }
+
+    template<typename T>
+    std::vector<T> permuteVector(const std::vector<T> &v, const std::vector<std::size_t> &permutationIndices) {
+        std::vector<T> permutation(v.size());
+        std::transform(permutationIndices.begin(), permutationIndices.end(), permutation.begin(),
+                       [&](std::size_t i) { return v[i]; });
+        return permutation;
+    }
+
+    template<typename T>
+    void permuteVectorInPlace(std::vector<T> &v, const std::vector<std::size_t> &permutationIndices) {
+        std::vector<int> done(v.size(), 0);
+        for (std::size_t i = 0; i < v.size(); i++) {
+            if (done[i] == 1) {
+                continue;
+            }
+            done[i] = 1;
+            std::size_t oldJ = i;
+            std::size_t j = permutationIndices[i];
+            while (i != j) {
+                std::swap(v[oldJ], v[j]);
+                done[j] = 1;
+                oldJ = j;
+                j = permutationIndices[j];
+            }
+        }
+    }
+
+    template<typename T>
+    void sortMultipleVectorsBasedOnPermutation(const std::vector<std::size_t> &permutationIndices, std::vector<T> &v) {
+        permuteVectorInPlace(v, permutationIndices);
+    }
+
+    template<typename T1, typename... TArgs>
+    void sortMultipleVectorsBasedOnPermutation(const std::vector<std::size_t> &permutationIndices, std::vector<T1> &v1,
+                                               TArgs&... v2) {
+        permuteVectorInPlace(v1, permutationIndices);
+        sortMultipleVectorsBasedOnPermutation(permutationIndices, v2...);
     }
 }
 
