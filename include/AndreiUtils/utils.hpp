@@ -120,6 +120,7 @@ namespace AndreiUtils {
         return avg;
     }
 
+    /*
     template<class T>
     bool vectorContains(const std::vector<T> &container, const T &key) {
         for (const auto &value: container) {
@@ -129,45 +130,66 @@ namespace AndreiUtils {
         }
         return false;
     }
+    //*/
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T *&key) {
-        for (const auto &value: container) {
-            if (key == value) {
-                return true;
-            }
+    bool vectorContains(const std::vector<T> &container, const T &key, std::size_t *position = nullptr) {
+        auto iter = find(container.begin(), container.end(), key);
+        if (iter == container.end()) {
+            return false;
         }
-        return false;
+        if (position != nullptr) {
+            *position = iter - container.begin();
+        }
+        return true;
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T *const &key) {
-        for (const auto &value: container) {
-            if (key == value) {
-                return true;
-            }
+    bool vectorContains(const std::vector<T *> &container, T *&key, std::size_t *position = nullptr) {
+        auto iter = find(container.begin(), container.end(), key);
+        if (iter == container.end()) {
+            return false;
         }
-        return false;
+        if (position != nullptr) {
+            *position = iter - container.begin();
+        }
+        return true;
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T const *&key) {
-        for (const auto &value: container) {
-            if (key == value) {
-                return true;
-            }
+    bool vectorContains(const std::vector<T *> &container, T *const &key, std::size_t *position = nullptr) {
+        auto iter = find(container.begin(), container.end(), key);
+        if (iter == container.end()) {
+            return false;
         }
-        return false;
+        if (position != nullptr) {
+            *position = iter - container.begin();
+        }
+        return true;
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T const *const &key) {
-        for (const auto &value: container) {
-            if (key == value) {
-                return true;
-            }
+    bool vectorContains(const std::vector<T *> &container, T const *&key, std::size_t *position = nullptr) {
+        auto iter = find(container.begin(), container.end(), key);
+        if (iter == container.end()) {
+            return false;
         }
-        return false;
+        if (position != nullptr) {
+            *position = iter - container.begin();
+        }
+        return true;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, T const *const &key, std::size_t *position = nullptr) {
+        auto iter = find(container.begin(), container.end(), key);
+        if (iter == container.end()) {
+            return false;
+        }
+        if (position != nullptr) {
+            *position = iter - container.begin();
+        }
+        return true;
     }
 
     template<class T>
