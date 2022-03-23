@@ -5,6 +5,7 @@
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
+#include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
@@ -266,6 +267,43 @@ void testSortMultipleVectorsBasedOnOneCriterion() {
     printVector(z);
 }
 
+void testAccessTimeInMapVsVector() {
+    int64_t N = 1e8 + 1;
+    vector<int64_t> v(N);
+    map<int64_t, bool> m;
+    Timer t;
+    double time;
+    t.start();
+    for (int64_t i = 0; i < N; i++) {
+        v[i] = i;
+        m[i] = true;
+    }
+    time = t.measure(TimeUnit::SECOND);
+    cout << "Initialization took " << time << endl;
+
+    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
+                            static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
+                            static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
+                            static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
+    bool res;
+    for (const auto &q: queries) {
+        t.start();
+        res = vectorContains(v, q);
+        time = t.measure(TimeUnit::SECOND);
+        cout << "Checking if " << q << " is in vector took " << time << ": res = " << res << endl;
+
+        t.start();
+        auto iter = find(v.begin(), v.end(), q);
+        time = t.measure(TimeUnit::SECOND);
+        cout << "Checking if " << q << " is in vector took " << time << ": res = " << (iter != v.end()) << endl;
+
+        t.start();
+        res = mapContains(m, q);
+        time = t.measure(TimeUnit::SECOND);
+        cout << "Checking if " << q << " is in map took " << time << ": res = " << res << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -281,6 +319,7 @@ int main() {
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
-    testSortMultipleVectorsBasedOnOneCriterion();
+    // testSortMultipleVectorsBasedOnOneCriterion();
+    testAccessTimeInMapVsVector();
     return 0;
 }
