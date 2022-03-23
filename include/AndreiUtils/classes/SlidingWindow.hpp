@@ -65,11 +65,42 @@ namespace AndreiUtils {
             return AndreiUtils::average(this->getDataInCorrectOrder());
         }
 
+        T &getLatest() {
+            return this->data[this->latestIndex()];
+        }
+
+        T getLatest() const {
+            return this->data[this->latestIndex()];
+        }
+
+        T &getEarliest() {
+            return this->data[this->earliestIndex()];
+        }
+
+        T getEarliest() const {
+            return this->data[this->earliestIndex()];
+        }
+
         std::vector<T> &getData() {
             return this->data;
         }
 
     protected:
+        size_t latestIndex() const {
+            if (this->dataSize == 0) {
+                throw std::runtime_error("There is no latest element because there is no element in the SlidingWindow");
+            }
+            return (this->index + this->size - 1) % this->size;
+        }
+
+        size_t earliestIndex() const {
+            if (this->dataSize == 0) {
+                throw std::runtime_error(
+                        "There is no earliest element because there is no element in the SlidingWindow");
+            }
+            return (this->index + this->size - this->dataSize) % this->size;
+        }
+
         std::vector<T> getDataInCorrectOrder() const {
             std::vector<T> a(this->dataSize);
             for (unsigned int i = this->dataSize; i >= 1; i--) {
@@ -127,6 +158,22 @@ namespace AndreiUtils {
 
         T getAverage(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             return AndreiUtils::average(this->getDataInCorrectOrder(invalidValuesHandlingMode));
+        }
+
+        bool &getLatestValid() {
+            return this->validData[this->latestIndex()];
+        }
+
+        bool getLatestValid() const {
+            return this->validData[this->latestIndex()];
+        }
+
+        bool &getEarliestValid() {
+            return this->validData[this->earliestIndex()];
+        }
+
+        bool getEarliestValid() const {
+            return this->validData[this->earliestIndex()];
         }
 
         std::vector<bool> &getValidFlags() {
