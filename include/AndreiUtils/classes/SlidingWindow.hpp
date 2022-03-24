@@ -128,7 +128,7 @@ namespace AndreiUtils {
 
         void addData(T newData, bool valid = true) {
             assert(this->size > 0);
-            this->validData[this->index] = valid;
+            this->validData[this->index] = valid ? 1 : 0;
             SlidingWindow<T>::addData(newData);
         }
 
@@ -168,23 +168,23 @@ namespace AndreiUtils {
             return AndreiUtils::average(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
-        bool &getLatestValid() {
-            return this->validData[this->latestIndex()];
+        void setLatestValid(bool valid) {
+            this->validData[this->latestIndex()] = valid ? 1 : 0;
         }
 
         bool getLatestValid() const {
-            return this->validData[this->latestIndex()];
+            return (this->validData[this->latestIndex()] != 0);
         }
 
-        bool &getEarliestValid() {
-            return this->validData[this->earliestIndex()];
+        void getEarliestValid(bool valid) {
+            this->validData[this->earliestIndex()] = valid ? 1 : 0;
         }
 
         bool getEarliestValid() const {
-            return this->validData[this->earliestIndex()];
+            return (this->validData[this->earliestIndex()] != 0);
         }
 
-        std::vector<bool> &getValidFlags() {
+        std::vector<uint8_t> &getValidFlags() {
             return this->validData;
         }
 
@@ -208,7 +208,7 @@ namespace AndreiUtils {
             return a;
         }
 
-        std::vector<bool> validData;
+        std::vector<uint8_t> validData;
     };
 }
 
