@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/utilsOpenCV.h>
+#include <AndreiUtils/utilsString.h>
 #include <AndreiUtils/utilsOpenMP.hpp>
 
 using namespace cv;
@@ -136,4 +137,15 @@ void AndreiUtils::convertDepthToMetersDouble64(const Mat *depthMat, Mat &output)
 
 void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
     depthMat->convertTo(*depthMat, CV_64F, 0.001);
+}
+
+void AndreiUtils::displayTextOnOpenCVMat(Mat &image, const string &text, Point topLeftCorner, float fontSize,
+                                         const Scalar &textColor, int fontFace, int lineType) {
+    int rowTextSize = (int) (fontSize * 20) + 5;
+    int thickness = (int) (2 * fontSize);
+    vector<string> textLines = splitString(text, "\n");
+    for (const auto &textLine: textLines) {
+        topLeftCorner.y += rowTextSize;
+        cv::putText(image, textLine, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+    }
 }

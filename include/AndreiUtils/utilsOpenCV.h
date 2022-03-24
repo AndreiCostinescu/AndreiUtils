@@ -33,6 +33,10 @@ namespace AndreiUtils {
     void convertDepthToMetersDouble64(const cv::Mat *depthMat, cv::Mat &output);
 
     void convertDepthToMetersDouble64(cv::Mat *depthMat);
+
+    void displayTextOnOpenCVMat(cv::Mat &image, const std::string &text, cv::Point topLeftCorner, float fontSize = 0.6,
+                                const cv::Scalar &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
+                                int lineType = cv::LINE_AA);
 }
 
 namespace cv {
