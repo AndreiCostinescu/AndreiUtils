@@ -20,6 +20,14 @@ namespace AndreiUtils {
     public:
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
+        unsigned getSize() const {
+            return this->size;
+        }
+
+        unsigned getDataSize() const {
+            return this->dataSize;
+        }
+
         void addData(T newData) {
             assert(this->size > 0);
             this->data[this->index] = std::move(newData);
