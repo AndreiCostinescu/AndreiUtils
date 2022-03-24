@@ -15,6 +15,7 @@
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
+#include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 #include <librealsense2/rs.hpp>

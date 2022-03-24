@@ -5,8 +5,7 @@
 #ifndef ANDREIUTILS_MEDIAN_COMPUTER_HPP
 #define ANDREIUTILS_MEDIAN_COMPUTER_HPP
 
-#include <AndreiUtils/utils.hpp>
-#include <vector>
+#include <AndreiUtils/utilsVector.hpp>
 
 template<typename T>
 struct median_computer {

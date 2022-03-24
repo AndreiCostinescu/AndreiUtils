@@ -5,10 +5,7 @@
 #ifndef ANDREIUTILS_TYPECREATOR_HPP
 #define ANDREIUTILS_TYPECREATOR_HPP
 
-#include <AndreiUtils/utils.hpp>
-#include <functional>
-#include <map>
-#include <string>
+#include <AndreiUtils/utilsMap.hpp>
 
 namespace AndreiUtils {
     template<class TypeID, class Type>
