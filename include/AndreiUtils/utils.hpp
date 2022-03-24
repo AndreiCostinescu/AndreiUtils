@@ -224,8 +224,25 @@ namespace AndreiUtils {
         return false;
     }
 
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    bool mapContains(const std::map<T1 *, T2, C, A> &container, const T1 *key, T2 *value = nullptr) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            if (value != nullptr) {
+                *value = data->second;
+            }
+            return true;
+        }
+        return false;
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapGetIfContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 &value) {
+        return mapContains(container, key, &value);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    bool mapGetIfContains(const std::map<T1 *, T2, C, A> &container, const T1 *key, T2 &value) {
         return mapContains(container, key, &value);
     }
 
@@ -233,9 +250,54 @@ namespace AndreiUtils {
     T2 mapGet(const std::map<T1, T2, C, A> &container, const T1 &key) {
         T2 value;
         if (!mapContains(container, key, &value)) {
-            assert(false);
+            throw std::runtime_error("Element not found in map!");
         }
         return value;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    T2 mapGet(const std::map<T1 *, T2, C, A> &container, const T1 *key) {
+        T2 value;
+        if (!mapContains(container, key, &value)) {
+            throw std::runtime_error("Element not found in map!");
+        }
+        return value;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 &mapGetRef(const std::map<T1, T2, C, A> &container, const T1 &key) {
+        if (!mapContains(container, key)) {
+            throw std::runtime_error("Element not found in map!");
+        }
+        return container[key];
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    T2 &mapGetRef(const std::map<T1 *, T2, C, A> &container, const T1 *key) {
+        if (!mapContains(container, key)) {
+            throw std::runtime_error("Element not found in map!");
+        }
+        return container[key];
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void mapSet(const std::map<T1, T2, C, A> &container, const T1 &key, const T2 &value) {
+        container[key] = value;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    void mapSet(const std::map<T1 *, T2, C, A> &container, const T1 *key, const T2 &value) {
+        container[key] = value;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    bool mapDelete(std::map<T1, T2, C, A> &container, const T1 &key) {
+        return (container.erase(key) > 0);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
+    bool mapDelete(std::map<T1 *, T2, C, A> &container, const T1 *key) {
+        return (container.erase(key) > 0);
     }
 
     template<class T>
@@ -433,9 +495,19 @@ namespace AndreiUtils {
 
     template<typename T1, typename... TArgs>
     void sortMultipleVectorsBasedOnPermutation(const std::vector<std::size_t> &permutationIndices, std::vector<T1> &v1,
-                                               TArgs&... v2) {
+                                               TArgs &... v2) {
         permuteVectorInPlace(v1, permutationIndices);
         sortMultipleVectorsBasedOnPermutation(permutationIndices, v2...);
+    }
+
+    template<class T1, class T2>
+    std::map<T1, T2> createMapFromKeysAndValues(const std::vector<T1> &keys, const std::vector<T2> &values) {
+        assert (keys.size() == values.size());
+        std::map<T1, T2> res;
+        for (int i = 0; i < keys.size(); i++) {
+            res[keys[i]] = values[i];
+        }
+        return res;
     }
 }
 
