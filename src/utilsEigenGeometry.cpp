@@ -193,3 +193,11 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
 
     return J / 2;
 }
+
+bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold) {
+    return (p1 - p2).norm() <= threshold;
+}
+
+bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold) {
+    return (pow(p1.x() - p2[0], 2) + pow(p1.y() - p2[1], 2) + pow(p1.z() - p2[2], 2)) <= pow(threshold, 2);
+}

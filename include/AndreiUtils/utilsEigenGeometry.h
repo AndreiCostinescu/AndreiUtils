@@ -33,6 +33,10 @@ namespace AndreiUtils {
 
     Eigen::Matrix<double, 4, 3> quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
             const Eigen::Vector3d &euler, bool componentOrderXYZ);
+
+    bool inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold);
+
+    bool inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold);
 }
 
 #endif //ANDREIUTILS_UTILSEIGENGEOMETRY_H
