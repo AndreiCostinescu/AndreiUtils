@@ -6,6 +6,7 @@
 #define ANDREIUTILS_UTILSVECTOR_HPP
 
 #include <algorithm>
+#include <AndreiUtils/utils.hpp>
 #include <functional>
 #include <iostream>
 #include <numeric>
@@ -224,7 +225,7 @@ namespace AndreiUtils {
             std::size_t oldJ = i;
             std::size_t j = permutationIndices[i];
             while (i != j) {
-                std::swap(v[oldJ], v[j]);
+                swapData(v[oldJ], v[j]);
                 done[j] = 1;
                 oldJ = j;
                 j = permutationIndices[j];

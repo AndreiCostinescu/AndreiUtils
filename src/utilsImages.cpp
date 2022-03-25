@@ -2,6 +2,7 @@
 // Created by Andrei on 20-Oct-21.
 //
 
+#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsImages.h>
 #include <AndreiUtils/utilsOpenMP.hpp>
 #include <cstring>
@@ -283,7 +284,7 @@ void AndreiUtils::swapColorImageChannels(uint8_t *image, int nrElements, int cha
             continue;
         }
         fastForLoop<uint8_t>(image, nrElements, [&channelSwap](uint8_t *const image, size_t i, size_t) {
-            swap(image[i + channelSwap.first], image[i + channelSwap.second]);
+            swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
         }, channels);
     }
 }

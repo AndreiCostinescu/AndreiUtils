@@ -5,11 +5,11 @@
 #ifndef ANDREIUTILS_CLASSES_PRIORITYQUEUE_HPP
 #define ANDREIUTILS_CLASSES_PRIORITYQUEUE_HPP
 
+#include <AndreiUtils/classes/CircularArray.hpp>
+#include <AndreiUtils/utils.hpp>
 #include <iostream>
 #include <map>
 #include <stdexcept>
-#include <utils/CircularArray.hpp>
-#include <utils/utils.hpp>
 #include <vector>
 
 namespace AndreiUtils {
@@ -259,9 +259,7 @@ namespace AndreiUtils {
         }
 
         void swap(int index1, int index2) {
-            auto tmp = this->indices[index1];
-            this->indices[index1] = this->indices[index2];
-            this->indices[index2] = tmp;
+            swapData(this->indices[index1], this->indices[index2]);
             this->positions[this->indices[index1].first] = index1;
             this->positions[this->indices[index2].first] = index2;
         }

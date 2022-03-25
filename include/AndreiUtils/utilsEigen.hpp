@@ -5,6 +5,7 @@
 #ifndef ANDREIUTILS_UTILSEIGEN_HPP
 #define ANDREIUTILS_UTILSEIGEN_HPP
 
+#include <AndreiUtils/utils.hpp>
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
@@ -171,7 +172,7 @@ namespace AndreiUtils {
             }
         }
         auto e = q.toRotationMatrix().eulerAngles(indices[0], indices[1], indices[2]);
-        std::swap(e.x(), e.z());
+        swapData(e.x(), e.z());
         return e;
     }
 

@@ -67,7 +67,7 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int 
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
             // Switch BGR to RGB format
             fastForLoop<uint8_t>(*data, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
-                swap(array[i], array[i + 2]);
+                swapData(array[i], array[i + 2]);
             }, 3);
         }
     } else {
