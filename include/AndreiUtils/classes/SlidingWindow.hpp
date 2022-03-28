@@ -89,7 +89,15 @@ namespace AndreiUtils {
             return this->data[this->earliestIndex()];
         }
 
+        std::vector<T> getData() const {
+            return this->data;
+        }
+
         std::vector<T> &getData() {
+            return this->data;
+        }
+
+        const std::vector<T> &getDataConstRef() const {
             return this->data;
         }
 
