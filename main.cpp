@@ -215,7 +215,15 @@ void testStringAllocation() {
 void testFloatSlidingWindow() {
     SlidingWindow<float> sw(10);
     for (int i = 0; i < 20; i++) {
+        for (const auto &v : sw) {
+            cout << v << " || ";
+        }
+        cout << endl;
         sw.addData((float) (i * i));
+        for (const auto &v : sw) {
+            cout << v << " || ";
+        }
+        cout << endl;
         cout << "At i = " << i << ": median = " << sw.getMedian() << ", average = " << sw.getAverage() << endl;
     }
 
@@ -318,9 +326,9 @@ int main() {
     // testLambdaCaptureScope();
     // testDualQuaternions();
     // testStringAllocation();
-    // testFloatSlidingWindow();
+    testFloatSlidingWindow();
     // testCrossBilateralFilter();
     // testSortMultipleVectorsBasedOnOneCriterion();
-    testAccessTimeInMapVsVector();
+    // testAccessTimeInMapVsVector();
     return 0;
 }

@@ -18,7 +18,85 @@ namespace AndreiUtils {
     template<class T>
     class SlidingWindow {
     public:
+        struct Iterator {
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using difference_type = std::ptrdiff_t;  // not ok...
+            using value_type = T;
+            using pointer = value_type *;
+            using reference = value_type &;
+
+            explicit Iterator(std::vector<value_type> *data, unsigned dataSize, unsigned dataIndex, unsigned index) :
+                    container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
+                    containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
+                // this->index = fastMin(this->index, this->containerDataSize + 1);
+                this->containerStartIndex =
+                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+            }
+
+            reference operator*() const { return (*this->container)[this->containerStartIndex]; }
+
+            pointer operator->() { return &(*this); }
+
+            // Prefix increment
+            Iterator &operator++() {
+                /*
+                if (this->index == this->containerDataSize) {
+                    return *this;
+                }
+                //*/
+                this->index++;
+                this->containerStartIndex = (this->containerStartIndex + 1) % this->containerSize;
+                return *this;
+            }
+
+            // Postfix increment
+            Iterator operator++(int) {  // NOLINT(cert-dcl21-cpp)
+                Iterator tmp = *this;
+                ++(*this);
+                return tmp;
+            }
+
+            /*
+            friend long operator-(const Iterator &a, const Iterator &b) { return a.index - b.index; };
+
+            friend Iterator operator+(const Iterator &a, int x) {
+                return Iterator(a.container, a.containerDataSize, a.containerIndex, a.index + x);
+            };
+
+            friend Iterator operator-(const Iterator &a, int x) {
+                return Iterator(a.container, a.containerDataSize, a.containerIndex, a.index - x);
+            };
+            //*/
+
+            friend bool operator==(const Iterator &a, const Iterator &b) {
+                return a.container == b.container && a.index == b.index && a.containerDataSize == b.containerDataSize &&
+                       a.containerIndex == b.containerIndex;
+            };
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify"
+
+            friend bool operator!=(const Iterator &a, const Iterator &b) {
+                return !(a == b);
+            };
+
+#pragma clang diagnostic pop
+
+        private:
+            std::vector<value_type> *container;
+            unsigned containerSize, containerDataSize, containerIndex, containerStartIndex, index;
+        };
+
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
+
+        bool empty() {
+            return this->dataSize == 0;
+        }
+
+        bool full() {
+            return this->dataSize == this->size;
+        }
 
         unsigned getSize() const {
             return this->size;
@@ -100,6 +178,10 @@ namespace AndreiUtils {
         const std::vector<T> &getDataConstRef() const {
             return this->data;
         }
+
+        Iterator begin() { return Iterator(&this->data, this->dataSize, this->index, 0); }
+
+        Iterator end() { return Iterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
     protected:
         size_t latestIndex() const {
