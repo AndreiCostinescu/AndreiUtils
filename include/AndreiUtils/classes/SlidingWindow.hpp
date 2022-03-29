@@ -88,6 +88,59 @@ namespace AndreiUtils {
             unsigned containerSize, containerDataSize, containerIndex, containerStartIndex, index;
         };
 
+        struct ConstIterator {
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using difference_type = std::ptrdiff_t;  // not ok...
+            using value_type = T;
+            using pointer = const value_type *;
+            using reference = const value_type &;
+
+            explicit ConstIterator(const std::vector<value_type> *data, unsigned dataSize, unsigned dataIndex,
+                                   unsigned index) :
+                    container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
+                    containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
+                this->containerStartIndex =
+                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+            }
+
+            reference operator*() const { return (*this->container)[this->containerStartIndex]; }
+
+            pointer operator->() { return &(*this); }
+
+            // Prefix increment
+            ConstIterator &operator++() {
+                this->index++;
+                this->containerStartIndex = (this->containerStartIndex + 1) % this->containerSize;
+                return *this;
+            }
+
+            // Postfix increment
+            ConstIterator operator++(int) {  // NOLINT(cert-dcl21-cpp)
+                ConstIterator tmp = *this;
+                ++(*this);
+                return tmp;
+            }
+
+            friend bool operator==(const ConstIterator &a, const ConstIterator &b) {
+                return a.container == b.container && a.index == b.index && a.containerDataSize == b.containerDataSize &&
+                       a.containerIndex == b.containerIndex;
+            };
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify"
+
+            friend bool operator!=(const ConstIterator &a, const ConstIterator &b) {
+                return !(a == b);
+            };
+
+#pragma clang diagnostic pop
+
+        private:
+            const std::vector<value_type> *container;
+            unsigned containerSize, containerDataSize, containerIndex, containerStartIndex, index;
+        };
+
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
         bool empty() {
@@ -182,6 +235,10 @@ namespace AndreiUtils {
         Iterator begin() { return Iterator(&this->data, this->dataSize, this->index, 0); }
 
         Iterator end() { return Iterator(&this->data, this->dataSize, this->index, this->dataSize); }
+
+        ConstIterator begin() const { return ConstIterator(&this->data, this->dataSize, this->index, 0); }
+
+        ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
     protected:
         size_t latestIndex() const {

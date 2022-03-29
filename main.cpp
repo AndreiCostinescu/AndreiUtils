@@ -220,7 +220,8 @@ void testFloatSlidingWindow() {
         }
         cout << endl;
         sw.addData((float) (i * i));
-        for (const auto &v : sw) {
+        const auto &swRef = sw;
+        for (const auto &v : swRef) {
             cout << v << " || ";
         }
         cout << endl;
