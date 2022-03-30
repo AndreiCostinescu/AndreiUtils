@@ -5,16 +5,85 @@
 #ifndef ANDREIUTILS_TYPECREATOR_HPP
 #define ANDREIUTILS_TYPECREATOR_HPP
 
-#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsMap.hpp>
 
 namespace AndreiUtils {
-    template<class TypeID, class Type>
-    class TypeCreatorWithID {
+    template<class TypeID, class Type, class CreatorArgumentsType>
+    class ConfigurableTypeCreatorWithID {
     public:
-        TypeCreatorWithID() = default;
+        ConfigurableTypeCreatorWithID() = default;
 
-        virtual ~TypeCreatorWithID() {
+        virtual ~ConfigurableTypeCreatorWithID() {
+            this->typeCreators.clear();
+        };
+
+        virtual void registerTypeCreator(
+                const TypeID &typeId, std::function<Type *(CreatorArgumentsType)> typeCreator, bool errorOnReplace) {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
+            }
+            this->registerTypeCreator(typeId, move(typeCreator));
+        }
+
+        virtual void registerTypeCreator(const TypeID &typeId,
+                                         std::function<Type *(CreatorArgumentsType)> typeCreator) {
+            this->typeCreators[typeId] = move(typeCreator);
+        }
+
+        virtual void mergeTypeCreators(const ConfigurableTypeCreatorWithID<TypeID, Type, CreatorArgumentsType> &other,
+                                       bool withOverwrite) {
+            for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
+                if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
+                    this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
+                }
+            }
+        }
+
+        virtual Type *createType(const TypeID &typeId, CreatorArgumentsType config) const {
+            return mapGet(this->typeCreators, typeId)(config);
+        }
+
+        virtual std::map<TypeID, std::function<Type *(CreatorArgumentsType)>> getRegisteredTypes() const {
+            return this->typeCreators;
+        }
+
+        virtual std::map<TypeID, std::function<Type *(CreatorArgumentsType)>> &getRegisteredTypes() {
+            return this->typeCreators;
+        }
+
+    protected:
+        std::map<TypeID, std::function<Type *(CreatorArgumentsType)>> typeCreators;
+    };
+
+    template<class Type, class CreatorArgumentsType>
+    class ConfigurableTypeCreator : public ConfigurableTypeCreatorWithID<std::string, Type, CreatorArgumentsType> {
+    public:
+        ConfigurableTypeCreator() = default;
+
+        virtual ~ConfigurableTypeCreator() = default;
+
+        void registerTypeCreator(const std::string &typeId, std::function<Type *(CreatorArgumentsType)> typeCreator,
+                                 bool errorOnReplace) override {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
+            }
+            // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
+            this->registerTypeCreator(typeId, move(typeCreator));
+        }
+
+        void registerTypeCreator(const std::string &typeId,
+                                 std::function<Type *(CreatorArgumentsType)> typeCreator) override {
+            ConfigurableTypeCreatorWithID<std::string, Type, CreatorArgumentsType>::registerTypeCreator(
+                    typeId, move(typeCreator));
+        }
+    };
+
+    template<class TypeID, class Type>
+    class ConfigurableTypeCreatorWithID<TypeID, Type, void> {
+    public:
+        ConfigurableTypeCreatorWithID() = default;
+
+        virtual ~ConfigurableTypeCreatorWithID() {
             this->typeCreators.clear();
         };
 
@@ -23,14 +92,15 @@ namespace AndreiUtils {
             if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
                 throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
             }
-            this->registerTypeCreator(typeId, typeCreator);
+            this->registerTypeCreator(typeId, move(typeCreator));
         }
 
         virtual void registerTypeCreator(const TypeID &typeId, std::function<Type *()> typeCreator) {
-            this->typeCreators[typeId] = typeCreator;
+            this->typeCreators[typeId] = move(typeCreator);
         }
 
-        virtual void mergeTypeCreators(const TypeCreatorWithID<TypeID, Type> &other, bool withOverwrite) {
+        virtual void mergeTypeCreators(const ConfigurableTypeCreatorWithID<TypeID, Type, void> &other,
+                                       bool withOverwrite) {
             for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
                 if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
                     this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
@@ -55,11 +125,11 @@ namespace AndreiUtils {
     };
 
     template<class Type>
-    class TypeCreator : public TypeCreatorWithID<std::string, Type> {
+    class ConfigurableTypeCreator<Type, void> : public ConfigurableTypeCreatorWithID<std::string, Type, void> {
     public:
-        TypeCreator() = default;
+        ConfigurableTypeCreator() = default;
 
-        virtual ~TypeCreator() = default;
+        virtual ~ConfigurableTypeCreator() = default;
 
         void registerTypeCreator(const std::string &typeId, std::function<Type *()> typeCreator,
                                  bool errorOnReplace) override {
@@ -67,82 +137,19 @@ namespace AndreiUtils {
                 throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
             }
             // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
-            this->registerTypeCreator(typeId, typeCreator);
+            this->registerTypeCreator(typeId, move(typeCreator));
         }
 
         void registerTypeCreator(const std::string &typeId, std::function<Type *()> typeCreator) override {
-            TypeCreatorWithID<std::string, Type>::registerTypeCreator(typeId, typeCreator);
+            ConfigurableTypeCreatorWithID<std::string, Type, void>::registerTypeCreator(typeId, move(typeCreator));
         }
     };
 
     template<class TypeID, class Type>
-    class ConfigurableTypeCreatorWithID {
-    public:
-        ConfigurableTypeCreatorWithID() = default;
-
-        virtual ~ConfigurableTypeCreatorWithID() {
-            this->typeCreators.clear();
-        };
-
-        virtual void registerTypeCreator(const TypeID &typeId,
-                                         std::function<Type *(const nlohmann::json &)> typeCreator,
-                                         bool errorOnReplace) {
-            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
-                throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
-            }
-            this->registerTypeCreator(typeId, move(typeCreator));
-        }
-
-        virtual void registerTypeCreator(const TypeID &typeId,
-                                         std::function<Type *(const nlohmann::json &json)> typeCreator) {
-            this->typeCreators[typeId] = move(typeCreator);
-        }
-
-        virtual void mergeTypeCreators(const ConfigurableTypeCreatorWithID<TypeID, Type> &other, bool withOverwrite) {
-            for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
-                if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
-                    this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
-                }
-            }
-        }
-
-        virtual Type *createType(const TypeID &typeId, const nlohmann::json &config) const {
-            return mapGet(this->typeCreators, typeId)(config);
-        }
-
-        virtual std::map<TypeID, std::function<Type *(const nlohmann::json &)>> getRegisteredTypes() const {
-            return this->typeCreators;
-        }
-
-        virtual std::map<TypeID, std::function<Type *(const nlohmann::json &)>> &getRegisteredTypes() {
-            return this->typeCreators;
-        }
-
-    protected:
-        std::map<TypeID, std::function<Type *(const nlohmann::json &)>> typeCreators;
-    };
+    using TypeCreatorWithID = ConfigurableTypeCreatorWithID<TypeID, Type, void>;
 
     template<class Type>
-    class ConfigurableTypeCreator : public ConfigurableTypeCreatorWithID<std::string, Type> {
-    public:
-        ConfigurableTypeCreator() = default;
-
-        virtual ~ConfigurableTypeCreator() = default;
-
-        void registerTypeCreator(const std::string &typeId, std::function<Type *(const nlohmann::json &)> typeCreator,
-                                 bool errorOnReplace) override {
-            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
-                throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
-            }
-            // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
-            this->registerTypeCreator(typeId, move(typeCreator));
-        }
-
-        void registerTypeCreator(const std::string &typeId,
-                                 std::function<Type *(const nlohmann::json &)> typeCreator) override {
-            ConfigurableTypeCreatorWithID<std::string, Type>::registerTypeCreator(typeId, move(typeCreator));
-        }
-    };
+    using TypeCreator = ConfigurableTypeCreator<Type, void>;
 }
 
 #endif //ANDREIUTILS_TYPECREATOR_HPP

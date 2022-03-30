@@ -215,13 +215,13 @@ void testStringAllocation() {
 void testFloatSlidingWindow() {
     SlidingWindow<float> sw(10);
     for (int i = 0; i < 20; i++) {
-        for (const auto &v : sw) {
+        for (const auto &v: sw) {
             cout << v << " || ";
         }
         cout << endl;
         sw.addData((float) (i * i));
         const auto &swRef = sw;
-        for (const auto &v : swRef) {
+        for (const auto &v: swRef) {
             cout << v << " || ";
         }
         cout << endl;
@@ -230,7 +230,7 @@ void testFloatSlidingWindow() {
 
     SlidingWindow<Eigen::Vector3d> swEigen(11);
     for (int i = 0; i < 20; i++) {
-        swEigen.addData(Vector3d((double) i, (double) i * i, (double) i * i * i));
+        swEigen.addData(Vector3d((double) i, (double) (i * i), (double) (i * i * i)));
         cout << "At i = " << i << ": median = " << swEigen.getMedian() << ", average = " << swEigen.getAverage()
              << endl;
     }
@@ -292,9 +292,9 @@ void testAccessTimeInMapVsVector() {
     cout << "Initialization took " << time << endl;
 
     vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
-                            static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
-                            static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
-                            static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
+                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
+                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
+                               static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
     bool res;
     for (const auto &q: queries) {
         t.start();
@@ -314,6 +314,37 @@ void testAccessTimeInMapVsVector() {
     }
 }
 
+class A {
+public:
+    virtual ~A() = default;
+};
+
+class B : virtual public A {
+};
+
+class C : virtual public A {
+};
+
+class D : public B, C {
+};
+
+void testTypeCreator() {
+    TypeCreator<A> creator;
+    creator.registerTypeCreator("A", []() { return new A(); });
+    creator.registerTypeCreator("B", []() { return new B(); });
+    creator.registerTypeCreator("C", []() { return new C(); });
+    creator.registerTypeCreator("D", []() { return new D(); });
+    auto c = creator.createType("C");
+    auto a = dynamic_cast<A *>(c);
+    auto b = dynamic_cast<B *>(c);
+    auto d = dynamic_cast<D *>(c);
+    cout << a << endl;
+    cout << b << endl;
+    cout << c << endl;
+    cout << d << endl;
+    delete c;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -327,9 +358,10 @@ int main() {
     // testLambdaCaptureScope();
     // testDualQuaternions();
     // testStringAllocation();
-    testFloatSlidingWindow();
+    // testFloatSlidingWindow();
     // testCrossBilateralFilter();
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testAccessTimeInMapVsVector();
+    testTypeCreator();
     return 0;
 }
