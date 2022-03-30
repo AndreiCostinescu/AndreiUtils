@@ -7,10 +7,10 @@
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
-#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>

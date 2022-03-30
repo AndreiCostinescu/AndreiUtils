@@ -31,7 +31,7 @@ namespace AndreiUtils {
         }
 
         template<typename T>
-        T *getData(const std::string &id) {
+        T *getData(const std::string &id) const {
             void *res = nullptr;
             if (!mapContains(this->data, id, &res)) {
                 throw std::runtime_error("Data " + id + " not registered in container!");
