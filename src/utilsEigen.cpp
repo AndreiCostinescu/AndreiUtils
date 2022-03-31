@@ -8,16 +8,6 @@
 using namespace Eigen;
 using namespace std;
 
-string AndreiUtils::eigenToString(const MatrixXd &eigenData) {
-    std::stringstream ss;
-    ss << eigenData;
-    return ss.str();
-}
-
-bool AndreiUtils::checkSameSize(const MatrixXd &a, const MatrixXd &b) {
-    return a.rows() == b.rows() && a.cols() == b.cols();
-}
-
 MatrixXd AndreiUtils::readEigenData(const string &file) {
     ifstream fin(file);
     if (!fin.is_open()) {
@@ -50,20 +40,4 @@ void AndreiUtils::writeEigenData(const string &file, const MatrixXd &m) {
         }
         fout << endl;
     }
-}
-
-vector<VectorXd> AndreiUtils::getMatrixRowsAsVector(const Eigen::MatrixXd &m) {
-    vector<VectorXd> res(m.rows());
-    for (int i = 0; i < m.rows(); i++) {
-        res[i] = m.row(i);
-    }
-    return res;
-}
-
-vector<VectorXd> AndreiUtils::getMatrixColsAsVector(const Eigen::MatrixXd &m) {
-    vector<VectorXd> res(m.cols());
-    for (int i = 0; i < m.cols(); i++) {
-        res[i] = m.col(i);
-    }
-    return res;
 }

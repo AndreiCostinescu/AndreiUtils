@@ -7,10 +7,44 @@
 
 #include <AndreiUtils/utils.hpp>
 #include <Eigen/Dense>
+#include <sstream>
 #include <string>
 #include <vector>
 
 namespace AndreiUtils {
+    template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    std::string eigenToString(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &eigenData) {
+        std::stringstream ss;
+        ss << eigenData;
+        return ss.str();
+    }
+
+    template<typename S1, int R1, int C1, int O1, int MR1, int MC1, typename S2, int R2, int C2, int O2, int MR2, int MC2>
+    bool checkSameSize(const Eigen::Matrix<S1, R1, C1, O1, MR1, MC1> &a,
+                       const Eigen::Matrix<S2, R2, C2, O2, MR2, MC2> &b) {
+        return a.rows() == b.rows() && a.cols() == b.cols();
+    }
+
+    template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> getMatrixRowsAsVector(
+            const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
+        std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> res(m.rows());
+        for (int i = 0; i < m.rows(); i++) {
+            res[i] = m.row(i);
+        }
+        return res;
+    }
+
+    template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> getMatrixColsAsVector(
+            const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
+        std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> res(m.cols());
+        for (int i = 0; i < m.cols(); i++) {
+            res[i] = m.col(i);
+        }
+        return res;
+    }
+
     // https://gist.github.com/javidcf/25066cf85e71105d57b6
     template<class MatT>
     Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> pseudoinverse(

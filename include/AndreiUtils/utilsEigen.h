@@ -10,17 +10,9 @@
 #include <vector>
 
 namespace AndreiUtils {
-    std::string eigenToString(const Eigen::MatrixXd &eigenData);
-
-    bool checkSameSize(const Eigen::MatrixXd &a, const Eigen::MatrixXd &b);
-
     Eigen::MatrixXd readEigenData(const std::string &file);
 
     void writeEigenData(const std::string &file, const Eigen::MatrixXd &m);
-
-    std::vector<Eigen::VectorXd> getMatrixRowsAsVector(const Eigen::MatrixXd &m);
-
-    std::vector<Eigen::VectorXd> getMatrixColsAsVector(const Eigen::MatrixXd &m);
 }
 
 #endif //ANDREIUTILS_UTILSEIGEN_H
