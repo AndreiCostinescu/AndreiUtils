@@ -157,11 +157,6 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
     fromImagePixelTo3dPoint(intrinsics, position, avgDepth, point);
 }
 
-void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
-    // project pixel from point in 3D
-    rs2_project_point_to_pixel(pixel, intrinsics, point);
-}
-
 void AndreiUtils::getRealsenseDepthPointFromImagePixel(
         const function<float(int, int)> &getDepth, const ImageParameters &size,
         const CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3], int windowSize,
@@ -169,6 +164,11 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
     return getRealsenseDepthPointFromImagePixel(
             getDepth, convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics), x, y, point, windowSize,
             forceWindowUsage, farthestAllowedDepth);
+}
+
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
+    // project pixel from point in 3D
+    rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
 
 void AndreiUtils::getImagePixelFromRealsenseDepthPoint(
