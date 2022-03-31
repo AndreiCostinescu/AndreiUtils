@@ -115,6 +115,8 @@ SET(UTILS_TIME src/utilsTime.cpp)
 # depends on UTILS_STRINGS (utilsStrings.h)
 SET(UTILS_FILES src/utilsFiles.cpp)
 
+SET(UTILS_CAMERA src/utilsCamera.cpp)
+
 set(UTILS_CLASSES_CAMERA
         src/classes/camera/ImageParameters.cpp
         src/classes/camera/CameraIntrinsicParameters.cpp
@@ -192,6 +194,8 @@ set(GENERAL_UTILS
         ${UTILS_TIME}
 
         ${UTILS_FILES}
+
+        ${UTILS_CAMERA}
 
         ${UTILS_CLASSES}
         )
