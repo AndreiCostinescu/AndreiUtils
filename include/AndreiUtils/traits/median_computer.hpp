@@ -7,11 +7,13 @@
 
 #include <AndreiUtils/utilsVector.hpp>
 
-template<typename T>
-struct median_computer {
-    static T medianComputer(std::vector<T> v) {
-        return AndreiUtils::median(v);
-    }
-};
+namespace AndreiUtils {
+    template<typename T>
+    struct median_computer {
+        static T medianComputer(std::vector<T> v) {
+            return AndreiUtils::median(v);
+        }
+    };
+}
 
 #endif //ANDREIUTILS_MEDIAN_COMPUTER_HPP
