@@ -86,6 +86,10 @@ void testPointerReference() {
 }
 
 void timeTesting() {
+    SystemTimePoint t;
+    cout << convertChronoToStringWithSubseconds(t) << endl;
+    cout << endl << endl << endl;
+
     auto now = std::chrono::system_clock::now();
     string time;
     time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%us-%pns", ":");
@@ -350,7 +354,7 @@ int main() {
     // eigenTesting();
     // fileTesting();
     // realsenseDistortionString();
-    // timeTesting();
+    timeTesting();
     // timeAddingTesting();
     // testPointerReference();
     // testMapKeys();
@@ -362,6 +366,6 @@ int main() {
     // testCrossBilateralFilter();
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testAccessTimeInMapVsVector();
-    testTypeCreator();
+    // testTypeCreator();
     return 0;
 }
