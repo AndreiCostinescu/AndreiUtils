@@ -6,6 +6,8 @@
 #define ANDREIUTILS_UTILSCAMERA_H
 
 #include <AndreiUtils/classes/camera/CameraIntrinsicParameters.h>
+#include <AndreiUtils/classes/camera/ImageParameters.h>
+#include <functional>
 
 namespace AndreiUtils {
     void fromImagePixelTo3dPoint(float (&point)[3], const AndreiUtils::CameraIntrinsicParameters &intrinsics,
@@ -25,6 +27,15 @@ namespace AndreiUtils {
 
     void from3dPointToImagePixel(double (&pixel)[2], const AndreiUtils::CameraIntrinsicParameters &intrinsics,
                                  const double (&point)[3]);
+
+    void point3dFromPixel(const std::function<float(int, int)> &getDepth, const AndreiUtils::ImageParameters &size,
+                          const AndreiUtils::CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3],
+                          int windowSize = 1, bool forceWindowUsage = false, float farthestAllowedDepth = 10);
+
+    void point3dFromPixel(const std::function<double(int, int)> &getDepth, const AndreiUtils::ImageParameters &size,
+                          const AndreiUtils::CameraIntrinsicParameters &intrinsics, double x, double y,
+                          double (&point)[3], int windowSize = 1, bool forceWindowUsage = false,
+                          double farthestAllowedDepth = 10);
 }
 
 #endif //ANDREIUTILS_UTILSCAMERA_H

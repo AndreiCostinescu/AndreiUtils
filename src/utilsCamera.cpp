@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/utilsCamera.h>
+#include <AndreiUtils/utils.hpp>
 #include <cfloat>
 
 using namespace AndreiUtils;
@@ -258,4 +259,84 @@ void AndreiUtils::from3dPointToImagePixel(double (&pixel)[2], const CameraIntrin
 
     pixel[0] = x * intrinsics.fx + intrinsics.ppx;
     pixel[1] = y * intrinsics.fy + intrinsics.ppy;
+}
+
+void AndreiUtils::point3dFromPixel(
+        const std::function<float(int, int)> &getDepth, const ImageParameters &size,
+        const CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3], int windowSize,
+        bool forceWindowUsage, float farthestAllowedDepth) {
+    int width = size.w, height = size.h;
+    int int_x = int(x), int_y = int(y);
+    float position[2] = {x, y};
+    // rs2_deproject_pixel_to_point(point, &intrinsics, position, getDepth(int_x, int_y));
+    // return;
+
+    float depth = getDepth(int_x, int_y), avgDepth = 0;
+    auto isDepthInvalid = [farthestAllowedDepth](float x) {
+        return isnan(x) || lessEqual(x, 0.1f) || lessEqual(farthestAllowedDepth, x);
+    };
+    if (forceWindowUsage || isDepthInvalid(depth)) {
+        int nrPoints = 0;
+        for (int i = max(-int_x, -windowSize); i <= min(windowSize, height - int_x - 1); i++) {
+            for (int j = max(-int_y, -windowSize); j <= min(windowSize, width - int_y - 1); j++) {
+                depth = getDepth(int_x + i, int_y + j);
+                if (isDepthInvalid(depth)) {
+                    continue;
+                }
+                avgDepth += depth;
+                nrPoints += 1;
+            }
+        }
+        if (nrPoints < 1) {
+            // cerr << "Can not compute depth average from less than one point..." << endl;
+            avgDepth = 0;
+        } else {
+            avgDepth /= (float) nrPoints;
+        }
+    } else {
+        avgDepth = depth;
+    }
+
+    // De-project from pixel to point in 3D: Get the distance at the given pixel
+    fromImagePixelTo3dPoint(point, intrinsics, position, avgDepth);
+}
+
+void AndreiUtils::point3dFromPixel(
+        const std::function<double(int, int)> &getDepth, const ImageParameters &size,
+        const CameraIntrinsicParameters &intrinsics, double x, double y, double (&point)[3], int windowSize,
+        bool forceWindowUsage, double farthestAllowedDepth) {
+    int width = size.w, height = size.h;
+    int int_x = int(x), int_y = int(y);
+    double position[2] = {x, y};
+    // rs2_deproject_pixel_to_point(point, &intrinsics, position, getDepth(int_x, int_y));
+    // return;
+
+    double depth = getDepth(int_x, int_y), avgDepth = 0;
+    auto isDepthInvalid = [farthestAllowedDepth](double x) {
+        return isnan(x) || lessEqual(x, 0.1) || lessEqual(farthestAllowedDepth, x);
+    };
+    if (forceWindowUsage || isDepthInvalid(depth)) {
+        int nrPoints = 0;
+        for (int i = max(-int_x, -windowSize); i <= min(windowSize, height - int_x - 1); i++) {
+            for (int j = max(-int_y, -windowSize); j <= min(windowSize, width - int_y - 1); j++) {
+                depth = getDepth(int_x + i, int_y + j);
+                if (isDepthInvalid(depth)) {
+                    continue;
+                }
+                avgDepth += depth;
+                nrPoints += 1;
+            }
+        }
+        if (nrPoints < 1) {
+            // cerr << "Can not compute depth average from less than one point..." << endl;
+            avgDepth = 0;
+        } else {
+            avgDepth /= (float) nrPoints;
+        }
+    } else {
+        avgDepth = depth;
+    }
+
+    // De-project from pixel to point in 3D: Get the distance at the given pixel
+    fromImagePixelTo3dPoint(point, intrinsics, position, avgDepth);
 }
