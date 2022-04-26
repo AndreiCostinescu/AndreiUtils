@@ -192,6 +192,53 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    void printVector(const T *&x, int size) {
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << x[i];
+        }
+        std::cout << std::endl;
+    }
+
+    template<class T>
+    void printVector(const T *&x, int size, const std::function<std::string(T const &)> &stringConversion) {
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                std::cout << ", ";
+            }
+            std::cout << stringConversion(x[i]);
+        }
+        std::cout << std::endl;
+    }
+
+    template<class T>
+    std::string printVectorToString(const T *&x, int size) {
+        std::stringstream s;
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                s << ", ";
+            }
+            s << x[i];
+        }
+        return s.str();
+    }
+
+    template<class T>
+    std::string printVectorToString(const T *&x, int size,
+                                    const std::function<std::string(T const &)> &stringConversion) {
+        std::stringstream s;
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                s << ", ";
+            }
+            s << stringConversion(x[i]);
+        }
+        return s.str();
+    }
+
+    template<class T>
     std::vector<T> mergeVectors(const std::vector<T> &v1, const std::vector<T> &v2) {
         std::vector<T> merged(v1);
         merged.insert(merged.end(), v2.begin(), v2.end());
