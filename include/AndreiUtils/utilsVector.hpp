@@ -192,7 +192,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const T *&x, int size) {
+    void printVector(const T *const &x, int size) {
         for (int i = 0; i < size; i++) {
             if (i > 0) {
                 std::cout << ", ";
@@ -203,7 +203,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const T *&x, int size, const std::function<std::string(T const &)> &stringConversion) {
+    void printVector(const T *const &x, int size, const std::function<std::string(T const &)> &stringConversion) {
         for (int i = 0; i < size; i++) {
             if (i > 0) {
                 std::cout << ", ";
@@ -214,7 +214,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    std::string printVectorToString(const T *&x, int size) {
+    std::string printVectorToString(const T *const &x, int size) {
         std::stringstream s;
         for (int i = 0; i < size; i++) {
             if (i > 0) {
@@ -226,7 +226,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    std::string printVectorToString(const T *&x, int size,
+    std::string printVectorToString(const T *const &x, int size,
                                     const std::function<std::string(T const &)> &stringConversion) {
         std::stringstream s;
         for (int i = 0; i < size; i++) {
