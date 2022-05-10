@@ -145,10 +145,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const std::vector<T> &x) {
+    void printVector(const std::vector<T> &x, const std::string &separator = ", ") {
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
-                std::cout << ", ";
+                std::cout << separator;
             }
             std::cout << x[i];
         }
@@ -156,10 +156,11 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const std::vector<T> &x, const std::function<std::string(T const &)> &stringConversion) {
+    void printVector(const std::vector<T> &x, const std::function<std::string(T const &)> &stringConversion,
+                     const std::string &separator = ", ") {
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
-                std::cout << ", ";
+                std::cout << separator;
             }
             std::cout << stringConversion(x[i]);
         }
@@ -167,11 +168,11 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    std::string printVectorToString(const std::vector<T> &x) {
+    std::string printVectorToString(const std::vector<T> &x, const std::string &separator = ", ") {
         std::stringstream s;
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
-                s << ", ";
+                s << separator;
             }
             s << x[i];
         }
@@ -180,11 +181,12 @@ namespace AndreiUtils {
 
     template<class T>
     std::string printVectorToString(const std::vector<T> &x,
-                                    const std::function<std::string(T const &)> &stringConversion) {
+                                    const std::function<std::string(T const &)> &stringConversion,
+                                    const std::string &separator = ", ") {
         std::stringstream s;
         for (int i = 0; i < x.size(); i++) {
             if (i > 0) {
-                s << ", ";
+                s << separator;
             }
             s << stringConversion(x[i]);
         }
@@ -192,10 +194,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const T *const &x, int size) {
+    void printVector(const T *const &x, int size, const std::string &separator = ", ") {
         for (int i = 0; i < size; i++) {
             if (i > 0) {
-                std::cout << ", ";
+                std::cout << separator;
             }
             std::cout << x[i];
         }
@@ -203,10 +205,11 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(const T *const &x, int size, const std::function<std::string(T const &)> &stringConversion) {
+    void printVector(const T *const &x, int size, const std::function<std::string(T const &)> &stringConversion,
+                     const std::string &separator = ", ") {
         for (int i = 0; i < size; i++) {
             if (i > 0) {
-                std::cout << ", ";
+                std::cout << separator;
             }
             std::cout << stringConversion(x[i]);
         }
@@ -214,11 +217,11 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    std::string printVectorToString(const T *const &x, int size) {
+    std::string printVectorToString(const T *const &x, int size, const std::string &separator = ", ") {
         std::stringstream s;
         for (int i = 0; i < size; i++) {
             if (i > 0) {
-                s << ", ";
+                s << separator;
             }
             s << x[i];
         }
@@ -227,11 +230,12 @@ namespace AndreiUtils {
 
     template<class T>
     std::string printVectorToString(const T *const &x, int size,
-                                    const std::function<std::string(T const &)> &stringConversion) {
+                                    const std::function<std::string(T const &)> &stringConversion,
+                                    const std::string &separator = ", ") {
         std::stringstream s;
         for (int i = 0; i < size; i++) {
             if (i > 0) {
-                s << ", ";
+                s << separator;
             }
             s << stringConversion(x[i]);
         }
