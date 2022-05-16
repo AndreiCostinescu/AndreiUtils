@@ -51,7 +51,7 @@ bool AndreiUtils::createDirectory(const string &path) {
     return true;
 }
 
-bool AndreiUtils::createNestedDirectories(const string &path) {
+bool AndreiUtils::createNestedDirectory(const string &path) {
     string dirPath = replace(path, "\\", "/"), tmpPath;
     size_t nrSubdirs = stringCount(dirPath, "/");
     bool res;

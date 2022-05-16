@@ -15,7 +15,7 @@ namespace AndreiUtils {
 
     bool createDirectory(const std::string &path);
 
-    bool createNestedDirectories(const std::string &path);
+    bool createNestedDirectory(const std::string &path);
 
     bool deleteFile(const std::string &fileName);
 }
