@@ -34,6 +34,10 @@ bool AndreiUtils::fileExists(const string &name) {
 }
 
 bool AndreiUtils::createDirectory(const string &path) {
+    if (path.empty()) {
+        cout << "Directory path is empty!" << endl;
+        return false;
+    }
     bool res;
 #if defined(WIN32) || defined(WIN64)
     res = (mkdir(path.c_str()) != -1);
@@ -47,11 +51,11 @@ bool AndreiUtils::createDirectory(const string &path) {
     return true;
 }
 
-bool AndreiUtils::createDirectories(const string &path) {
+bool AndreiUtils::createNestedDirectories(const string &path) {
     string dirPath = replace(path, "\\", "/"), tmpPath;
-    size_t subdirs = stringCount(dirPath, "/");
+    size_t nrSubdirs = stringCount(dirPath, "/");
     bool res;
-    for (int i = 0; i < subdirs; i++) {
+    for (int i = 0; i <= nrSubdirs; i++) {
         tmpPath = firstParts(dirPath, "/", i + 1);
         res = createDirectory(tmpPath);
     }
