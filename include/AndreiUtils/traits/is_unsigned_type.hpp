@@ -14,6 +14,11 @@ namespace AndreiUtils {
     };
 
     template<>
+    struct is_unsigned_type<bool> {
+        static const bool value = true;
+    };
+
+    template<>
     struct is_unsigned_type<std::uint8_t> {
         static const bool value = true;
     };
