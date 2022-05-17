@@ -349,12 +349,30 @@ void testTypeCreator() {
     delete c;
 }
 
+void testIntegralAndUnsignedTypes() {
+    cout << is_integral<bool>::value << endl;
+    cout << is_unsigned<bool>::value << endl;
+    cout << endl;
+    cout << is_integral<long long>::value << endl;
+    cout << is_integral<int64_t>::value << endl;
+    cout << endl;
+    cout << is_integral<unsigned long long>::value << endl;
+    cout << is_integral<uint64_t>::value << endl;
+    cout << endl;
+    cout << is_unsigned<long long>::value << endl;
+    cout << is_unsigned<int64_t>::value << endl;
+    cout << endl;
+    cout << is_unsigned<unsigned long long>::value << endl;
+    cout << is_unsigned<uint64_t>::value << endl;
+    cout << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
     // fileTesting();
     // realsenseDistortionString();
-    timeTesting();
+    // timeTesting();
     // timeAddingTesting();
     // testPointerReference();
     // testMapKeys();
@@ -367,5 +385,6 @@ int main() {
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testAccessTimeInMapVsVector();
     // testTypeCreator();
+    testIntegralAndUnsignedTypes();
     return 0;
 }
