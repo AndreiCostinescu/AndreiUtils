@@ -7,6 +7,7 @@
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/classes/UnionFind.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
@@ -367,6 +368,54 @@ void testIntegralAndUnsignedTypes() {
     cout << endl;
 }
 
+void testUnionFind() {
+    UnionFind<int> x;
+    assert(x.numberOfDistinctComponents() == 0);
+    x.add(0);
+    assert(x.find(0, 0));
+    assert(x.numberOfDistinctComponents() == 1);
+    x.add(1);
+    assert(!x.find(0, 1));
+    assert(x.find(1, 1));
+    assert(x.numberOfDistinctComponents() == 2);
+    assert(x.size() == 2);
+    x.unite(1, 1);
+    assert(x.numberOfDistinctComponents() == 2);
+    assert(x.size() == 2);
+    try {
+        x.unite(1, 2);
+        assert(false);
+    } catch (exception &e) {
+        if (string(e.what()) != "Index 2 out of bounds (2)!") {
+            throw e;
+        }
+    }
+    x.add(2);
+    assert(x.numberOfDistinctComponents() == 3);
+    assert(x.size() == 3);
+    assert(!x.find(0, 1));
+    assert(!x.find(1, 2));
+    assert(x.find(2, 2));
+    x.unite(1, 2);
+    assert(x.numberOfDistinctComponents() == 2);
+    assert(x.size() == 3);
+    assert(!x.find(0, 1));
+    assert(x.find(1, 2));
+    assert(!x.find(0, 2));
+    x.unite(2, 1);
+    assert(x.numberOfDistinctComponents() == 2);
+    assert(x.size() == 3);
+    assert(!x.find(0, 1));
+    assert(x.find(1, 2));
+    assert(!x.find(0, 2));
+    x.unite(2, 0);
+    assert(x.numberOfDistinctComponents() == 1);
+    assert(x.size() == 3);
+    assert(x.find(0, 1));
+    assert(x.find(1, 2));
+    assert(x.find(0, 2));
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -385,6 +434,7 @@ int main() {
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testAccessTimeInMapVsVector();
     // testTypeCreator();
-    testIntegralAndUnsignedTypes();
+    // testIntegralAndUnsignedTypes();
+    testUnionFind();
     return 0;
 }
