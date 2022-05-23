@@ -94,7 +94,7 @@ void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *&data, c
     assert (dataType == convertFrameTypeToDataType(2, 1));
     if (data != nullptr) {
         fastSrcOp<uint16_t, double>(data, (uint16_t *) tmpData, dataElements,
-                                    [](const uint16_t &x) { return (double) (x / 1000.0); });
+                                    [&](const uint16_t &x) { return (double) x * f.get_units(); });
     }
     delete[] tmpData;
 }
@@ -103,6 +103,11 @@ void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&
     int dataType;
     frameToBytes(f, (uint8_t **) &data, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
+    if (data != nullptr) {
+        fastSrcOp<uint16_t, uint16_t>(data, data, dataElements, [&](const uint16_t &x) {
+            return (uint16_t) ((double) x * f.get_units() * 1000);
+        });
+    }
 }
 
 void AndreiUtils::fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, const float position[2], float depth,
