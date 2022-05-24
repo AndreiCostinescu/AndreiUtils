@@ -198,12 +198,19 @@ void testDualQuaternions() {
     vector<double> angles = {M_PI_2, 0, M_PI};
     Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
     DualQuaternion<double> q(r, t);
-    cout << q << endl;
+    cout << "q = " << q << endl;
     cout << printVectorToString(angles) << endl;
     cout << q.getTranslation().transpose() << endl;
     cout << q.transform(p).transpose() << endl;
     cout << q.getTransformationMatrix() << endl;
     cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << endl;
+    cout << endl;
+
+    cout << "Inverse:" << endl;
+    DualQuaternion<double> qInv = q.dualQuaternionInverse();
+    cout << "qInv = " << qInv << endl;
+    cout << "q * qInv = " << q * qInv << endl;
+    cout << "qInv * q = " << qInv * q << endl;
 }
 
 void testStringAllocation() {
@@ -436,7 +443,7 @@ void testUnionFind() {
     assert(x.find(0, 1));
     assert(x.find(1, 2));
     assert(x.find(0, 2));
-    
+
     UnionFindWithValues<int> y;
     assert(y.numberOfDistinctComponents() == 0);
     y.addElem(0);
@@ -555,7 +562,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
+    testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -563,7 +570,7 @@ int main() {
     // testAccessTimeInMapVsVector();
     // testTypeCreator();
     // testIntegralAndUnsignedTypes();
-    testUnionFind();
+    // testUnionFind();
     // testHashable();
     return 0;
 }
