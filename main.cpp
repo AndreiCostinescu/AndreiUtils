@@ -11,6 +11,7 @@
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
+#include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
@@ -325,6 +326,10 @@ public:
 };
 
 class B : virtual public A {
+public:
+    bool operator<(const B &other) const {
+        return true;
+    }
 };
 
 class C : virtual public A {
@@ -479,6 +484,66 @@ void testUnionFind() {
     assert(y.findByElem(0, 2));
 }
 
+namespace std {
+    template<>
+    struct hash<B> {
+        size_t operator()(const B &b) const noexcept {
+            return 0;
+        }
+    };
+}
+
+void testHashable() {
+    auto x = std::hash<int>();
+    auto y = std::hash<float>();
+    auto z = std::hash<double>();
+    for (int i = 0; i < 10; i++) {
+        cout << "Hash value of " << i << " is " << x(i) << endl;
+    }
+    for (int i = 0; i < 10; i++) {
+        cout << "Hash value of " << i << " is " << x(i) << endl;
+    }
+    for (float i = 0; i < 10; i += 0.5) {
+        cout << "Hash value of " << i << " is " << y(i) << endl;
+    }
+    for (double i = 0; i < 10; i += 0.5) {
+        cout << "Hash value of " << i << " is " << z(i) << endl;
+    }
+
+    cout << std::is_default_constructible<std::hash<int>>::value << endl;
+    cout << std::is_default_constructible<std::hash<float>>::value << endl;
+    cout << std::is_default_constructible<std::hash<double>>::value << endl;
+    cout << std::is_default_constructible<std::hash<B>>::value << endl;
+    cout << std::is_default_constructible<std::hash<C>>::value << endl;
+
+    cout << is_hashable<int>::value << endl;
+    cout << is_hashable<float>::value << endl;
+    cout << is_hashable<double>::value << endl;
+    cout << is_hashable<B>::value << endl;
+    cout << is_hashable<C>::value << endl;
+
+    auto b = std::hash<B>();
+    // auto c = std::hash<C>();  // Compiler error!
+
+    map<B, int> mB;
+    map<C, int> mC;
+    B bObj1, bObj2, bObj3;
+    C cObj1, cObj2, cObj3;
+
+    // is_detected<std::less<int>::operator()>;
+    // is_detected<std::less<int>::operator(), int>;
+    // is_detected<std::less<C>::operator(), C, C>;
+
+    cout << is_hashable<map<B, int>::key_compare>::value << endl;
+
+    mB[bObj1] = 1;
+    mB[bObj2] = 2;
+    mB[bObj3] = 3;
+    // mC[cObj1] = 1;  // Compiler error
+    // mC[cObj2] = 2;  // Compiler error
+    // mC[cObj3] = 3;  // Compiler error
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -499,5 +564,6 @@ int main() {
     // testTypeCreator();
     // testIntegralAndUnsignedTypes();
     testUnionFind();
+    // testHashable();
     return 0;
 }
