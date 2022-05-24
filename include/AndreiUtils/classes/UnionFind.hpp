@@ -5,95 +5,59 @@
 #ifndef ANDREIUTILS_UNIONFIND_HPP
 #define ANDREIUTILS_UNIONFIND_HPP
 
+#include<AndreiUtils/classes/UnionFind.h>
 #include<AndreiUtils/utilsMap.hpp>
 #include<map>
-#include<vector>
 
 namespace AndreiUtils {
-    template<typename T>
-    class UnionFind {
+    template<typename T, typename C = std::less<T>, typename A = std::allocator<std::pair<const T, size_t>>>
+    class UnionFindWithValues : public UnionFind{
     public:
-        explicit UnionFind(int n = 0) : parents(n) {
-            this->nrDistinctComponents = n;
-            for (int i = 0; i < n; i++) {
-                this->parents[i] = i;
-            }
-        }
+        explicit UnionFindWithValues(size_t n = 0) : UnionFind(n) {}
 
-        explicit UnionFind(const std::vector<T> &elements) : parents(elements.size()) {
-            int n = elements.size();
+        explicit UnionFindWithValues(const std::vector<T> &elements) : UnionFind() {
+            size_t n = elements.size();
+            this->parents.resize(n);
             this->nrDistinctComponents = n;
-            for (int i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 this->idToElement[i] = elements[i];
+                this->elementToId[elements[i]] = i;
                 this->parents[i] = i;
+                this->sizes[i] = 1;
             }
-        }
-
-        int size() const {
-            return this->parents.size();
-        }
-
-        int numberOfDistinctComponents() const {
-            return this->nrDistinctComponents;
         }
 
         void add(const T &element) {
             // the size of the union-find data structure is always in parents.size()
-            int n = this->size();
+            size_t n = this->size();
             this->parents.push_back(n);
             this->sizes.push_back(1);
             this->idToElement[n] = element;
+            this->elementToId[element] = n;
             this->nrDistinctComponents++;
         }
 
-        int find(int id) {
-            if (id >= this->size()) {
-                throw std::runtime_error(
-                        "Index " + std::to_string(id) + " out of bounds (" + std::to_string(this->size()) + ")!");
-            }
-            if (this->parents[id] != id) {
-                this->parents[id] = find(this->parents[id]);
-            }
-            return this->parents[id];
-
-            // chase parent of current element until it reaches root.
-            while (this->parents[id] != id) {
-                this->parents[id] = this->parents[this->parents[id]];
-                id = this->parents[id];
-            }
-            return id;
+        size_t findByElem(const T &elem) {
+            return this->find(mapGet(this->elementToId, elem));
         }
 
-        bool find(int id1, int id2) {
-            return (find(id1) == find(id2));
+        bool findByElem(const T &elem1, const T &elem2) {
+            return (find(elem1) == find(elem2));
         }
 
-        void unite(int id1, int id2) {
-            int root1 = find(id1);
-            int root2 = find(id2);
-            if (root1 == root2) {
-                return;
-            }
-
-            if (this->sizes[root1] < this->sizes[root2]) {
-                this->parents[root1] = root2;
-                this->sizes[root2] += this->sizes[root1];
-            } else {
-                this->parents[root2] = root1;
-                this->sizes[root1] += this->sizes[root2];
-            }
-            this->nrDistinctComponents--;
+        void uniteByElem(const T &elem1, const T &elem2) {
+            size_t root1 = find(elem1);
+            size_t root2 = find(elem2);
+            this->uniteImpl(root1, root2);
         }
 
-        T &get(int id) const {
+        T &get(size_t id) const {
             return AndreiUtils::mapGetRef(this->idToElement, id);
         }
 
-    private:
-        std::map<int, T> idToElement;
-        std::vector<int> parents;
-        std::vector<int> sizes;
-        int nrDistinctComponents{};
+    protected:
+        std::map<size_t, T> idToElement;
+        std::map<T, size_t, C, A> elementToId;
     };
 }
 

@@ -369,17 +369,22 @@ void testIntegralAndUnsignedTypes() {
 }
 
 void testUnionFind() {
-    UnionFind<int> x;
+    UnionFind x;
     assert(x.numberOfDistinctComponents() == 0);
-    x.add(0);
+    x.add();
+    assert(x.find(0) == 0);
     assert(x.find(0, 0));
     assert(x.numberOfDistinctComponents() == 1);
-    x.add(1);
+    x.add();
+    assert(x.find(0) == 0);
+    assert(x.find(1) == 1);
     assert(!x.find(0, 1));
     assert(x.find(1, 1));
     assert(x.numberOfDistinctComponents() == 2);
     assert(x.size() == 2);
     x.unite(1, 1);
+    assert(x.find(0) == 0);
+    assert(x.find(1) == 1);
     assert(x.numberOfDistinctComponents() == 2);
     assert(x.size() == 2);
     try {
@@ -390,30 +395,88 @@ void testUnionFind() {
             throw e;
         }
     }
-    x.add(2);
+    x.add();
     assert(x.numberOfDistinctComponents() == 3);
     assert(x.size() == 3);
+    assert(x.find(0) == 0);
+    assert(x.find(1) == 1);
+    assert(x.find(2) == 2);
     assert(!x.find(0, 1));
     assert(!x.find(1, 2));
     assert(x.find(2, 2));
     x.unite(1, 2);
     assert(x.numberOfDistinctComponents() == 2);
     assert(x.size() == 3);
+    assert(x.find(0) == 0);
+    assert(x.find(1) == 1);
+    assert(x.find(2) == 1);
     assert(!x.find(0, 1));
     assert(x.find(1, 2));
     assert(!x.find(0, 2));
     x.unite(2, 1);
     assert(x.numberOfDistinctComponents() == 2);
     assert(x.size() == 3);
+    assert(x.find(0) == 0);
+    assert(x.find(1) == 1);
+    assert(x.find(2) == 1);
     assert(!x.find(0, 1));
     assert(x.find(1, 2));
     assert(!x.find(0, 2));
     x.unite(2, 0);
     assert(x.numberOfDistinctComponents() == 1);
     assert(x.size() == 3);
+    assert(x.find(0) == 1);
+    assert(x.find(1) == 1);
+    assert(x.find(2) == 1);
     assert(x.find(0, 1));
     assert(x.find(1, 2));
     assert(x.find(0, 2));
+    
+    UnionFindWithValues<int> y;
+    assert(y.numberOfDistinctComponents() == 0);
+    y.add(0);
+    assert(y.findByElem(0, 0));
+    assert(y.numberOfDistinctComponents() == 1);
+    y.add(1);
+    assert(!y.findByElem(0, 1));
+    assert(y.findByElem(1, 1));
+    assert(y.numberOfDistinctComponents() == 2);
+    assert(y.size() == 2);
+    y.unite(1, 1);
+    assert(y.numberOfDistinctComponents() == 2);
+    assert(y.size() == 2);
+    try {
+        y.uniteByElem(1, 2);
+        assert(false);
+    } catch (exception &e) {
+        if (string(e.what()) != "Element not found in map!") {
+            throw e;
+        }
+    }
+    y.add(2);
+    assert(y.numberOfDistinctComponents() == 3);
+    assert(y.size() == 3);
+    assert(!y.findByElem(0, 1));
+    assert(!y.findByElem(1, 2));
+    assert(y.findByElem(2, 2));
+    y.uniteByElem(1, 2);
+    assert(y.numberOfDistinctComponents() == 2);
+    assert(y.size() == 3);
+    assert(!y.findByElem(0, 1));
+    assert(y.findByElem(1, 2));
+    assert(!y.findByElem(0, 2));
+    y.uniteByElem(2, 1);
+    assert(y.numberOfDistinctComponents() == 2);
+    assert(y.size() == 3);
+    assert(!y.findByElem(0, 1));
+    assert(y.findByElem(1, 2));
+    assert(!y.findByElem(0, 2));
+    y.uniteByElem(2, 0);
+    assert(y.numberOfDistinctComponents() == 1);
+    assert(y.size() == 3);
+    assert(y.findByElem(0, 1));
+    assert(y.findByElem(1, 2));
+    assert(y.findByElem(0, 2));
 }
 
 int main() {

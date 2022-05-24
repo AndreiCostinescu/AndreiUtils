@@ -1,0 +1,76 @@
+//
+// Created by Andrei on 24-May-22.
+//
+
+#include<AndreiUtils/classes/UnionFind.h>
+#include<stdexcept>
+#include<string>
+
+using namespace AndreiUtils;
+using namespace std;
+
+UnionFind::UnionFind(size_t n) : parents(n) {
+    this->nrDistinctComponents = n;
+    for (size_t i = 0; i < n; i++) {
+        this->parents[i] = i;
+        this->sizes[i] = 1;
+    }
+}
+
+size_t UnionFind::size() const {
+    return this->parents.size();
+}
+
+size_t UnionFind::numberOfDistinctComponents() const {
+    return this->nrDistinctComponents;
+}
+
+void UnionFind::add() {
+    // the size of the union-find data structure is always in parents.size()
+    size_t n = this->size();
+    this->parents.push_back(n);
+    this->sizes.push_back(1);
+    this->nrDistinctComponents++;
+}
+
+size_t UnionFind::find(size_t id) {
+    if (id >= this->size()) {
+        throw runtime_error("Index " + to_string(id) + " out of bounds (" + to_string(this->size()) + ")!");
+    }
+    if (this->parents[id] != id) {
+        this->parents[id] = find(this->parents[id]);
+    }
+    return this->parents[id];
+
+    // chase parent of current element until it reaches root.
+    while (this->parents[id] != id) {
+        this->parents[id] = this->parents[this->parents[id]];
+        id = this->parents[id];
+    }
+    return id;
+}
+
+bool UnionFind::find(size_t id1, size_t id2) {
+    return (find(id1) == find(id2));
+}
+
+void UnionFind::unite(size_t id1, size_t id2) {
+    size_t root1 = find(id1);
+    size_t root2 = find(id2);
+    this->uniteImpl(root1, root2);
+}
+
+void UnionFind::uniteImpl(size_t root1, size_t root2) {
+    if (root1 == root2) {
+        return;
+    }
+
+    if (this->sizes[root1] < this->sizes[root2]) {
+        this->parents[root1] = root2;
+        this->sizes[root2] += this->sizes[root1];
+    } else {
+        this->parents[root2] = root1;
+        this->sizes[root1] += this->sizes[root2];
+    }
+    this->nrDistinctComponents--;
+}
