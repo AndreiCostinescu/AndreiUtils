@@ -5,7 +5,7 @@
 #ifndef ANDREIUTILS_UNIONFIND_H
 #define ANDREIUTILS_UNIONFIND_H
 
-#include<vector>
+#include <vector>
 
 namespace AndreiUtils {
     class UnionFind {
@@ -25,6 +25,8 @@ namespace AndreiUtils {
         void unite(size_t id1, size_t id2);
 
     protected:
+        virtual void setParentIndex(size_t index, size_t parentIndex);
+
         void uniteImpl(size_t root1, size_t root2);
 
         std::vector<size_t> parents;

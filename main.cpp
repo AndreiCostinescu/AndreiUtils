@@ -439,10 +439,10 @@ void testUnionFind() {
     
     UnionFindWithValues<int> y;
     assert(y.numberOfDistinctComponents() == 0);
-    y.add(0);
+    y.addElem(0);
     assert(y.findByElem(0, 0));
     assert(y.numberOfDistinctComponents() == 1);
-    y.add(1);
+    y.addElem(1);
     assert(!y.findByElem(0, 1));
     assert(y.findByElem(1, 1));
     assert(y.numberOfDistinctComponents() == 2);
@@ -458,7 +458,7 @@ void testUnionFind() {
             throw e;
         }
     }
-    y.add(2);
+    y.addElem(2);
     assert(y.numberOfDistinctComponents() == 3);
     assert(y.size() == 3);
     assert(!y.findByElem(0, 1));

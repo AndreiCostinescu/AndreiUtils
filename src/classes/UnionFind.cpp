@@ -2,14 +2,14 @@
 // Created by Andrei on 24-May-22.
 //
 
-#include<AndreiUtils/classes/UnionFind.h>
-#include<stdexcept>
-#include<string>
+#include <AndreiUtils/classes/UnionFind.h>
+#include <stdexcept>
+#include <string>
 
 using namespace AndreiUtils;
 using namespace std;
 
-UnionFind::UnionFind(size_t n) : parents(n) {
+UnionFind::UnionFind(size_t n) : parents(n), sizes(n) {
     this->nrDistinctComponents = n;
     for (size_t i = 0; i < n; i++) {
         this->parents[i] = i;
@@ -38,7 +38,7 @@ size_t UnionFind::find(size_t id) {
         throw runtime_error("Index " + to_string(id) + " out of bounds (" + to_string(this->size()) + ")!");
     }
     if (this->parents[id] != id) {
-        this->parents[id] = find(this->parents[id]);
+        this->setParentIndex(id, find(this->parents[id]));
     }
     return this->parents[id];
 
@@ -60,16 +60,20 @@ void UnionFind::unite(size_t id1, size_t id2) {
     this->uniteImpl(root1, root2);
 }
 
+void UnionFind::setParentIndex(size_t index, size_t parentIndex) {
+    this->parents[index] = parentIndex;
+}
+
 void UnionFind::uniteImpl(size_t root1, size_t root2) {
     if (root1 == root2) {
         return;
     }
 
     if (this->sizes[root1] < this->sizes[root2]) {
-        this->parents[root1] = root2;
+        this->setParentIndex(root1, root2);
         this->sizes[root2] += this->sizes[root1];
     } else {
-        this->parents[root2] = root1;
+        this->setParentIndex(root2, root1);
         this->sizes[root1] += this->sizes[root2];
     }
     this->nrDistinctComponents--;
