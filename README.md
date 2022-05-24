@@ -14,9 +14,11 @@ https://bitbucket.org/AndreiCostinescu/AndreiUtils
   Check the [CMAKE FLAGS](#markdown-header-cmake-flags) section to check which flags there are available. ``-G "MinGW Makefiles"`` is necessary if compiling on windows with mingw's gcc.
 
 ### CMAKE FLAGS
+- -DWITH_ALL=On/Off (toggle to add/remove all utils)
 - -DWITH_EIGEN=On/Off (toggle to add/remove eigen utils to the library)
 - -DWITH_JSON=On/Off (toggle to add/remove json utils to library)
 - -DWITH_OPENCV=On/Off (toggle to add/remove opencv utils to the library)
+- -DWITH_OPENMP=On/Off (toggle to add/remove openmp utils to the library)
 - -DWITH_REALSENSE=On/Off (toggle to add/remove realsense utils to the library)
 
 ### Optional external libraries
