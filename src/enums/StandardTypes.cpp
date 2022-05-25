@@ -10,6 +10,8 @@ using namespace std;
 
 int AndreiUtils::getStandardTypeByteAmount(StandardTypes type) {
     switch (type) {
+        case TYPE_BOOL:
+            return 0;
         case TYPE_UINT_8:
         case TYPE_INT_8:
             return 1;
@@ -35,6 +37,35 @@ int AndreiUtils::getStandardTypeByteAmount(StandardTypes type) {
     }
 }
 
+int AndreiUtils::getStandardTypeBitAmount(StandardTypes type) {
+    switch (type) {
+        case TYPE_BOOL:
+            return 1;
+        case TYPE_UINT_8:
+        case TYPE_INT_8:
+            return 8;
+        case TYPE_UINT_16:
+        case TYPE_INT_16:
+        case TYPE_FLOAT_16:
+            return 16;
+        case TYPE_UINT_32:
+        case TYPE_INT_32:
+        case TYPE_FLOAT_32:
+            return 32;
+        case TYPE_UINT_64:
+        case TYPE_INT_64:
+        case TYPE_FLOAT_64:
+            return 64;
+        case TYPE_UINT_128:
+        case TYPE_INT_128:
+        case TYPE_FLOAT_128:
+            return 128;
+        default: {
+            throw runtime_error("Unknown Standard Type " + to_string(type));
+        }
+    }
+}
+
 int AndreiUtils::convertStandardTypesToOpenCVType(AndreiUtils::StandardTypes type) {
     if (type == StandardTypes::TYPE_UINT_8) {
         return 0;
@@ -53,7 +84,7 @@ int AndreiUtils::convertStandardTypesToOpenCVType(AndreiUtils::StandardTypes typ
     } else if (type == StandardTypes::TYPE_FLOAT_16) {
         return 7;
     }
-    throw runtime_error("Can not convert " + to_string(type) + " to opencv type...");
+    throw runtime_error("Can not convert " + to_string(type) + " to OpenCV type...");
 }
 
 AndreiUtils::StandardTypes AndreiUtils::convertOpenCVTypeToStandardTypes(int type) {
@@ -75,5 +106,5 @@ AndreiUtils::StandardTypes AndreiUtils::convertOpenCVTypeToStandardTypes(int typ
     } else if (type == 7) {
         return StandardTypes::TYPE_FLOAT_16;
     }
-    throw runtime_error("Can not convert openCV type " + to_string(type) + " to StandardTypes...");
+    throw runtime_error("Can not convert OpenCV type " + to_string(type) + " to StandardTypes...");
 }

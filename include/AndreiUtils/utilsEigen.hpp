@@ -74,6 +74,13 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    Eigen::Quaternion<T> qZero() {
+        Eigen::Quaternion<T> q;
+        qSetZero(q);
+        return q;
+    }
+
+    template<class T>
     Eigen::Quaternion<T> qxRotation(const T &angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
     }
@@ -243,6 +250,12 @@ namespace std {
     ostream &operator<<(ostream &os, const Eigen::Quaternion<T> &q) {
         os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
         return os;
+    }
+
+    template<class T>
+    istream &operator>>(istream &is, Eigen::Quaternion<T> &q) {
+        is >> q.w() >> q.x() >> q.y() >> q.z();
+        return is;
     }
 }
 

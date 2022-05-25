@@ -6,6 +6,7 @@
 #define ANDREIUTILS_UTILS_HPP
 
 #include <cmath>
+#include <type_traits>
 #include <stdexcept>
 #include <utility>
 
@@ -32,22 +33,38 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool less(const T a, const T b, double tol = 1e-9) {
-        return (b - a) > tol;
+        if (std::is_integral<T>::value) {
+            return a < b;
+        } else {
+            return (b - a) > tol;
+        }
     }
 
     template<typename T>
     inline bool lessEqual(const T a, const T b, double tol = 1e-9) {
-        return (b - a) > -tol;
+        if (std::is_integral<T>::value) {
+            return a <= b;
+        } else {
+            return (b - a) > -tol;
+        }
     }
 
     template<typename T>
     inline bool greater(const T a, const T b, double tol = 1e-9) {
-        return (a - b) > tol;
+        if (std::is_integral<T>::value) {
+            return a > b;
+        } else {
+            return (a - b) > tol;
+        }
     }
 
     template<typename T>
     inline bool greaterEqual(const T a, const T b, double tol = 1e-9) {
-        return (a - b) > -tol;
+        if (std::is_integral<T>::value) {
+            return a >= b;
+        } else {
+            return (a - b) > -tol;
+        }
     }
 
     template<typename T>
@@ -57,7 +74,11 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool equal(const T a, const T b, double tol = 1e-9) {
-        return (fastAbs(a - b) < tol);
+        if (std::is_integral<T>::value) {
+            return a == b;
+        } else {
+            return (fastAbs(a - b) < tol);
+        }
     }
 
     template<typename T>

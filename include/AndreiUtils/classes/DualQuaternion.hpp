@@ -32,7 +32,7 @@ namespace AndreiUtils {
             this->d = qDivScalar(this->d, norm);
         }
 
-        DualQuaternion normalized() {
+        DualQuaternion normalized() const {
             DualQuaternion res = *this;
             T norm = this->r.norm();
             if (equal(norm, T(0))) {
@@ -43,20 +43,27 @@ namespace AndreiUtils {
             return res;
         }
 
-        DualQuaternion conjugate() {
+        DualQuaternion conjugate() const {
             return DualQuaternion(this->r.conjugate(), this->d.conjugate());
         }
 
-        DualQuaternion quaternionConjugate() {
+        DualQuaternion quaternionConjugate() const {
             return this->conjugate();
         }
 
-        DualQuaternion dualConjugate() {
+        DualQuaternion dualConjugate() const {
             return DualQuaternion(this->r, qNeg(this->d));
         }
 
-        DualQuaternion quaternionDualConjugate() {
+        DualQuaternion quaternionDualConjugate() const {
             return DualQuaternion(this->r.conjugate(), this->d.conjugate()).dualConjugate();
+        }
+
+        DualQuaternion dualQuaternionInverse() const {
+            DualQuaternion inv;
+            inv.r = this->r.conjugate();
+            inv.d = qNeg(inv.r * this->d * inv.r);
+            return inv;
         }
 
         DualQuaternion operator*(const T &s) {
@@ -91,23 +98,33 @@ namespace AndreiUtils {
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
-        Eigen::Quaternion<T> getRotation() {
+        Eigen::Matrix<T, 3, 1> rotate(const Eigen::Matrix<T, 3, 1> &v) {
+            return ((*this) * DualQuaternion(vToQ(v), qZero<double>()) *
+                    this->quaternionDualConjugate()).getRotation().vec();
+        }
+
+        Eigen::Matrix<T, 3, 1> translate(const Eigen::Matrix<T, 3, 1> &t) {
+            return ((*this) * DualQuaternion(qZero<double>(), vToQ(t)) *
+                    this->quaternionDualConjugate()).getDual().vec();
+        }
+
+        Eigen::Quaternion<T> getRotation() const {
             return this->r;
         }
 
-        Eigen::Matrix<T, 3, 3> getRotationAsMatrix() {
+        Eigen::Matrix<T, 3, 3> getRotationAsMatrix() const {
             return this->r.toRotationMatrix();
         }
 
-        Eigen::Quaternion<T> getDual() {
+        Eigen::Quaternion<T> getDual() const {
             return this->d;
         }
 
-        Eigen::Matrix<T, 3, 1> getTranslation() {
+        Eigen::Matrix<T, 3, 1> getTranslation() const {
             return qMulScalar(this->d * this->r.conjugate(), T(2)).vec();
         }
 
-        Eigen::Matrix<T, 4, 4> getTransformationMatrix() {
+        Eigen::Matrix<T, 4, 4> getTransformationMatrix() const {
             auto q = this->normalized();
             Eigen::Matrix<T, 4, 4> M = Eigen::Matrix<T, 4, 4>::Identity();
 
@@ -122,6 +139,11 @@ namespace AndreiUtils {
         friend std::ostream &operator<<(std::ostream &os, const DualQuaternion &q) {
             os << q.r << " " << q.d;
             return os;
+        }
+
+        friend std::istream &operator>>(std::istream &is, DualQuaternion &q) {
+            is >> q.r >> q.d;
+            return is;
         }
 
     protected:

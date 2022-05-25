@@ -21,9 +21,12 @@ namespace AndreiUtils {
         TYPE_FLOAT_32 = 11,
         TYPE_FLOAT_64 = 12,
         TYPE_FLOAT_128 = 13,
+        TYPE_BOOL = 14,
     };
 
     int getStandardTypeByteAmount(StandardTypes type);
+
+    int getStandardTypeBitAmount(StandardTypes type);
 
     int convertStandardTypesToOpenCVType(StandardTypes type);
 
