@@ -74,6 +74,13 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    Eigen::Quaternion<T> qZero() {
+        Eigen::Quaternion<T> q;
+        qSetZero(q);
+        return q;
+    }
+
+    template<class T>
     Eigen::Quaternion<T> qxRotation(const T &angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
     }

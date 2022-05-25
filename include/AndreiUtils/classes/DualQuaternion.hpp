@@ -98,6 +98,16 @@ namespace AndreiUtils {
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
+        Eigen::Matrix<T, 3, 1> rotate(const Eigen::Matrix<T, 3, 1> &v) {
+            return ((*this) * DualQuaternion(vToQ(v), qZero<double>()) *
+                    this->quaternionDualConjugate()).getRotation().vec();
+        }
+
+        Eigen::Matrix<T, 3, 1> translate(const Eigen::Matrix<T, 3, 1> &t) {
+            return ((*this) * DualQuaternion(qZero<double>(), vToQ(t)) *
+                    this->quaternionDualConjugate()).getDual().vec();
+        }
+
         Eigen::Quaternion<T> getRotation() const {
             return this->r;
         }
