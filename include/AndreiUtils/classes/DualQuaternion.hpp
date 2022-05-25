@@ -131,6 +131,11 @@ namespace AndreiUtils {
             return os;
         }
 
+        friend std::istream &operator>>(std::istream &is, DualQuaternion &q) {
+            is >> q.r >> q.d;
+            return is;
+        }
+
     protected:
         Eigen::Quaternion<T> r;
         Eigen::Quaternion<T> d;

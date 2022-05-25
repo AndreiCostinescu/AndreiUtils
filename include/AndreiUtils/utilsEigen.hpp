@@ -244,6 +244,12 @@ namespace std {
         os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
         return os;
     }
+
+    template<class T>
+    istream &operator>>(istream &is, Eigen::Quaternion<T> &q) {
+        is >> q.w() >> q.x() >> q.y() >> q.z();
+        return is;
+    }
 }
 
 #endif //ANDREIUTILS_UTILSEIGEN_HPP
