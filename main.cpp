@@ -349,12 +349,20 @@ void testTypeCreator() {
     delete c;
 }
 
+void testJsonArraySerialization() {
+    nlohmann::json j = readJsonFile("../testJsonOutput.json");
+    j["data"] = {110, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    j["name"] = "dummy data 2";
+    j["isDummy"] = false;
+    writeJsonFile("../testJsonOutput.json", j);
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
     // fileTesting();
     // realsenseDistortionString();
-    timeTesting();
+    // timeTesting();
     // timeAddingTesting();
     // testPointerReference();
     // testMapKeys();
@@ -367,5 +375,6 @@ int main() {
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testAccessTimeInMapVsVector();
     // testTypeCreator();
+    testJsonArraySerialization();
     return 0;
 }
