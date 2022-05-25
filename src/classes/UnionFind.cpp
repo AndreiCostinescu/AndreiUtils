@@ -21,7 +21,7 @@ size_t UnionFind::size() const {
     return this->parents.size();
 }
 
-size_t UnionFind::numberOfDistinctComponents() const {
+const size_t &UnionFind::numberOfDistinctComponents() const {
     return this->nrDistinctComponents;
 }
 
@@ -54,19 +54,27 @@ bool UnionFind::find(size_t id1, size_t id2) {
     return (find(id1) == find(id2));
 }
 
-void UnionFind::unite(size_t id1, size_t id2) {
+bool UnionFind::unite(size_t id1, size_t id2) {
     size_t root1 = find(id1);
     size_t root2 = find(id2);
-    this->uniteImpl(root1, root2);
+    return this->uniteImpl(root1, root2);
+}
+
+const vector<size_t> &UnionFind::getParents() const {
+    return this->parents;
+}
+
+const vector<size_t> &UnionFind::getSizes() const {
+    return this->sizes;
 }
 
 void UnionFind::setParentIndex(size_t index, size_t parentIndex) {
     this->parents[index] = parentIndex;
 }
 
-void UnionFind::uniteImpl(size_t root1, size_t root2) {
+bool UnionFind::uniteImpl(size_t root1, size_t root2) {
     if (root1 == root2) {
-        return;
+        return false;
     }
 
     if (this->sizes[root1] < this->sizes[root2]) {
@@ -77,4 +85,5 @@ void UnionFind::uniteImpl(size_t root1, size_t root2) {
         this->sizes[root1] += this->sizes[root2];
     }
     this->nrDistinctComponents--;
+    return true;
 }

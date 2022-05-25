@@ -15,8 +15,7 @@ namespace AndreiUtils {
     class UnionFindWithValues : public UnionFind {
     public:
         explicit UnionFindWithValues(size_t n = 0) :
-                UnionFind(n),
-                valueUpdater([](size_t, size_t, size_t, std::map<T, size_t, C, A> &, std::map<size_t, T> &) {}) {}
+                UnionFind(n), valueUpdater([](size_t, size_t, size_t, UnionFindWithValues<T, C, A> *) {}) {}
 
         explicit UnionFindWithValues(const std::vector<T> &elements) : UnionFindWithValues() {
             size_t n = elements.size();
@@ -31,8 +30,8 @@ namespace AndreiUtils {
             }
         }
 
-        explicit UnionFindWithValues(const std::function<void(size_t, size_t, size_t, std::map<T, size_t, C, A> &,
-                                                              std::map<size_t, T> &)> &valueUpdater) :
+        explicit UnionFindWithValues(
+                const std::function<void(size_t, size_t, size_t, UnionFindWithValues<T, C, A> *)> &valueUpdater) :
                 UnionFind(), valueUpdater(valueUpdater) {}
 
         void addElem(const T &element) {
@@ -50,24 +49,36 @@ namespace AndreiUtils {
             return (findByElem(elem1) == findByElem(elem2));
         }
 
-        void uniteByElem(const T &elem1, const T &elem2) {
+        bool uniteByElem(const T &elem1, const T &elem2) {
             size_t root1 = findByElem(elem1);
             size_t root2 = findByElem(elem2);
-            this->uniteImpl(root1, root2);
+            return this->uniteImpl(root1, root2);
         }
 
         T &get(size_t id) const {
             return AndreiUtils::mapGetRef(this->idToElement, id);
         }
 
+        size_t getId(const T &elem) const {
+            return AndreiUtils::mapGetRef(this->elementToId, elem);
+        }
+
+        const std::map<size_t, T> &getIdToElement() const {
+            return this->idToElement;
+        }
+
+        const std::map<T, size_t, C, A> &getElementToId() const {
+            return this->elementToId;
+        }
+
     protected:
         void setParentIndex(size_t index, size_t parentIndex) override {
             size_t previousParentIndex = this->parents[index];
-            this->valueUpdater(index, parentIndex, previousParentIndex, this->elementToId, this->idToElement);
+            this->valueUpdater(index, parentIndex, previousParentIndex, this);
             this->parents[index] = parentIndex;
         }
 
-        std::function<void(size_t, size_t, size_t, std::map<T, size_t, C, A> &, std::map<size_t, T> &)> valueUpdater;
+        std::function<void(size_t, size_t, size_t, UnionFindWithValues<T, C, A> *)> valueUpdater;
         std::map<size_t, T> idToElement;
         std::map<T, size_t, C, A> elementToId;
     };

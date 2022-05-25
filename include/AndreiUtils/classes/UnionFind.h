@@ -14,7 +14,7 @@ namespace AndreiUtils {
 
         size_t size() const;
 
-        size_t numberOfDistinctComponents() const;
+        const size_t &numberOfDistinctComponents() const;
 
         void add();
 
@@ -22,12 +22,16 @@ namespace AndreiUtils {
 
         bool find(size_t id1, size_t id2);
 
-        void unite(size_t id1, size_t id2);
+        bool unite(size_t id1, size_t id2);
+
+        const std::vector<size_t> &getParents() const;
+
+        const std::vector<size_t> &getSizes() const;
 
     protected:
         virtual void setParentIndex(size_t index, size_t parentIndex);
 
-        void uniteImpl(size_t root1, size_t root2);
+        bool uniteImpl(size_t root1, size_t root2);
 
         std::vector<size_t> parents;
         std::vector<size_t> sizes;
