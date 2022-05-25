@@ -368,6 +368,7 @@ void testJsonArraySerialization() {
     j["name"] = "dummy data 2";
     j["isDummy"] = false;
     writeJsonFile("../testJsonOutput.json", j);
+}
 
 void testIntegralAndUnsignedTypes() {
     cout << is_integral<bool>::value << endl;
