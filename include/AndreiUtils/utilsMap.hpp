@@ -126,9 +126,27 @@ namespace AndreiUtils {
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMap(const std::map<T1, T2, C, A> &container,
-                  const std::function<std::string(T2 const &)> &stringConversion) {
+                  const std::function<std::string(T1 const &)> &keyStringConversion,
+                  const std::function<std::string(T2 const &)> &valueStringConversion) {
         for (const auto &containerItem: container) {
-            std::cout << containerItem.first << " -> " << stringConversion(containerItem.second) << std::endl;
+            std::cout << keyStringConversion(containerItem.first) << " -> "
+                      << valueStringConversion(containerItem.second) << std::endl;
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMapConvertKey(const std::map<T1, T2, C, A> &container,
+                            const std::function<std::string(T1 const &)> &keyStringConversion) {
+        for (const auto &containerItem: container) {
+            std::cout << keyStringConversion(containerItem.first) << " -> " << containerItem.second << std::endl;
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMapConvertValue(const std::map<T1, T2, C, A> &container,
+                              const std::function<std::string(T2 const &)> &valueStringConversion) {
+        for (const auto &containerItem: container) {
+            std::cout << containerItem.first << " -> " << valueStringConversion(containerItem.second) << std::endl;
         }
     }
 
@@ -154,12 +172,32 @@ namespace AndreiUtils {
 
     template<class T1, class T2>
     std::map<T1, T2> createMapFromKeysAndValues(const std::vector<T1> &keys, const std::vector<T2> &values) {
-        assert (keys.size() == values.size());
+        assert(keys.size() == values.size());
         std::map<T1, T2> res;
         for (int i = 0; i < keys.size(); i++) {
             res[keys[i]] = values[i];
         }
         return res;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void filterMapBasedOnPredicate(std::map<T1, T2, C, A> &container,
+                                   const std::function<bool(T1 const &, T2 const &)> &predicate) {
+        for (auto elem = container.begin(); elem != container.end();) {
+            if (predicate(elem->first, elem->second)) {
+                elem = container.erase(elem);
+            } else {
+                ++elem;
+            }
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::map<T1, T2, C, A> getFilteredMapBasedOnPredicate(
+            const std::map<T1, T2, C, A> &container, const std::function<bool(T1 const &, T2 const &)> &predicate) {
+        std::map<T1, T2, C, A> result = container;
+        filterMapBasedOnPredicate(result, predicate);
+        return result;
     }
 }
 
