@@ -13,23 +13,43 @@ namespace AndreiUtils {
     template<class T>
     class DualQuaternion {
     public:
-        DualQuaternion() : r(1, 0, 0, 0), d(0, 0, 0, 0) {}
+        static DualQuaternion identity() {
+            DualQuaternion q;
+            q.r.setIdentity();
+            qSetZero(q.d);
+            return q;
+        }
 
-        DualQuaternion(Eigen::Quaternion<T> r, Eigen::Quaternion<T> d) : r(r.normalized()), d(d) {}
+        DualQuaternion() : r(qZero<double>()), d(qZero<double>()) {}
 
-        DualQuaternion(Eigen::Quaternion<T> r, Eigen::Matrix<T, 3, 1> t) : r(r.normalized()) {
+        DualQuaternion(Eigen::Quaternion<T> r, Eigen::Quaternion<T> d) : r(r), d(d) {}
+
+        DualQuaternion(Eigen::Quaternion<T> r, Eigen::Matrix<T, 3, 1> t) : r(r) {
             this->d = qMulScalar(vToQ(t) * r, 0.5);
         }
 
         virtual ~DualQuaternion() = default;
+
+        double coefficientNorm() const {
+            Eigen::Matrix<double, 8, 1> coefficients;
+            coefficients.topRows(4) = this->r.coeffs().template cast<double>();
+            coefficients.bottomRows(4) = this->d.coeffs().template cast<double>();
+            return coefficients.norm();
+        }
+
+        double coefficientSquareSum() const {
+            Eigen::Matrix<double, 8, 1> coefficients;
+            coefficients.topRows(4) = this->r.coeffs().template cast<double>();
+            coefficients.bottomRows(4) = this->d.coeffs().template cast<double>();
+            return coefficients.squaredNorm();
+        }
 
         void normalize() {
             T norm = this->r.norm();
             if (equal(norm, T(0))) {
                 return;
             }
-            this->r = qDivScalar(this->r, norm);
-            this->d = qDivScalar(this->d, norm);
+            (*this) /= norm;
         }
 
         DualQuaternion normalized() const {
@@ -66,12 +86,26 @@ namespace AndreiUtils {
             return inv;
         }
 
-        DualQuaternion operator*(const T &s) {
+        DualQuaternion operator*(const T &s) const {
             return DualQuaternion(qMulScalar(this->r, s), qMulScalar(this->d, s));
         }
 
+        DualQuaternion &operator*=(const T &s) {
+            *this = *this * s;
+            return *this;
+        }
+
+        DualQuaternion operator/(const T &s) const {
+            return DualQuaternion(qDivScalar(this->r, s), qDivScalar(this->d, s));
+        }
+
+        DualQuaternion &operator/=(const T &s) {
+            *this = *this / s;
+            return *this;
+        }
+
         // q_T = a * b corresponds to T_a_b = T_a_i * T_i_b; *this * other
-        DualQuaternion operator*(const DualQuaternion &other) {
+        DualQuaternion operator*(const DualQuaternion &other) const {
             /*
             Eigen::Quaternion<T> real = this->r * other.r;
             Eigen::Quaternion<T> dual((this->d * other.r).coeffs() + (this->r * other.d).coeffs());
@@ -81,29 +115,44 @@ namespace AndreiUtils {
             //*/
         }
 
-        DualQuaternion operator+(const DualQuaternion &other) {
-            return DualQuaternion(qAdd(this->r, other->r), qAdd(this->d, other.d));
+        DualQuaternion &operator*=(const DualQuaternion &other) {
+            (*this) = (*this) * other;
+            return *this;
         }
 
-        DualQuaternion operator-() {
+        DualQuaternion operator+(const DualQuaternion &other) const {
+            return DualQuaternion(qAdd(this->r, other.r), qAdd(this->d, other.d));
+        }
+
+        DualQuaternion &operator+=(const DualQuaternion &other) {
+            (*this) = (*this) + other;
+            return *this;
+        }
+
+        DualQuaternion operator-() const {
             return DualQuaternion(qNeg(this->r), qNeg(this->d));
         }
 
-        DualQuaternion operator-(const DualQuaternion &other) {
-            return qAdd((*this), qNeg(-other));
+        DualQuaternion operator-(const DualQuaternion &other) const {
+            return (*this) + (-other);
         }
 
-        Eigen::Matrix<T, 3, 1> transform(const Eigen::Matrix<T, 3, 1> &p) {
+        DualQuaternion &operator-=(const DualQuaternion &other) {
+            (*this) = (*this) - other;
+            return (*this);
+        }
+
+        Eigen::Matrix<T, 3, 1> transform(const Eigen::Matrix<T, 3, 1> &p) const {
             return ((*this) * DualQuaternion(Eigen::Quaternion<T>::Identity(), vToQ(p)) *
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
-        Eigen::Matrix<T, 3, 1> rotate(const Eigen::Matrix<T, 3, 1> &v) {
+        Eigen::Matrix<T, 3, 1> rotate(const Eigen::Matrix<T, 3, 1> &v) const {
             return ((*this) * DualQuaternion(vToQ(v), qZero<double>()) *
                     this->quaternionDualConjugate()).getRotation().vec();
         }
 
-        Eigen::Matrix<T, 3, 1> translate(const Eigen::Matrix<T, 3, 1> &t) {
+        Eigen::Matrix<T, 3, 1> translate(const Eigen::Matrix<T, 3, 1> &t) const {
             return ((*this) * DualQuaternion(qZero<double>(), vToQ(t)) *
                     this->quaternionDualConjugate()).getDual().vec();
         }
