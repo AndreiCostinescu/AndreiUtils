@@ -28,6 +28,8 @@ namespace AndreiUtils {
 
         const std::vector<size_t> &getSizes() const;
 
+        size_t getComponentSize(size_t id);
+
     protected:
         virtual void setParentIndex(size_t index, size_t parentIndex);
 

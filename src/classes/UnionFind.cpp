@@ -68,6 +68,11 @@ const vector<size_t> &UnionFind::getSizes() const {
     return this->sizes;
 }
 
+size_t UnionFind::getComponentSize(size_t id) {
+    size_t componentRoot = this->find(id);
+    return this->sizes[componentRoot];
+}
+
 void UnionFind::setParentIndex(size_t index, size_t parentIndex) {
     this->parents[index] = parentIndex;
 }

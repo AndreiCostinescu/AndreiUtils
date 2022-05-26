@@ -42,7 +42,7 @@ namespace AndreiUtils {
         }
 
         size_t findByElem(const T &elem) {
-            return this->find(mapGet(this->elementToId, elem));
+            return this->find(this->getId(elem));
         }
 
         bool findByElem(const T &elem1, const T &elem2) {
@@ -69,6 +69,10 @@ namespace AndreiUtils {
 
         const std::map<T, size_t, C, A> &getElementToId() const {
             return this->elementToId;
+        }
+
+        size_t getComponentSizeByElem(const T &elem) {
+            return this->getComponentSize(this->getId(elem));
         }
 
     protected:
