@@ -211,6 +211,24 @@ void testDualQuaternions() {
     cout << "qInv = " << qInv << endl;
     cout << "q * qInv = " << q * qInv << endl;
     cout << "qInv * q = " << qInv * q << endl;
+    cout << endl;
+
+    Eigen::Matrix<double, 8, 1> coeffs;
+    coeffs.topRows(4) = q.getRotation().coeffs().cast<double>();
+    coeffs.bottomRows(4) = q.getDual().coeffs().cast<double>();
+
+    cout << q.coefficientNorm() << endl;
+    cout << qInv.coefficientNorm() << endl;
+    q.normalize();
+    qInv.normalize();
+    cout << q.coefficientNorm() << endl;
+    cout << qInv.coefficientNorm() << endl;
+    cout << "q - qInv = " << q - qInv << endl;
+    cout << (qInv - q).coefficientNorm() << endl;
+    cout << (q - qInv).coefficientNorm() << endl;
+    cout << "q    = " << q << endl;
+    cout << "qInv = " << qInv << endl;
+    cout << average(vector<DualQuaternion<double>>({q, qInv})) << endl;
 }
 
 void testStringAllocation() {
@@ -551,6 +569,24 @@ void testHashable() {
     // mC[cObj3] = 3;  // Compiler error
 }
 
+void testMapFiltering() {
+    map<int, int> x;
+    for (int i = 0; i < 20; i++) {
+        x[i] = i - 5;
+    }
+    auto y = getFilteredMapBasedOnPredicate(x, (std::function<bool(int const &, int const &)>) [](const int &key,
+                                                                                                  const int &value) {
+        // return false;
+        // return true;
+        // return key % 3;
+        return value % 4 != 0;
+    });
+    cout << "Printing map:" << endl;
+    printMap(x);
+    printMap(y);
+    cout << "Done!" << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -562,7 +598,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    testDualQuaternions();
+    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -572,5 +608,6 @@ int main() {
     // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
+    testMapFiltering();
     return 0;
 }
