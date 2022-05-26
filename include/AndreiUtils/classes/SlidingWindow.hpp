@@ -143,11 +143,11 @@ namespace AndreiUtils {
 
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
-        bool empty() {
+        bool empty() const {
             return this->dataSize == 0;
         }
 
-        bool full() {
+        bool full() const {
             return this->dataSize == this->size;
         }
 
@@ -208,7 +208,7 @@ namespace AndreiUtils {
             return this->data[this->latestIndex()];
         }
 
-        T getLatest() const {
+        const T &getLatest() const {
             return this->data[this->latestIndex()];
         }
 
@@ -216,19 +216,15 @@ namespace AndreiUtils {
             return this->data[this->earliestIndex()];
         }
 
-        T getEarliest() const {
+        const T &getEarliest() const {
             return this->data[this->earliestIndex()];
-        }
-
-        std::vector<T> getData() const {
-            return this->data;
         }
 
         std::vector<T> &getData() {
             return this->data;
         }
 
-        const std::vector<T> &getDataConstRef() const {
+        const std::vector<T> &getData() const {
             return this->data;
         }
 
