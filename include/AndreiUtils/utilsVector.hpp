@@ -33,14 +33,15 @@ namespace AndreiUtils {
 
     template<typename T>
     inline T average(const std::vector<T> &a) {
-        T avg;
         if (a.empty()) {
-            return avg;
+            return T();
         }
-        for (const T &val: a) {
-            avg += val;
+        T avg = a[0];
+        size_t n = a.size();
+        for (size_t i = 1; i < n; i++) {
+            avg = avg + a[i];
         }
-        avg /= (double) a.size();
+        avg = avg / ((double) a.size());
         return avg;
     }
 
