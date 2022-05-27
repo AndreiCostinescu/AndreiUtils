@@ -18,6 +18,7 @@
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsMap.hpp>
+#include <AndreiUtils/utilsOpenCV.hpp>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 #include <librealsense2/rs.hpp>
@@ -360,7 +361,7 @@ public:
 class C : virtual public A {
 };
 
-class D : public B, C {
+class D : public B, public C {
 };
 
 void testTypeCreator() {
@@ -595,6 +596,130 @@ void testMapFiltering() {
     cout << "Done!" << endl;
 }
 
+void testDynamicCast() {
+    A objA;
+    B objB;
+    C objC;
+    D objD;
+    auto *a = &objA;
+    auto *b = &objB;
+    auto *c = &objC;
+    auto *d = &objD;
+
+    cout << a << endl;
+    cout << b << endl;
+    cout << c << endl;
+    cout << d << endl;
+    cout << endl;
+
+    A *tmp;
+    tmp = dynamic_cast<A*>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<A*>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<A*>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<A*>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<B*>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<B*>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<B*>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<B*>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<C*>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<C*>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<C*>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<C*>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<D*>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D*>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D*>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D*>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    // delete a;
+    // delete b;
+    // delete c;
+    // delete d;
+}
+
+void testOpenCVMatrixAccessors() {
+    cv::Mat m1(10, 10, CV_64F);
+    m1.setTo(1);
+    auto getElement = getMatrixElementAccessor<double, int>(m1, 10);
+    cout << getElement(10, 10) << endl;
+    cout << getElement(4, 10) << endl;
+    cout << getElement(1, 1) << endl;
+    cout << getElement(5, 5) << endl;
+    cout << getElement(1, -1) << endl;
+    cout << getElement(1, -1) << endl;
+    cout << endl;
+
+    cv::Mat *m2 = &m1;
+    m1.setTo(4);
+    cout << "m2 = " << m2 << endl;
+    auto getElementPtr = getMatrixElementAccessor<double, int>(m2, 14);
+    cout << getElementPtr(10, 10) << endl;
+    cout << getElementPtr(4, 10) << endl;
+    cout << getElementPtr(1, 1) << endl;
+    cout << getElementPtr(5, 5) << endl;
+    cout << getElementPtr(1, -1) << endl;
+    cout << getElementPtr(1, -1) << endl;
+    cout << endl;
+
+    auto *m3 = new cv::Mat(10, 10, CV_64F);
+    m3->setTo(64);
+    cout << "m3 = " << m3 << endl;
+    auto getElementPtr2 = getMatrixElementAccessor<double, int>(m3, 19);
+    cout << getElementPtr2(10, 10) << endl;
+    cout << getElementPtr2(4, 10) << endl;
+    cout << getElementPtr2(1, 1) << endl;
+    cout << getElementPtr2(5, 5) << endl;
+    cout << getElementPtr2(1, -1) << endl;
+    cout << getElementPtr2(1, -1) << endl;
+    cout << endl;
+    delete m3;
+
+    const auto *m4 = new cv::Mat(10, 10, CV_64F);
+    cout << "m4 = " << m4 << endl;
+    auto getElementPtr3 = getMatrixElementAccessor<double, int>(m4, 69);
+    cout << getElementPtr3(10, 10) << endl;
+    cout << getElementPtr3(4, 10) << endl;
+    cout << getElementPtr3(1, 1) << endl;
+    cout << getElementPtr3(5, 5) << endl;
+    cout << getElementPtr3(1, -1) << endl;
+    cout << getElementPtr3(1, -1) << endl;
+    cout << endl;
+
+    auto const *const &m5 = m4;
+    cout << "m5 = " << m5 << endl;
+    auto getElementPtr4 = getMatrixElementAccessor<double, float>(m5, 2.4);
+    cout << getElementPtr4(10, 10) << endl;
+    cout << getElementPtr4(4, 10) << endl;
+    cout << getElementPtr4(1, 1) << endl;
+    cout << getElementPtr4(5, 5) << endl;
+    cout << getElementPtr4(1, -1) << endl;
+    cout << getElementPtr4(1, -1) << endl;
+    cout << endl;
+    delete m4;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -617,6 +742,8 @@ int main() {
     // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
-    testMapFiltering();
+    // testMapFiltering();
+    // testDynamicCast();
+    testOpenCVMatrixAccessors();
     return 0;
 }
