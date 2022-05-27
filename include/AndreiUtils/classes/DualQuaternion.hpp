@@ -199,6 +199,12 @@ namespace AndreiUtils {
         Eigen::Quaternion<T> r;
         Eigen::Quaternion<T> d;
     };
+
+    using Posef = DualQuaternion<float>;
+    using Posed = DualQuaternion<double>;
+    using Poseld = DualQuaternion<long double>;
+
+    using Pose = Posed;
 }
 
 #endif //ANDREIUTILS_DUALQUATERNION_HPP
