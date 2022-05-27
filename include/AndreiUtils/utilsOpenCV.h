@@ -6,7 +6,6 @@
 #define ANDREIUTILS_UTILSOPENCV_H
 
 #include <AndreiUtils/enums/RotationType.h>
-#include <Eigen/Dense>
 #include <fstream>
 #include <opencv2/opencv.hpp>
 #include <vector>
