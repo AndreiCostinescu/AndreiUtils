@@ -296,6 +296,44 @@ namespace AndreiUtils {
         permuteVectorInPlace(v1, permutationIndices);
         sortMultipleVectorsBasedOnPermutation(permutationIndices, v2...);
     }
+
+    template<class T>
+    bool isSequenceStable(const std::vector<T> &sequence, const T &avg,
+                          const std::function<double(const T &, const T &)> &op, double stabilityThreshold = 0.5,
+                          bool verbose = false) {
+        double sumOfSquaredDifferences = 0.;
+        for (const auto &element: sequence) {
+            sumOfSquaredDifferences += op(element, avg);
+        }
+        if (verbose) {
+            std::cout << "Sum of squared differences for relative pose = " << sumOfSquaredDifferences << std::endl;
+        }
+        return sumOfSquaredDifferences < stabilityThreshold;
+    }
+
+    template<class T>
+    bool isSequenceStable(const std::vector<T> &sequence, const T &avg, double stabilityThreshold = 0.5,
+                          bool verbose = false) {
+        return isSequenceStable(sequence, avg, [](const T &t1, const T &t2) { return std::abs(t1 - t2); },
+                                stabilityThreshold, verbose);
+    }
+
+    template<class T>
+    bool isSequenceStable(const std::vector<T> &sequence, double stabilityThreshold = 0.5, bool verbose = false) {
+        if (sequence.empty()) {
+            return true;
+        }
+        return isSequenceStable(sequence, average(sequence), stabilityThreshold, verbose);
+    }
+
+    template<class T>
+    bool isSequenceStable(const std::vector<T> &sequence, const std::function<double(const T &, const T &)> &op,
+                          double stabilityThreshold = 0.5, bool verbose = false) {
+        if (sequence.empty()) {
+            return true;
+        }
+        return isSequenceStable(sequence, average(sequence), op, stabilityThreshold, verbose);
+    }
 }
 
 #endif //ANDREIUTILS_UTILSVECTOR_HPP
