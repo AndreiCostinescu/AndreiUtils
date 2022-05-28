@@ -66,6 +66,24 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    Eigen::Matrix<T, 3, 1> xAxis3d() {
+        const static Eigen::Matrix<T, 3, 1> a = Eigen::Matrix<T, 3, 1>::UnitX();
+        return a;
+    }
+
+    template<class T>
+    Eigen::Matrix<T, 3, 1> yAxis3d() {
+        const static Eigen::Matrix<T, 3, 1> a = Eigen::Matrix<T, 3, 1>::UnitY();
+        return a;
+    }
+
+    template<class T>
+    Eigen::Matrix<T, 3, 1> zAxis3d() {
+        const static Eigen::Matrix<T, 3, 1> a = Eigen::Matrix<T, 3, 1>::UnitZ();
+        return a;
+    }
+
+    template<class T>
     void qSetZero(Eigen::Quaternion<T> &q) {
         q.w() = 0;
         q.x() = 0;
