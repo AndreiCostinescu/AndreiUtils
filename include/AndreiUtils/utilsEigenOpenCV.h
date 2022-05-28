@@ -5,10 +5,12 @@
 #ifndef ANDREIUTILS_UTILSEIGENOPENCV_H
 #define ANDREIUTILS_UTILSEIGENOPENCV_H
 
+#include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/utilsOpenCV.h>
 #include <complex>
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
+#include <vector>
 
 namespace AndreiUtils {
     template<typename Scalar, int Rows, int Cols,
@@ -99,7 +101,7 @@ namespace AndreiUtils {
 
             int setItems = 0;
             V data;
-            for (auto item : node) {
+            for (auto item: node) {
                 std::string name = item.name();
                 if (name == "type") {
                     this->type = (std::string) item;
@@ -209,6 +211,38 @@ namespace AndreiUtils {
 
     void read(const cv::FileNode &node, Eigen::Array3f &x,
               const Eigen::Array3f &default_value = Eigen::Array3f::Zero());
+
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
+            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
+            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
+            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            const CameraIntrinsicParameters &intrinsics);
+
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
+            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            const CameraIntrinsicParameters &intrinsics);
+
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
+            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
+            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
+            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            const CameraIntrinsicParameters &intrinsics);
+
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
+            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            const CameraIntrinsicParameters &intrinsics);
 }
 
 namespace cv {
@@ -227,7 +261,7 @@ namespace cv {
                           ((Rows == 1 && Cols != 1) ? Eigen::RowMajor :
                            ((Cols == 1 && Rows != 1) ? Eigen::ColMajor :
                             EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
-#endif
+            #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
     void write(cv::FileStorage &fs, const std::string &name,
@@ -250,7 +284,7 @@ namespace cv {
                           ((Rows == 1 && Cols != 1) ? Eigen::RowMajor :
                            ((Cols == 1 && Rows != 1) ? Eigen::ColMajor :
                             EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
-#endif
+            #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
     void read(const cv::FileNode &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,

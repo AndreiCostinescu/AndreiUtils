@@ -149,3 +149,39 @@ void AndreiUtils::displayTextOnOpenCVMat(Mat &image, const string &text, Point t
         cv::putText(image, textLine, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
     }
 }
+
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
+        cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
+        double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]) {
+    cv::Matx33d cameraMatrix(fx, 0, ppx, 0, fy, ppy, 0, 0, 1);
+    cv::Vec<float, 5> distortionParameters;
+    if (distortionCoefficients != nullptr) {
+        distortionParameters = cv::Vec<float, 5>(distortionCoefficients);
+    }
+
+    cv::solvePnP(points3d, points2d, cameraMatrix, distortionParameters, rVec, tVec, false, cv::SOLVEPNP_EPNP);
+    cv::Matx33d r;
+    cv::Rodrigues(rVec, r);
+}
+
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
+        cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
+        double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]) {
+    cv::Mat rVec;
+    recoverPoseFrom2dAnd3dPoints(tVec, rVec, points2d, points3d, fx, fy, ppx, ppy, distortionCoefficients);
+    cv::Rodrigues(rVec, rMat);
+}
+
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
+        cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
+        const CameraIntrinsicParameters &intrinsics) {
+    recoverPoseFrom2dAnd3dPoints(tVec, rVec, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
+                                 intrinsics.ppy, intrinsics.distortionCoefficients);
+}
+
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
+        cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
+        const CameraIntrinsicParameters &intrinsics) {
+    recoverPoseFrom2dAnd3dPoints(tVec, rMat, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
+                                 intrinsics.ppy, intrinsics.distortionCoefficients);
+}
