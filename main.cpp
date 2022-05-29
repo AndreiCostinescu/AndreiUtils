@@ -775,6 +775,20 @@ void testPrintingImagesOpenCV() {
     cout << "END PROGRAM!" << endl;
 }
 
+void testFastForLoop() {
+    vector<int> v(4 * maxNumberOfOMPThreads());
+    printVector(v);
+    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
+        _v[index] = threadID;
+    });
+    printVector(v);
+    setNumberOfOMPThreads(16);
+    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
+        _v[index] = threadID;
+    });
+    printVector(v);
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -801,6 +815,7 @@ int main() {
     // testDynamicCast();
     // testOpenCVMatrixAccessors();
     // testOMPUtils();
-    testPrintingImagesOpenCV();
+    // testPrintingImagesOpenCV();
+    testFastForLoop();
     return 0;
 }
