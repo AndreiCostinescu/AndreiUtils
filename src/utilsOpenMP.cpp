@@ -6,6 +6,10 @@
 
 using namespace AndreiUtils;
 
+int AndreiUtils::getOMPActiveThreadNumber() {
+    return omp_get_thread_num();
+}
+
 int AndreiUtils::getNumberOfActiveOMPThreads() {
     return omp_get_num_threads();
 }

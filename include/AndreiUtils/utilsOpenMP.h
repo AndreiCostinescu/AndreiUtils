@@ -8,6 +8,8 @@
 #include <omp.h>
 
 namespace AndreiUtils {
+    int getOMPActiveThreadNumber();
+
     int getNumberOfActiveOMPThreads();
 
     void setNumberOfOMPThreads(int nrThread);
