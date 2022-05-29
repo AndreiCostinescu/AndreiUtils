@@ -6,12 +6,216 @@ set(@PROJECT_NAME@_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 
 set(@PROJECT_NAME@_VERSION ${@PROJECT_NAME@_VERSION_MAJOR}.${@PROJECT_NAME@_VERSION_MINOR}.${@PROJECT_NAME@_VERSION_PATCH})
 
+set(@PROJECT_NAME@_EXTERNAL_LIBRARIES )
+
+### ADD EXTERNAL DEPENDENCIES: utils ###
+
+if (WIN32)
+    set(@PROJECT_NAME@_EXTERNAL_LIBRARIES wsock32 ws2_32 ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+else (WIN32)
+    set(@PROJECT_NAME@_EXTERNAL_LIBRARIES pthread ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+endif (WIN32)
+
+### CREATE THE TARGETS ###
+
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
+### CHECK THE REQUESTED COMPONENTS ###
+
+set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "realsense")
+
+if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
+    set(@PROJECT_NAME@_FIND_COMPONENTS "world")
+endif()
+message("@PROJECT_NAME@ requested components: ${@PROJECT_NAME@_FIND_COMPONENTS}")
+
+set(@PROJECT_NAME@_REQUEST_EIGEN 0)
+set(@PROJECT_NAME@_REQUEST_OPENCV 0)
+set(@PROJECT_NAME@_REQUEST_OPENMP 0)
+set(@PROJECT_NAME@_REQUEST_REALSENSE 0)
+foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
+    string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
+    if ("${__@PROJECT_NAME@_component}" MATCHES "eigen")
+        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "eigen_opencv")
+        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
+        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "eigen_realsense")
+        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
+        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "opencv")
+        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "opencv_realsense")
+        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
+        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "openmp")
+        set(@PROJECT_NAME@_REQUEST_OPENMP 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "realsense")
+        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
+    endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "world")
+        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
+        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
+        set(@PROJECT_NAME@_REQUEST_OPENMP 1)
+        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
+    endif()
+endforeach()
+
+### ADD EXTERNAL DEPENDENCIES IF NEEDED: Eigen ###
+
+if (${@PROJECT_NAME@_REQUEST_EIGEN})
+    if ((NOT DEFINED Eigen3_FOUND) OR (NOT ${Eigen3_FOUND}))
+        find_package(Eigen3 3.3 REQUIRED)
+        include_directories(${EIGEN3_INCLUDE_DIRS})
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES Eigen3::Eigen ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+endif ()
+
+### ADD EXTERNAL DEPENDENCIES IF NEEDED: opencv ###
+
+if (${@PROJECT_NAME@_REQUEST_OPENCV})
+    if ((NOT DEFINED OPENCV_CORE_FOUND) OR (NOT ${OPENCV_CORE_FOUND}) OR (NOT DEFINED OpenCV_core_FOUND) OR (NOT ${OpenCV_core_FOUND}))
+        if ("${OPENCV_VERSION}" STREQUAL "")
+            find_package(OpenCV REQUIRED COMPONENTS core)
+        else ()
+            find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS core)
+        endif ()
+
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES opencv_core ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+    if ((NOT DEFINED OPENCV_IMGPROC_FOUND) OR (NOT ${OPENCV_IMGPROC_FOUND}) OR (NOT DEFINED OpenCV_imgproc_FOUND) OR (NOT ${OpenCV_imgproc_FOUND}))
+        if ("${OPENCV_VERSION}" STREQUAL "")
+            find_package(OpenCV REQUIRED COMPONENTS imgproc)
+        else ()
+            find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS imgproc)
+        endif ()
+
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES opencv_imgproc ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+    if ((NOT DEFINED OPENCV_CALIB3D_FOUND) OR (NOT ${OPENCV_CALIB3D_FOUND}) OR (NOT DEFINED OpenCV_calib3d_FOUND) OR (NOT ${OpenCV_calib3d_FOUND}))
+        if ("${OPENCV_VERSION}" STREQUAL "")
+            find_package(OpenCV REQUIRED COMPONENTS calib3d)
+        else ()
+            find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS calib3d)
+        endif ()
+
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES opencv_calib3d ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+    include_directories(${OpenCV_INCLUDE_DIRS})
+endif ()
+
+### ADD EXTERNAL DEPENDENCIES IF NEEDED: openmp ###
+
+if (${@PROJECT_NAME@_REQUEST_OPENMP})
+    if ((NOT DEFINED OpenMP_FOUND) OR (NOT ${OpenMP_FOUND}))
+        find_package(OpenMP REQUIRED)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${OpenMP_CXX_LIBRARIES} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+endif ()
+
+### ADD EXTERNAL DEPENDENCIES IF NEEDED: realsense2 ###
+
+if (${@PROJECT_NAME@_REQUEST_EIGEN})
+    if ((NOT DEFINED realsense2_FOUND) OR (NOT ${realsense2_FOUND}))
+        find_package(realsense2 REQUIRED)
+        include_directories(${realsense2_INCLUDE_DIR})
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${realsense2_LIBRARY} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+endif ()
+
+### START POPULATING @PROJECT_NAME@_INCLUDE and @PROJECT_NAME@_LIBRARY variables
+
 set_and_check(@PROJECT_NAME@_INCLUDE "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set(@PROJECT_NAME@_LIBRARY ${@PROJECT_NAME@_EXTERNAL_LIBRARIES} ${@PROJECT_NAME@_LIBRARY})  # might contain components from previous includes
+
+### ADD THE REQUESTED COMPONENTS TO @PROJECT_NAME@_LIBRARY ###
+
+# first, iterate through the components because of inter-dependencies-ordering
+foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_COMPONENTS})
+    list(FIND @PROJECT_NAME@_FIND_COMPONENTS ${__@PROJECT_NAME@_component} __componentIdx)
+    if(__componentIdx LESS 0)
+        continue()
+    endif ()
+    string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
+    if ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "general")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_GENERAL ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen_opencv")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN_OPENCV ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen_realsense")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN_REALSENSE ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "json")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_JSON ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "opencv")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENCV ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "opencv_realsense")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENCV_REALSENSE ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "openmp")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENMP ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "realsense")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_REALSENSE ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "world")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@ ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    else ()
+        message(WARNING "Unknown component/module/target ${__@PROJECT_NAME@_componentLOW}")
+    endif ()
+endforeach ()
+
+### SET THE NOT FOUND COMPONENTS! ###
+
+# second, iterate through the requested components and check if found or not...
+foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
+    if (NOT @PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND)
+        # Either the component is required or the user did not set any components at all.
+        # In the latter case, the @PROJECT_NAME@_FIND_REQUIRED_<component> variable will not be defined
+        # since it is not set by this config. So let's assume the implicitly set components are always required.
+        if(NOT DEFINED @PROJECT_NAME@_FIND_REQUIRED_${__@PROJECT_NAME@_component} OR @PROJECT_NAME@_FIND_REQUIRED_${__@PROJECT_NAME@_component})
+            message(FATAL_ERROR "${__@PROJECT_NAME@_component} is required but was not found")
+        elseif(NOT @PROJECT_NAME@_FIND_QUIETLY)
+            # The component was marked as optional using OPTIONAL_COMPONENTS
+            message(WARNING "Optional component ${__@PROJECT_NAME@_component} was not found")
+        endif()
+        #indicate that module is NOT found
+        string(TOUPPER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentUP)
+        set(${__@PROJECT_NAME@_componentUP}_FOUND "${__@PROJECT_NAME@_componentUP}_FOUND-NOTFOUND")
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND FALSE)
+    endif()
+endforeach()
+
+check_required_components(@PROJECT_NAME@)
+
 set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_NAME@)
 
-message("@PROJECT_NAME@_INCLUDE set to @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
-get_target_property(@PROJECT_NAME@_INCLUDE_CHECK @PROJECT_NAME@::@PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
-message("@PROJECT_NAME@_INCLUDE_CHECK is ${@PROJECT_NAME@_INCLUDE_CHECK}")
-
+# message("@PROJECT_NAME@_INCLUDE set to @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+# get_target_property(@PROJECT_NAME@_INCLUDE_CHECK @PROJECT_NAME@::@PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
+# message("@PROJECT_NAME@_INCLUDE_CHECK is ${@PROJECT_NAME@_INCLUDE_CHECK}")
