@@ -231,79 +231,19 @@ if (USE_JSON)
     # JSON_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_JSON")
     add_library(${LIB_NAME} ${JSON_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_JSON_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_JSON_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
     target_include_directories(${LIB_NAME}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:include>
             )
-endif ()
-
-if (USE_EIGEN)
-    # EIGEN_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_EIGEN")
-    add_library(${LIB_NAME} ${EIGEN_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-    target_include_directories(${LIB_NAME}
-            PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-
-    if (USE_OPENCV)
-        # EIGEN_OPENCV_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_EIGEN_OPENCV")
-        add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
-        target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-        target_include_directories(${LIB_NAME}
-                PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-    endif ()
-
-    if (USE_REALSENSE)
-        # EIGEN_REALSENSE_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_EIGEN_REALSENSE")
-        add_library(${LIB_NAME} ${EIGEN_REALSENSE_UTILS})
-        target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-        target_include_directories(${LIB_NAME}
-                PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-    endif ()
-endif ()
-
-if (USE_OPENCV)
-    # OPENCV_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_OPENCV")
-    add_library(${LIB_NAME} ${OPENCV_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-    target_include_directories(${LIB_NAME}
-            PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-
-    if (USE_REALSENSE)
-        # OPENCV_REALSENSE_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_OPENCV_REALSENSE")
-        add_library(${LIB_NAME} ${OPENCV_REALSENSE_UTILS})
-        target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-        target_include_directories(${LIB_NAME}
-                PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-    endif ()
 endif ()
 
 if (USE_OPENMP)
     # OPENMP_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_OPENMP")
     add_library(${LIB_NAME} ${OPENMP_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
     target_include_directories(${LIB_NAME}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -315,12 +255,72 @@ if (USE_REALSENSE)
     # REALSENSE_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_REALSENSE")
     add_library(${LIB_NAME} ${REALSENSE_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
     target_include_directories(${LIB_NAME}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:include>
             )
+endif ()
+
+if (USE_OPENCV)
+    # OPENCV_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_OPENCV")
+    add_library(${LIB_NAME} ${OPENCV_UTILS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_include_directories(${LIB_NAME}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
+
+    if (USE_REALSENSE)
+        # OPENCV_REALSENSE_UTILS
+        set(LIB_NAME "${LIBRARY_NAME}_OPENCV_REALSENSE")
+        add_library(${LIB_NAME} ${OPENCV_REALSENSE_UTILS})
+        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_REALSENSE ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${LIBRARY_NAME}_OPENCV ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+        target_include_directories(${LIB_NAME}
+                PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:include>
+                )
+    endif ()
+endif ()
+
+if (USE_EIGEN)
+    # EIGEN_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_EIGEN")
+    add_library(${LIB_NAME} ${EIGEN_UTILS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_include_directories(${LIB_NAME}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
+
+    if (USE_OPENCV)
+        # EIGEN_OPENCV_UTILS
+        set(LIB_NAME "${LIBRARY_NAME}_EIGEN_OPENCV")
+        add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
+        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_EIGEN ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_OPENCV ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+        target_include_directories(${LIB_NAME}
+                PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:include>
+                )
+    endif ()
+
+    if (USE_REALSENSE)
+        # EIGEN_REALSENSE_UTILS
+        set(LIB_NAME "${LIBRARY_NAME}_EIGEN_REALSENSE")
+        add_library(${LIB_NAME} ${EIGEN_REALSENSE_UTILS})
+        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_EIGEN ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_REALSENSE ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+        target_include_directories(${LIB_NAME}
+                PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:include>
+                )
+    endif ()
 endif ()
 
 # UTILS
