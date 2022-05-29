@@ -100,25 +100,42 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     return !fs->fail();
 }
 
-void AndreiUtils::printImage(const Mat *const image, const char *title, bool verbose) {
+void AndreiUtils::displayImage(const Mat &image, const char *title, bool verbose) {
     if (verbose) {
         cout << "Printing " << title << "... " << image << endl;
     }
-    if (image != nullptr && !image->empty()) {
-        imshow(title, *image);
-    } else if (image != nullptr) {
-        assert(image->empty());
+    if (!image.empty()) {
+        imshow(title, image);
+    } else {
+        assert(image.empty());
         cerr << title << " is empty!" << endl;
+    }
+}
+
+void AndreiUtils::displayImage(const Mat *const image, const char *title, bool verbose) {
+    if (verbose) {
+        cout << "Printing " << title << "... " << image << endl;
+    }
+    if (image != nullptr) {
+        displayImage(*image, title, false);
     } else {
         assert(image == nullptr);
         cerr << title << " is null!" << endl;
     }
 }
 
-void AndreiUtils::printImages(const vector<const Mat *> &images, const vector<string> &titles) {
+void AndreiUtils::displayImages(const vector<Mat> &images, const vector<string> &titles) {
     assert (images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
-        printImage(images[i], titles[i].c_str());
+        displayImage(images[i], titles[i].c_str());
+    }
+    cout << "Printed!" << endl;
+}
+
+void AndreiUtils::displayImages(const vector<const Mat *> &images, const vector<string> &titles) {
+    assert (images.size() >= titles.size());
+    for (int i = 0; i < images.size(); i++) {
+        displayImage(images[i], titles[i].c_str());
     }
     cout << "Printed!" << endl;
 }

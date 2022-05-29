@@ -18,6 +18,7 @@
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsMap.hpp>
+#include <AndreiUtils/utilsOpenCV.h>
 #include <AndreiUtils/utilsOpenCV.hpp>
 #include <AndreiUtils/utilsOpenMP.h>
 #include <AndreiUtils/utilsTime.h>
@@ -614,43 +615,43 @@ void testDynamicCast() {
     cout << endl;
 
     A *tmp;
-    tmp = dynamic_cast<A*>(a);
+    tmp = dynamic_cast<A *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<A*>(b);
+    tmp = dynamic_cast<A *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<A*>(c);
+    tmp = dynamic_cast<A *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<A*>(d);
-    cout << tmp << endl;
-    cout << endl;
-
-    tmp = dynamic_cast<B*>(a);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B*>(b);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B*>(c);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B*>(d);
+    tmp = dynamic_cast<A *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<C*>(a);
+    tmp = dynamic_cast<B *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<C*>(b);
+    tmp = dynamic_cast<B *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<C*>(c);
+    tmp = dynamic_cast<B *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<C*>(d);
+    tmp = dynamic_cast<B *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<D*>(a);
+    tmp = dynamic_cast<C *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<D*>(b);
+    tmp = dynamic_cast<C *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<D*>(c);
+    tmp = dynamic_cast<C *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<D*>(d);
+    tmp = dynamic_cast<C *>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<D *>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D *>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D *>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D *>(d);
     cout << tmp << endl;
     cout << endl;
 
@@ -753,6 +754,27 @@ void testOMPUtils() {
     }
 }
 
+void testPrintingImagesOpenCV() {
+    cv::Mat m = cv::Mat(300, 300, CV_8U);
+    m.setTo(100);
+    displayImage(m, "GrayScale");
+    for (int i = 0; i < 4; i++) {
+        for (int v = 0; v < 256; v++) {
+            m.setTo(v);
+            displayImage(m, "GrayScale");
+            cv::waitKey(2);
+        }
+        for (int v = 255; v >= 0; v--) {
+            m.setTo(v);
+            displayImage(m, "GrayScale");
+            cv::waitKey(2);
+        }
+    }
+    cout << "Finished visualization!" << endl;
+    cv::waitKey();
+    cout << "END PROGRAM!" << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -778,6 +800,7 @@ int main() {
     // testMapFiltering();
     // testDynamicCast();
     // testOpenCVMatrixAccessors();
-    testOMPUtils();
+    // testOMPUtils();
+    testPrintingImagesOpenCV();
     return 0;
 }

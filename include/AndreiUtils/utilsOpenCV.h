@@ -22,9 +22,13 @@ namespace AndreiUtils {
 
     bool matReadBinary(std::ifstream *fs, cv::Mat *result);
 
-    void printImage(const cv::Mat *image, const char *title, bool verbose = false);
+    void displayImage(const cv::Mat &image, const char *title, bool verbose = false);
 
-    void printImages(const std::vector<const cv::Mat *> &images, const std::vector<std::string> &titles);
+    void displayImage(const cv::Mat *image, const char *title, bool verbose = false);
+
+    void displayImages(const std::vector<cv::Mat> &images, const std::vector<std::string> &titles);
+
+    void displayImages(const std::vector<const cv::Mat *> &images, const std::vector<std::string> &titles);
 
     void convertDepthToMillimetersUInt16(const cv::Mat *depthMat, cv::Mat &output);
 
