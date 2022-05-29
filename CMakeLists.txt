@@ -169,7 +169,7 @@ if (USE_OPENCV AND USE_REALSENSE)
 endif ()
 
 if (USE_OPENMP)
-    # SET(UTILS_OPENMP include/AndreiUtils/utilsOpenMP.hpp)
+    SET(UTILS_OPENMP include/AndreiUtils/utilsOpenMP.hpp src/utilsOpenMP.cpp)
 endif ()
 
 if (USE_REALSENSE)
@@ -236,7 +236,13 @@ endif ()
 if (USE_OPENMP)
     # OPENMP_UTILS
     set(LIB_NAME "${LIBRARY_NAME}_OPENMP")
-    # add_library(${LIB_NAME} ${OPENMP_UTILS})
+    add_library(${LIB_NAME} ${OPENMP_UTILS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_include_directories(${LIB_NAME}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
 endif ()
 
 if (USE_REALSENSE)

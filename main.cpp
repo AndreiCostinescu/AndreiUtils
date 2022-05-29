@@ -19,6 +19,7 @@
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsOpenCV.hpp>
+#include <AndreiUtils/utilsOpenMP.h>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 #include <librealsense2/rs.hpp>
@@ -720,6 +721,38 @@ void testOpenCVMatrixAccessors() {
     delete m4;
 }
 
+void testOMPUtils() {
+    cout << "Default settings:" << endl;
+    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
+    #pragma omp parallel default(none)
+    {
+        #pragma omp single
+        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    }
+    #pragma omp parallel default(none) num_threads(3)
+    {
+        #pragma omp single
+        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    }
+    cout << endl;
+
+    cout << "After setting #omp threads to 12:" << endl;
+    setNumberOfOMPThreads(12);
+    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
+    #pragma omp parallel default(none)
+    {
+        #pragma omp single
+        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    }
+    #pragma omp parallel default(none) num_threads(3)
+    {
+        #pragma omp single
+        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -744,6 +777,7 @@ int main() {
     // testHashable();
     // testMapFiltering();
     // testDynamicCast();
-    testOpenCVMatrixAccessors();
+    // testOpenCVMatrixAccessors();
+    testOMPUtils();
     return 0;
 }
