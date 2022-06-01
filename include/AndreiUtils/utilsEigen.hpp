@@ -99,6 +99,11 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    Eigen::Quaternion<T> qIdentity() {
+        return Eigen::Quaternion<T>::Identity();
+    }
+
+    template<class T>
     Eigen::Quaternion<T> qxRotation(const T &angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
     }
@@ -141,6 +146,11 @@ namespace AndreiUtils {
     template<class T>
     void qDecrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         q1.coeffs() -= q2.coeffs();
+    }
+
+    template<class T>
+    double qCoefficientSquareSum(Eigen::Quaternion<T> const &q) {
+        return q.coeffs().squaredNorm();
     }
 
     template<class T>
