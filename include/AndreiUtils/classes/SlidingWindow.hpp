@@ -161,6 +161,19 @@ namespace AndreiUtils {
 
         void addData(T newData) {
             assert(this->size > 0);
+            this->data[this->index] = newData;
+            this->index += 1;
+            if (this->index == this->data.size()) {
+                this->index = 0;
+            }
+            if (this->dataSize < this->size) {
+                this->dataSize++;
+            }
+            // std::cout << this->index << "; " << this->dataSize << "; " << this->size << "; " << std::endl;
+        }
+
+        void addMoveData(T &newData) {
+            assert(this->size > 0);
             this->data[this->index] = std::move(newData);
             this->index += 1;
             if (this->index == this->data.size()) {
@@ -273,6 +286,12 @@ namespace AndreiUtils {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
             SlidingWindow<T>::addData(newData);
+        }
+
+        void addMoveData(T &newData, bool valid = true) {
+            assert(this->size > 0);
+            this->validData[this->index] = valid ? 1 : 0;
+            SlidingWindow<T>::addMoveData(newData);
         }
 
         T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters,
