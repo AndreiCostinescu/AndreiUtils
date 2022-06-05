@@ -21,6 +21,13 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    T *fastCreateCopy(const T *const src, size_t size) {
+        auto *dst = new T[size];
+        fastMemCopy(dst, src, size);
+        return dst;
+    }
+
+    template<class T>
     void fastATimesSrcPlusB(T *const dst, const T *const src, size_t size, T a, T b) {
         // dst and src are predefined shared?!
         #pragma omp parallel for shared(size, a, b) default(none)
