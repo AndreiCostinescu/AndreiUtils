@@ -56,13 +56,14 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int 
     }
 
     // size_t frameElements = w * h * c;
-    size_t nrBytes = w * h * c * elementSize;
     if (vf.get_bytes_per_pixel() != c * elementSize) {
+        size_t nrBytes = w * h * c * elementSize;
         int dataElements = w * h * vf.get_bytes_per_pixel();
         throw runtime_error("The container data and the frame data do not have the same amount of bytes: " +
                             to_string(dataElements) + " vs. " + to_string(nrBytes));
     }
     if (copyData) {
+        size_t nrBytes = w * h * c * elementSize;
         fastMemCopy(*data, (const uint8_t *) f.get_data(), nrBytes);
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
             // Switch BGR to RGB format
