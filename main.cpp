@@ -789,6 +789,25 @@ void testFastForLoop() {
     printVector(v);
 }
 
+void testOpenCVMatrixCropReference() {
+    cv::Mat m = cv::Mat(300, 300, CV_8U);
+    m.setTo(100);
+
+    for (int i = 0; i < 4; i++) {
+        for (int v = 0; v < 256; v++) {
+            cv::Mat view = m(cv::Range(100, 200), cv::Range(100, 200));
+            view.setTo(v);
+            displayImage(m, "GrayScale");
+            cv::waitKey(10);
+        }
+        for (int v = 255; v >= 0; v--) {
+            m.setTo(v);
+            displayImage(m, "GrayScale");
+            cv::waitKey(10);
+        }
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -816,6 +835,7 @@ int main() {
     // testOpenCVMatrixAccessors();
     // testOMPUtils();
     // testPrintingImagesOpenCV();
-    testFastForLoop();
+    // testFastForLoop();
+    testOpenCVMatrixCropReference();
     return 0;
 }
