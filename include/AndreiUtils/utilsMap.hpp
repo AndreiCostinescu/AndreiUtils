@@ -9,6 +9,7 @@
 #include <iostream>
 #include <map>
 #include <stdexcept>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -151,7 +152,48 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::vector<T1> getMapKeys(const std::map<T1, T2, C, A> &container) {
+    std::string printMapToString(std::map<T1, T2, C, A> const &container) {
+        std::stringstream ss;
+        for (const auto &containerItem: container) {
+            ss << containerItem.first << " -> " << containerItem.second << std::endl;
+        }
+        return ss.str();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::string printMapToString(std::map<T1, T2, C, A> const &container,
+                                 std::function<std::string(T1 const &)> const &keyStringConversion,
+                                 std::function<std::string(T2 const &)> const &valueStringConversion) {
+        std::stringstream ss;
+        for (const auto &containerItem: container) {
+            ss << keyStringConversion(containerItem.first) << " -> " << valueStringConversion(containerItem.second)
+               << std::endl;
+        }
+        return ss.str();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::string printMapToStringConvertKey(std::map<T1, T2, C, A> const &container,
+                                           std::function<std::string(T1 const &)> const &keyStringConversion) {
+        std::stringstream ss;
+        for (const auto &containerItem: container) {
+            ss << keyStringConversion(containerItem.first) << " -> " << containerItem.second << std::endl;
+        }
+        return ss.str();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::string printMapToStringConvertValue(std::map<T1, T2, C, A> const &container,
+                                             std::function<std::string(T2 const &)> const &valueStringConversion) {
+        std::stringstream ss;
+        for (const auto &containerItem: container) {
+            ss << containerItem.first << " -> " << valueStringConversion(containerItem.second) << std::endl;
+        }
+        return ss.str();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::vector<T1> getMapKeys(std::map<T1, T2, C, A> const &container) {
         std::vector<T1> keys(container.size());
         int i = 0;
         for (const auto &elem: container) {
