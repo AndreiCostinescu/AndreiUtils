@@ -56,11 +56,11 @@ namespace AndreiUtils {
         }
 
         T &get(size_t id) const {
-            return AndreiUtils::mapGetRef(this->idToElement, id);
+            return AndreiUtils::mapGet(this->idToElement, id);
         }
 
         size_t getId(const T &elem) const {
-            return AndreiUtils::mapGetRef(this->elementToId, elem);
+            return AndreiUtils::mapGet(this->elementToId, elem);
         }
 
         const std::map<size_t, T> &getIdToElement() const {

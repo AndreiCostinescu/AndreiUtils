@@ -808,6 +808,96 @@ void testOpenCVMatrixCropReference() {
     }
 }
 
+void testMapRefAccessing() {
+    map<int, int> x;
+    x[0] = 0;
+    x[1] = 1;
+    x[2] = 2;
+    x[3] = 3;
+    x[4] = 4;
+    int value = 42;
+    int *valuePtr = &value;
+    int const *valueConstPtr = &value;
+
+    // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
+
+    cout << mapGetIfContains(x, -1, value) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    cout << mapGetIfContains(x, -1, valuePtr) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    cout << mapGetIfContains(x, 0, value) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    cout << mapGetIfContains(x, 1, valuePtr) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
+    cout << value << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    value = 42;
+
+    cout << mapGetIfContains(x, 1, valuePtr) << endl;
+    cout << value << endl;
+    cout << "Update valuePtr..." << endl;
+    *valuePtr = 42;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+    int &valueRef = *valuePtr;
+
+    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
+    cout << value << endl;
+    cout << "Update valueRef..." << endl;
+    valueRef = 69;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    // ------------------ NOW CHECK MAP_GET FUNCTIONS ------------------
+
+    try {
+        mapGet(x, -1);
+    } catch (exception &e) {
+        if (strcmp(e.what(), "Element not found in map!") != 0) {
+            throw e;
+        }
+    }
+
+    value = mapGet(x, 0);
+    cout << "value = " << value << endl;
+    value = 5;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    int &valueRef2 = mapGet(x, 4);
+    cout << "valueRef2 = " << valueRef2 << endl;
+    valueRef2 = 5;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+
+    int &valueRef3 = mapGet(x, 1);
+    valueRef3 = -14;
+    cout << "valueRef3 = " << valueRef3 << endl;
+    cout << "valueRef  = " << valueRef << endl;
+    cout << printMapToString(x) << endl;
+    cout << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -836,6 +926,7 @@ int main() {
     // testOMPUtils();
     // testPrintingImagesOpenCV();
     // testFastForLoop();
-    testOpenCVMatrixCropReference();
+    // testOpenCVMatrixCropReference();
+    testMapRefAccessing();
     return 0;
 }

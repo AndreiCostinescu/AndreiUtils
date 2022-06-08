@@ -14,88 +14,118 @@
 #include <vector>
 
 namespace AndreiUtils {
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
+    bool mapContains(std::map<T1, T2, C, A> const &container, T1 const &key) {
+        const auto &data = container.find(key);
+        return data != container.end();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    bool mapContains(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
+        const auto &data = container.find(const_cast<T1 *>(key));
+        return data != container.end();
+    }
+
+    // if element is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    bool mapContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 *value = nullptr) {
+    bool mapGetIfContains(std::map<T1, T2, C, A> const &container, T1 const &key, T2 &value) {
         const auto &data = container.find(key);
         if (data != container.end()) {
-            if (value != nullptr) {
-                *value = data->second;
-            }
+            value = data->second;
             return true;
         }
         return false;
     }
 
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
-    bool mapContains(const std::map<T1 *, T2, C, A> &container, const T1 *key, T2 *value = nullptr) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+    // if element is found, gets a (non-const) pointer-reference of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
+    bool mapGetIfContains(std::map<T1, T2, C, A> &container, T1 const &key, T2 *&value) {
+        auto data = container.find(key);
         if (data != container.end()) {
-            if (value != nullptr) {
-                *value = data->second;
-            }
+            value = &data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element is found, gets a (const) pointer-reference of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    bool mapGetIfContains(std::map<T1, T2, C, A> const &container, T1 const &key, T2 const *&value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = &data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    bool mapGetIfContains(std::map<T1 *, T2, C, A> const &container, T1 const *const &key, T2 &value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a (non-const) pointer-reference of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    bool mapGetIfContains(std::map<T1 *, T2, C, A> &container, T1 const *const &key, T2 *&value) {
+        auto data = container.find(key);
+        if (data != container.end()) {
+            value = &data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a (const) pointer-reference of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    bool mapGetIfContains(std::map<T1 *, T2, C, A> const &container, T1 const *const &key, T2 const *&value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = &data->second;
             return true;
         }
         return false;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    bool mapGetIfContains(const std::map<T1, T2, C, A> &container, const T1 &key, T2 &value) {
-        return mapContains(container, key, &value);
+    T2 &mapGet(std::map<T1, T2, C, A> &container, T1 const &key) {
+        auto data = container.find(key);
+        if (data == container.end()) {
+            throw std::runtime_error("Element not found in map!");
+        }
+        return data->second;
     }
 
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
-    bool mapGetIfContains(const std::map<T1 *, T2, C, A> &container, const T1 *key, T2 &value) {
-        return mapContains(container, key, &value);
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    T2 &mapGet(std::map<T1 *, T2, C, A> &container, T1 const *key) {
+        auto data = container.find(key);
+        if (data == container.end()) {
+            throw std::runtime_error("Element not found in map!");
+        }
+        return data->second;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 mapGet(const std::map<T1, T2, C, A> &container, const T1 &key) {
-        T2 value;
-        if (!mapContains(container, key, &value)) {
+    T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
+        const auto &data = container.find(key);
+        if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
         }
-        return value;
+        return data->second;
     }
 
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
-    T2 mapGet(const std::map<T1 *, T2, C, A> &container, const T1 *key) {
-        T2 value;
-        if (!mapContains(container, key, &value)) {
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    T2 const &mapGet(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
+        auto data = container.find(key);
+        if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
         }
-        return value;
-    }
-
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 &mapGetRef(std::map<T1, T2, C, A> &container, const T1 &key) {
-        if (!mapContains(container, key)) {
-            throw std::runtime_error("Element not found in map!");
-        }
-        return container.at(key);
-    }
-
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
-    T2 &mapGetRef(std::map<T1 *, T2, C, A> &container, const T1 *key) {
-        if (!mapContains(container, key)) {
-            throw std::runtime_error("Element not found in map!");
-        }
-        return container.at(const_cast<T1 *>(key));
-    }
-
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    const T2 &mapGetRef(const std::map<T1, T2, C, A> &container, const T1 &key) {
-        if (!mapContains(container, key)) {
-            throw std::runtime_error("Element not found in map!");
-        }
-        return container.at(key);
-    }
-
-    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1 *, T2>>>
-    const T2 &mapGetRef(const std::map<T1 *, T2, C, A> &container, const T1 *key) {
-        if (!mapContains(container, key)) {
-            throw std::runtime_error("Element not found in map!");
-        }
-        return container.at(const_cast<T1 *>(key));
+        return data->second;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
