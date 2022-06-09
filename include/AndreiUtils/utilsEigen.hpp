@@ -271,6 +271,37 @@ namespace AndreiUtils {
         }
         return v;
     }
+
+    template<class T>
+    Eigen::Matrix<T, 3, 1> qToRPY(const Eigen::Quaternion<T> &q) {
+        // first rotate around X, then round Y and finally around Z => R = Rx * Ry * Rz
+        // x points left, y points front, z point up
+        Eigen::Matrix<T, 3, 1> euler;
+
+        double sqw = q.w() * q.w(), sqx = q.x() * q.x(), sqy = q.y() * q.y(), sqz = q.z() * q.z();
+
+        // If quaternion is normalised the unit is one, otherwise it is the correction factor
+        double unit = sqx + sqy + sqz + sqw, test = q.x() * q.z() + q.y() * q.w();
+
+        if (test > 0.4999 * unit) {
+            // 0.4999f OR 0.5f - EPSILON: Singularity at north pole
+            euler.x() = 0;                                                                         // Roll
+            euler.y() = M_PI * 0.5f;                                                      // Pitch
+            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
+        } else if (test < -0.4999f * unit) {
+            // -0.4999f OR -0.5f + EPSILON: Singularity at south pole
+            euler.x() = 0;                                                                         // Roll
+            euler.y() = -M_PI * 0.5f;                                                     // Pitch
+            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
+        } else {
+            euler.x() = atan2(2 * q.x() * q.w() - 2 * q.y() * q.z(), sqw - sqx - sqy + sqz);  // Roll
+            euler.y() = asin(2 * test / unit);                                         // Pitch
+            euler.z() = atan2(2 * q.z() * q.w() - 2 * q.x() * q.y(), sqw + sqx - sqy - sqz);  // Yaw
+        }
+
+        // return (float)(180 / M_PI) * euler;  // convert to degrees
+        return euler;
+    }
 }
 
 namespace std {

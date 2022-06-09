@@ -90,6 +90,11 @@ namespace AndreiUtils {
     inline T fastMax(const T a, const T b) {
         return (greater<T>(a, b) ? a : b);
     }
+
+    template<typename T>
+    inline T clamp(T const &v, T const &minV, T const &maxV) {
+        return fastMin(fastMax(v, minV), maxV);
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
