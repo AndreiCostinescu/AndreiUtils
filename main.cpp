@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
@@ -816,55 +817,64 @@ void testMapRefAccessing() {
     x[3] = 3;
     x[4] = 4;
     int value = 42;
-    int *valuePtr = &value;
-    int const *valueConstPtr = &value;
+    int *valuePtr = nullptr;
+    int const *valueConstPtr = nullptr;
 
     // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
 
     cout << mapGetIfContains(x, -1, value) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 0, value) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     value = 42;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << "Update valuePtr..." << endl;
     *valuePtr = 42;
     cout << printMapToString(x) << endl;
     cout << endl;
     int &valueRef = *valuePtr;
 
-    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << mapGetIfContains(x, 2, valuePtr) << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << "Update valueRef..." << endl;
     valueRef = 69;
+    *valuePtr = -42;
     cout << printMapToString(x) << endl;
     cout << endl;
 
@@ -898,6 +908,15 @@ void testMapRefAccessing() {
     cout << endl;
 }
 
+void testMixedDataContainer() {
+    nlohmann::json x;
+    x["24"] = 25;
+    MixedDataContainer c;
+    c.addData("json", &x);
+    auto tmp = *(c.getData<nlohmann::json>("json"));
+    cout << tmp.dump() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -927,6 +946,7 @@ int main() {
     // testPrintingImagesOpenCV();
     // testFastForLoop();
     // testOpenCVMatrixCropReference();
-    testMapRefAccessing();
+    // testMapRefAccessing();
+    testMixedDataContainer();
     return 0;
 }
