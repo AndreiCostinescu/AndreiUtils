@@ -168,10 +168,10 @@ namespace AndreiUtils {
 
     /**
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
-    */
+    //*/
     template<class T>
     Eigen::Quaternion<T> qFromEulerAngles(const std::vector<T> &angles, const std::string &format = "xyz") {
-        Eigen::Quaternion<T> q = Eigen::Quaternion<T>::Identity();
+        Eigen::Quaternion<T> q = qIdentity<T>();
         if (angles.size() > format.size()) {
             throw std::runtime_error("Not all angles have the format specified!");
         }
