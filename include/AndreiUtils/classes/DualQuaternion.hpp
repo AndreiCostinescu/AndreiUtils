@@ -45,6 +45,11 @@ namespace AndreiUtils {
             return coefficients.squaredNorm();
         }
 
+        template<class CastType>
+        DualQuaternion<CastType> cast() const {
+            return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
+        }
+
         void normalize() {
             T norm = this->r.norm();
             if (equal(norm, T(0))) {
@@ -144,7 +149,7 @@ namespace AndreiUtils {
         }
 
         Eigen::Matrix<T, 3, 1> transform(const Eigen::Matrix<T, 3, 1> &p) const {
-            return ((*this) * DualQuaternion(Eigen::Quaternion<T>::Identity(), vToQ(p)) *
+            return ((*this) * DualQuaternion(qIdentity<T>(), vToQ(p)) *
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
