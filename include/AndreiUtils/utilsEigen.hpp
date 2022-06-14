@@ -166,6 +166,11 @@ namespace AndreiUtils {
         return q;
     }
 
+    template<class T>
+    Eigen::Matrix<T, 3, 1> qRotate(const Eigen::Quaternion<T> &q, const Eigen::Matrix<T, 3, 1> &v) {
+        return (q * vToQ(v) * q.inverse()).vec();
+    }
+
     /**
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     //*/
