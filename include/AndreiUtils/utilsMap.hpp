@@ -271,6 +271,33 @@ namespace AndreiUtils {
         filterMapBasedOnPredicate(result, predicate);
         return result;
     }
+
+    template<class T, typename A = std::allocator<std::pair<const int, T>>>
+    std::map<int, T, std::less<int>, A> mapFromVector(std::vector<T> const &v) {
+        std::map<int, T, std::less<int>, A> m;
+        for (size_t i = 0; i < v.size(); i++) {
+            m[i] = v[i];
+        }
+        return m;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::map<T1, T2, C, A> mapFromVector(std::vector<T2> const &v, std::function<T1(T2 const &)> const &keyOp) {
+        std::map<T1, T2, C, A> m;
+        for (size_t i = 0; i < v.size(); i++) {
+            m[keyOp(v[i])] = v[i];
+        }
+        return m;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::map<T1, T2, C, A> mapFromVector(std::vector<T2> const &v, std::function<T1(T2 const &, size_t)> const &keyOp) {
+        std::map<T1, T2, C, A> m;
+        for (size_t i = 0; i < v.size(); i++) {
+            m[keyOp(v[i], i)] = v[i];
+        }
+        return m;
+    }
 }
 
 #endif //ANDREIUTILS_MAPUTILS_HPP

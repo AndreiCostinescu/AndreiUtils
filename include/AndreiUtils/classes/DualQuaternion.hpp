@@ -14,19 +14,20 @@ namespace AndreiUtils {
     class DualQuaternion {
     public:
         static DualQuaternion identity() {
-            DualQuaternion q;
-            q.r.setIdentity();
-            qSetZero(q.d);
-            return q;
+            return {qIdentity<T>(), Eigen::Matrix<T, 3, 1>::Zero()};
         }
 
-        DualQuaternion() : r(qZero<double>()), d(qZero<double>()) {}
+        DualQuaternion() : r(qZero<T>()), d(qZero<T>()) {}
 
         DualQuaternion(Eigen::Quaternion<T> r, Eigen::Quaternion<T> d) : r(r), d(d) {}
 
         DualQuaternion(Eigen::Quaternion<T> r, Eigen::Matrix<T, 3, 1> t) : r(r) {
-            this->d = qMulScalar(vToQ(t) * r, 0.5);
+            this->d = qMulScalar(vToQ(t) * r, T(0.5));
         }
+
+        explicit DualQuaternion(Eigen::Matrix<T, 4, 4> t) :
+                DualQuaternion(qFromRotationMatrix(Eigen::Matrix<T, 3, 3>(t.template block<3, 3>(0, 0))),
+                               t.template block<3, 1>(0, 3)) {}
 
         virtual ~DualQuaternion() = default;
 
@@ -42,6 +43,11 @@ namespace AndreiUtils {
             coefficients.topRows(4) = this->r.coeffs().template cast<double>();
             coefficients.bottomRows(4) = this->d.coeffs().template cast<double>();
             return coefficients.squaredNorm();
+        }
+
+        template<class CastType>
+        DualQuaternion<CastType> cast() const {
+            return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
         }
 
         void normalize() {
@@ -143,18 +149,25 @@ namespace AndreiUtils {
         }
 
         Eigen::Matrix<T, 3, 1> transform(const Eigen::Matrix<T, 3, 1> &p) const {
-            return ((*this) * DualQuaternion(Eigen::Quaternion<T>::Identity(), vToQ(p)) *
+            return ((*this) * DualQuaternion(qIdentity<T>(), vToQ(p)) *
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
         Eigen::Matrix<T, 3, 1> rotate(const Eigen::Matrix<T, 3, 1> &v) const {
-            return ((*this) * DualQuaternion(vToQ(v), qZero<double>()) *
+            return ((*this) * DualQuaternion(vToQ(v), qZero<T>()) *
                     this->quaternionDualConjugate()).getRotation().vec();
         }
 
         Eigen::Matrix<T, 3, 1> translate(const Eigen::Matrix<T, 3, 1> &t) const {
-            return ((*this) * DualQuaternion(qZero<double>(), vToQ(t)) *
-                    this->quaternionDualConjugate()).getDual().vec();
+            return ((*this) * DualQuaternion(qZero<T>(), vToQ(t)) * this->quaternionDualConjugate()).getTranslation();
+        }
+
+        DualQuaternion addRotation(const Eigen::Quaternion<T> &q) const {
+            return DualQuaternion(q * this->r, this->getTranslation());
+        }
+
+        DualQuaternion addTranslation(const Eigen::Matrix<T, 3, 1> &t) const {
+            return DualQuaternion(this->r, t + this->getTranslation());
         }
 
         Eigen::Quaternion<T> getRotation() const {
@@ -176,12 +189,8 @@ namespace AndreiUtils {
         Eigen::Matrix<T, 4, 4> getTransformationMatrix() const {
             auto q = this->normalized();
             Eigen::Matrix<T, 4, 4> M = Eigen::Matrix<T, 4, 4>::Identity();
-
-            // Extract rotational information
-            M.template block<3, 3>(0, 0) = q.getRotationAsMatrix();
-
-            // Extract translation information
-            M.col(3).template topRows<3>() = q.getTranslation();
+            M.template block<3, 3>(0, 0) = q.getRotationAsMatrix();  // Extract rotational information
+            M.col(3).template topRows<3>() = q.getTranslation();  // Extract translation information
             return M;
         }
 

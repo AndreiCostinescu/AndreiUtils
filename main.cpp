@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
@@ -198,7 +199,10 @@ void testLambdaCaptureScope() {
 void testDualQuaternions() {
     Vector3d t(1, 2, 3);
     Vector3d p(4, 2, 3);
-    vector<double> angles = {M_PI_2, 0, M_PI};
+    vector<double> angles;
+    // angles = {M_PI_2, 0, M_PI};
+    // angles = {0, 0, M_PI};
+    angles = {M_PI_2, 0, 0};
     Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
     DualQuaternion<double> q(r, t);
     cout << "q = " << q << endl;
@@ -232,6 +236,22 @@ void testDualQuaternions() {
     cout << "q    = " << q << endl;
     cout << "qInv = " << qInv << endl;
     cout << average(vector<DualQuaternion<double>>({q, qInv})) << endl;
+
+    cout << endl << endl;
+
+    cout << q.getTranslation().transpose() << ", " << q << endl;
+    p = Vector3d(2, -31, 1);
+    auto q1 = q.addTranslation(p);
+    cout << q1.getTranslation().transpose() << ", " << q1 << endl;
+    cout << endl;
+
+    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q << endl;
+    // angles = {M_PI / 4, M_PI / 3, -M_PI / 6};
+    angles = {-M_PI_2, M_PI, 0};
+    r = qFromEulerAngles<double>(angles, "zyx");
+    auto q2 = q.addRotation(r);
+    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", " << q2 << endl;
+    cout << endl;
 }
 
 void testStringAllocation() {
@@ -816,55 +836,64 @@ void testMapRefAccessing() {
     x[3] = 3;
     x[4] = 4;
     int value = 42;
-    int *valuePtr = &value;
-    int const *valueConstPtr = &value;
+    int *valuePtr = nullptr;
+    int const *valueConstPtr = nullptr;
 
     // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
 
     cout << mapGetIfContains(x, -1, value) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 0, value) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     value = 42;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << "Update valuePtr..." << endl;
     *valuePtr = 42;
     cout << printMapToString(x) << endl;
     cout << endl;
     int &valueRef = *valuePtr;
 
-    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << endl;
+    cout << mapGetIfContains(x, 2, valuePtr) << endl;
+    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
+         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
     cout << "Update valueRef..." << endl;
     valueRef = 69;
+    *valuePtr = -42;
     cout << printMapToString(x) << endl;
     cout << endl;
 
@@ -898,6 +927,15 @@ void testMapRefAccessing() {
     cout << endl;
 }
 
+void testMixedDataContainer() {
+    nlohmann::json x;
+    x["24"] = 25;
+    MixedDataContainer c;
+    c.addData("json", &x);
+    auto tmp = *(c.getData<nlohmann::json>("json"));
+    cout << tmp.dump() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -909,7 +947,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
+    testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -927,6 +965,7 @@ int main() {
     // testPrintingImagesOpenCV();
     // testFastForLoop();
     // testOpenCVMatrixCropReference();
-    testMapRefAccessing();
+    // testMapRefAccessing();
+    // testMixedDataContainer();
     return 0;
 }
