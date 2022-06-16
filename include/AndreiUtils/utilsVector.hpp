@@ -66,8 +66,36 @@ namespace AndreiUtils {
     //*/
 
     template<class T>
+    bool vectorContains(const std::vector<T> &container, std::function<bool(T const &)> const &predicate,
+                        std::size_t *position = nullptr) {
+        for (size_t i = 0; i < container.size(); i++) {
+            if (predicate(container[i])) {
+                if (position != nullptr) {
+                    *position = i;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorContains(const std::vector<T *> &container, std::function<bool(T const *const &)> const &predicate,
+                        std::size_t *position = nullptr) {
+        for (size_t i = 0; i < container.size(); i++) {
+            if (predicate(container[i])) {
+                if (position != nullptr) {
+                    *position = i;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
     bool vectorContains(const std::vector<T> &container, const T &key, std::size_t *position = nullptr) {
-        auto iter = find(container.begin(), container.end(), key);
+        auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
         }
@@ -79,7 +107,7 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T *> &container, T *&key, std::size_t *position = nullptr) {
-        auto iter = find(container.begin(), container.end(), key);
+        auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
         }
@@ -91,7 +119,7 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T *> &container, T *const &key, std::size_t *position = nullptr) {
-        auto iter = find(container.begin(), container.end(), key);
+        auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
         }
@@ -103,7 +131,7 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T *> &container, T const *&key, std::size_t *position = nullptr) {
-        auto iter = find(container.begin(), container.end(), key);
+        auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
         }
@@ -115,7 +143,7 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(const std::vector<T *> &container, T const *const &key, std::size_t *position = nullptr) {
-        auto iter = find(container.begin(), container.end(), key);
+        auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
         }
