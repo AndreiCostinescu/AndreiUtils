@@ -22,7 +22,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
 ### CHECK THE REQUESTED COMPONENTS ###
 
-set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "realsense" "world")
+set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "pthread" "realsense" "world")
 
 if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
     set(@PROJECT_NAME@_FIND_COMPONENTS "world")
@@ -158,6 +158,10 @@ foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_COMPONENTS})
         set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
     elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "openmp")
         set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENMP ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "pthread")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_PTHREAD ${@PROJECT_NAME@_LIBRARY})
         set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
         set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
     elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "realsense")

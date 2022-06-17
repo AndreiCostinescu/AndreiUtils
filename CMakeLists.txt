@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(AndreiUtils)  # sets PROJECT_NAME variable
 set(PROJECT_VERSION_STRING "1.0.0")
@@ -29,6 +29,7 @@ option(WITH_EIGEN "Build the code with eigen" OFF)
 option(WITH_JSON "Build the code with json" ON)
 option(WITH_OPENCV "Build the code with opencv" OFF)
 option(WITH_OPENMP "Build the code with openmp" OFF)
+option(WITH_PTHREAD "Build the code with openmp" OFF)
 option(WITH_REALSENSE "Build the code with librealsense" OFF)
 
 set(OPENCV_VERSION "" CACHE STRING "The opencv version to use in the project")
@@ -42,6 +43,8 @@ cumulative_or(USE_OPENCV WITH_OPENCV)
 cumulative_or(USE_OPENCV WITH_ALL)
 cumulative_or(USE_OPENMP WITH_OPENMP)
 cumulative_or(USE_OPENMP WITH_ALL)
+cumulative_or(USE_PTHREAD WITH_PTHREAD)
+cumulative_or(USE_PTHREAD WITH_ALL)
 cumulative_or(USE_REALSENSE WITH_REALSENSE)
 cumulative_or(USE_REALSENSE WITH_ALL)
 
@@ -49,6 +52,7 @@ message("Use eigen set to ${USE_EIGEN}")
 message("Use json set to ${USE_JSON}")
 message("Use opencv set to ${USE_OPENCV}")
 message("Use openmp set to ${USE_OPENMP}")
+message("Use pthread set to ${USE_PTHREAD}")
 message("Use realsense set to ${USE_REALSENSE}")
 
 if (WIN32)
@@ -146,6 +150,7 @@ SET(UTILS_JSON)
 SET(UTILS_OPENCV)
 SET(UTILS_OPENCV_REALSENSE)
 SET(UTILS_OPENMP)
+SET(UTILS_PTHREAD)
 SET(UTILS_REALSENSE)
 
 if (USE_EIGEN)
@@ -176,6 +181,10 @@ endif ()
 
 if (USE_OPENMP)
     SET(UTILS_OPENMP include/AndreiUtils/utilsOpenMP.hpp src/utilsOpenMP.cpp)
+endif ()
+
+if (USE_OPENMP)
+    SET(UTILS_PTHREAD src/utilsPThread.cpp)
 endif ()
 
 if (USE_REALSENSE)
@@ -213,6 +222,7 @@ set(JSON_UTILS ${UTILS_JSON})
 set(OPENCV_UTILS ${UTILS_OPENCV})
 set(OPENCV_REALSENSE_UTILS ${UTILS_OPENCV_REALSENSE})
 set(OPENMP_UTILS ${UTILS_OPENMP})
+set(PTHREAD_UTILS ${UTILS_PTHREAD})
 set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
 set(LIBRARY_NAME ${PROJECT_NAME})
@@ -244,6 +254,18 @@ if (USE_OPENMP)
     set(LIB_NAME "${LIBRARY_NAME}_OPENMP")
     add_library(${LIB_NAME} ${OPENMP_UTILS})
     target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_include_directories(${LIB_NAME}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
+endif ()
+
+if (USE_PTHREAD)
+    # PTHREAD_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_PTHREAD")
+    add_library(${LIB_NAME} ${PTHREAD_UTILS})
+    target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
     target_include_directories(${LIB_NAME}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -333,6 +355,7 @@ set(UTILS
         ${OPENCV_UTILS}
         ${OPENCV_REALSENSE_UTILS}
         ${OPENMP_UTILS}
+        ${PTHREAD_UTILS}
         ${REALSENSE_UTILS}
         )
 message("Utils = ${UTILS}")
