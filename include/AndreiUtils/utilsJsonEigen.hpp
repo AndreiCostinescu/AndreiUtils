@@ -2,9 +2,10 @@
 // Created by Andrei on 27.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSJSONOPENCV_HPP
-#define ANDREIUTILS_UTILSJSONOPENCV_HPP
+#ifndef ANDREIUTILS_UTILSJSONEIGEN_HPP
+#define ANDREIUTILS_UTILSJSONEIGEN_HPP
 
+#include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsJson.h>
 #include <complex>
@@ -163,6 +164,37 @@ namespace AndreiUtils {
 
 namespace nlohmann {
     template<class T>
+    struct adl_serializer<Eigen::Quaternion<T>> {
+        static void to_json(nlohmann::json &j, const Eigen::Quaternion<T> &q) {
+            std::vector<T> coefficients{q.w(), q.x(), q.y(), q.z()};
+            j = coefficients;
+        }
+
+        static void from_json(const nlohmann::json &j, Eigen::Quaternion<T> &q) {
+            auto coefficients = j.get<std::vector<T>>();
+            if (coefficients.size() != 4) {
+                throw std::runtime_error(
+                        "Coefficients' size is not 4 (is " + std::to_string(coefficients.size()) + ")!");
+            }
+            q.w() = coefficients[0];
+            q.x() = coefficients[1];
+            q.y() = coefficients[2];
+            q.z() = coefficients[3];
+        }
+    };
+
+    template<class T>
+    struct adl_serializer<AndreiUtils::DualQuaternion<T>> {
+        static void to_json(nlohmann::json &j, const AndreiUtils::DualQuaternion<T> &q) {
+            j = q.coefficients();
+        }
+
+        static void from_json(const nlohmann::json &j, AndreiUtils::DualQuaternion<T> &q) {
+            q.fromCoefficients(j.get<std::vector<T>>());
+        }
+    };
+
+    template<class T>
     struct adl_serializer<Eigen::Matrix<T, 2, 1>> {
         static void to_json(nlohmann::json &j, const Eigen::Matrix<T, 2, 1> &v) {
             j["x"] = v(0);
@@ -309,4 +341,4 @@ namespace nlohmann {
     };
 }
 
-#endif //ANDREIUTILS_UTILSJSONOPENCV_HPP
+#endif //ANDREIUTILS_UTILSJSONEIGEN_HPP
