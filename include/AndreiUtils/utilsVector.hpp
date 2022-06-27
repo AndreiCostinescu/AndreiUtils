@@ -348,6 +348,18 @@ namespace AndreiUtils {
         }
         return isSequenceStable(sequence, average(sequence), op, stabilityThreshold, verbose);
     }
+
+    template<class T>
+    std::vector<T> reverseVector(std::vector<T> const &v) {
+        auto res = v;
+        std::reverse(res.begin(), res.end());
+        return res;
+    }
+
+    template<class T>
+    void reverseVectorInPlace(std::vector<T> &v) {
+        std::reverse(v.begin(), v.end());
+    }
 }
 
 #endif //ANDREIUTILS_UTILSVECTOR_HPP

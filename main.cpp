@@ -245,12 +245,14 @@ void testDualQuaternions() {
     cout << q1.getTranslation().transpose() << ", " << q1 << endl;
     cout << endl;
 
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q << endl;
+    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q
+         << endl;
     // angles = {M_PI / 4, M_PI / 3, -M_PI / 6};
     angles = {-M_PI_2, M_PI, 0};
     r = qFromEulerAngles<double>(angles, "zyx");
     auto q2 = q.addRotation(r);
-    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", " << q2 << endl;
+    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", "
+         << q2 << endl;
     cout << endl;
 }
 
@@ -947,7 +949,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    testDualQuaternions();
+    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -967,5 +969,6 @@ int main() {
     // testOpenCVMatrixCropReference();
     // testMapRefAccessing();
     // testMixedDataContainer();
+    testGraph();
     return 0;
 }
