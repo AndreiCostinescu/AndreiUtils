@@ -330,6 +330,20 @@ namespace AndreiUtils {
             return AndreiUtils::average(this->getDataInCorrectOrder(invalidValuesHandlingMode));
         }
 
+        std::vector<T> &getDataIfAllValid() {
+            if (!this->checkAllValid()) {
+                throw std::runtime_error("Data contains invalid values!");
+            }
+            return this->data;
+        }
+
+        const std::vector<T> &getDataIfAllValid() const {
+            if (!this->checkAllValid()) {
+                throw std::runtime_error("Data contains invalid values!");
+            }
+            return this->data;
+        }
+
         void setLatestValid(bool valid) {
             this->validData[this->latestIndex()] = valid ? 1 : 0;
         }
@@ -351,6 +365,10 @@ namespace AndreiUtils {
         }
 
     protected:
+        bool checkAllValid() {
+            return std::all_of(this->validData.begin(), this->validData.end(), [](uint8_t const &x) { return x != 0; });
+        }
+
         std::vector<T> getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             std::vector<T> a(this->dataSize);
             int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
