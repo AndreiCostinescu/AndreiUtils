@@ -17,6 +17,11 @@ namespace AndreiUtils {
         using GraphT = Graph<NodeId, EdgeId>;
     public:
         DFS(GraphT const &graph, bool recursive) : traversedNodes(0), finishedNodes(0) {
+            for (auto const &x: graph.getIncomingEdgesForEachNode()) {
+                if (x.second.empty()) {
+                    this->roots[x.first] = true;
+                }
+            }
             if (recursive) {
                 this->dfsRecursive(graph);
             } else {
@@ -55,45 +60,43 @@ namespace AndreiUtils {
         }
 
     protected:
-        void traverseDfsRecursive(GraphT const &graph, NodeT const *n) {
-            this->visited[n->getId()] = true;
-            this->startNum[n->getId()] = this->traversedNodes++;
+        void traverseDfsRecursive(GraphT const &graph, NodeId const &nId) {
+            this->visited[nId] = true;
+            this->startNum[nId] = this->traversedNodes++;
             // node neighbors
-            auto neighbors = graph.getNeighbors(n);
+            auto neighbors = graph.getNeighbors(nId);
             if (neighbors != nullptr) {
                 for (auto const &neighbor: *neighbors) {
                     auto neighborId = neighbor.first->getId();
-                    auto &edges = graph.getEdges(std::make_pair(n->getId(), neighborId));
+                    auto &edges = graph.getEdges(std::make_pair(nId, neighborId));
                     assert (edges.size() >= 1);
-                    if (this->edgeClassification(graph, edges, neighborId, n->getId())) {
-                        this->traverseDfsRecursive(graph, neighbor.first);
+                    if (this->edgeClassification(graph, edges, neighborId, nId)) {
+                        this->traverseDfsRecursive(graph, neighborId);
                     }
                 }
             }
-            this->traversal[this->finishedNodes] = n->getId();
-            this->endNum[n->getId()] = this->finishedNodes++;
+            this->traversal[this->finishedNodes] = nId;
+            this->endNum[nId] = this->finishedNodes++;
         }
 
         void dfsRecursive(GraphT const &graph) {
-            auto &nodes = graph.getNodes();
-            this->traversal.resize(nodes.size());
-            for (auto const &nodeData: nodes) {
+            this->traversal.resize(graph.getNrNodes());
+            for (auto const &nodeData: this->roots) {
                 if (!mapContains(this->visited, nodeData.first)) {
                     this->roots[nodeData.first] = true;
-                    this->traverseDfsRecursive(graph, nodeData.second);
+                    this->traverseDfsRecursive(graph, nodeData.first);
                 }
             }
         }
 
         void dfsIterative(GraphT const &graph) {
-            auto &nodes = graph.getNodes();
-            this->traversal.resize(nodes.size());
+            this->traversal.resize(graph.getNrNodes());
             auto &allNeighbors = graph.getNeighbors();
             std::map<NodeId, std::tuple<int, int, std::vector<NodeT *>>> neighborIndexAndSize;
-            std::vector<NodeId> stack(nodes.size());
+            std::vector<NodeId> stack(this->traversal.size());
             std::size_t stackIndex;
             NodeId iterNode, iterNeighborNode;
-            for (auto const &nodeData: nodes) {
+            for (auto const &nodeData: this->roots) {
                 if (!mapContains(this->visited, nodeData.first)) {
                     this->roots[nodeData.first] = true;
 
@@ -143,7 +146,8 @@ namespace AndreiUtils {
             }
         }
 
-        bool edgeClassification(GraphT const &graph, std::map<EdgeT*, bool> const &edges, NodeId const &neighborId, NodeId const &nodeId) {
+        bool edgeClassification(GraphT const &graph, std::map<EdgeT *, bool> const &edges, NodeId const &neighborId,
+                                NodeId const &nodeId) {
             bool foundTreeEdge = false;
             int edgeIndex = 0;
             for (auto const &edge: edges) {

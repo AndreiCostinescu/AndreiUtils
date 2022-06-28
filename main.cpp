@@ -974,21 +974,16 @@ void testGraph() {
 
     //*
     auto printDfsData = [](DFS<int, string> const &_dfs) {
-        cout << "Roots: ";
-        printVector(_dfs.getGraphRoots());
-        cout << "Tree edges: ";
-        printVector(_dfs.getTreeEdges());
-        cout << "Forward edges: ";
-        printVector(_dfs.getForwardEdges());
-        cout << "Backward edges: ";
-        printVector(_dfs.getBackwardEdges());
-        cout << "Cross edges: ";
-        printVector(_dfs.getCrossEdges());
+        cout << "Roots: [" << printVectorToString(_dfs.getGraphRoots()) << "]" << endl;
+        cout << "Tree edges: [" << printVectorToString(_dfs.getTreeEdges()) << "]" << endl;
+        cout << "Forward edges: [" << printVectorToString(_dfs.getForwardEdges()) << "]" << endl;
+        cout << "Backward edges: [" << printVectorToString(_dfs.getBackwardEdges()) << "]" << endl;
+        cout << "Cross edges: [" << printVectorToString(_dfs.getCrossEdges()) << "]" << endl;
         vector<int> topoSort;
         bool isTopoSort = _dfs.getTopologicalSort(topoSort);
         cout << "TopoSort: ";
         if (isTopoSort) {
-            printVector(topoSort);
+            cout << "[" << printVectorToString(topoSort) << "]" << endl;
         } else {
             cout << "None" << endl;
         }

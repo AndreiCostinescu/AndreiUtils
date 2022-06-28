@@ -153,6 +153,14 @@ namespace AndreiUtils {
             }
         }
 
+        inline size_t getNrNodes() const {
+            return this->nodes.size();
+        }
+
+        inline size_t getNrEdges() const {
+            return this->edges.size();
+        }
+
         std::map<NodeId, NodeT *const> &getNodes() {
             return this->nodes;
         }
@@ -182,10 +190,30 @@ namespace AndreiUtils {
         }
 
         std::map<NodeT *, int> const *getNeighbors(NodeT const *const n) const {
-            if (!mapContains(this->neighbors, n->getId())) {
+            return this->getNeighbors(n->getId());
+        }
+
+        std::map<NodeT *, int> const *getNeighbors(NodeId const &nId) const {
+            if (!mapContains(this->neighbors, nId)) {
                 return nullptr;
             }
-            return &mapGet(this->neighbors, n->getId());
+            return &mapGet(this->neighbors, nId);
+        }
+
+        std::map<NodeId, std::map<EdgeT *, bool>> &getIncomingEdgesForEachNode() {
+            return this->incomingEdges;
+        }
+
+        std::map<NodeId, std::map<EdgeT *, bool>> const &getIncomingEdgesForEachNode() const {
+            return this->incomingEdges;
+        }
+
+        std::map<NodeId, std::map<EdgeT *, bool>> &getOutgoingEdgesForEachNode() {
+            return this->outgoingEdges;
+        }
+
+        std::map<NodeId, std::map<EdgeT *, bool>> const &getOutgoingEdgesForEachNode() const {
+            return this->outgoingEdges;
         }
 
     protected:
