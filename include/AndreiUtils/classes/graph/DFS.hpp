@@ -22,6 +22,9 @@ namespace AndreiUtils {
                     this->roots[x.first] = true;
                 }
             }
+            if (this->roots.empty()) {
+                std::cerr << "Warning: Graph has no roots: will perform a modified DFS version..." << std::endl;
+            }
             if (recursive) {
                 this->dfsRecursive(graph);
             } else {
@@ -81,10 +84,17 @@ namespace AndreiUtils {
 
         void dfsRecursive(GraphT const &graph) {
             this->traversal.resize(graph.getNrNodes());
-            for (auto const &nodeData: this->roots) {
-                if (!mapContains(this->visited, nodeData.first)) {
-                    this->roots[nodeData.first] = true;
-                    this->traverseDfsRecursive(graph, nodeData.first);
+            bool hasRoots = !this->roots.empty();
+            std::vector<NodeId> nodeIterationContainer;
+            if (hasRoots) {
+                nodeIterationContainer = getMapKeys(this->roots);
+            } else {
+                nodeIterationContainer = getMapKeys(graph.getNodes());
+            }
+            for (auto const &nodeData: nodeIterationContainer) {
+                if (!mapContains(this->visited, nodeData)) {
+                    this->roots[nodeData] = true;
+                    this->traverseDfsRecursive(graph, nodeData);
                 }
             }
         }
@@ -96,11 +106,18 @@ namespace AndreiUtils {
             std::vector<NodeId> stack(this->traversal.size());
             std::size_t stackIndex;
             NodeId iterNode, iterNeighborNode;
-            for (auto const &nodeData: this->roots) {
-                if (!mapContains(this->visited, nodeData.first)) {
-                    this->roots[nodeData.first] = true;
+            bool hasRoots = !this->roots.empty();
+            std::vector<NodeId> nodeIterationContainer;
+            if (hasRoots) {
+                nodeIterationContainer = getMapKeys(this->roots);
+            } else {
+                nodeIterationContainer = getMapKeys(graph.getNodes());
+            }
+            for (auto const &nodeId: nodeIterationContainer) {
+                if (!mapContains(this->visited, nodeId)) {
+                    this->roots[nodeId] = true;
 
-                    iterNode = nodeData.first;
+                    iterNode = nodeId;
                     this->startNum[iterNode] = this->traversedNodes++;
                     this->visited[iterNode] = true;
                     stack[stackIndex = 0] = iterNode;
