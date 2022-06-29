@@ -9,6 +9,7 @@
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
+#include <AndreiUtils/classes/graph/DFS.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
@@ -245,12 +246,14 @@ void testDualQuaternions() {
     cout << q1.getTranslation().transpose() << ", " << q1 << endl;
     cout << endl;
 
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q << endl;
+    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q
+         << endl;
     // angles = {M_PI / 4, M_PI / 3, -M_PI / 6};
     angles = {-M_PI_2, M_PI, 0};
     r = qFromEulerAngles<double>(angles, "zyx");
     auto q2 = q.addRotation(r);
-    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", " << q2 << endl;
+    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", "
+         << q2 << endl;
     cout << endl;
 }
 
@@ -936,6 +939,68 @@ void testMixedDataContainer() {
     cout << tmp.dump() << endl;
 }
 
+void testGraph() {
+    auto edgeIdFromNodes = [](int const &n1, int const &n2) { return to_string(n1) + "->" + to_string(n2); };
+    Graph<int, string> g;
+    g.addNode(1);
+    g.addNode(2);
+    g.addNode(3);
+    g.addNode(4);
+    g.addNode(5);
+    g.addNode(6);
+    g.addNode(7);
+    g.addNode(8);
+    g.addNode(9);
+    g.addNode(10);
+    g.addEdge(2, 1, edgeIdFromNodes);
+    g.addEdge(3, 2, edgeIdFromNodes);
+    g.addEdge(4, 3, edgeIdFromNodes);
+    g.addEdge(5, 4, edgeIdFromNodes);
+    g.addEdge(6, 5, edgeIdFromNodes);
+    // g.addEdge(1, 3, edgeIdFromNodes);
+    g.addEdge(7, 6, edgeIdFromNodes);
+    g.addEdge(1, 8, edgeIdFromNodes);
+    g.addEdge(8, 9, edgeIdFromNodes);
+    g.addEdge(9, 10, edgeIdFromNodes);
+    g.addEdge(1, 10, edgeIdFromNodes);
+
+    Timer dfsRecTimer;
+    DFS<int, string> dfs(g);
+    auto t1 = dfsRecTimer.measure(TimeUnit::SECOND);
+    Timer dfsIterTimer;
+    DFS<int, string> dfsIter(g, false);
+    auto t2 = dfsIterTimer.measure(TimeUnit::SECOND);
+    cout << "RecTime: " << t1 << " sec vs. IterTime: " << t2 << " sec" << endl;
+
+    //*
+    auto printDfsData = [](DFS<int, string> const &_dfs) {
+        cout << "Roots: ";
+        printVector(_dfs.getGraphRoots());
+        cout << "Tree edges: ";
+        printVector(_dfs.getTreeEdges());
+        cout << "Forward edges: ";
+        printVector(_dfs.getForwardEdges());
+        cout << "Backward edges: ";
+        printVector(_dfs.getBackwardEdges());
+        cout << "Cross edges: ";
+        printVector(_dfs.getCrossEdges());
+        vector<int> topoSort;
+        bool isTopoSort = _dfs.getTopologicalSort(topoSort);
+        cout << "TopoSort: ";
+        if (isTopoSort) {
+            printVector(topoSort);
+        } else {
+            cout << "None" << endl;
+        }
+    };
+    printDfsData(dfs);
+    printDfsData(dfsIter);
+    //*/
+
+    int x = 35;
+    cout << (x = 42) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -947,7 +1012,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    testDualQuaternions();
+    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -967,5 +1032,6 @@ int main() {
     // testOpenCVMatrixCropReference();
     // testMapRefAccessing();
     // testMixedDataContainer();
+    testGraph();
     return 0;
 }

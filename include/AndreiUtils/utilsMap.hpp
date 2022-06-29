@@ -139,6 +139,22 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+        if (mapContains(container, key)) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        container.insert({key, value});
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    void mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+        if (mapContains(container, key)) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        container.insert({const_cast<T1 *>(key), value});
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapDelete(std::map<T1, T2, C, A> &container, T1 const &key) {
         return (container.erase(key) > 0);
     }

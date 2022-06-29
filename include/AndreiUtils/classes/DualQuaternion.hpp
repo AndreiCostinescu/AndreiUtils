@@ -17,6 +17,12 @@ namespace AndreiUtils {
             return {qIdentity<T>(), Eigen::Matrix<T, 3, 1>::Zero()};
         }
 
+        static DualQuaternion createFromCoefficients(std::vector<T> const &coefficients) {
+            DualQuaternion<T> q;
+            q.fromCoefficients(coefficients);
+            return q;
+        }
+
         DualQuaternion() : r(qZero<T>()), d(qZero<T>()) {}
 
         DualQuaternion(Eigen::Quaternion<T> r, Eigen::Quaternion<T> d) : r(r), d(d) {}
@@ -30,6 +36,26 @@ namespace AndreiUtils {
                                t.template block<3, 1>(0, 3)) {}
 
         virtual ~DualQuaternion() = default;
+
+        std::vector<T> coefficients() const {
+            return {this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
+                    this->d.z()};
+        }
+
+        void fromCoefficients(std::vector<T> const &coefficients) {
+            if (coefficients.size() != 8) {
+                throw std::runtime_error(
+                        "Coefficients' size is not 8 (is " + std::to_string(coefficients.size()) + ")!");
+            }
+            this->r.w() = coefficients[0];
+            this->r.x() = coefficients[1];
+            this->r.y() = coefficients[2];
+            this->r.z() = coefficients[3];
+            this->d.w() = coefficients[4];
+            this->d.x() = coefficients[5];
+            this->d.y() = coefficients[6];
+            this->d.z() = coefficients[7];
+        }
 
         double coefficientNorm() const {
             Eigen::Matrix<double, 8, 1> coefficients;
