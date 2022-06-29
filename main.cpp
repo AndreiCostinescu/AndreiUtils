@@ -9,6 +9,7 @@
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
+#include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
@@ -957,7 +958,7 @@ void testGraph() {
     g.addEdge(4, 3, edgeIdFromNodes);
     g.addEdge(5, 4, edgeIdFromNodes);
     g.addEdge(6, 5, edgeIdFromNodes);
-    // g.addEdge(1, 3, edgeIdFromNodes);
+    g.addEdge(1, 3, edgeIdFromNodes);
     g.addEdge(7, 6, edgeIdFromNodes);
     g.addEdge(1, 8, edgeIdFromNodes);
     g.addEdge(8, 9, edgeIdFromNodes);
@@ -970,7 +971,7 @@ void testGraph() {
     Timer dfsIterTimer;
     DFS<int, string> dfsIter(g, false);
     auto t2 = dfsIterTimer.measure(TimeUnit::SECOND);
-    cout << "RecTime: " << t1 << " sec vs. IterTime: " << t2 << " sec" << endl;
+    cout << "DFS RecTime: " << t1 << " sec vs. IterTime: " << t2 << " sec" << endl;
 
     //*
     auto printDfsData = [](DFS<int, string> const &_dfs) {
@@ -990,6 +991,17 @@ void testGraph() {
     };
     printDfsData(dfs);
     printDfsData(dfsIter);
+
+    BFS<int, string> bfs(g);
+    Timer bfsRecTimer;
+    auto res = bfs.bfs();
+    auto t3 = bfsRecTimer.measure(TimeUnit::SECOND);
+    cout << "BFS " << t3 << " sec" << endl;
+    cout << "Roots: [" << printVectorToString(bfs.getGraphRoots()) << "]" << endl;
+    cout << "BFS traversal: [" << printVectorToString(bfs.getTraversal()) << "]" << endl;
+    for (auto const &rootData : res) {
+        cout << "Distances starting from " << rootData.first << ": " << printMapToString(rootData.second) << endl;
+    }
     //*/
 
     int x = 35;

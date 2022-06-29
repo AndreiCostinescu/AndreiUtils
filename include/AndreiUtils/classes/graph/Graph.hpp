@@ -177,6 +177,18 @@ namespace AndreiUtils {
             return this->edges;
         }
 
+        bool hasNode(NodeId const &nodeId) const {
+            return mapContains(this->nodes, nodeId);
+        }
+
+        bool hasEdge(EdgeId const &edgeId) const {
+            return mapContains(this->edges, edgeId);
+        }
+
+        NodeT const *getNode(NodeId const &nodeId) const {
+            return mapGet(this->nodes, nodeId);
+        }
+
         EdgeT const *getEdge(EdgeId const &edgeId) const {
             return mapGet(this->edges, edgeId);
         }
