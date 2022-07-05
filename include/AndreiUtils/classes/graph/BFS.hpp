@@ -8,6 +8,7 @@
 #include <AndreiUtils/classes/graph/Graph.hpp>
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsVector.hpp>
+#include <cassert>
 #include <list>
 
 namespace AndreiUtils {
@@ -18,12 +19,7 @@ namespace AndreiUtils {
         using GraphT = Graph<NodeId, EdgeId>;
     public:
         explicit BFS(GraphT const &graph) : graph(graph), traversalIndex(0) {
-            for (auto const &x: this->graph.getIncomingEdgesForEachNode()) {
-                if (x.second.empty()) {
-                    this->roots[x.first] = true;
-                }
-            }
-            this->traversal.resize(this->graph.getNrNodes());
+            this->initialize();
         }
 
         std::map<NodeId, std::map<NodeId, int>> bfs() {
@@ -55,6 +51,26 @@ namespace AndreiUtils {
             return -1;
         }
 
+        int bfs(NodeId const &startNode, NodeId const &endNode, std::vector<NodeId> &path) {
+            int val = this->bfs(startNode, endNode);
+            if (val == -1) {
+                return -1;
+            }
+            path.clear();
+            assert(mapContains(this->parents, startNode));
+            assert(mapContains(this->parents, endNode));
+            NodeId currentId = endNode;
+            path.push_back(currentId);
+            NodeId parentId = mapGet(this->parents, currentId);
+            while (parentId != currentId) {
+                currentId = parentId;
+                path.push_back(currentId);
+                parentId = mapGet(this->parents, currentId);
+            }
+            reverseVectorInPlace(path);
+            return val;
+        }
+
         std::vector<NodeId> getGraphRoots() const {
             return getMapKeys(this->roots);
         }
@@ -70,10 +86,27 @@ namespace AndreiUtils {
         }
 
     protected:
-        void bfsIterative(NodeId const &startNode, NodeId const *endNode = nullptr,
-                          bool withResetTraversalIndex = true) {
-            if (withResetTraversalIndex) {
+        void initialize() {
+            for (auto const &x: this->graph.getIncomingEdgesForEachNode()) {
+                if (x.second.empty()) {
+                    this->roots[x.first] = true;
+                }
+            }
+            this->traversal.resize(this->graph.getNrNodes());
+        }
+
+        void cleanup() {
+            this->roots.clear();
+            this->visited.clear();
+            this->traversal.clear();
+            this->distances.clear();
+            this->traversalIndex = 0;
+        }
+
+        void bfsIterative(NodeId const &startNode, NodeId const *endNode = nullptr, bool withReset = true) {
+            if (withReset) {
                 this->traversalIndex = 0;
+                this->parents.clear();
             }
 
             // Create a queue for BFS
@@ -83,6 +116,7 @@ namespace AndreiUtils {
             // Mark the current node as visited and enqueue it
             this->visited[startNode] = true;
             this->distances[startNode] = 0;
+            this->parents[startNode] = startNode;
             queue.push_back(startNode);
 
             NodeId iterNodeId;
@@ -108,6 +142,7 @@ namespace AndreiUtils {
                     if (!mapContains(this->visited, adjacentId)) {
                         this->visited[adjacentId] = true;
                         this->distances[adjacentId] = iterNodeDistance + 1;
+                        this->parents[adjacentId] = iterNodeId;
                         queue.push_back(adjacentId);
                     }
                 }
@@ -119,6 +154,7 @@ namespace AndreiUtils {
         std::map<NodeId, bool> visited;
         std::vector<NodeId> traversal;
         std::map<NodeId, int> distances;
+        std::map<NodeId, NodeId> parents;
         int traversalIndex;
     };
 }
