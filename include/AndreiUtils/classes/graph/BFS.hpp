@@ -60,7 +60,13 @@ namespace AndreiUtils {
         }
 
         std::vector<NodeId> getTraversal() const {
-            return this->traversal;
+            // Starting and Ending iterators
+            auto start = this->traversal.begin();
+            auto end = this->traversal.begin() + this->traversalIndex;
+
+            std::vector<int> result(this->traversalIndex);  // To store the sliced vector
+            copy(start, end, result.begin());  // Copy vector using copy function()
+            return result;  // Return the final sliced vector
         }
 
     protected:
