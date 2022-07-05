@@ -72,9 +72,20 @@ namespace AndreiUtils {
             return this->data;
         }
 
+        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2) {
+            this->id = _id;
+            this->n1 = _n1;
+            this->n2 = _n2;
+        }
+
+        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2, EdgeData &_data) {
+            this->update(_id, _n1, _n2);
+            this->data = &_data;
+        }
+
     protected:
         EdgeId id;
-        Node<NodeId> *n1, *n2;
+        NodeT *n1, *n2;
         EdgeData *data;
     };
 }

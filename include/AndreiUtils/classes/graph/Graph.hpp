@@ -228,6 +228,45 @@ namespace AndreiUtils {
             return this->outgoingEdges;
         }
 
+        void changeEdge(EdgeId const &edgeId, EdgeId const &newEdgeId, NodeId const &newN1Id, NodeId const &newN2Id) {
+            auto &edge = mapGet(this->edges, edgeId);
+            NodeT *const &newN1 = mapGet(this->nodes, newN1Id);
+            NodeT *const &newN2 = mapGet(this->nodes, newN2Id);
+            NodeT *const &n2 = edge->getN2();
+            NodeId const &n1Id = edge->getN1()->getId(), &n2Id = n2->getId();
+
+            if (n1Id == newN1Id && n2Id == newN2Id) {
+                return;
+            }
+            if (n2Id != newN2Id) {
+                // change the incoming node of the edge
+                mapDelete(this->incomingEdges[n2Id], edge);
+                this->incomingEdges[newN2Id][edge] = true;
+            }
+            if (n1Id != newN1Id) {
+                // change the outgoing node of the edge
+                mapDelete(this->outgoingEdges[n1Id], edge);
+                this->outgoingEdges[newN1Id][edge] = true;
+            }
+
+            this->neighbors[n1Id][n2]--;
+            if (this->neighbors[n1Id][n2] == 0) {
+                mapDelete(this->neighbors[n1Id], n2);
+            }
+            this->neighbors[newN1Id][newN2]++;
+
+            mapDelete(this->edgesFromNodeIds[{n1Id, n2Id}], edge);
+            this->edgesFromNodeIds[{newN1Id, newN2Id}][edge] = true;
+
+            edge->update(newEdgeId, newN1, newN2);
+            if (edgeId != newEdgeId) {
+                mapDelete(this->edges, edgeId);
+                mapAdd<EdgeId, EdgeT *const>(this->edges, newEdgeId, edge);
+                this->allocatedEdges[newEdgeId] = this->allocatedEdges[edgeId];
+                mapDelete(this->allocatedEdges, edgeId);
+            }
+        }
+
     protected:
         void addNode(NodeT *node, bool allocatedData) {
             if (node == nullptr) {
@@ -318,7 +357,7 @@ namespace AndreiUtils {
         std::map<EdgeId, bool> allocatedEdges;
         std::map<NodeId, std::map<EdgeT *, bool>> incomingEdges, outgoingEdges;
         std::map<std::pair<NodeId, NodeId>, std::map<EdgeT *, bool>> edgesFromNodeIds;
-        std::map<NodeId, std::map<NodeT *, int>> neighbors;
+        std::map<NodeId, std::map<NodeT *, int>> neighbors;  // outgoing neighbors
     };
 }
 
