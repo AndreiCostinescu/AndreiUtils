@@ -8,6 +8,7 @@
 #include <AndreiUtils/classes/graph/Graph.hpp>
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsVector.hpp>
+#include <cassert>
 
 namespace AndreiUtils {
     template<typename NodeId=int, typename EdgeId=std::string>
@@ -16,23 +17,9 @@ namespace AndreiUtils {
         using EdgeT = Edge<EdgeId, NodeId>;
         using GraphT = Graph<NodeId, EdgeId>;
     public:
-        DFS(GraphT const &graph, bool recursive) : traversedNodes(0), finishedNodes(0) {
-            for (auto const &x: graph.getIncomingEdgesForEachNode()) {
-                if (x.second.empty()) {
-                    this->roots[x.first] = true;
-                }
-            }
-            if (this->roots.empty()) {
-                std::cerr << "Warning: Graph has no roots: will perform a modified DFS version..." << std::endl;
-            }
-            if (recursive) {
-                this->dfsRecursive(graph);
-            } else {
-                this->dfsIterative(graph);
-            }
+        explicit DFS(GraphT const &_graph, bool recursive = true) : graph(_graph), traversedNodes(0), finishedNodes(0) {
+            this->initialize(recursive);
         }
-
-        explicit DFS(GraphT const &graph) : DFS(graph, true) {}
 
         std::vector<NodeId> getGraphRoots() const {
             return getMapKeys(this->roots);
@@ -54,6 +41,22 @@ namespace AndreiUtils {
             return getMapKeys(this->crossEdges);
         }
 
+        std::map<NodeId, int> const &getStartNums() const {
+            return this->startNum;
+        }
+
+        std::map<NodeId, int> &getStartNums() {
+            return this->startNum;
+        }
+
+        std::map<NodeId, int> const &getFinishNums() const {
+            return this->endNum;
+        }
+
+        std::map<NodeId, int> &getFinishNums() {
+            return this->endNum;
+        }
+
         bool getTopologicalSort(std::vector<NodeId> &container) const {
             if (!this->backwardEdges.empty()) {
                 return false;
@@ -63,18 +66,48 @@ namespace AndreiUtils {
         }
 
     protected:
-        void traverseDfsRecursive(GraphT const &graph, NodeId const &nId) {
+        void initialize(bool recursive = true) {
+            for (auto const &x: this->graph.getIncomingEdgesForEachNode()) {
+                if (x.second.empty()) {
+                    this->roots[x.first] = true;
+                }
+            }
+            if (this->roots.empty()) {
+                std::cerr << "Warning: Graph has no roots: will perform a modified DFS version..." << std::endl;
+            }
+            if (recursive) {
+                this->dfsRecursive();
+            } else {
+                this->dfsIterative();
+            }
+        }
+
+        void cleanup() {
+            this->roots.clear();
+            this->crossEdges.clear();
+            this->treeEdges.clear();
+            this->forwardEdges.clear();
+            this->backwardEdges.clear();
+            this->startNum.clear();
+            this->endNum.clear();
+            this->visited.clear();
+            this->traversal.clear();
+            this->traversedNodes = 0;
+            this->finishedNodes = 0;
+        }
+
+        void traverseDfsRecursive(NodeId const &nId) {
             this->visited[nId] = true;
             this->startNum[nId] = this->traversedNodes++;
             // node neighbors
-            auto neighbors = graph.getNeighbors(nId);
+            auto neighbors = this->graph.getNeighbors(nId);
             if (neighbors != nullptr) {
                 for (auto const &neighbor: *neighbors) {
                     auto neighborId = neighbor.first->getId();
-                    auto &edges = graph.getEdges(std::make_pair(nId, neighborId));
+                    auto &edges = this->graph.getEdges(std::make_pair(nId, neighborId));
                     assert (edges.size() >= 1);
-                    if (this->edgeClassification(graph, edges, neighborId, nId)) {
-                        this->traverseDfsRecursive(graph, neighborId);
+                    if (this->edgeClassification(edges, neighborId, nId)) {
+                        this->traverseDfsRecursive(neighborId);
                     }
                 }
             }
@@ -82,26 +115,26 @@ namespace AndreiUtils {
             this->endNum[nId] = this->finishedNodes++;
         }
 
-        void dfsRecursive(GraphT const &graph) {
-            this->traversal.resize(graph.getNrNodes());
+        void dfsRecursive() {
+            this->traversal.resize(this->graph.getNrNodes());
             bool hasRoots = !this->roots.empty();
             std::vector<NodeId> nodeIterationContainer;
             if (hasRoots) {
                 nodeIterationContainer = getMapKeys(this->roots);
             } else {
-                nodeIterationContainer = getMapKeys(graph.getNodes());
+                nodeIterationContainer = getMapKeys(this->graph.getNodes());
             }
             for (auto const &nodeData: nodeIterationContainer) {
                 if (!mapContains(this->visited, nodeData)) {
                     this->roots[nodeData] = true;
-                    this->traverseDfsRecursive(graph, nodeData);
+                    this->traverseDfsRecursive(nodeData);
                 }
             }
         }
 
-        void dfsIterative(GraphT const &graph) {
-            this->traversal.resize(graph.getNrNodes());
-            auto &allNeighbors = graph.getNeighbors();
+        void dfsIterative() {
+            this->traversal.resize(this->graph.getNrNodes());
+            auto &allNeighbors = this->graph.getNeighbors();
             std::map<NodeId, std::tuple<int, int, std::vector<NodeT *>>> neighborIndexAndSize;
             std::vector<NodeId> stack(this->traversal.size());
             std::size_t stackIndex;
@@ -111,7 +144,7 @@ namespace AndreiUtils {
             if (hasRoots) {
                 nodeIterationContainer = getMapKeys(this->roots);
             } else {
-                nodeIterationContainer = getMapKeys(graph.getNodes());
+                nodeIterationContainer = getMapKeys(this->graph.getNodes());
             }
             for (auto const &nodeId: nodeIterationContainer) {
                 if (!mapContains(this->visited, nodeId)) {
@@ -137,9 +170,9 @@ namespace AndreiUtils {
                             std::get<0>(neighborData) = i + 1;
                             iterNeighborNode = std::get<2>(neighborData)[i]->getId();
 
-                            auto &edges = graph.getEdges(std::make_pair(iterNode, iterNeighborNode));
+                            auto &edges = this->graph.getEdges(std::make_pair(iterNode, iterNeighborNode));
                             assert (edges.size() >= 1);
-                            if (this->edgeClassification(graph, edges, iterNeighborNode, iterNode)) {
+                            if (this->edgeClassification(edges, iterNeighborNode, iterNode)) {
                                 found = true;
                                 iterNode = iterNeighborNode;
                                 this->startNum[iterNode] = this->traversedNodes++;
@@ -163,7 +196,7 @@ namespace AndreiUtils {
             }
         }
 
-        bool edgeClassification(GraphT const &graph, std::map<EdgeT *, bool> const &edges, NodeId const &neighborId,
+        bool edgeClassification(std::map<EdgeT *, bool> const &edges, NodeId const &neighborId,
                                 NodeId const &nodeId) {
             bool foundTreeEdge = false;
             int edgeIndex = 0;
@@ -207,6 +240,7 @@ namespace AndreiUtils {
             return foundTreeEdge;
         }
 
+        GraphT const &graph;
         std::map<NodeId, bool> roots;  // nodes that form a root in the DFS-tree
         std::map<EdgeId, bool> crossEdges, treeEdges, forwardEdges, backwardEdges;
         std::map<NodeId, int> startNum, endNum;
