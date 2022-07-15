@@ -8,6 +8,7 @@
 #include <AndreiUtils/classes/graph/Node.hpp>
 #include <AndreiUtils/classes/graph/Edge.hpp>
 #include <AndreiUtils/utilsMap.hpp>
+#include <cassert>
 #include <tuple>
 
 namespace AndreiUtils {
@@ -115,6 +116,15 @@ namespace AndreiUtils {
             this->addNode(&n, false);
         }
 
+        void removeNode(NodeId const &nodeId) {
+            NodeT *const &node = mapGet(this->nodes, nodeId);
+            this->removeNode(node);
+        }
+
+        void removeNode(NodeT const &node) {
+            this->removeNode(&node);
+        }
+
         void addEdge(NodeId const &n1, NodeId const &n2,
                      std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId) {
             this->addEdge(new EdgeT{*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
@@ -139,7 +149,7 @@ namespace AndreiUtils {
         }
 
         void removeEdge(EdgeId const &edgeId) {
-            EdgeT &edge = mapGet(this->edges, edgeId);
+            EdgeT *const &edge = mapGet(this->edges, edgeId);
             this->removeEdge(edge);
         }
 
@@ -249,6 +259,7 @@ namespace AndreiUtils {
                 this->outgoingEdges[newN1Id][edge] = true;
             }
 
+            assert(this->neighbors[n1Id][n2] > 0);
             this->neighbors[n1Id][n2]--;
             if (this->neighbors[n1Id][n2] == 0) {
                 mapDelete(this->neighbors[n1Id], n2);
@@ -339,10 +350,26 @@ namespace AndreiUtils {
             mapDelete(this->outgoingEdges[edge->getN1()->getId()], edge);
 
             auto edgeId = edge->getId();
+            assert(this->neighbors[edge->getN1()->getId()][edge->getN2()] > 0);
             this->neighbors[edge->getN1()->getId()][edge->getN2()]--;
             if (this->neighbors[edge->getN1()->getId()][edge->getN2()] == 0) {
                 mapDelete(this->neighbors[edge->getN1()->getId()], edge->getN2());
             }
+
+            this->deleteEdge(edge, edgeId);
+        }
+
+        void deleteNode(NodeT const *node, NodeId nodeId) {
+            // don't make nodeId a reference; once node is deleted the reference points to bad memory
+            if (mapGet(this->allocatedNodes, nodeId)) {
+                delete node;
+            }
+            mapDelete(this->nodes, nodeId);
+            mapDelete(this->allocatedNodes, nodeId);
+        }
+
+        void deleteEdge(EdgeT const *edge, EdgeId edgeId) {
+            // don't make edgeId a reference; once edge is deleted the reference points to bad memory
             if (mapGet(this->allocatedEdges, edgeId)) {
                 delete edge;
             }

@@ -1006,6 +1006,9 @@ void testGraph() {
 
     int x = 35;
     cout << (x = 42) << endl;
+
+    g.removeEdge(edgeIdFromNodes(2, 1));
+    g.removeNode(1);
 }
 
 int main() {
