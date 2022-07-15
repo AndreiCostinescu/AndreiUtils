@@ -325,24 +325,34 @@ namespace AndreiUtils {
         void removeNode(NodeT const *node) {
             // delete node from edgesFromNodeIds
             auto nodeId = node->getId();
-            for (auto const &edgeData: mapGet(this->incomingEdges, node)) {
-                // Delete all the neighbors where node is an incoming node
-                auto &n1Id = edgeData.first->getN1()->getId();
-                mapDelete(this->neighbors[n1Id], nodeId);
+            std::vector<EdgeT *> toRemoveEdges;
+            std::vector<NodeId> toRemoveEdgeNodeIds;
+            for (auto const &edgeData: mapGet(this->incomingEdges, nodeId)) {
+                toRemoveEdges.push_back(edgeData.first);
+                toRemoveEdgeNodeIds.push_back(edgeData.first->getN1()->getId());
+            }
+            for (size_t i = 0; i < toRemoveEdges.size(); i++) {
+                auto &n1Id = toRemoveEdgeNodeIds[i];
                 mapDelete(this->edgesFromNodeIds, std::make_pair(n1Id, nodeId));
+                this->removeEdge(toRemoveEdges[i]);
+                // Delete all the neighbors where node is an incoming node
+                mapDelete(this->neighbors[n1Id], node);
             }
-            for (auto const &edgeData: mapGet(this->outgoingEdges, node)) {
-                mapDelete(this->edgesFromNodeIds, std::make_pair(nodeId, edgeData.first->getN2()->getId()));
+            toRemoveEdges.clear();
+            toRemoveEdgeNodeIds.clear();
+            for (auto const &edgeData: mapGet(this->outgoingEdges, nodeId)) {
+                toRemoveEdges.push_back(edgeData.first);
+                toRemoveEdgeNodeIds.push_back(edgeData.first->getN1()->getId());
             }
-            mapDelete(this->incomingEdges, node);
-            mapDelete(this->outgoingEdges, node);
+            for (size_t i = 0; i < toRemoveEdges.size(); i++) {
+                mapDelete(this->edgesFromNodeIds, std::make_pair(nodeId, toRemoveEdgeNodeIds[i]));
+                this->removeEdge(toRemoveEdges[i]);
+            }
+            mapDelete(this->incomingEdges, nodeId);
+            mapDelete(this->outgoingEdges, nodeId);
 
             mapDelete(this->neighbors, nodeId);
-            if (mapGet(this->allocatedNodes, nodeId)) {
-                delete node;
-            }
-            mapDelete(this->nodes, nodeId);
-            mapDelete(this->allocatedNodes, nodeId);
+            this->deleteNode(node, nodeId);
         }
 
         void removeEdge(EdgeT const *edge) {
