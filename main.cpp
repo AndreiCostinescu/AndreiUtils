@@ -1011,6 +1011,19 @@ void testGraph() {
     g.removeNode(1);
 }
 
+void testMapCopy() {
+    map<int, int> x, y;
+    x[0] = 0;
+    x[1] = 1;
+    x[2] = 1;
+    y = x;
+    y[0] = 42;
+
+    printMap(x);
+    cout << endl << endl;
+    printMap(y);
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1042,6 +1055,7 @@ int main() {
     // testOpenCVMatrixCropReference();
     // testMapRefAccessing();
     // testMixedDataContainer();
-    testGraph();
+    // testGraph();
+    testMapCopy();
     return 0;
 }
