@@ -100,6 +100,8 @@ namespace AndreiUtils {
             this->allocatedNodes.clear();
             this->edges.clear();
             this->allocatedEdges.clear();
+            this->incomingEdges.clear();
+            this->outgoingEdges.clear();
             this->edgesFromNodeIds.clear();
             this->neighbors.clear();
         }
