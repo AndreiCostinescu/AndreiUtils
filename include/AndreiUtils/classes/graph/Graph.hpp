@@ -241,6 +241,9 @@ namespace AndreiUtils {
         }
 
         void changeEdge(EdgeId const &edgeId, EdgeId const &newEdgeId, NodeId const &newN1Id, NodeId const &newN2Id) {
+            if (!this->withMultipleEdges && this->hasEdge(newEdgeId)) {
+                throw std::runtime_error("Edge to be changed already exists in the graph!");
+            }
             auto &edge = mapGet(this->edges, edgeId);
             NodeT *const &newN1 = mapGet(this->nodes, newN1Id);
             NodeT *const &newN2 = mapGet(this->nodes, newN2Id);
