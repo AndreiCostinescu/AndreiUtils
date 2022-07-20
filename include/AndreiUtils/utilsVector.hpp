@@ -374,7 +374,7 @@ namespace AndreiUtils {
         std::vector<T> res = container;
         size_t containerSize = container.size();
         res.resize(containerSize + size);
-        memCopy(res.data() + containerSize, valuesToBeAppended, size);
+        memcpy(res.data() + containerSize, valuesToBeAppended, size * sizeof(T));
         return res;
     }
 
@@ -387,7 +387,7 @@ namespace AndreiUtils {
     void vectorAppendInPlace(std::vector<T> &container, T const *valuesToBeAppended, size_t const &size) {
         size_t containerSize = container.size();
         container.resize(containerSize + size);
-        memcpy(container.data() + containerSize, valuesToBeAppended, size);
+        memcpy(container.data() + containerSize, valuesToBeAppended, size * sizeof(T));
     }
 }
 

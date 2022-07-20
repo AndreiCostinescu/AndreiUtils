@@ -26,7 +26,7 @@
 #include <AndreiUtils/utilsOpenMP.h>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
-#include <librealsense2/rs.hpp>
+// #include <librealsense2/rs.hpp>
 #include <random>
 
 using namespace AndreiUtils;
@@ -1024,6 +1024,25 @@ void testMapCopy() {
     printMap(y);
 }
 
+void testVectorAppendFunctions() {
+    Eigen::Vector3d x(1, 2, 3);
+    vector<double> y{1, 2, 3, 4, 5, 6, 7};
+    printVector(x.data(), 3);
+    printVector(y);
+    vector<double> res, res2;
+    vectorAppendInPlace(res, y);
+    printVector(res);
+    vectorAppendInPlace(res, x.data(), 3);
+    printVector(res);
+    res2 = vectorAppend(y, x.data(), 3);
+    printVector(res2);
+    res2 = vectorAppend(res, x.data(), 3);
+    printVector(res2);
+    res2 = vectorAppend(res, y);
+    printVector(res2);
+    cout << "Done" << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1056,6 +1075,7 @@ int main() {
     // testMapRefAccessing();
     // testMixedDataContainer();
     // testGraph();
-    testMapCopy();
+    // testMapCopy();
+    testVectorAppendFunctions();
     return 0;
 }
