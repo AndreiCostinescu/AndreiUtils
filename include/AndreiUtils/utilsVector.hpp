@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <AndreiUtils/utils.hpp>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <numeric>
@@ -359,6 +360,34 @@ namespace AndreiUtils {
     template<class T>
     void reverseVectorInPlace(std::vector<T> &v) {
         std::reverse(v.begin(), v.end());
+    }
+
+    template<class T>
+    std::vector<T> vectorAppend(std::vector<T> const &container, std::vector<T> const &valuesToBeAppended) {
+        auto res = container;
+        res.insert(res.end(), valuesToBeAppended.begin(), valuesToBeAppended.end());
+        return res;
+    }
+
+    template<class T>
+    std::vector<T> vectorAppend(std::vector<T> const &container, T const *valuesToBeAppended, size_t const &size) {
+        std::vector<T> res = container;
+        size_t containerSize = container.size();
+        res.resize(containerSize + size);
+        memCopy(res.data() + containerSize, valuesToBeAppended, size);
+        return res;
+    }
+
+    template<class T>
+    void vectorAppendInPlace(std::vector<T> &container, std::vector<T> const &valuesToBeAppended) {
+        container.insert(container.end(), valuesToBeAppended.begin(), valuesToBeAppended.end());
+    }
+
+    template<class T>
+    void vectorAppendInPlace(std::vector<T> &container, T const *valuesToBeAppended, size_t const &size) {
+        size_t containerSize = container.size();
+        container.resize(containerSize + size);
+        memcpy(container.data() + containerSize, valuesToBeAppended, size);
     }
 }
 
