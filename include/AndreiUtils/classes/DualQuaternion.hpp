@@ -31,6 +31,9 @@ namespace AndreiUtils {
             this->d = qMulScalar(vToQ(t) * r, T(0.5));
         }
 
+        DualQuaternion(Eigen::Matrix<T, 3, 3> r, Eigen::Matrix<T, 3, 1> t) :
+                DualQuaternion(qFromRotationMatrix(r), t) {}
+
         explicit DualQuaternion(Eigen::Matrix<T, 4, 4> t) :
                 DualQuaternion(qFromRotationMatrix(Eigen::Matrix<T, 3, 3>(t.template block<3, 3>(0, 0))),
                                t.template block<3, 1>(0, 3)) {}
