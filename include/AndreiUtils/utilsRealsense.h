@@ -41,7 +41,7 @@ namespace AndreiUtils {
             int windowSize = 1, bool forceWindowUsage = false, float farthestAllowedDepth = 10);
 
     // Returns the image pixel at the requested 3D position
-    void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]);
+    void getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *intrinsics, float point[3], float (&pixel)[2]);
 
     void getImagePixelFromRealsenseDepthPoint(
             const AndreiUtils::ImageParameters &size, const AndreiUtils::CameraIntrinsicParameters &intrinsics,

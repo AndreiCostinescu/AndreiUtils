@@ -172,7 +172,7 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
             forceWindowUsage, farthestAllowedDepth);
 }
 
-void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics *intrinsics, float point[3], float (&pixel)[2]) {
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *intrinsics, float point[3], float (&pixel)[2]) {
     // project pixel from point in 3D
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
