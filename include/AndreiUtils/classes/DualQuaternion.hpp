@@ -121,6 +121,14 @@ namespace AndreiUtils {
             return inv;
         }
 
+        bool operator==(DualQuaternion const &other) const {
+            return qEqual(this->r, other.r) && qEqual(this->d, other.d);
+        }
+
+        bool operator!=(DualQuaternion const &other) const {
+            return !(*this == other);
+        }
+
         DualQuaternion operator*(const T &s) const {
             return DualQuaternion(qMulScalar(this->r, s), qMulScalar(this->d, s));
         }

@@ -206,7 +206,13 @@ void testDualQuaternions() {
     // angles = {0, 0, M_PI};
     angles = {M_PI_2, 0, 0};
     Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
-    DualQuaternion<double> q(r, t);
+    DualQuaternion<double> q(r, t), qCopy;
+
+    qCopy = q;
+    cout << "qCopy == q: " << (qCopy == q) << endl;
+    qCopy = qCopy.addTranslation({0, 0, 1});
+    cout << "qCopy != q: " << (qCopy != q) << endl;
+
     cout << "q = " << q << endl;
     cout << printVectorToString(angles) << endl;
     cout << q.getTranslation().transpose() << endl;
