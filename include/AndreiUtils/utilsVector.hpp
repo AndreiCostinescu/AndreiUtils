@@ -389,6 +389,19 @@ namespace AndreiUtils {
         container.resize(containerSize + size);
         memcpy(container.data() + containerSize, valuesToBeAppended, size * sizeof(T));
     }
+
+    template<typename T>
+    bool vectorEquals(std::vector<T> const &v1, std::vector<T> const &v2) {
+        if (v1.size() != v2.size()) {
+            return false;
+        }
+        for (size_t i = 0; i < v1.size(); i++) {
+            if (v1[i] != v2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 #endif //ANDREIUTILS_UTILSVECTOR_HPP

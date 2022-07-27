@@ -1049,6 +1049,16 @@ void testVectorAppendFunctions() {
     cout << "Done" << endl;
 }
 
+void testVectorEquals() {
+    Eigen::Vector3d x(1, 2, 3);
+    vector<double> y{1, 2, 3, 4, 5, 6, 7};
+    vector<double> res, res2;
+    vectorAppendInPlace(res, y);
+    cout << vectorEquals(y, res) << endl;
+    vectorAppendInPlace(res, x.data(), 3);
+    cout << vectorEquals(y, res) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1082,6 +1092,7 @@ int main() {
     // testMixedDataContainer();
     // testGraph();
     // testMapCopy();
-    testVectorAppendFunctions();
+    // testVectorAppendFunctions();
+    testVectorEquals();
     return 0;
 }
