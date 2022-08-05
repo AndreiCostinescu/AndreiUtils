@@ -5,6 +5,7 @@
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
@@ -27,7 +28,6 @@
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 // #include <librealsense2/rs.hpp>
-#include <random>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -1005,7 +1005,7 @@ void testGraph() {
     cout << "BFS " << t3 << " sec" << endl;
     cout << "Roots: [" << printVectorToString(bfs.getGraphRoots()) << "]" << endl;
     cout << "BFS traversal: [" << printVectorToString(bfs.getTraversal()) << "]" << endl;
-    for (auto const &rootData : res) {
+    for (auto const &rootData: res) {
         cout << "Distances starting from " << rootData.first << ": " << printMapToString(rootData.second) << endl;
     }
     //*/
@@ -1059,6 +1059,23 @@ void testVectorEquals() {
     cout << vectorEquals(y, res) << endl;
 }
 
+void testRandom() {
+    RandomNumberGenerator<int> randomInt(1, 10);
+    for (int i = 0; i < 20; i++) {
+        cout << randomInt.sample() << endl;
+    }
+    cout << endl << endl;
+    RandomNumberGenerator<double> randomDouble(0, 1);
+    for (int i = 0; i < 20; i++) {
+        cout << randomDouble.sample() << endl;
+    }
+    cout << endl << endl;
+
+    class A {};
+    A a1, a2;
+    // RandomNumberGenerator<A> randomA(a1, a2);  // produces compiler error as intended!
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1093,6 +1110,7 @@ int main() {
     // testGraph();
     // testMapCopy();
     // testVectorAppendFunctions();
-    testVectorEquals();
+    // testVectorEquals();
+    testRandom();
     return 0;
 }
