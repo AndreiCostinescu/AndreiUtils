@@ -67,7 +67,7 @@ namespace AndreiUtils {
     //*/
 
     template<typename T>
-    std::vector<T> vectorFromArray(T *const &array, size_t size) {
+    std::vector<T> vectorFromArray(T const *const &array, size_t size) {
         std::vector<T> res(size);
         for (size_t i = 0; i < size; i++) {
             res[i] = array[i];
