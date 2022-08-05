@@ -66,6 +66,15 @@ namespace AndreiUtils {
     }
     //*/
 
+    template<typename T>
+    std::vector<T> vectorFromArray(T *const &array, size_t size) {
+        std::vector<T> res(size);
+        for (size_t i = 0; i < size; i++) {
+            res[i] = array[i];
+        }
+        return res;
+    }
+
     template<class T>
     bool vectorContains(const std::vector<T> &container, std::function<bool(T const &)> const &predicate,
                         std::size_t *position = nullptr) {
