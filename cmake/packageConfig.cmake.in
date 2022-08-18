@@ -22,7 +22,45 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
 ### CHECK THE REQUESTED COMPONENTS ###
 
-set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "pthread" "realsense" "world")
+# set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "pthread" "realsense" "world")
+set(@PROJECT_NAME@_COMPONENTS "general")
+if (@USE_JSON@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "json")  # JSON_UTILS
+endif ()
+
+if (@USE_OPENMP@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "openmp")  # OPENMP_UTILS
+endif ()
+
+if (@USE_PTHREAD@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "pthread")  # PTHREAD_UTILS
+endif ()
+
+if (@USE_REALSENSE@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "realsense")  # REALSENSE_UTILS
+endif ()
+
+if (@USE_OPENCV@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv")  # OPENCV_UTILS
+
+    if (@USE_REALSENSE@)
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv_realsense")  # OPENCV_REALSENSE_UTILS
+    endif ()
+endif ()
+
+if (@USE_EIGEN@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen")  # EIGEN_UTILS
+
+    if (@USE_OPENCV@)
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_opencv")  # EIGEN_OPENCV_UTILS
+    endif ()
+
+    if (@USE_REALSENSE@)
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_realsense")  # EIGEN_REALSENSE_UTILS
+    endif ()
+endif ()
+
+set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "world")
 
 if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
     set(@PROJECT_NAME@_FIND_COMPONENTS "world")
