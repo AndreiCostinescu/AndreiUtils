@@ -26,9 +26,9 @@ namespace AndreiUtils {
     }
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> getMatrixRowsAsVector(
+    std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> getMatrixRowsAsVector(
             const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
-        std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> res(m.rows());
+        std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> res(m.rows());
         for (int i = 0; i < m.rows(); i++) {
             res[i] = m.row(i);
         }
