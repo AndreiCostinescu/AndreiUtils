@@ -46,8 +46,10 @@ namespace AndreiUtils {
         }
 
         Eigen::Matrix<T, 8, 1> coefficientsAsEigen() const {
-            return {this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
-                    this->d.z()};
+            Eigen::Matrix<T, 8, 1> res;
+            res << this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
+                    this->d.z();
+            return res;
         }
 
         void fromCoefficients(std::vector<T> const &coefficients) {

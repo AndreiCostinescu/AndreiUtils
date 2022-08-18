@@ -217,6 +217,7 @@ void testDualQuaternions() {
     auto qCopyNorm = qCopy.norm();
     cout << qNorm << endl;
     cout << qCopyNorm << endl;
+    cout << qCopyNorm.coefficientsAsEigen() << endl;
 
     cout << "q = " << q << endl;
     cout << printVectorToString(angles) << endl;
