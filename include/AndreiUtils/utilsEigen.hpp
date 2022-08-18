@@ -128,31 +128,43 @@ namespace AndreiUtils {
         return Eigen::Quaternion<T>(q.coeffs() / scalar);
     }
 
+    // q1 == q2
     template<class T>
     bool qEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         return q1.w() == q2.w() && q1.x() == q2.x() && q1.y() == q2.y() && q1.z() == q2.z();
     }
 
+    // q1 != q2
     template<class T>
     bool qNotEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         return !(q1 == q2);
     }
 
+    // q1 + q2
     template<class T>
     Eigen::Quaternion<T> qAdd(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         return Eigen::Quaternion<T>(q1.coeffs() + q2.coeffs());
     }
 
+    // q1 += q2
     template<class T>
     void qIncrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         q1.coeffs() += q2.coeffs();
     }
 
+    // q1 - q2
     template<class T>
     Eigen::Quaternion<T> qDiff(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         return Eigen::Quaternion<T>(q1.coeffs() - q2.coeffs());
     }
 
+    // q1 - q2: alias for qDiff
+    template<class T>
+    Eigen::Quaternion<T> qSub(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
+        return qDiff(q1, q2);
+    }
+
+    // q1 -= q2
     template<class T>
     void qDecrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
         q1.coeffs() -= q2.coeffs();
@@ -163,6 +175,7 @@ namespace AndreiUtils {
         return q.coeffs().squaredNorm();
     }
 
+    // -q
     template<class T>
     Eigen::Quaternion<T> qNeg(const Eigen::Quaternion<T> &q) {
         return Eigen::Quaternion<T>(-q.coeffs());
