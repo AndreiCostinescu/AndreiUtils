@@ -213,6 +213,11 @@ void testDualQuaternions() {
     qCopy = qCopy.addTranslation({0, 0, 1});
     cout << "qCopy != q: " << (qCopy != q) << endl;
 
+    auto qNorm = q.norm();
+    auto qCopyNorm = qCopy.norm();
+    cout << qNorm << endl;
+    cout << qCopyNorm << endl;
+
     cout << "q = " << q << endl;
     cout << printVectorToString(angles) << endl;
     cout << q.getTranslation().transpose() << endl;

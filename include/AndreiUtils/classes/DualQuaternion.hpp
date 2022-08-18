@@ -79,22 +79,33 @@ namespace AndreiUtils {
             return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
         }
 
+        // inspired by DQ::norm function
+        DualQuaternion norm() const {
+            /*
+            return DualQuaternion(this->r * this->r.conjugate(),
+                                  qAdd(this->r * this->d.conjugate(), this->d * this->r.conjugate()));
+            //*/
+
+            DualQuaternion norm = this->conjugate() * (*this);
+            norm.r.w() = sqrt(norm.r.w());
+            norm.d.w() /= (2 * norm.r.w());  // why???
+            return norm;
+        }
+
         void normalize() {
+            *this = (*this) * (this->norm().dualQuaternionInverse());
+            /*
             T norm = this->r.norm();
             if (equal(norm, T(0))) {
                 return;
             }
-            (*this) /= norm;
+            this->r.normalize();
+            //*/
         }
 
         DualQuaternion normalized() const {
             DualQuaternion res = *this;
-            T norm = this->r.norm();
-            if (equal(norm, T(0))) {
-                return res;
-            }
-            res.r = qDivScalar(res.r, norm);
-            res.d = qDivScalar(res.d, norm);
+            res.normalize();
             return res;
         }
 
