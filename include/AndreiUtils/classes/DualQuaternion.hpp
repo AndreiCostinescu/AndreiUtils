@@ -45,6 +45,11 @@ namespace AndreiUtils {
                     this->d.z()};
         }
 
+        Eigen::Matrix<T, 8, 1> coefficientsAsEigen() const {
+            return {this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
+                    this->d.z()};
+        }
+
         void fromCoefficients(std::vector<T> const &coefficients) {
             if (coefficients.size() != 8) {
                 throw std::runtime_error(
