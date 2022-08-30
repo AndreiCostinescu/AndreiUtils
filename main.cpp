@@ -268,6 +268,8 @@ void testDualQuaternions() {
     cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", "
          << q2 << endl;
     cout << endl;
+
+    cout << q.powScrew(0.5) << endl;
 }
 
 void testStringAllocation() {

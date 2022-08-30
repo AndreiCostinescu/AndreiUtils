@@ -86,6 +86,54 @@ namespace AndreiUtils {
             return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
         }
 
+        double rotationAngle() const {
+            return 2 * acos(this->r.w());
+        }
+
+        // inspired by Riddhiman's function
+        DualQuaternion powScrew(double const &a) const {
+            double theta = this->rotationAngle(), n;  // Theta in radians (ALWAYS)
+            DualQuaternion res;
+
+            if (theta == 0) {
+                n = theta;
+            } else {
+                n = 0.5 * theta;
+            }
+
+            double cos_n = cos(n);
+            double cos_a_n = cos(a * n);
+            double sin_n = sin(n);
+            double sin_a_n = sin(a * n);
+
+            double tmp = -(2 * this->d.w() / sin_n);
+            double tmp_cos_2 = 0.5 * tmp * cos_n;
+
+            Eigen::Vector3d u, v;
+            u.x() = this->r.x();
+            u.y() = this->r.y();
+            u.z() = this->r.z();
+            u /= sin_n;
+            v.x() = this->d.x() - tmp_cos_2 * u.x();
+            v.y() = this->d.y() - tmp_cos_2 * u.y();
+            v.z() = this->d.z() - tmp_cos_2 * u.z();
+            v /= sin_n;
+
+            res.r.w() = cos_a_n;
+            res.r.x() = u.x() * sin_a_n;
+            res.r.y() = u.y() * sin_a_n;
+            res.r.z() = u.z() * sin_a_n;
+
+            double tmp_a_2 = 0.5 * tmp * a;
+
+            res.d.w() = -tmp_a_2 * sin_a_n;
+            res.d.x() = (v.x() * sin_a_n) + (tmp_a_2 * u.x() * cos_a_n);
+            res.d.y() = (v.y() * sin_a_n) + (tmp_a_2 * u.y() * cos_a_n);
+            res.d.z() = (v.z() * sin_a_n) + (tmp_a_2 * u.z() * cos_a_n);
+
+            return res;
+        }
+
         // inspired by DQ::norm function
         DualQuaternion norm() const {
             /*
