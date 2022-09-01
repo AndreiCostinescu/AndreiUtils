@@ -24,6 +24,8 @@ namespace AndreiUtils {
     long double rad2Deg(long double x);
 
     bool inContact(const float (&p1)[3], const float (&p2)[3], double threshold);
+
+    bool inContact(const float (&p1)[3], const float (&p2)[3], double threshold, double &distance);
 }
 
 #endif //ANDREIUTILS_UTILSGEOMETRY_H

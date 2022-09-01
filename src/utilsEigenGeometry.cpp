@@ -201,3 +201,15 @@ bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2
 bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold) {
     return (pow(p1.x() - p2[0], 2) + pow(p1.y() - p2[1], 2) + pow(p1.z() - p2[2], 2)) <= pow(threshold, 2);
 }
+
+bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold, double &distance) {
+    distance = (p1 - p2).norm();
+    return distance <= threshold;
+}
+
+bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold, double &distance) {
+    distance = pow(p1.x() - p2[0], 2) + pow(p1.y() - p2[1], 2) + pow(p1.z() - p2[2], 2);
+    bool check = (distance <= pow(threshold, 2));
+    distance = sqrt(distance);
+    return check;
+}

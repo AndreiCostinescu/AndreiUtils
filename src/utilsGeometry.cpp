@@ -34,3 +34,10 @@ long double AndreiUtils::rad2Deg(long double x) {
 bool AndreiUtils::inContact(const float (&p1)[3], const float (&p2)[3], double threshold) {
     return (pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2) + pow(p1[2] - p2[2], 2)) <= pow(threshold, 2);
 }
+
+bool AndreiUtils::inContact(const float (&p1)[3], const float (&p2)[3], double threshold, double &distance) {
+    distance = pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2) + pow(p1[2] - p2[2], 2);
+    bool check = (distance <= pow(threshold, 2));
+    distance = sqrt(distance);
+    return check;
+}

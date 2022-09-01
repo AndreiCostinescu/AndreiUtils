@@ -37,6 +37,10 @@ namespace AndreiUtils {
     bool inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold);
 
     bool inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold);
+
+    bool inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold, double &distance);
+
+    bool inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold, double &distance);
 }
 
 #endif //ANDREIUTILS_UTILSEIGENGEOMETRY_H
