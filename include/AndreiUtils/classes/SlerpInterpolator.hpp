@@ -45,6 +45,15 @@ namespace AndreiUtils {
             }
         }
 
+        // interpolationPoints[i] should be \in [0, 1] for interpolation inside interval and not \in for extrapolation
+        void compute(InterpolationType const &start, InterpolationType const &end, std::vector<double> const &interpolationPoints) {
+            this->clear();
+            this->result.resize(interpolationPoints.size());
+            for (int i = 0; i < interpolationPoints.size(); i++) {
+                this->result[i] = start.slerp(interpolationPoints[i], end);
+            }
+        }
+
         void clear() {
             this->result.clear();
         }
