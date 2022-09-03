@@ -95,6 +95,11 @@ namespace AndreiUtils {
     inline T clamp(T const &v, T const &minV, T const &maxV) {
         return fastMin(fastMax(v, minV), maxV);
     }
+
+    template<typename T>
+    inline T average(T const &a, T const &b) {
+        return a + (b - a) / 2;
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
