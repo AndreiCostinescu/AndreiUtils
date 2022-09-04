@@ -181,6 +181,22 @@ namespace AndreiUtils {
         return Eigen::Quaternion<T>(-q.coeffs());
     }
 
+    // log(q)
+    template<class T>
+    Eigen::Quaternion<T> qLog(const Eigen::Quaternion<T> &q) {
+        T qNorm = q.norm();
+        Eigen::Matrix<T, 3, 1> x = acos(q.w() / qNorm) * q.vec().normalized();
+        return Eigen::Quaternion<T>(log(qNorm), x.x(), x.y(), x.z());
+    }
+
+    // exp(q)
+    template<class T>
+    Eigen::Quaternion<T> qExp(const Eigen::Quaternion<T> &q) {
+        Eigen::Matrix<T, 3, 1> x = q.vec();
+        T xNorm = x.norm();
+        return qMulScalar(Eigen::Quaternion<T>(Eigen::AngleAxis<T>(xNorm, x.normalized())), exp(q.w()));
+    }
+
     template<class T>
     Eigen::Quaternion<T> vToQ(const Eigen::Matrix<T, 3, 1> &v) {
         Eigen::Quaternion<T> q;
