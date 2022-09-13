@@ -411,6 +411,18 @@ namespace AndreiUtils {
         }
         return true;
     }
+
+    /**
+     * @tparam T
+     * @param v: the vector to splice
+     * @param startIndex : the start index of the splice (inclusive)
+     * @param endIndex : the end index of the splice (inclusive)
+     * @return the vector from startIndex to endIndex inclusive
+     */
+    template<typename T>
+    std::vector<T> spliceVector(std::vector<T> const &v, int startIndex, int endIndex) {
+        return {v.begin() + startIndex, v.begin() + endIndex + 1};
+    }
 }
 
 #endif //ANDREIUTILS_UTILSVECTOR_HPP

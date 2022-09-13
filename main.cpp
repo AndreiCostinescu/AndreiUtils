@@ -1107,6 +1107,16 @@ void testInterpolation() {
     printVector(sx.getResult());
 }
 
+void testSpliceVector() {
+    int n = 10;
+    vector<double> x(n);
+    for (int i = 0; i < n; i++) {
+        x[i] = i+1;
+    }
+    printVector(spliceVector(x, 0, 9));
+    printVector(spliceVector(x, 1, 8));
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1143,6 +1153,7 @@ int main() {
     // testVectorAppendFunctions();
     // testVectorEquals();
     // testRandom();
-    testInterpolation();
+    // testInterpolation();
+    testSpliceVector();
     return 0;
 }
