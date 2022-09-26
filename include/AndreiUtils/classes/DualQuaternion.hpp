@@ -325,28 +325,31 @@ namespace AndreiUtils {
     };
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::one = DualQuaternion<T>(T(1));
+    DualQuaternion<T> const DualQuaternion<T>::zero;
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::i = DualQuaternion<T>(T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::one = DualQuaternion<T>(T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::j = DualQuaternion<T>(T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::i = DualQuaternion<T>(T(0), T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::k = DualQuaternion<T>(T(0), T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::j = DualQuaternion<T>(T(0), T(0), T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::e = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::k = DualQuaternion<T>(T(0), T(0), T(0), T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::ei = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::e = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::ej = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::ei = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(1));
 
     template<class T>
-    const DualQuaternion<T> DualQuaternion<T>::ek = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(1));
+    DualQuaternion<T> const DualQuaternion<T>::ej = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(1));
+
+    template<class T>
+    DualQuaternion<T> const DualQuaternion<T>::ek = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(1));
 
     using Posef = DualQuaternion<float>;
     using Posed = DualQuaternion<double>;

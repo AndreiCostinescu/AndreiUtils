@@ -201,6 +201,16 @@ void testLambdaCaptureScope() {
 }
 
 void testDualQuaternions() {
+    cout << DualQuaternion<double>::zero << endl;
+    cout << DualQuaternion<double>::one << endl;
+    cout << DualQuaternion<double>::i << endl;
+    cout << DualQuaternion<double>::j << endl;
+    cout << DualQuaternion<double>::k << endl;
+    cout << DualQuaternion<double>::e << endl;
+    cout << DualQuaternion<double>::ei << endl;
+    cout << DualQuaternion<double>::ej << endl;
+    cout << DualQuaternion<double>::ek << endl;
+
     Vector3d t(1, 2, 3);
     Vector3d p(4, 2, 3);
     vector<double> angles;
@@ -1128,7 +1138,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
+    testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -1154,6 +1164,6 @@ int main() {
     // testVectorEquals();
     // testRandom();
     // testInterpolation();
-    testSpliceVector();
+    // testSpliceVector();
     return 0;
 }
