@@ -44,6 +44,10 @@ if (@USE_PTHREAD@)
     set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "pthread")  # PTHREAD_UTILS
 endif ()
 
+if (@USE_PYTHON@)
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "python")  # PYTHON_UTILS
+endif ()
+
 if (@USE_REALSENSE@)
     set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "realsense")  # REALSENSE_UTILS
 endif ()
@@ -78,6 +82,7 @@ message("@PROJECT_NAME@ requested components: ${@PROJECT_NAME@_FIND_COMPONENTS}"
 set(@PROJECT_NAME@_REQUEST_EIGEN 0)
 set(@PROJECT_NAME@_REQUEST_OPENCV 0)
 set(@PROJECT_NAME@_REQUEST_OPENMP 0)
+set(@PROJECT_NAME@_REQUEST_PYTHON 0)
 set(@PROJECT_NAME@_REQUEST_REALSENSE 0)
 foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
     string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
@@ -102,6 +107,9 @@ foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
     if ("${__@PROJECT_NAME@_component}" MATCHES "openmp")
         set(@PROJECT_NAME@_REQUEST_OPENMP 1)
     endif()
+    if ("${__@PROJECT_NAME@_component}" MATCHES "python")
+        set(@PROJECT_NAME@_REQUEST_PYTHON 1)
+    endif()
     if ("${__@PROJECT_NAME@_component}" MATCHES "realsense")
         set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
     endif()
@@ -109,6 +117,7 @@ foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
         set(@PROJECT_NAME@_REQUEST_EIGEN 1)
         set(@PROJECT_NAME@_REQUEST_OPENCV 1)
         set(@PROJECT_NAME@_REQUEST_OPENMP 1)
+        set(@PROJECT_NAME@_REQUEST_PYTHON 1)
         set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
     endif()
 endforeach()
@@ -147,6 +156,20 @@ if (${@PROJECT_NAME@_REQUEST_OPENMP})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
         set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${OpenMP_CXX_LIBRARIES} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+    endif ()
+endif ()
+
+### ADD EXTERNAL DEPENDENCIES IF NEEDED: python ###
+
+if (${@PROJECT_NAME@_REQUEST_PYTHON})
+    if (((NOT DEFINED PYTHON_FOUND) OR (NOT ${PYTHON_FOUND})) AND (DEFINED PYBIND11_PYTHON_VERSION) AND (${PYBIND11_PYTHON_VERSION}))
+        find_package(Python3 ${PYBIND11_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
+        message("Found package python with version ${PYBIND11_PYTHON_VERSION}")
+    endif ()
+    if ((NOT DEFINED PYBIND11_FOUND) OR (NOT ${PYBIND11_FOUND}))
+        find_package(pybind11 REQUIRED)
+        set(PYBIND11_LIB pybind11::embed)
+        set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${PYBIND11_LIB} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
     endif ()
 endif ()
 
@@ -208,6 +231,10 @@ foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_COMPONENTS})
         set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
     elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "pthread")
         set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_PTHREAD ${@PROJECT_NAME@_LIBRARY})
+        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
+        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "python")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_PYTHON ${@PROJECT_NAME@_LIBRARY})
         set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
         set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
     elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "realsense")

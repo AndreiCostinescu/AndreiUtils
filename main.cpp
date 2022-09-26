@@ -6,6 +6,7 @@
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/classes/PythonInterface.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
@@ -1121,10 +1122,17 @@ void testSpliceVector() {
     int n = 10;
     vector<double> x(n);
     for (int i = 0; i < n; i++) {
-        x[i] = i+1;
+        x[i] = i + 1;
     }
     printVector(spliceVector(x, 0, 9));
     printVector(spliceVector(x, 1, 8));
+}
+
+void testPythonInterface() {
+    PythonInterface p("hello_world", {"print_hello", "return_hello"});
+    p.callFunction("print_hello");
+    auto res = p.callFunction("return_hello");
+    cout << res.cast<string>() << endl;
 }
 
 int main() {
@@ -1138,7 +1146,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    testDualQuaternions();
+    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -1165,5 +1173,6 @@ int main() {
     // testRandom();
     // testInterpolation();
     // testSpliceVector();
+    testPythonInterface();
     return 0;
 }

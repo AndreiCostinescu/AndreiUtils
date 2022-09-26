@@ -29,10 +29,12 @@ option(WITH_EIGEN "Build the code with eigen" OFF)
 option(WITH_JSON "Build the code with json" ON)
 option(WITH_OPENCV "Build the code with opencv" OFF)
 option(WITH_OPENMP "Build the code with openmp" OFF)
-option(WITH_PTHREAD "Build the code with openmp" OFF)
+option(WITH_PTHREAD "Build the code with pthread" OFF)
+option(WITH_PYTHON "Build the code with pybind" OFF)
 option(WITH_REALSENSE "Build the code with librealsense" OFF)
 
 set(OPENCV_VERSION "" CACHE STRING "The opencv version to use in the project")
+set(PYBIND11_PYTHON_VERSION "3.7" CACHE STRING "The python version to use in the project")
 
 # used only when using AndreiUtils as a submodule/subdirectory in the upper project
 cumulative_or(USE_EIGEN WITH_EIGEN)
@@ -45,6 +47,8 @@ cumulative_or(USE_OPENMP WITH_OPENMP)
 cumulative_or(USE_OPENMP WITH_ALL)
 cumulative_or(USE_PTHREAD WITH_PTHREAD)
 cumulative_or(USE_PTHREAD WITH_ALL)
+cumulative_or(USE_PYTHON WITH_PYTHON)
+cumulative_or(USE_PYTHON WITH_ALL)
 cumulative_or(USE_REALSENSE WITH_REALSENSE)
 cumulative_or(USE_REALSENSE WITH_ALL)
 
@@ -53,6 +57,7 @@ message("Use json set to ${USE_JSON}")
 message("Use opencv set to ${USE_OPENCV}")
 message("Use openmp set to ${USE_OPENMP}")
 message("Use pthread set to ${USE_PTHREAD}")
+message("Use python set to ${USE_REALSENSE}")
 message("Use realsense set to ${USE_REALSENSE}")
 
 if (WIN32)
@@ -92,6 +97,17 @@ if (USE_OPENMP)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
     set(ANDREI_UTILS_REQUIRED_LIBS ${OpenMP_CXX_LIBRARIES} ${ANDREI_UTILS_REQUIRED_LIBS})
     set(ANDREI_UTILS_OPENMP_REQUIRED_LIBS ${OpenMP_CXX_LIBRARIES} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS})
+endif ()
+
+if (USE_PYTHON)
+    if ((DEFINED PYBIND11_PYTHON_VERSION) AND (${PYBIND11_PYTHON_VERSION}))
+        find_package(Python3 ${PYBIND11_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
+        message("Found package python with version ${PYBIND11_PYTHON_VERSION}")
+    endif ()
+    find_package(pybind11 REQUIRED)
+    set(PYBIND11_LIB pybind11::embed)
+    set(ANDREI_UTILS_REQUIRED_LIBS ${PYBIND11_LIB} ${ANDREI_UTILS_REQUIRED_LIBS})
+    set(ANDREI_UTILS_PYTHON_REQUIRED_LIBS ${PYBIND11_LIB} ${ANDREI_UTILS_PYTHON_REQUIRED_LIBS})
 endif ()
 
 if (USE_REALSENSE)
@@ -151,6 +167,7 @@ SET(UTILS_OPENCV)
 SET(UTILS_OPENCV_REALSENSE)
 SET(UTILS_OPENMP)
 SET(UTILS_PTHREAD)
+SET(UTILS_PYTHON)
 SET(UTILS_REALSENSE)
 
 if (USE_EIGEN)
@@ -185,6 +202,10 @@ endif ()
 
 if (USE_OPENMP)
     SET(UTILS_PTHREAD src/utilsPThread.cpp)
+endif ()
+
+if (USE_PYTHON)
+    SET(UTILS_PYTHON src/classes/PythonInterface.cpp)
 endif ()
 
 if (USE_REALSENSE)
@@ -223,6 +244,7 @@ set(OPENCV_UTILS ${UTILS_OPENCV})
 set(OPENCV_REALSENSE_UTILS ${UTILS_OPENCV_REALSENSE})
 set(OPENMP_UTILS ${UTILS_OPENMP})
 set(PTHREAD_UTILS ${UTILS_PTHREAD})
+set(PYTHON_UTILS ${UTILS_PYTHON})
 set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
 set(LIBRARY_NAME ${PROJECT_NAME})
@@ -266,6 +288,18 @@ if (USE_PTHREAD)
     set(LIB_NAME "${LIBRARY_NAME}_PTHREAD")
     add_library(${LIB_NAME} ${PTHREAD_UTILS})
     target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+    target_include_directories(${LIB_NAME}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
+endif ()
+
+if (USE_PYTHON)
+    # PYTHON_UTILS
+    set(LIB_NAME "${LIBRARY_NAME}_PYTHON")
+    add_library(${LIB_NAME} ${PYTHON_UTILS})
+    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_PYTHON_REQUIRED_LIBS} ${LIBRARY_NAME}_GENERAL ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
     target_include_directories(${LIB_NAME}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -356,6 +390,7 @@ set(UTILS
         ${OPENCV_REALSENSE_UTILS}
         ${OPENMP_UTILS}
         ${PTHREAD_UTILS}
+        ${PYTHON_UTILS}
         ${REALSENSE_UTILS}
         )
 message("Utils = ${UTILS}")
