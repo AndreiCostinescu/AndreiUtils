@@ -14,7 +14,7 @@ namespace AndreiUtils {
     class DualQuaternion {
     public:
         static DualQuaternion identity() {
-            return {qIdentity<T>(), Eigen::Matrix<T, 3, 1>::Zero()};
+            return DualQuaternion::one;
         }
 
         static DualQuaternion createFromCoefficients(std::vector<T> const &coefficients) {
@@ -23,7 +23,9 @@ namespace AndreiUtils {
             return q;
         }
 
-        DualQuaternion() : r(qZero<T>()), d(qZero<T>()) {}
+        explicit DualQuaternion(T const &q0 = T(0), T const &q1 = T(0), T const &q2 = T(0), T const &q3 = T(0),
+                                T const &q4 = T(0), T const &q5 = T(0), T const &q6 = T(0), T const &q7 = T(0)) :
+                r(q0, q1, q2, q3), d(q4, q5, q6, q7) {}
 
         DualQuaternion(Eigen::Quaternion<T> r, Eigen::Quaternion<T> d) : r(r), d(d) {}
 
@@ -307,10 +309,44 @@ namespace AndreiUtils {
             return is;
         }
 
+        static DualQuaternion<T> const zero;
+        static DualQuaternion<T> const one;
+        static DualQuaternion<T> const i;
+        static DualQuaternion<T> const j;
+        static DualQuaternion<T> const k;
+        static DualQuaternion<T> const e;
+        static DualQuaternion<T> const ei;
+        static DualQuaternion<T> const ej;
+        static DualQuaternion<T> const ek;
+
     protected:
         Eigen::Quaternion<T> r;
         Eigen::Quaternion<T> d;
     };
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::one = DualQuaternion<T>(T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::i = DualQuaternion<T>(T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::j = DualQuaternion<T>(T(0), T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::k = DualQuaternion<T>(T(0), T(0), T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::e = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::ei = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::ej = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(1));
+
+    template<class T>
+    const DualQuaternion<T> DualQuaternion<T>::ek = DualQuaternion<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(1));
 
     using Posef = DualQuaternion<float>;
     using Posed = DualQuaternion<double>;
