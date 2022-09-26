@@ -200,7 +200,7 @@ if (USE_OPENMP)
     SET(UTILS_OPENMP include/AndreiUtils/utilsOpenMP.hpp src/utilsOpenMP.cpp)
 endif ()
 
-if (USE_OPENMP)
+if (USE_PTHREAD)
     SET(UTILS_PTHREAD src/utilsPThread.cpp)
 endif ()
 
