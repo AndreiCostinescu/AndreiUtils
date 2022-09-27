@@ -20,6 +20,7 @@ if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
     set(@PROJECT_NAME@_FIND_COMPONENTS "world")  # <- TODO modify here the default value of the find package components
 endif()
 message("@PROJECT_NAME@ requested components: ${@PROJECT_NAME@_FIND_COMPONENTS}")
+set(@PROJECT_NAME@_FIND_COMPONENTS_LOW )
 foreach(__@PROJECT_NAME@_find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
     string(TOLOWER "${__@PROJECT_NAME@_find_component}" __@PROJECT_NAME@_find_componentLOW)
     set(@PROJECT_NAME@_FIND_COMPONENTS_LOW ${@PROJECT_NAME@_FIND_COMPONENTS_LOW} ${__@PROJECT_NAME@_find_componentLOW})
