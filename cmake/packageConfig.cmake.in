@@ -12,7 +12,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
 ### CHECK THE REQUESTED COMPONENTS ###
 
-# set(@PROJECT_NAME@_COMPONENTS "general" "eigen" "eigen_opencv" "eigen_realsense" "json" "opencv" "opencv_realsense" "openmp" "pthread" "realsense" "world")
 set(@PROJECT_NAME@_COMPONENTS "general")
 if (@USE_JSON@)
     set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "json")  # JSON_UTILS
