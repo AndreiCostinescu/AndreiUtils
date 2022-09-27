@@ -12,12 +12,12 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
 ### CHECK THE REQUESTED COMPONENTS ###
 
-# TODO modify below the list of components of this package
+# TODO: modify below the list of components of this package
 set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "world")
-# TODO modify above the list of components of this package
+# TODO: modify above the list of components of this package
 
 if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
-    set(@PROJECT_NAME@_FIND_COMPONENTS "world")  # <- TODO modify here the default value of the find package components
+    set(@PROJECT_NAME@_FIND_COMPONENTS "world")  # <- TODO: modify here the default value of the find package components
 endif()
 message("@PROJECT_NAME@ requested components: ${@PROJECT_NAME@_FIND_COMPONENTS}")
 set(@PROJECT_NAME@_FIND_COMPONENTS_LOW )
@@ -27,7 +27,7 @@ foreach(__@PROJECT_NAME@_find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
 endforeach()
 
 ### set the _REQUEST_ package-variables to 0 or 1 depending on whether the requested components contain the data or not ###
-set(@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE )  # <- TODO modify here the extra packages
+set(@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE )  # <- TODO: modify here the extra packages
 foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE})
     set(@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} 0)
 endforeach()
@@ -46,8 +46,8 @@ endforeach()
 
 ### ADD CORE EXTERNAL TARGETS ###
 
-# TODO modify below with the core external targets
-# TODO modify above with the core external targets
+# TODO: modify below with the core external targets
+# TODO: modify above with the core external targets
 
 ### ADD EXTERNAL TARGETS IF REQUESTED ###
 
@@ -55,7 +55,8 @@ foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES
     if (NOT (${@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE}}))
         continue()
     endif ()
-    # TODO modify below with the requested external targets
+    # TODO: modify below with the requested external targets
+    # e.g.: if (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES <packageName>) ... endif ()
     # TODO: modify above with the requested external targets
 endforeach()
 
