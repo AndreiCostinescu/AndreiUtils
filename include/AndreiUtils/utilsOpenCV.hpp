@@ -1,5 +1,5 @@
 //
-// Created by andrei on 27.05.22.
+// Created by Andrei on 27.05.22.
 //
 
 #ifndef ANDREIUTILS_UTILSOPENCV_HPP

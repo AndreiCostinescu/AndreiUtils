@@ -1,5 +1,5 @@
 //
-// Created by andrei on 09.02.22.
+// Created by Andrei on 09.02.22.
 //
 
 #ifndef ANDREIUTILS_DUALQUATERNION_HPP

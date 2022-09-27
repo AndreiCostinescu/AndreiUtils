@@ -1,5 +1,5 @@
 //
-// Created by andrei on 31.03.22.
+// Created by Andrei on 31.03.22.
 //
 
 #ifndef ANDREIUTILS_IS_EIGEN_DATA_H

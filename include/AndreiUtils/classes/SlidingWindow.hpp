@@ -1,5 +1,5 @@
 //
-// Created by andrei on 03.12.20.
+// Created by Andrei on 03.12.20.
 //
 
 #ifndef ANDREIUTILS_SLIDINGWINDOW_HPP

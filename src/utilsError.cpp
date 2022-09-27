@@ -1,5 +1,5 @@
 //
-// Created by andrei on 06.12.21.
+// Created by Andrei on 06.12.21.
 //
 
 #include <AndreiUtils/utilsError.h>

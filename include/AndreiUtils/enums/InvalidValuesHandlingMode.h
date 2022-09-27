@@ -1,5 +1,5 @@
 //
-// Created by andrei on 18.03.22.
+// Created by Andrei on 18.03.22.
 //
 
 #ifndef ANDREIUTILS_INVALIDVALUESHANDLINGMODE_H

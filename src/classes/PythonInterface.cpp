@@ -1,5 +1,5 @@
 //
-// Created by andrei on 26.09.22.
+// Created by Andrei on 26.09.22.
 //
 
 #include <AndreiUtils/classes/PythonInterface.h>

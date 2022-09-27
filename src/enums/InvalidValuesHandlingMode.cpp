@@ -1,5 +1,5 @@
 //
-// Created by andrei on 08.03.22.
+// Created by Andrei on 08.03.22.
 //
 
 #include <AndreiUtils/enums/InvalidValuesHandlingMode.h>

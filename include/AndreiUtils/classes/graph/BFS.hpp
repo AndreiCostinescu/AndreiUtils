@@ -1,5 +1,5 @@
 //
-// Created by andrei on 28.06.22.
+// Created by Andrei on 28.06.22.
 //
 
 #ifndef ANDREIUTILS_BFS_HPP

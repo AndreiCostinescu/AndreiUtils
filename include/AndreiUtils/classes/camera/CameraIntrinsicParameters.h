@@ -1,5 +1,5 @@
 //
-// Created by andrei on 14.01.22.
+// Created by Andrei on 14.01.22.
 //
 
 #ifndef ANDREIUTILS_CAMERAINTRINSICPARAMETERS_HPP

@@ -1,5 +1,5 @@
 //
-// Created by andrei on 26.01.22.
+// Created by Andrei on 26.01.22.
 //
 
 #ifndef ANDREIUTILS_UTILSREALSENSEEIGEN_H

@@ -1,5 +1,5 @@
 //
-// Created by andrei on 05.10.21.
+// Created by Andrei on 05.10.21.
 //
 
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>

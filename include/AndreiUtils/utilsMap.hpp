@@ -1,5 +1,5 @@
 //
-// Created by andrei on 24.03.22.
+// Created by Andrei on 24.03.22.
 //
 
 #ifndef ANDREIUTILS_MAPUTILS_HPP

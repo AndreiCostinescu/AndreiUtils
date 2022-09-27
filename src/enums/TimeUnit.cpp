@@ -1,5 +1,5 @@
 //
-// Created by andrei on 25.01.22.
+// Created by Andrei on 25.01.22.
 //
 
 #include <AndreiUtils/enums/TimeUnit.h>
