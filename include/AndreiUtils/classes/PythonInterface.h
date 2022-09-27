@@ -7,8 +7,8 @@
 
 #include <AndreiUtils/utilsMap.hpp>
 #include <pybind11/embed.h>  // everything needed for embedding
-#include <pybind11/eigen.h>  // everything needed for Eigen conversions
-#include <pybind11/stl.h>    // everything needed for std:: types conversions
+// #include <pybind11/eigen.h>  // everything needed for Eigen conversions
+// #include <pybind11/stl.h>    // everything needed for std:: types conversions
 
 namespace py = pybind11;
 
