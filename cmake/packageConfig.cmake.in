@@ -12,44 +12,35 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
 ### CHECK THE REQUESTED COMPONENTS ###
 
-set(@PROJECT_NAME@_COMPONENTS "general")
+set(@PROJECT_NAME@_COMPONENTS "core")
 if (@USE_JSON@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "json")  # JSON_UTILS
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "json")
 endif ()
-
 if (@USE_OPENMP@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "openmp")  # OPENMP_UTILS
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "openmp")
 endif ()
-
 if (@USE_PTHREAD@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "pthread")  # PTHREAD_UTILS
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "pthread")
 endif ()
-
 if (@USE_PYTHON@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "python")  # PYTHON_UTILS
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "python")
 endif ()
-
 if (@USE_REALSENSE@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "realsense")  # REALSENSE_UTILS
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "realsense")
 endif ()
-
 if (@USE_OPENCV@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv")  # OPENCV_UTILS
-
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv")
     if (@USE_REALSENSE@)
-        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv_realsense")  # OPENCV_REALSENSE_UTILS
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "opencv_realsense")
     endif ()
 endif ()
-
 if (@USE_EIGEN@)
-    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen")  # EIGEN_UTILS
-
+    set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen")
     if (@USE_OPENCV@)
-        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_opencv")  # EIGEN_OPENCV_UTILS
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_opencv")
     endif ()
-
     if (@USE_REALSENSE@)
-        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_realsense")  # EIGEN_REALSENSE_UTILS
+        set(@PROJECT_NAME@_COMPONENTS ${@PROJECT_NAME@_COMPONENTS} "eigen_realsense")
     endif ()
 endif ()
 
@@ -59,89 +50,78 @@ if(NOT @PROJECT_NAME@_FIND_COMPONENTS)
     set(@PROJECT_NAME@_FIND_COMPONENTS "world")
 endif()
 message("@PROJECT_NAME@ requested components: ${@PROJECT_NAME@_FIND_COMPONENTS}")
+foreach(__@PROJECT_NAME@_find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
+    string(TOLOWER "${__@PROJECT_NAME@_find_component}" __@PROJECT_NAME@_find_componentLOW)
+    set(@PROJECT_NAME@_FIND_COMPONENTS_LOW ${@PROJECT_NAME@_FIND_COMPONENTS_LOW} ${__@PROJECT_NAME@_find_componentLOW})
+endforeach()
 
-set(@PROJECT_NAME@_REQUEST_EIGEN 0)
-set(@PROJECT_NAME@_REQUEST_OPENCV 0)
-set(@PROJECT_NAME@_REQUEST_OPENMP 0)
-set(@PROJECT_NAME@_REQUEST_PYTHON 0)
-set(@PROJECT_NAME@_REQUEST_REALSENSE 0)
-foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_FIND_COMPONENTS})
-    string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
-    if ("${__@PROJECT_NAME@_component}" MATCHES ".*eigen.*")
-        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
-    endif()
-    if ("${__@PROJECT_NAME@_component}" MATCHES ".*opencv.*")
-        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
-    endif()
-    if ("${__@PROJECT_NAME@_component}" MATCHES ".*openmp.*")
-        set(@PROJECT_NAME@_REQUEST_OPENMP 1)
-    endif()
-    if ("${__@PROJECT_NAME@_component}" MATCHES ".*python.*")
-        set(@PROJECT_NAME@_REQUEST_PYTHON 1)
-    endif()
-    if ("${__@PROJECT_NAME@_component}" MATCHES ".*realsense.*")
-        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
-    endif()
-    if ("${__@PROJECT_NAME@_component}" MATCHES "world")
-        set(@PROJECT_NAME@_REQUEST_EIGEN 1)
-        set(@PROJECT_NAME@_REQUEST_OPENCV 1)
-        set(@PROJECT_NAME@_REQUEST_OPENMP 1)
-        set(@PROJECT_NAME@_REQUEST_PYTHON 1)
-        set(@PROJECT_NAME@_REQUEST_REALSENSE 1)
+### set the _REQUEST_ package-variables to 0 or 1 depending on whether the requested components contain the data or not ###
+set(@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE eigen opencv openmp python realsense)
+foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE})
+    set(@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} 0)
+endforeach()
+foreach(__@PROJECT_NAME@_find_componentLOW ${@PROJECT_NAME@_FIND_COMPONENTS_LOW})
+    foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE})
+        if ("${__@PROJECT_NAME@_find_componentLOW}" MATCHES ".*${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE}.*")
+            set(@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} 1)
+        endif()
+    endforeach()
+    if ("${__@PROJECT_NAME@_find_componentLOW}" MATCHES "world")
+        foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE})
+            set(@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} 1)
+        endforeach()
     endif()
 endforeach()
 
-### ADD EXTERNAL TARGETS IF NEEDED: Eigen ###
+### ADD CORE EXTERNAL TARGETS ###
 
-if (${@PROJECT_NAME@_REQUEST_EIGEN})
-    if ((NOT DEFINED Eigen3_FOUND) OR (NOT ${Eigen3_FOUND}))
-        find_package(Eigen3 3.3 REQUIRED)
+### ADD EXTERNAL TARGETS IF REQUESTED ###
+
+foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES_LOWERCASE})
+    if (NOT (${@PROJECT_NAME@_REQUEST_${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE}}))
+        continue()
     endif ()
-endif ()
-
-### ADD EXTERNAL TARGETS IF NEEDED: opencv ###
-
-if (${@PROJECT_NAME@_REQUEST_OPENCV})
-    if (((NOT DEFINED OPENCV_CORE_FOUND) OR (NOT ${OPENCV_CORE_FOUND}) OR (NOT DEFINED OpenCV_core_FOUND) OR (NOT ${OpenCV_core_FOUND})) OR ((NOT DEFINED OPENCV_IMGPROC_FOUND) OR (NOT ${OPENCV_IMGPROC_FOUND}) OR (NOT DEFINED OpenCV_imgproc_FOUND) OR (NOT ${OpenCV_imgproc_FOUND})) OR ((NOT DEFINED OPENCV_HIGHGUI_FOUND) OR (NOT ${OPENCV_HIGHGUI_FOUND}) OR (NOT DEFINED OpenCV_highgui_FOUND) OR (NOT ${OpenCV_highgui_FOUND})) OR ((NOT DEFINED OPENCV_CALIB3D_FOUND) OR (NOT ${OPENCV_CALIB3D_FOUND}) OR (NOT DEFINED OpenCV_calib3d_FOUND) OR (NOT ${OpenCV_calib3d_FOUND})))
-        if ("${OPENCV_VERSION}" STREQUAL "")
-            find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui calib3d)
-        else ()
-            find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS core imgproc highgui calib3d)
+    if (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES eigen)
+        if ((NOT DEFINED Eigen3_FOUND) OR (NOT ${Eigen3_FOUND}))
+            if ("${EIGEN3_VERSION}" STREQUAL "")
+                find_package(Eigen3 REQUIRED)
+            else ()
+                find_package(Eigen3 ${Eigen3_VERSION} REQUIRED)
+            endif ()
+        endif ()
+    elseif (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES opencv)
+        if (((NOT DEFINED OPENCV_CORE_FOUND) OR (NOT ${OPENCV_CORE_FOUND}) OR (NOT DEFINED OpenCV_core_FOUND) OR (NOT ${OpenCV_core_FOUND})) OR
+            ((NOT DEFINED OPENCV_IMGPROC_FOUND) OR (NOT ${OPENCV_IMGPROC_FOUND}) OR (NOT DEFINED OpenCV_imgproc_FOUND) OR (NOT ${OpenCV_imgproc_FOUND})) OR
+            ((NOT DEFINED OPENCV_HIGHGUI_FOUND) OR (NOT ${OPENCV_HIGHGUI_FOUND}) OR (NOT DEFINED OpenCV_highgui_FOUND) OR (NOT ${OpenCV_highgui_FOUND})) OR
+            ((NOT DEFINED OPENCV_CALIB3D_FOUND) OR (NOT ${OPENCV_CALIB3D_FOUND}) OR (NOT DEFINED OpenCV_calib3d_FOUND) OR (NOT ${OpenCV_calib3d_FOUND})))
+            if ("${OPENCV_VERSION}" STREQUAL "")
+                find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui calib3d)
+            else ()
+                find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS core imgproc highgui calib3d)
+            endif ()
+        endif ()
+    elseif (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES openmp)
+        if ((NOT DEFINED OpenMP_FOUND) OR (NOT ${OpenMP_FOUND}))
+            find_package(OpenMP REQUIRED)
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+            # set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${OpenMP_CXX_LIBRARIES} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
+        endif ()
+    elseif (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES python)
+        if (((NOT DEFINED PYTHON_FOUND) OR (NOT ${PYTHON_FOUND})) AND (DEFINED PYBIND11_PYTHON_VERSION) AND (${PYBIND11_PYTHON_VERSION}))
+            find_package(Python3 ${PYBIND11_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
+            message("Found package python with version ${PYBIND11_PYTHON_VERSION}")
+        endif ()
+        if ((NOT DEFINED PYBIND11_FOUND) OR (NOT ${PYBIND11_FOUND}))
+            find_package(pybind11 REQUIRED)
+        endif ()
+    elseif (${__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE} MATCHES realsense)
+        if ((NOT DEFINED realsense2_FOUND) OR (NOT ${realsense2_FOUND}))
+            find_package(realsense2 REQUIRED)
         endif ()
     endif ()
-endif ()
-
-### ADD EXTERNAL TARGETS IF NEEDED: openmp ###
-
-if (${@PROJECT_NAME@_REQUEST_OPENMP})
-    if ((NOT DEFINED OpenMP_FOUND) OR (NOT ${OpenMP_FOUND}))
-        find_package(OpenMP REQUIRED)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-        # set(@PROJECT_NAME@_EXTERNAL_LIBRARIES ${OpenMP_CXX_LIBRARIES} ${@PROJECT_NAME@_EXTERNAL_LIBRARIES})
-    endif ()
-endif ()
-
-### ADD EXTERNAL TARGETS IF NEEDED: python ###
-
-if (${@PROJECT_NAME@_REQUEST_PYTHON})
-    if (((NOT DEFINED PYTHON_FOUND) OR (NOT ${PYTHON_FOUND})) AND (DEFINED PYBIND11_PYTHON_VERSION) AND (${PYBIND11_PYTHON_VERSION}))
-        find_package(Python3 ${PYBIND11_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
-        message("Found package python with version ${PYBIND11_PYTHON_VERSION}")
-    endif ()
-    if ((NOT DEFINED PYBIND11_FOUND) OR (NOT ${PYBIND11_FOUND}))
-        find_package(pybind11 REQUIRED)
-    endif ()
-endif ()
-
-### ADD EXTERNAL TARGETS IF NEEDED: realsense2 ###
-
-if (${@PROJECT_NAME@_REQUEST_REALSENSE})
-    if ((NOT DEFINED realsense2_FOUND) OR (NOT ${realsense2_FOUND}))
-        find_package(realsense2 REQUIRED)
-    endif ()
-endif ()
+endforeach()
 
 ### START POPULATING @PROJECT_NAME@_INCLUDE and @PROJECT_NAME@_LIBRARY variables
 
@@ -152,62 +132,20 @@ set(@PROJECT_NAME@_LIBRARY )  # reset content
 
 # first, iterate through the components because of inter-dependencies-ordering
 foreach(__@PROJECT_NAME@_component ${@PROJECT_NAME@_COMPONENTS})
-    list(FIND @PROJECT_NAME@_FIND_COMPONENTS ${__@PROJECT_NAME@_component} __componentIdx)
+    string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
+    list(FIND @PROJECT_NAME@_FIND_COMPONENTS_LOW ${__@PROJECT_NAME@_componentLOW} __componentIdx)
     if(__componentIdx LESS 0)
+        # component was not requested
         continue()
     endif ()
-    string(TOLOWER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentLOW)
-    if ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "general")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_GENERAL ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen_opencv")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN_OPENCV ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "eigen_realsense")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_EIGEN_REALSENSE ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "json")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_JSON ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "opencv")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENCV ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "opencv_realsense")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENCV_REALSENSE ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "openmp")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_OPENMP ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "pthread")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_PTHREAD ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "python")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_PYTHON ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "realsense")
-        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_REALSENSE ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
-    elseif ("${__@PROJECT_NAME@_componentLOW}" STREQUAL "world")
+    if (${__@PROJECT_NAME@_componentLOW} MATCHES world)
         set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@ ${@PROJECT_NAME@_LIBRARY})
-        set(${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
-        set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
     else ()
-        message(WARNING "Unknown component/module/target ${__@PROJECT_NAME@_componentLOW}")
+        set(@PROJECT_NAME@_LIBRARY @PROJECT_NAME@::@PROJECT_TARGET@_${__@PROJECT_NAME@_component} ${@PROJECT_NAME@_LIBRARY})
     endif ()
+    set(@PROJECT_NAME@_${__@PROJECT_NAME@_component}_FOUND TRUE)  # indicate that module is found
+    string(TOUPPER "${__@PROJECT_NAME@_component}" __@PROJECT_NAME@_componentUP)
+    set(@PROJECT_NAME@_${__@PROJECT_NAME@_componentUP}_FOUND 1)  # indicate that module is found
 endforeach ()
 
 ### SET THE NOT FOUND COMPONENTS! ###
