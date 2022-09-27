@@ -1,5 +1,5 @@
 //
-// Created by root on 17.06.22.
+// Created by Andrei on 17.06.22.
 //
 
 #ifndef ANDREIUTILS_UTILSPTHREAD_H
