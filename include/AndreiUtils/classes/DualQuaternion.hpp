@@ -136,6 +136,53 @@ namespace AndreiUtils {
             return res;
         }
 
+        // inspired by DQ::log function
+        DualQuaternion log() const {
+            // Verify if the object caller is a unit DQ
+            if (this->norm() != DualQuaternion::identity()) {
+                throw (std::range_error("Bad log() call: Not a unit dual quaternion"));
+            }
+
+            // log calculation: https://www.researchgate.net/publication/362477656_Dynamic_Modeling_of_Robotic_Systems_A_Dual_Quaternion_Formulation
+            Eigen::Quaterniond _r = (0.5 * this->rotationAngle()) * this->rotation_axis();  // primary
+            Eigen::Quaterniond _d = 0.5 * this->translation();  // dual
+            return {_r, _d};
+        }
+
+        // inspired by DQ::exp function
+        DualQuaternion exp() const {
+            double phi;
+            DualQuaternion prim;
+            DualQuaternion exp;
+
+            if (this->r != qZero<double>()) {
+                throw (std::range_error(
+                        "Bad exp() call: Exponential operation is defined only for pure dual quaternions."));
+            }
+
+            auto pFct = this->P();
+            auto dFct = this->D();
+
+            prim = pFct;
+            phi = prim.q.norm();
+
+            if (phi != 0.0) {
+                prim = cos(phi) + (sin(phi) / phi) * pFct;
+            } else {
+                prim = DualQuaternion::identity();
+            }
+
+            exp = (prim + DualQuaternion::e * dFct * prim);
+
+            return exp;
+        }
+
+        // inspired by DQ::pow function
+        DualQuaternion powGeom(double const &a) const {
+            DualQuaternion res = a * this->log();
+            return res.exp();
+        }
+
         // inspired by DQ::norm function
         DualQuaternion norm() const {
             /*
@@ -193,9 +240,14 @@ namespace AndreiUtils {
             return qEqual(this->r, other.r) && qEqual(this->d, other.d);
         }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify"
+
         bool operator!=(DualQuaternion const &other) const {
             return !(*this == other);
         }
+
+#pragma clang diagnostic pop
 
         DualQuaternion operator*(const T &s) const {
             return DualQuaternion(qMulScalar(this->r, s), qMulScalar(this->d, s));
