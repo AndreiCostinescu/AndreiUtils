@@ -235,18 +235,21 @@ namespace AndreiUtils {
             return inv;
         }
 
-        bool operator==(DualQuaternion const &other) const {
-            return qEqual(this->r, other.r) && qEqual(this->d, other.d);
+        bool equal(DualQuaternion const &other, T const & tol = 1e-9) const {
+            return qEqual(this->r, other.r, tol) && qEqual(this->d, other.d, tol);
         }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "Simplify"
+        bool notEqual(DualQuaternion const &other, T const & tol = 1e-9) const {
+            return !this->equal(other, tol);
+        }
+
+        bool operator==(DualQuaternion const &other) const {
+            return this->equal(other);
+        }
 
         bool operator!=(DualQuaternion const &other) const {
-            return !(*this == other);
+            return !this->equal(other);
         }
-
-#pragma clang diagnostic pop
 
         DualQuaternion operator*(const T &s) const {
             return DualQuaternion(qMulScalar(this->r, s), qMulScalar(this->d, s));

@@ -130,14 +130,15 @@ namespace AndreiUtils {
 
     // q1 == q2
     template<class T>
-    bool qEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        return q1.w() == q2.w() && q1.x() == q2.x() && q1.y() == q2.y() && q1.z() == q2.z();
+    bool qEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2, T const &tol = T(1e-9)) {
+        return equal(q1.w(), q2.w(), tol) && equal(q1.x(), q2.x(), tol) && equal(q1.y(), q2.y(), tol) &&
+               equal(q1.z(), q2.z(), tol);
     }
 
     // q1 != q2
     template<class T>
-    bool qNotEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        return !(q1 == q2);
+    bool qNotEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2, T const &tol = T(1e-9)) {
+        return !qEqual(q1, q2, tol);
     }
 
     // q1 + q2

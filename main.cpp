@@ -202,6 +202,7 @@ void testLambdaCaptureScope() {
 }
 
 void testDualQuaternions() {
+    cout << setprecision(16);
     cout << DualQuaternion<double>::zero << endl;
     cout << DualQuaternion<double>::one << endl;
     cout << DualQuaternion<double>::i << endl;
@@ -221,10 +222,20 @@ void testDualQuaternions() {
     Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
     DualQuaternion<double> q(r, t), qCopy;
 
+    cout << "q = " << q << endl;
+    cout << "Log of q = " << q.log() << endl;
+    cout << "Exp of Log of q = " << q.log().exp() << endl;
+    cout << "Exp of Log of q == q?: " << q.log().exp().equal(q) << endl;
+
     qCopy = q;
     cout << "qCopy == q: " << (qCopy == q) << endl;
     qCopy = qCopy.addTranslation({0, 0, 1});
     cout << "qCopy != q: " << (qCopy != q) << endl;
+
+    cout << "qCopy = " << qCopy << endl;
+    cout << "Log of qCopy = " << qCopy.log() << endl;
+    cout << "Exp of Log of qCopy = " << qCopy.log().exp() << endl;
+    cout << "Exp of Log of qCopy == qCopy?: " << qCopy.log().exp().equal(qCopy) << endl;
 
     auto qNorm = q.norm();
     auto qCopyNorm = qCopy.norm();
@@ -243,6 +254,13 @@ void testDualQuaternions() {
     cout << "Inverse:" << endl;
     DualQuaternion<double> qInv = q.dualQuaternionInverse();
     cout << "qInv = " << qInv << endl;
+    
+    cout << "qInv = " << qInv << endl;
+    cout << "Log of qInv = " << qInv.log() << endl;
+    cout << "Exp of Log of qInv = " << qInv.log().exp() << endl;
+    cout << "Exp of Log of qInv == qInv?: " << qInv.log().exp().equal(qInv) << endl;
+    cout << endl;
+
     cout << "q * qInv = " << q * qInv << endl;
     cout << "qInv * q = " << qInv * q << endl;
     cout << endl;
@@ -1146,7 +1164,7 @@ int main() {
     // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
+    testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
@@ -1173,6 +1191,6 @@ int main() {
     // testRandom();
     // testInterpolation();
     // testSpliceVector();
-    testPythonInterface();
+    // testPythonInterface();
     return 0;
 }
