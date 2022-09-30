@@ -7,17 +7,21 @@
 
 #include <string>
 #include <unistd.h>
+#include <vector>
 
 namespace AndreiUtils {
-    std::string getCurrentDirectory(bool withTrainingSeparator = false);
+    std::string getCurrentDirectory(bool withTrailingSeparator = false);
 
-    bool fileExists(const std::string &name);
+    bool fileExists(std::string const &name);
 
-    bool createDirectory(const std::string &path);
+    bool createDirectory(std::string const &path);
 
-    bool createNestedDirectory(const std::string &path);
+    bool createNestedDirectory(std::string const &path);
 
-    bool deleteFile(const std::string &fileName);
+    bool deleteFile(std::string const &fileName);
+
+    std::vector<std::string> listDirectoryFiles(std::string const &directoryName,
+                                                std::string const &extensionFilter = "");
 }
 
 #endif //ANDREIUTILS_UTILSFILES_H
