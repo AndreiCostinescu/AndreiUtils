@@ -88,8 +88,12 @@ namespace AndreiUtils {
             return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
         }
 
-        double rotationAngle() const {
-            return 2 * acos(this->r.w());
+        T rotationAngle() const {
+            return Eigen::AngleAxis<T>(this->r).angle();
+        }
+
+        Eigen::Matrix<T, 3, 1> rotationAxis() const {
+            return Eigen::AngleAxis<T>(this->r).axis();
         }
 
         // inspired by Riddhiman's function
@@ -140,41 +144,36 @@ namespace AndreiUtils {
         DualQuaternion log() const {
             // Verify if the object caller is a unit DQ
             if (this->norm() != DualQuaternion::identity()) {
-                throw (std::range_error("Bad log() call: Not a unit dual quaternion"));
+                throw std::runtime_error("Bad log() call: Not a unit dual quaternion");
             }
 
-            // log calculation: https://www.researchgate.net/publication/362477656_Dynamic_Modeling_of_Robotic_Systems_A_Dual_Quaternion_Formulation
-            Eigen::Quaterniond _r = (0.5 * this->rotationAngle()) * this->rotation_axis();  // primary
-            Eigen::Quaterniond _d = 0.5 * this->translation();  // dual
-            return {_r, _d};
+            // log calculation: https://www.sciencedirect.com/science/article/pii/S1474667016395441
+            auto angleAxis = Eigen::AngleAxis<T>(this->r);
+            Eigen::Matrix<T, 3, 1> _x = angleAxis.angle() * angleAxis.axis();  // primary; axis-angle representation
+            Eigen::Quaternion<T> _r(T(0), _x.x(), _x.y(), _x.z());
+
+            _x = this->getTranslation();  // dual
+            Eigen::Quaternion<T> _d(T(0), _x.x(), _x.y(), _x.z());
+
+            return {qDivScalar(_r, T(2.)), qDivScalar(_d, T(2.))};
         }
 
         // inspired by DQ::exp function
         DualQuaternion exp() const {
-            double phi;
-            DualQuaternion prim;
-            DualQuaternion exp;
-
-            if (this->r != qZero<double>()) {
-                throw (std::range_error(
-                        "Bad exp() call: Exponential operation is defined only for pure dual quaternions."));
+            if (this->r.w() != 0 && this->d.w() != 0) {
+                throw std::runtime_error(
+                        "Bad exp() call: Exponential operation is defined only for pure dual quaternions.");
             }
 
-            auto pFct = this->P();
-            auto dFct = this->D();
-
-            prim = pFct;
-            phi = prim.q.norm();
-
+            T phi = this->r.norm();
+            Eigen::Quaternion<T> prim;
             if (phi != 0.0) {
-                prim = cos(phi) + (sin(phi) / phi) * pFct;
+                prim = qAdd({cos(phi), 0, 0, 0}, qMulScalar(this->r, sin(phi) / phi));
             } else {
-                prim = DualQuaternion::identity();
+                prim = qIdentity<T>();
             }
 
-            exp = (prim + DualQuaternion::e * dFct * prim);
-
-            return exp;
+            return {prim, this->d * prim};
         }
 
         // inspired by DQ::pow function
@@ -236,18 +235,21 @@ namespace AndreiUtils {
             return inv;
         }
 
-        bool operator==(DualQuaternion const &other) const {
-            return qEqual(this->r, other.r) && qEqual(this->d, other.d);
+        bool equal(DualQuaternion const &other, T const & tol = 1e-9) const {
+            return qEqual(this->r, other.r, tol) && qEqual(this->d, other.d, tol);
         }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "Simplify"
+        bool notEqual(DualQuaternion const &other, T const & tol = 1e-9) const {
+            return !this->equal(other, tol);
+        }
+
+        bool operator==(DualQuaternion const &other) const {
+            return this->equal(other);
+        }
 
         bool operator!=(DualQuaternion const &other) const {
-            return !(*this == other);
+            return !this->equal(other);
         }
-
-#pragma clang diagnostic pop
 
         DualQuaternion operator*(const T &s) const {
             return DualQuaternion(qMulScalar(this->r, s), qMulScalar(this->d, s));
