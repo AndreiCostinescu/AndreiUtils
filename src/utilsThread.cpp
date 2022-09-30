@@ -4,8 +4,6 @@
 
 #include <AndreiUtils/utilsThread.h>
 #include <chrono>
-#include <cstring>
-#include <iostream>
 #include <thread>
 
 using namespace std;
