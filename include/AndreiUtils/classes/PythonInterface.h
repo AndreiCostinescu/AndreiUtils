@@ -25,7 +25,11 @@ namespace AndreiUtils {
         py::module module;
 
     public:
-        explicit PythonInterface(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames);
+        PythonInterface();
+
+        PythonInterface(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames);
+
+        void reInitialize(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames);
 
         std::map<std::string, py::function> &getFunctions();
 

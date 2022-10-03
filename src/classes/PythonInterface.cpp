@@ -10,7 +10,14 @@ using namespace std;
 
 PythonInterpreterGuard PythonInterface::guard;  // NOLINT(cert-err58-cpp)
 
-PythonInterface::PythonInterface(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames) {
+PythonInterface::PythonInterface() : module(), functions() {}
+
+PythonInterface::PythonInterface(const string &moduleName, const vector<string> &toImportFunctionNames) :
+        PythonInterface() {
+    this->reInitialize(moduleName, toImportFunctionNames);
+}
+
+void PythonInterface::reInitialize(const string &moduleName, const vector<string> &toImportFunctionNames) {
     try {
         this->module = pybind11::module::import(moduleName.c_str());
         for (auto &importNames: toImportFunctionNames) {
