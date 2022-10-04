@@ -321,6 +321,17 @@ namespace AndreiUtils {
         sortMultipleVectorsBasedOnPermutation(permutationIndices, v2...);
     }
 
+    template<typename T, typename Compare>
+    void sortVectorsBasedOnFirst(std::vector<T> &v, Compare const &compare) {
+        std::sort(v.begin(), v.end(), compare);
+    }
+
+    template<typename T1, typename Compare, typename... TArgs>
+    void sortVectorsBasedOnFirst(std::vector<T1> &v1, Compare const &compare, TArgs &... v2) {
+        auto permutationIndices = getSortedIndicesOfVector(v1, compare);
+        sortMultipleVectorsBasedOnPermutation(permutationIndices, v1, v2...);
+    }
+
     template<class T>
     bool isSequenceStable(const std::vector<T> &sequence, const T &avg,
                           const std::function<double(const T &, const T &)> &op, double stabilityThreshold = 0.5,
