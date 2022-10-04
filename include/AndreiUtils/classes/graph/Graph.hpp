@@ -12,7 +12,7 @@
 #include <tuple>
 
 namespace AndreiUtils {
-    template<typename NodeId=int, typename EdgeId=std::string, typename NodeData=void, typename EdgeData=void>
+    template<typename NodeId=int, typename EdgeId=std::string, typename NodeData=void *, typename EdgeData=void *>
     class Graph {
         using NodeT = Node<NodeId, NodeData>;
         using EdgeT = Edge<EdgeId, NodeId, EdgeData, NodeData>;
