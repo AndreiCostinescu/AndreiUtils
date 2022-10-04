@@ -48,19 +48,19 @@ namespace AndreiUtils {
             return this->id;
         }
 
-        inline Node<NodeId> *&getN1() {
+        inline NodeT *&getN1() {
             return this->n1;
         }
 
-        inline Node<NodeId> *const &getN1() const {
+        inline NodeT *const &getN1() const {
             return this->n1;
         }
 
-        inline Node<NodeId> *&getN2() {
+        inline NodeT *&getN2() {
             return this->n2;
         }
 
-        inline Node<NodeId> *const &getN2() const {
+        inline NodeT *const &getN2() const {
             return this->n2;
         }
 
