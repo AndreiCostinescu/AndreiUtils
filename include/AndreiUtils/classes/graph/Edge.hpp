@@ -11,9 +11,9 @@
 #include <string>
 
 namespace AndreiUtils {
-    template<typename EdgeId=std::string, typename NodeId=int>
+    template<typename EdgeId=std::string, typename NodeId=int, typename EdgeData=void, typename NodeData=void>
     class Edge {
-        using NodeT = Node<NodeId>;
+        using NodeT = Node<NodeId, NodeData>;
     public:
         Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr) {}
 
