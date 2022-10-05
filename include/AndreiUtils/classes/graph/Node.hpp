@@ -30,7 +30,10 @@ namespace AndreiUtils {
 
         Node(Node const &other) : id(other.id), data(other.data), ownsData(false) {}
 
-        Node(Node &&other) : id(other.id), data(other.data), ownsData(other.ownsData) { other.reset(); }
+        Node(Node &&other) noexcept: id(other.id), data(other.data), ownsData(other.ownsData) {
+            other.ownsData = false;
+            other.reset();
+        }
 
         Node &operator=(Node const &other) {
             if (&other != this) {
@@ -42,19 +45,19 @@ namespace AndreiUtils {
             return *this;
         }
 
-        Node &operator=(Node &&other) {
+        Node &operator=(Node &&other) noexcept {
             if (&other != this) {
                 this->discardData();
                 this->id = other.id;
                 this->data = other.data;
                 this->ownsData = other.ownsData;
+                other.ownsData = false;
                 other.reset();
             }
             return *this;
         }
 
         virtual ~Node() {
-            this->discardData();
             this->reset();
         }
 
@@ -100,6 +103,8 @@ namespace AndreiUtils {
         void discardData() {
             if (this->ownsData) {
                 delete this->data;
+                this->data = nullptr;
+                this->ownsData = false;
             }
         }
 

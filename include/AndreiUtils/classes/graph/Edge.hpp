@@ -14,6 +14,7 @@ namespace AndreiUtils {
     template<typename EdgeId=std::string, typename NodeId=int>
     class Edge {
         using NodeT = Node<NodeId>;
+        using EdgeIdFunction = std::function<EdgeId(NodeT const &, NodeT const &)>;
     public:
         Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr), ownsData(false) {}
 
@@ -61,7 +62,9 @@ namespace AndreiUtils {
 
         Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(false) {}
 
-        Edge(Edge &&other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(other.ownsData) {
+        Edge(Edge &&other) noexcept: id(other.id), n1(other.n1), n2(other.n2), data(other.data),
+                                     ownsData(other.ownsData) {
+            other.ownsData = false;
             other.reset();
         }
 
@@ -77,7 +80,7 @@ namespace AndreiUtils {
             return *this;
         }
 
-        Edge &operator=(Edge &&other) {
+        Edge &operator=(Edge &&other) noexcept {
             if (&other != this) {
                 this->discardData();
                 this->id = other.id;
@@ -85,13 +88,13 @@ namespace AndreiUtils {
                 this->n2 = other.n2;
                 this->data = other.data;
                 this->ownsData = other.ownsData;
+                other.ownsData = false;
                 other.reset();
             }
             return *this;
         }
 
         virtual ~Edge() {
-            this->discardData();
             this->reset();
         }
 
@@ -167,6 +170,8 @@ namespace AndreiUtils {
         void discardData() {
             if (this->ownsData) {
                 delete this->data;
+                this->data = nullptr;
+                this->ownsData = false;
             }
         }
 
