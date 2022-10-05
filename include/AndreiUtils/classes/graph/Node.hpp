@@ -28,6 +28,10 @@ namespace AndreiUtils {
             this->data = new T(std::move(data));
         }
 
+        // needed for the above to only accept r-values
+        template<class T>
+        Node(NodeId const &id, T &data) = delete;
+
         Node(Node const &other) : id(other.id), data(other.data), ownsData(false) {}
 
         Node(Node &&other) noexcept: id(other.id), data(other.data), ownsData(other.ownsData) {
@@ -92,6 +96,10 @@ namespace AndreiUtils {
             this->data = new T(std::move(_data));
             this->ownsData = true;
         }
+
+        // needed for the above to only accept r-values
+        template<class T>
+        void setData(T &_data) = delete;
 
     protected:
         void reset() {

@@ -25,6 +25,7 @@ namespace AndreiUtils {
         Edge(EdgeId id, NodeT *n1, NodeT *n2, EdgeData *data, bool passOwnership = false) :
                 id(id), n1(n1), n2(n2), data(data), ownsData(passOwnership) {}
 
+        // this only accepts r-values as data parameter
         template<class T>
         Edge(EdgeId id, NodeT *n1, NodeT *n2, T &&data) :
                 id(id), n1(n1), n2(n2), data(nullptr), ownsData(true) {
@@ -33,9 +34,14 @@ namespace AndreiUtils {
             this->data = new T(std::move(data));
         }
 
+        // needed for the above to only accept r-values
+        template<class T>
+        Edge(EdgeId id, NodeT *n1, NodeT *n2, T &data) = delete;
+
         Edge(EdgeId id, NodeT &n1, NodeT &n2, EdgeData *data, bool passOwnership = false) :
                 id(id), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
 
+        // this only accepts r-values as data parameter
         template<class T>
         Edge(EdgeId id, NodeT &n1, NodeT &n2, T &&data) :
                 id(id), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
@@ -44,21 +50,28 @@ namespace AndreiUtils {
             this->data = new T(std::move(data));
         }
 
-        Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes) :
+        // needed for the above to only accept r-values
+        template<class T>
+        Edge(EdgeId id, NodeT &n1, NodeT &n2, T &data) = delete;
+
+        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes) :
                 id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(false) {}
 
-        Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes,
-             EdgeData *data, bool passOwnership = false) :
-                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
+        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, EdgeData *data, bool passOwnership = false)
+                : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
 
         // the constructor only accepts r-values as data parameter
         template<class T>
-        Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes,
-             T &&data) : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
+        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, T &&data) :
+                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
             this->data = new T(std::move(data));
         }
+
+        // needed for the above to only accept r-values
+        template<class T>
+        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, T &data) = delete;
 
         Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(false) {}
 
@@ -145,6 +158,10 @@ namespace AndreiUtils {
             this->data = new T(std::move(_data));
             this->ownsData = true;
         }
+
+        // needed for the above to only accept r-values
+        template<class T>
+        void setData(T &_data) = delete;
 
         void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2) {
             this->id = _id;

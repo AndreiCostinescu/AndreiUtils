@@ -16,6 +16,7 @@ namespace AndreiUtils {
     class Graph {
         using NodeT = Node<NodeId>;
         using EdgeT = Edge<EdgeId, NodeId>;
+        using EdgeIdFunction = std::function<EdgeId(NodeId const &, NodeId const &)>;
     public:
         explicit Graph(bool withMultipleEdges = false, bool withSelfEdges = false) :
                 withMultipleEdges(withMultipleEdges), withSelfEdges(withSelfEdges) {}
@@ -116,10 +117,17 @@ namespace AndreiUtils {
             this->addNode(new NodeT(n, std::move(nodeData)), true);
         }
 
+        // needed for the above to only accept r-values
+        template<class T>
+        void addNode(NodeId const &n, T &nodeData) = delete;
+
         // this will allocate new data; only accept r-values
         void addNode(NodeT &&n) {
             this->addNode(new NodeT(std::move(n)), true);
         }
+
+        // needed for the above to only accept r-values
+        void addNode(NodeT &n) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
         void addNode(NodeT *n) {
@@ -154,10 +162,17 @@ namespace AndreiUtils {
                                     }, edgeData), true);
         }
 
+        // needed for the above to only accept r-values
+        template<class T>
+        void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId, T &edgeData) = delete;
+
         // this will allocate new data; only accept r-values
         void addEdge(EdgeT &&e) {
             this->addEdge(new EdgeT(std::move(e)), true);
         }
+
+        // needed for the above to only accept r-values
+        void addEdge(EdgeT &e) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
         void addEdge(EdgeT *e) {
