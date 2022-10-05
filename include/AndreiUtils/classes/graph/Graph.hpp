@@ -157,7 +157,7 @@ namespace AndreiUtils {
             this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
                                     [&](NodeT const &_n1, NodeT const &_n2) {
                                         return createEdgeId(_n1.getId(), _n2.getId());
-                                    }, edgeData), true);
+                                    }, std::move(edgeData)), true);
         }
 
         // needed for the above to only accept r-values
