@@ -8,7 +8,7 @@
 #include <AndreiUtils/classes/graph/NodeData.h>
 
 namespace AndreiUtils {
-    template<typename NodeId=int, typename NodeData=void *>
+    template<typename NodeId=int>
     class Node {
     public:
         Node() : id(), data(nullptr) {}

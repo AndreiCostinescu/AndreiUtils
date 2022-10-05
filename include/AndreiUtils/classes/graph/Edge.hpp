@@ -11,7 +11,7 @@
 #include <string>
 
 namespace AndreiUtils {
-    template<typename EdgeId=std::string, typename NodeId=int, typename EdgeData=void *, typename NodeData=void *>
+    template<typename EdgeId=std::string, typename NodeId=int>
     class Edge {
         using NodeT = Node<NodeId, NodeData>;
     public:
