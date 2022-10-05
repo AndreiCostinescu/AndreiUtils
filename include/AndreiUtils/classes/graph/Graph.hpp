@@ -143,8 +143,7 @@ namespace AndreiUtils {
             this->removeNode(&node);
         }
 
-        void addEdge(NodeId const &n1, NodeId const &n2,
-                     std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId,
+        void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId,
                      EdgeData *edgeData = nullptr, bool passOwnership = false) {
             this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
                                     [&](NodeT const &_n1, NodeT const &_n2) {
@@ -154,8 +153,7 @@ namespace AndreiUtils {
 
         // the function only accepts r-values as edgeData parameter
         template<class T>
-        void addEdge(NodeId const &n1, NodeId const &n2,
-                     std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId, T &&edgeData) {
+        void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId, T &&edgeData) {
             this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
                                     [&](NodeT const &_n1, NodeT const &_n2) {
                                         return createEdgeId(_n1.getId(), _n2.getId());
@@ -179,11 +177,14 @@ namespace AndreiUtils {
             this->addEdge(e, false);
         }
 
-        void addUndirectedEdge(NodeId const &n1, NodeId const &n2,
-                               std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId) {
+        // Don't allow setting the edgeData here (if EdgeData derived class has pointers this will create a copy)
+        // After adding the undirected edge, add the edge data manually!
+        void addUndirectedEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId) {
             auto convert = [&](NodeT const &_n1, NodeT const &_n2) { return createEdgeId(_n1.getId(), _n2.getId()); };
-            this->addEdge(new EdgeT{*mapGet(this->nodes, n1), *mapGet(this->nodes, n2), convert}, true);
-            this->addEdge(new EdgeT{*mapGet(this->nodes, n2), *mapGet(this->nodes, n1), convert}, true);
+            auto &_n1 = mapGet(this->nodes, n1);
+            auto &_n2 = mapGet(this->nodes, n2);
+            this->addEdge(new EdgeT(*_n1, *_n2, convert), true);
+            this->addEdge(new EdgeT(*_n2, *_n1, convert), true);
         }
 
         void removeEdge(EdgeId const &edgeId) {
