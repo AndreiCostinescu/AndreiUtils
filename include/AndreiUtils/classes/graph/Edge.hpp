@@ -143,6 +143,13 @@ namespace AndreiUtils {
             return this->data;
         }
 
+        template<class T>
+        T *getData() const {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            return dynamic_cast<T *>(this->data);
+        }
+
         void setData(EdgeData *_data, bool passOwnership = false) {
             this->discardData();
             this->data = _data;
