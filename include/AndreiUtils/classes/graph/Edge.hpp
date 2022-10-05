@@ -15,30 +15,85 @@ namespace AndreiUtils {
     class Edge {
         using NodeT = Node<NodeId>;
     public:
-        Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr) {}
+        Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr), ownsData(false) {}
 
-        Edge(EdgeId id, NodeT *n1, NodeT *n2) : id(id), n1(n1), n2(n2), data(nullptr) {}
+        Edge(EdgeId id, NodeT *n1, NodeT *n2) : id(id), n1(n1), n2(n2), data(nullptr), ownsData(false) {}
 
-        Edge(EdgeId id, NodeT &n1, NodeT &n2) : id(id), n1(&n1), n2(&n2), data(nullptr) {}
+        Edge(EdgeId id, NodeT &n1, NodeT &n2) : id(id), n1(&n1), n2(&n2), data(nullptr), ownsData(false) {}
 
-        Edge(EdgeId id, NodeT *n1, NodeT *n2, EdgeData *data) : id(id), n1(n1), n2(n2), data(data) {}
+        Edge(EdgeId id, NodeT *n1, NodeT *n2, EdgeData *data, bool passOwnership = false) :
+                id(id), n1(n1), n2(n2), data(data), ownsData(passOwnership) {}
 
-        Edge(EdgeId id, NodeT &n1, NodeT &n2, EdgeData *data) : id(id), n1(&n1), n2(&n2), data(data) {}
+        template<class T>
+        Edge(EdgeId id, NodeT *n1, NodeT *n2, T &&data) :
+                id(id), n1(n1), n2(n2), data(nullptr), ownsData(true) {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            this->data = new T(std::move(data));
+        }
 
-        Edge(EdgeId id, NodeT *n1, NodeT *n2, EdgeData &data) : id(id), n1(n1), n2(n2), data(&data) {}
+        Edge(EdgeId id, NodeT &n1, NodeT &n2, EdgeData *data, bool passOwnership = false) :
+                id(id), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
 
-        Edge(EdgeId id, NodeT &n1, NodeT &n2, EdgeData &data) : id(id), n1(&n1), n2(&n2), data(&data) {}
+        template<class T>
+        Edge(EdgeId id, NodeT &n1, NodeT &n2, T &&data) :
+                id(id), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            this->data = new T(std::move(data));
+        }
 
         Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes) :
-                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr) {}
+                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(false) {}
 
         Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes,
-             EdgeData *data) : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(data) {}
+             EdgeData *data, bool passOwnership = false) :
+                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
 
+        // the constructor only accepts r-values as data parameter
+        template<class T>
         Edge(NodeT &n1, NodeT &n2, std::function<EdgeId(NodeT const &n1, NodeT const &n2)> const &createIdFromNodes,
-             EdgeData &data) : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(&data) {}
+             T &&data) : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            this->data = new T(std::move(data));
+        }
 
-        virtual ~Edge() = default;
+        Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(false) {}
+
+        Edge(Edge &&other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(other.ownsData) {
+            other.reset();
+        }
+
+        Edge &operator=(Edge const &other) {
+            if (&other != this) {
+                this->discardData();
+                this->id = other.id;
+                this->n1 = other.n1;
+                this->n2 = other.n2;
+                this->data = other.data;
+                this->ownsData = false;
+            }
+            return *this;
+        }
+
+        Edge &operator=(Edge &&other) {
+            if (&other != this) {
+                this->discardData();
+                this->id = other.id;
+                this->n1 = other.n1;
+                this->n2 = other.n2;
+                this->data = other.data;
+                this->ownsData = other.ownsData;
+                other.reset();
+            }
+            return *this;
+        }
+
+        virtual ~Edge() {
+            this->discardData();
+            this->reset();
+        }
 
         inline EdgeId &getId() {
             return this->id;
@@ -72,21 +127,53 @@ namespace AndreiUtils {
             return this->data;
         }
 
+        void setData(EdgeData *_data, bool passOwnership = false) {
+            this->discardData();
+            this->data = _data;
+            this->ownsData = passOwnership;
+        }
+
+        // the function only accepts r-values as _data parameter
+        template<class T>
+        void setData(T &&_data) {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            this->discardData();
+            this->data = new T(std::move(_data));
+            this->ownsData = true;
+        }
+
         void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2) {
             this->id = _id;
             this->n1 = _n1;
             this->n2 = _n2;
         }
 
-        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2, EdgeData &_data) {
+        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2, EdgeData *_data,
+                    bool passOwnership = false) {
             this->update(_id, _n1, _n2);
-            this->data = &_data;
+            this->setData(_data, passOwnership);
         }
 
     protected:
+        void reset() {
+            this->discardData();
+            this->ownsData = false;
+            this->data = nullptr;
+            this->n1 = nullptr;
+            this->n2 = nullptr;
+        }
+
+        void discardData() {
+            if (this->ownsData) {
+                delete this->data;
+            }
+        }
+
         EdgeId id;
         NodeT *n1, *n2;
         EdgeData *data;
+        bool ownsData;
     };
 }
 

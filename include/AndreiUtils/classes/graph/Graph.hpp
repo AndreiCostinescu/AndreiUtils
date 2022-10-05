@@ -106,16 +106,24 @@ namespace AndreiUtils {
             this->neighbors.clear();
         }
 
-        void addNode(NodeId const &n) {
-            this->addNode(new NodeT(n), true);
+        void addNode(NodeId const &n, NodeData *nodeData = nullptr, bool passOwnership = false) {
+            this->addNode(new NodeT(n, nodeData, passOwnership), true);
         }
 
-        void addNode(NodeT n) {
-            this->addNode(new NodeT(n), true);
+        // the function only accepts r-values as nodeData parameter
+        template<class T>
+        void addNode(NodeId const &n, T &&nodeData) {
+            this->addNode(new NodeT(n, std::move(nodeData)), true);
         }
 
-        void addNode(NodeT &n) {
-            this->addNode(&n, false);
+        // this will allocate new data; only accept r-values
+        void addNode(NodeT &&n) {
+            this->addNode(new NodeT(std::move(n)), true);
+        }
+
+        // this will not allocate new data and any changes within the graph will be reflected on the outside data
+        void addNode(NodeT *n) {
+            this->addNode(n, false);
         }
 
         void removeNode(NodeId const &nodeId) {
@@ -128,19 +136,32 @@ namespace AndreiUtils {
         }
 
         void addEdge(NodeId const &n1, NodeId const &n2,
-                     std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId) {
-            this->addEdge(new EdgeT{*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
+                     std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId,
+                     EdgeData *edgeData = nullptr, bool passOwnership = false) {
+            this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
                                     [&](NodeT const &_n1, NodeT const &_n2) {
                                         return createEdgeId(_n1.getId(), _n2.getId());
-                                    }}, true);
+                                    }, edgeData, passOwnership), true);
         }
 
-        void addEdge(EdgeT e) {
-            this->addEdge(new EdgeT(e), true);
+        // the function only accepts r-values as edgeData parameter
+        template<class T>
+        void addEdge(NodeId const &n1, NodeId const &n2,
+                     std::function<EdgeId(NodeId const &n1, NodeId const &n2)> const &createEdgeId, T &&edgeData) {
+            this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
+                                    [&](NodeT const &_n1, NodeT const &_n2) {
+                                        return createEdgeId(_n1.getId(), _n2.getId());
+                                    }, edgeData), true);
         }
 
-        void addEdge(EdgeT &e) {
-            this->addEdge(&e, false);
+        // this will allocate new data; only accept r-values
+        void addEdge(EdgeT &&e) {
+            this->addEdge(new EdgeT(std::move(e)), true);
+        }
+
+        // this will not allocate new data and any changes within the graph will be reflected on the outside data
+        void addEdge(EdgeT *e) {
+            this->addEdge(e, false);
         }
 
         void addUndirectedEdge(NodeId const &n1, NodeId const &n2,

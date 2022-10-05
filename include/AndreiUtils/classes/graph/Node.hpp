@@ -6,6 +6,8 @@
 #define ANDREIUTILS_NODE_HPP
 
 #include <AndreiUtils/classes/graph/NodeData.h>
+#include <type_traits>
+#include <utility>
 
 namespace AndreiUtils {
     template<typename NodeId=int>
@@ -13,13 +15,48 @@ namespace AndreiUtils {
     public:
         Node() : id(), data(nullptr) {}
 
-        explicit Node(NodeId const &id) : id(id), data(nullptr) {}
+        explicit Node(NodeId const &id) : id(id), data(nullptr), ownsData(false) {}
 
-        Node(NodeId const &id, NodeData *data) : id(id), data(data) {}
+        Node(NodeId const &id, NodeData *data, bool passOwnership = false) :
+                id(id), data(data), ownsData(passOwnership) {}
 
-        Node(NodeId const &id, NodeData &data) : id(id), data(&data) {}
+        // this only accepts r-values as the data parameter
+        template<class T>
+        Node(NodeId const &id, T &&data) : id(id), data(nullptr), ownsData(true) {
+            static_assert(std::is_base_of<NodeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::NodeData");
+            this->data = new T(std::move(data));
+        }
 
-        virtual ~Node() = default;
+        Node(Node const &other) : id(other.id), data(other.data), ownsData(false) {}
+
+        Node(Node &&other) : id(other.id), data(other.data), ownsData(other.ownsData) { other.reset(); }
+
+        Node &operator=(Node const &other) {
+            if (&other != this) {
+                this->discardData();
+                this->id = other.id;
+                this->data = other.data;
+                this->ownsData = false;
+            }
+            return *this;
+        }
+
+        Node &operator=(Node &&other) {
+            if (&other != this) {
+                this->discardData();
+                this->id = other.id;
+                this->data = other.data;
+                this->ownsData = other.ownsData;
+                other.reset();
+            }
+            return *this;
+        }
+
+        virtual ~Node() {
+            this->discardData();
+            this->reset();
+        }
 
         inline NodeId &getId() {
             return this->id;
@@ -37,9 +74,38 @@ namespace AndreiUtils {
             return this->data;
         }
 
+        void setData(NodeData *_data, bool passOwnership = false) {
+            this->discardData();
+            this->data = _data;
+            this->ownsData = passOwnership;
+        }
+
+        // this only accepts r-values as the _data parameter
+        template<class T>
+        void setData(T &&_data) {
+            static_assert(std::is_base_of<NodeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::NodeData");
+            this->discardData();
+            this->data = new T(std::move(_data));
+            this->ownsData = true;
+        }
+
     protected:
+        void reset() {
+            this->discardData();
+            this->ownsData = false;
+            this->data = nullptr;
+        }
+
+        void discardData() {
+            if (this->ownsData) {
+                delete this->data;
+            }
+        }
+
         NodeId id;
         NodeData *data;
+        bool ownsData;
     };
 }
 
