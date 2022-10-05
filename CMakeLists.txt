@@ -147,6 +147,11 @@ set(UTILS_CLASSES_CAMERA
         src/classes/camera/ImageCaptureParametersWithIntrinsics.cpp
         )
 
+set(UTILS_CLASSES_GRAPH
+        src/classes/graph/NodeData.cpp
+        src/classes/graph/EdgeData.cpp
+        )
+
 SET(UTILS_CLASSES
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
@@ -154,6 +159,7 @@ SET(UTILS_CLASSES
         src/classes/Timer.cpp
         src/classes/UnionFind.cpp
         ${UTILS_CLASSES_CAMERA}
+        ${UTILS_CLASSES_GRAPH}
         )
 
 SET(UTILS_EIGEN)
