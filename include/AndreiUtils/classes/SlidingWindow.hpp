@@ -250,11 +250,12 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
-        bool isWindowStable(double stabilityThreshold = 1e-9) {
+        bool isWindowStable(double stabilityThreshold = 1e-9) const {
             return isSequenceStable(this->getData(), stabilityThreshold);
         }
 
-        bool isWindowStable(std::function<double(const T &, const T &)> const &op, double stabilityThreshold = 1e-9) {
+        bool isWindowStable(std::function<double(const T &, const T &)> const &op,
+                            double stabilityThreshold = 1e-9) const {
             return isSequenceStable(this->getData(), op, stabilityThreshold);
         }
 
@@ -373,12 +374,14 @@ namespace AndreiUtils {
             return this->validData;
         }
 
-        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9) {
+        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode,
+                            double stabilityThreshold = 1e-9) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold);
         }
 
         bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9) {
+                            InvalidValuesHandlingMode invalidValuesHandlingMode,
+                            double stabilityThreshold = 1e-9) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold);
         }
 
