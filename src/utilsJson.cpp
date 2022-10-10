@@ -21,7 +21,7 @@ json AndreiUtils::readJsonFile(const string &path) {
 }
 
 void AndreiUtils::writeJsonFile(const string &path, const json &content) {
-    createNestedDirectory(path);
+    createNestedDirectory(path, true);
     ofstream fout(path);
     if (!fout.is_open()) {
         throw runtime_error("Can not open file " + path);
