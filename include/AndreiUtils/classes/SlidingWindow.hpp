@@ -9,6 +9,7 @@
 #include <AndreiUtils/traits/get_vector_type_for_convolution.hpp>
 #include <AndreiUtils/traits/median_computer.hpp>
 #include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsVector.hpp>
 #include <cassert>
 #include <iostream>
 #include <utility>
@@ -249,6 +250,14 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
+        bool isWindowStable(double stabilityThreshold = 1e-9) {
+            return isSequenceStable(this->getData(), stabilityThreshold);
+        }
+
+        bool isWindowStable(std::function<double(const T &, const T &)> const &op, double stabilityThreshold = 1e-9) {
+            return isSequenceStable(this->getData(), op, stabilityThreshold);
+        }
+
     protected:
         size_t latestIndex() const {
             if (this->dataSize == 0) {
@@ -337,7 +346,7 @@ namespace AndreiUtils {
             return this->data;
         }
 
-        const std::vector<T> &getDataIfAllValid() const {
+        std::vector<T> const &getDataIfAllValid() const {
             if (!this->checkAllValid()) {
                 throw std::runtime_error("Data contains invalid values!");
             }
@@ -362,6 +371,15 @@ namespace AndreiUtils {
 
         std::vector<uint8_t> &getValidFlags() {
             return this->validData;
+        }
+
+        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9) {
+            return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold);
+        }
+
+        bool isWindowStable(std::function<double(const T &, const T &)> const &op,
+                            InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9) {
+            return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold);
         }
 
     protected:
