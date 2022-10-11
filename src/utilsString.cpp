@@ -123,13 +123,14 @@ bool AndreiUtils::contains(const string &who, const string &what) {
     return (who.find(what) != string::npos);
 }
 
-bool AndreiUtils::startsWith(const string &str, const string &startQuery) {
-    return (str.rfind(startQuery, 0) == 0);
+bool AndreiUtils::startsWith(const string &str, const string &startQuery, size_t strSkipFirstCharactersAmount) {
+    return (str.rfind(startQuery, strSkipFirstCharactersAmount) == strSkipFirstCharactersAmount);
 }
 
-bool AndreiUtils::endsWith(const string &str, const string &endQuery) {
+bool AndreiUtils::endsWith(const string &str, const string &endQuery, size_t strIgnoreLastCharactersAmount) {
     if (str.length() >= endQuery.length()) {
-        return (0 == str.compare(str.length() - endQuery.length(), endQuery.length(), endQuery));
+        return (0 == str.compare(str.length() - endQuery.length() - strIgnoreLastCharactersAmount, endQuery.length(),
+                                 endQuery));
     }
     return false;
 }

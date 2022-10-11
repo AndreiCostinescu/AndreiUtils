@@ -1271,6 +1271,29 @@ void testMoveSemantics() {
     allowOnlyRValues(E<int>(69));
 }
 
+void testStringFindFunctions() {
+    string a = "abdabdad";
+    string b = "a";
+    string c = "abd";
+    string d = "d";
+    cout << a.rfind(b) << endl;
+    cout << a.rfind(b, 0) << endl;
+    cout << a.rfind(d) << endl;
+    cout << a.rfind(d, 0) << endl;
+    cout << a.rfind(d, 3) << endl;
+    cout << a.rfind(c) << endl;
+    cout << a.rfind(c, 0) << endl;
+    cout << a.rfind(c, 3) << endl;
+
+    a = "....";
+    b = "..";
+    cout << a.rfind(b, 4) << endl;
+    cout << a.rfind(b, 3) << endl;
+    cout << a.rfind(b, 2) << endl;
+    cout << a.rfind(b, 1) << endl;
+    cout << a.rfind(b, 0) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1310,6 +1333,8 @@ int main() {
     // testInterpolation();
     // testSpliceVector();
     // testPythonInterface();
-    testMoveSemantics();
+    // testMoveSemantics();
+    testStringFindFunctions();
+
     return 0;
 }

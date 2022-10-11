@@ -22,6 +22,8 @@ namespace AndreiUtils {
 
     std::vector<std::string> listDirectoryFiles(std::string const &directoryName,
                                                 std::string const &extensionFilter = "");
+
+    bool isFilePathAbsolute(std::string const &path);
 }
 
 #endif //ANDREIUTILS_UTILSFILES_H

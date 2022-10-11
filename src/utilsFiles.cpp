@@ -125,3 +125,11 @@ vector<string> AndreiUtils::listDirectoryFiles(string const &directoryName, stri
 
     return fileNames;
 }
+
+bool AndreiUtils::isFilePathAbsolute(const string &path) {
+    #if defined(_WIN32)
+    return startsWith(path, ":/", 1);
+    #else
+    return startsWith(path, "/");
+    #endif
+}

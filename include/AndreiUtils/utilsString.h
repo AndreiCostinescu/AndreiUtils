@@ -35,9 +35,9 @@ namespace AndreiUtils {
 
     bool contains(const std::string &who, const std::string &what);
 
-    bool startsWith(const std::string &str, const std::string &startQuery);
+    bool startsWith(const std::string &str, const std::string &startQuery, size_t strSkipFirstCharactersAmount = 0);
 
-    bool endsWith(const std::string &str, const std::string &endQuery);
+    bool endsWith(const std::string &str, const std::string &endQuery, size_t strIgnoreLastCharactersAmount = 0);
 
     std::string trim(const std::string &str, const std::string &whitespace = " \t");
 
