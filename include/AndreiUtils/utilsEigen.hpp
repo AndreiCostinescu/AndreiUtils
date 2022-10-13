@@ -135,12 +135,6 @@ namespace AndreiUtils {
                equal(q1.z(), q2.z(), tol);
     }
 
-    // orientation: q1 == q2
-    template<class T>
-    bool qEqualOrientation(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2, T const &tol = T(1e-9)) {
-        return qEqual(q1, q2) || qEqual(q1, qNeg(q2));
-    }
-
     // q1 != q2
     template<class T>
     bool qNotEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2, T const &tol = T(1e-9)) {
@@ -202,6 +196,12 @@ namespace AndreiUtils {
         Eigen::Matrix<T, 3, 1> x = q.vec();
         T xNorm = x.norm();
         return qMulScalar(Eigen::Quaternion<T>(Eigen::AngleAxis<T>(xNorm, x.normalized())), exp(q.w()));
+    }
+
+    // orientation: q1 == q2
+    template<class T>
+    bool qEqualOrientation(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2, T const &tol = T(1e-9)) {
+        return qEqual(q1, q2) || qEqual(q1, qNeg(q2));
     }
 
     template<class T>
