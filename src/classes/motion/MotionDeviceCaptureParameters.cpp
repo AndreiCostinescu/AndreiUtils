@@ -19,14 +19,3 @@ void MotionDeviceCaptureParameters::setMotionDeviceCaptureParameters(
     this->fps = _fps;
     this->intrinsics = _intrinsics;
 }
-
-void MotionDeviceCaptureParameters::toJson(nlohmann::json &j) const {
-    j.clear();
-    j["fps"] = this->fps;
-    j["intrinsics"] = this->intrinsics;
-}
-
-void MotionDeviceCaptureParameters::fromJson(const nlohmann::json &j) {
-    this->fps = j.at("fps").get<double>();
-    this->intrinsics = j.at("intrinsics").get<MotionDeviceIntrinsicParameters>();
-}

@@ -3,7 +3,6 @@
 //
 
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
-#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <utility>
 
 using namespace AndreiUtils;
@@ -23,17 +22,4 @@ void MotionDeviceIntrinsicParameters::setMotionDeviceIntrinsicParameters(
     this->data = _data;
     this->biasVariances = _biasVariances;
     this->noiseVariances = _noiseVariances;
-}
-
-void MotionDeviceIntrinsicParameters::toJson(nlohmann::json &j) const {
-    j.clear();
-    j["data"] = this->data;
-    j["biasVariances"] = this->biasVariances;
-    j["noiseVariances"] = this->noiseVariances;
-}
-
-void MotionDeviceIntrinsicParameters::fromJson(const nlohmann::json &j) {
-    this->data = j.at("data").get<Eigen::MatrixXd>();
-    this->biasVariances = j.at("biasVariances").get<Eigen::VectorXd>();
-    this->noiseVariances = j.at("noiseVariances").get<Eigen::VectorXd>();
 }

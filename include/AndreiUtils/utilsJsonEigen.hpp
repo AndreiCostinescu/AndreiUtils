@@ -6,6 +6,9 @@
 #define ANDREIUTILS_UTILSJSONEIGEN_HPP
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/Symmetry.h>
+#include <AndreiUtils/classes/motion/MotionDeviceCaptureParameters.h>
+#include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsJson.h>
 #include <complex>
@@ -160,6 +163,51 @@ namespace AndreiUtils {
         std::string type;
         int rows, cols, options, maxRows, maxCols, currentRows, currentCols;
     };
+
+    class SymmetryJsonSerializer {
+    public:
+        SymmetryJsonSerializer(Symmetry const &s);
+
+        SymmetryJsonSerializer(Symmetry &s);
+
+        void toJson(nlohmann::json &j) const;
+
+        void fromJson(nlohmann::json const &j);
+
+    private:
+        Symmetry const *sConst;
+        Symmetry *s;
+    };
+
+    class MotionDeviceIntrinsicParametersJsonSerializer {
+    public:
+        MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters const &m);
+
+        MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters &m);
+
+        void toJson(nlohmann::json &j) const;
+
+        void fromJson(nlohmann::json const &j);
+
+    private:
+        MotionDeviceIntrinsicParameters const *mConst;
+        MotionDeviceIntrinsicParameters *m;
+    };
+
+    class MotionDeviceCaptureParametersJsonSerializer {
+    public:
+        MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters const &m);
+
+        MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters &m);
+
+        void toJson(nlohmann::json &j) const;
+
+        void fromJson(nlohmann::json const &j);
+
+    private:
+        MotionDeviceCaptureParameters const *mConst;
+        MotionDeviceCaptureParameters *m;
+    };
 }
 
 namespace nlohmann {
@@ -191,6 +239,39 @@ namespace nlohmann {
 
         static void from_json(const nlohmann::json &j, AndreiUtils::DualQuaternion<T> &q) {
             q.fromCoefficients(j.get<std::vector<T>>());
+        }
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::Symmetry> {
+        static void to_json(nlohmann::json &j, const AndreiUtils::Symmetry &s) {
+            AndreiUtils::SymmetryJsonSerializer(s).toJson(j);
+        }
+
+        static void from_json(const nlohmann::json &j, AndreiUtils::Symmetry &s) {
+            AndreiUtils::SymmetryJsonSerializer(s).fromJson(j);
+        }
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::MotionDeviceIntrinsicParameters> {
+        static void to_json(nlohmann::json &j, const AndreiUtils::MotionDeviceIntrinsicParameters &p) {
+            AndreiUtils::MotionDeviceIntrinsicParametersJsonSerializer(p).toJson(j);
+        }
+
+        static void from_json(const nlohmann::json &j, AndreiUtils::MotionDeviceIntrinsicParameters &p) {
+            AndreiUtils::MotionDeviceIntrinsicParametersJsonSerializer(p).fromJson(j);
+        }
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::MotionDeviceCaptureParameters> {
+        static void to_json(nlohmann::json &j, const AndreiUtils::MotionDeviceCaptureParameters &p) {
+            AndreiUtils::MotionDeviceCaptureParametersJsonSerializer(p).toJson(j);
+        }
+
+        static void from_json(const nlohmann::json &j, AndreiUtils::MotionDeviceCaptureParameters &p) {
+            AndreiUtils::MotionDeviceCaptureParametersJsonSerializer(p).fromJson(j);
         }
     };
 

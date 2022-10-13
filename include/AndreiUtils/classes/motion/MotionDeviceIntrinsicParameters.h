@@ -9,8 +9,12 @@
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
+    class MotionDeviceInstrinsicParametersJsonSerializer;
+
     class MotionDeviceIntrinsicParameters {
     public:
+        friend class MotionDeviceInstrinsicParametersJsonSerializer;
+
         MotionDeviceIntrinsicParameters();
 
         MotionDeviceIntrinsicParameters(Eigen::MatrixXd data, Eigen::VectorXd biasVariances,
@@ -20,26 +24,8 @@ namespace AndreiUtils {
 
         void setMotionDeviceIntrinsicParameters(const Eigen::MatrixXd &_data, const Eigen::VectorXd &_biasVariances,
                                                 const Eigen::VectorXd &_noiseVariances);
-
-        void toJson(nlohmann::json &j) const;
-
-        void fromJson(const nlohmann::json &j);
-
         Eigen::MatrixXd data;
         Eigen::VectorXd biasVariances, noiseVariances;
-    };
-}
-
-namespace nlohmann {
-    template<>
-    struct adl_serializer<AndreiUtils::MotionDeviceIntrinsicParameters> {
-        static void to_json(nlohmann::json &j, const AndreiUtils::MotionDeviceIntrinsicParameters &p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json &j, AndreiUtils::MotionDeviceIntrinsicParameters &p) {
-            p.fromJson(j);
-        }
     };
 }
 

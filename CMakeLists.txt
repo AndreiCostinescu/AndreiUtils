@@ -163,6 +163,7 @@ SET(UTILS_CLASSES
         )
 
 SET(UTILS_EIGEN)
+SET(UTILS_EIGEN_JSON)
 SET(UTILS_EIGEN_OPENCV)
 SET(UTILS_EIGEN_REALSENSE)
 SET(UTILS_JSON)
@@ -178,7 +179,12 @@ if (USE_EIGEN)
     SET(UTILS_EIGEN
             src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
-            src/enums/EigenLeastSquaresSolver.cpp)
+            src/classes/Symmetry.cpp src/enums/EigenLeastSquaresSolver.cpp)
+endif ()
+
+if (USE_EIGEN AND USE_JSON)
+    # depends on eigen and json
+    SET(UTILS_EIGEN_JSON src/utilsJsonEigen.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
@@ -241,6 +247,7 @@ set(GENERAL_UTILS
         ${UTILS_CLASSES}
         )
 set(EIGEN_UTILS ${UTILS_EIGEN})
+set(EIGEN_JSON_UTILS ${UTILS_EIGEN_JSON})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
 set(EIGEN_REALSENSE_UTILS ${UTILS_EIGEN_REALSENSE})
 set(JSON_UTILS ${UTILS_JSON})
@@ -358,6 +365,18 @@ if (USE_EIGEN)
             )
     set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
 
+    if (USE_JSON)
+        # EIGEN_JSON_UTILS
+        set(LIB_NAME "${LIBRARY_NAME}_eigen_json")
+        add_library(${LIB_NAME} ${EIGEN_JSON_UTILS})
+        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_json)
+        target_include_directories(${LIB_NAME} PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:include>
+                )
+        set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    endif ()
+
     if (USE_OPENCV)
         # EIGEN_OPENCV_UTILS
         set(LIB_NAME "${LIBRARY_NAME}_eigen_opencv")
@@ -387,6 +406,7 @@ endif ()
 set(UTILS
         ${GENERAL_UTILS}
         ${EIGEN_UTILS}
+        ${EIGEN_JSON_UTILS}
         ${EIGEN_OPENCV_UTILS}
         ${EIGEN_REALSENSE_UTILS}
         ${JSON_UTILS}
