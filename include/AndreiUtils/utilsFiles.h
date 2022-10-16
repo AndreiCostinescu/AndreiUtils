@@ -5,6 +5,7 @@
 #ifndef ANDREIUTILS_UTILSFILES_H
 #define ANDREIUTILS_UTILSFILES_H
 
+#include <fstream>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -24,6 +25,8 @@ namespace AndreiUtils {
                                                 std::string const &extensionFilter = "");
 
     bool isFilePathAbsolute(std::string const &path);
+
+    bool reachedTheEndOfTheFile(std::ifstream &in);
 }
 
 #endif //ANDREIUTILS_UTILSFILES_H

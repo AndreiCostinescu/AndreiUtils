@@ -133,3 +133,7 @@ bool AndreiUtils::isFilePathAbsolute(const string &path) {
     return startsWith(path, "/");
     #endif
 }
+
+bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {
+    return (in.peek() == EOF);
+}
