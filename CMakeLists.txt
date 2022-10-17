@@ -207,7 +207,7 @@ if (USE_OPENCV AND USE_REALSENSE)
 endif ()
 
 if (USE_OPENMP)
-    SET(UTILS_OPENMP include/AndreiUtils/utilsOpenMP.hpp src/utilsOpenMP.cpp)
+    SET(UTILS_OPENMP src/utilsOpenMP.cpp)
 endif ()
 
 if (USE_PTHREAD)
