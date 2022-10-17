@@ -22,12 +22,12 @@ namespace AndreiUtils {
             if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
                 throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
             }
-            this->registerTypeCreator(typeId, move(typeCreator));
+            this->registerTypeCreator(typeId, std::move(typeCreator));
         }
 
         virtual void registerTypeCreator(const TypeID &typeId,
                                          std::function<Type *(CreatorArgumentsType)> typeCreator) {
-            this->typeCreators[typeId] = move(typeCreator);
+            this->typeCreators[typeId] = std::move(typeCreator);
         }
 
         virtual void mergeTypeCreators(const ConfigurableTypeCreatorWithID<TypeID, Type, CreatorArgumentsType> &other,
@@ -68,13 +68,13 @@ namespace AndreiUtils {
                 throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
             }
             // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
-            this->registerTypeCreator(typeId, move(typeCreator));
+            this->registerTypeCreator(typeId, std::move(typeCreator));
         }
 
         void registerTypeCreator(const std::string &typeId,
                                  std::function<Type *(CreatorArgumentsType)> typeCreator) override {
             ConfigurableTypeCreatorWithID<std::string, Type, CreatorArgumentsType>::registerTypeCreator(
-                    typeId, move(typeCreator));
+                    typeId, std::move(typeCreator));
         }
     };
 
@@ -92,11 +92,11 @@ namespace AndreiUtils {
             if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
                 throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
             }
-            this->registerTypeCreator(typeId, move(typeCreator));
+            this->registerTypeCreator(typeId, std::move(typeCreator));
         }
 
         virtual void registerTypeCreator(const TypeID &typeId, std::function<Type *()> typeCreator) {
-            this->typeCreators[typeId] = move(typeCreator);
+            this->typeCreators[typeId] = std::move(typeCreator);
         }
 
         virtual void mergeTypeCreators(const ConfigurableTypeCreatorWithID<TypeID, Type, void> &other,
@@ -137,11 +137,11 @@ namespace AndreiUtils {
                 throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
             }
             // this->template registerTypeCreator<std::string, Type>(typeId, typeCreator);
-            this->registerTypeCreator(typeId, move(typeCreator));
+            this->registerTypeCreator(typeId, std::move(typeCreator));
         }
 
         void registerTypeCreator(const std::string &typeId, std::function<Type *()> typeCreator) override {
-            ConfigurableTypeCreatorWithID<std::string, Type, void>::registerTypeCreator(typeId, move(typeCreator));
+            ConfigurableTypeCreatorWithID<std::string, Type, void>::registerTypeCreator(typeId, std::move(typeCreator));
         }
     };
 
