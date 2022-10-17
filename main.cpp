@@ -27,10 +27,13 @@
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsOpenCV.h>
 #include <AndreiUtils/utilsOpenCV.hpp>
-#include <AndreiUtils/utilsOpenMP.h>
 #include <AndreiUtils/utilsTime.h>
 #include <iostream>
 // #include <librealsense2/rs.hpp>
+
+#ifdef WITH_OPENMP
+#include <AndreiUtils/utilsOpenMP.hpp>
+#endif
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -791,6 +794,7 @@ void testOpenCVMatrixAccessors() {
     delete m4;
 }
 
+#ifdef WITH_OPENMP
 void testOMPUtils() {
     cout << "Default settings:" << endl;
     printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
@@ -823,6 +827,21 @@ void testOMPUtils() {
     }
 }
 
+void testFastForLoop() {
+    vector<int> v(4 * maxNumberOfOMPThreads());
+    printVector(v);
+    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
+        _v[index] = threadID;
+    });
+    printVector(v);
+    setNumberOfOMPThreads(16);
+    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
+        _v[index] = threadID;
+    });
+    printVector(v);
+}
+#endif
+
 void testPrintingImagesOpenCV() {
     cv::Mat m = cv::Mat(300, 300, CV_8U);
     m.setTo(100);
@@ -842,20 +861,6 @@ void testPrintingImagesOpenCV() {
     cout << "Finished visualization!" << endl;
     cv::waitKey();
     cout << "END PROGRAM!" << endl;
-}
-
-void testFastForLoop() {
-    vector<int> v(4 * maxNumberOfOMPThreads());
-    printVector(v);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-    setNumberOfOMPThreads(16);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
 }
 
 void testOpenCVMatrixCropReference() {
@@ -1018,7 +1023,6 @@ void testGraph() {
     auto t2 = dfsIterTimer.measure(TimeUnit::SECOND);
     cout << "DFS RecTime: " << t1 << " sec vs. IterTime: " << t2 << " sec" << endl;
 
-    //*
     auto printDfsData = [](DFS<int, string> const &_dfs) {
         cout << "Roots: [" << printVectorToString(_dfs.getGraphRoots()) << "]" << endl;
         cout << "Tree edges: [" << printVectorToString(_dfs.getTreeEdges()) << "]" << endl;
@@ -1047,7 +1051,6 @@ void testGraph() {
     for (auto const &rootData: res) {
         cout << "Distances starting from " << rootData.first << ": " << printMapToString(rootData.second) << endl;
     }
-    //*/
 
     int x = 35;
     cout << (x = 42) << endl;

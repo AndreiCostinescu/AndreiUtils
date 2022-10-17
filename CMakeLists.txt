@@ -366,6 +366,7 @@ set(UTILS
         )
 message("Utils = ${UTILS}")
 
+# used when AndreiUtils is included as a submodule/subproject/subdirectory
 append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
@@ -376,5 +377,8 @@ set(ANDREI_UTILS_REQUIRED_LIBS ${TARGET_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
 message(${ANDREI_UTILS_REQUIRED_LIBS})
 add_executable(TestAndreiUtils main.cpp)
 target_link_libraries(TestAndreiUtils ${ANDREI_UTILS_REQUIRED_LIBS})
+if (${USE_OPENMP})
+    target_compile_definitions(TestAndreiUtils PRIVATE WITH_OPENMP)
+endif ()
 
 include(cmake/installConfig.cmake)
