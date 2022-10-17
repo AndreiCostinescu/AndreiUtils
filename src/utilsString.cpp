@@ -220,7 +220,7 @@ string AndreiUtils::padLeftUntil(const string &s, const string &pad, int stringS
     } else {
         nrRepeats = (stringSizeLimit - (long) s.size()) / (long) pad.size();
         if (padTimes >= 0) {
-            nrRepeats = AndreiUtils::fastMin(nrRepeats, padTimes);
+            nrRepeats = fastMin(nrRepeats, padTimes);
         }
     }
     return (pad * nrRepeats) + s;
@@ -237,7 +237,7 @@ string AndreiUtils::padRightUntil(const string &s, const string &pad, int string
     } else {
         nrRepeats = (stringSizeLimit - (long) s.size()) / (long) pad.size();
         if (padTimes >= 0) {
-            nrRepeats = AndreiUtils::fastMin(nrRepeats, padTimes);
+            nrRepeats = fastMin(nrRepeats, padTimes);
         }
     }
     return s + (pad * nrRepeats);

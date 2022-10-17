@@ -53,12 +53,6 @@ Mat AndreiUtils::convertFrameToMat(const frame &f) {
     if (f.get_profile().format() == RS2_FORMAT_RGB8) {
         cvtColor(m, m, COLOR_RGB2BGR);
         assert(m.data == matData);
-        /*
-        // Switch RGB to BGR format
-        fastForLoop<uint8_t>(matData, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
-            swapData(array[i], array[i + 2]);
-        }, 3);
-        //*/
     }
     return m;
 }

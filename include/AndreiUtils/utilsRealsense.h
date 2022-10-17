@@ -22,7 +22,7 @@ namespace AndreiUtils {
     // Converts depth frame to a double data with distances in meters
     void depthFrameToMeters(const rs2::depth_frame &f, double *&data, size_t dataElements);
 
-    // Converts depth frame to a uint16_t data with distances in meters
+    // Converts depth frame to a uint16_t data with distances in millimeters
     void depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&data, size_t dataElements);
 
     void fromImagePixelTo3dPoint(const rs2_intrinsics &intrinsics, const float position[2], float depth,
