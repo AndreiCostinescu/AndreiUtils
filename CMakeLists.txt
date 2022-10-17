@@ -24,6 +24,23 @@ macro(append what to)
     endif ()
 endmacro()
 
+macro(AndreiUtilsAddTarget targetName targetSources targetLinkDependencies)
+    message("In AndreiUtilsAddTarget: targetName = ${targetName}")
+    message("In AndreiUtilsAddTarget: targetSources = ${${targetSources}}")
+    message("In AndreiUtilsAddTarget: targetLinkDependencies = ${${targetLinkDependencies}}")
+    add_library(${targetName} ${${targetSources}})
+    target_link_libraries(${targetName} ${${targetLinkDependencies}})
+    # needed for cmake to correctly generate AndreiUtilsConfig.cmake to include the include directory of the libary :)
+    target_include_directories(${targetName} PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            )
+    if (${USE_OPENMP})
+        target_compile_definitions(${targetName} PRIVATE WITH_OPENMP)
+    endif ()
+    set(ALL_INSTALL_TARGETS ${targetName} ${ALL_INSTALL_TARGETS})
+endmacro()
+
 option(WITH_ALL "Build the code with all extensions" OFF)
 option(WITH_EIGEN "Build the code with eigen" OFF)
 option(WITH_JSON "Build the code with json" ON)
@@ -260,145 +277,75 @@ set(REALSENSE_UTILS ${UTILS_REALSENSE})
 
 set(LIBRARY_NAME ${PROJECT_NAME})
 
+if (USE_OPENMP)
+    # OPENMP_UTILS
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_openmp" OPENMP_UTILS ANDREI_UTILS_OPENMP_REQUIRED_LIBS)
+endif ()
+
 # GENERAL_UTILS
-set(LIB_NAME "${LIBRARY_NAME}_core")
-add_library(${LIB_NAME} ${GENERAL_UTILS})
-target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
-target_include_directories(${LIB_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        )
-set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_GENERAL_REQUIRED_LIBS})
+if (${USE_OPENMP})
+    set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_openmp ${LIBRARY_LINK_TARGETS})
+endif ()
+AndreiUtilsAddTarget("${LIBRARY_NAME}_core" GENERAL_UTILS LIBRARY_LINK_TARGETS)
 
 if (USE_JSON)
     # JSON_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_json")
-    add_library(${LIB_NAME} ${JSON_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_JSON_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
-endif ()
-
-if (USE_OPENMP)
-    # OPENMP_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_openmp")
-    add_library(${LIB_NAME} ${OPENMP_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENMP_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_JSON_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_json" JSON_UTILS LIBRARY_LINK_TARGETS)
 endif ()
 
 if (USE_PTHREAD)
     # PTHREAD_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_pthread")
-    add_library(${LIB_NAME} ${PTHREAD_UTILS})
-    target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_pthread" PTHREAD_UTILS LIBRARY_LINK_TARGETS)
 endif ()
 
 if (USE_PYTHON)
     # PYTHON_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_python")
-    add_library(${LIB_NAME} ${PYTHON_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_PYTHON_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_PYTHON_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_python" PYTHON_UTILS LIBRARY_LINK_TARGETS)
 endif ()
 
 if (USE_REALSENSE)
     # REALSENSE_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_realsense")
-    add_library(${LIB_NAME} ${REALSENSE_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_REALSENSE_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_realsense" REALSENSE_UTILS LIBRARY_LINK_TARGETS)
 endif ()
 
 if (USE_OPENCV)
     # OPENCV_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_opencv")
-    add_library(${LIB_NAME} ${OPENCV_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_OPENCV_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_opencv" OPENCV_UTILS LIBRARY_LINK_TARGETS)
 
     if (USE_REALSENSE)
         # OPENCV_REALSENSE_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_opencv_realsense")
-        add_library(${LIB_NAME} ${OPENCV_REALSENSE_UTILS})
-        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_realsense ${LIBRARY_NAME}_opencv)
-        target_include_directories(${LIB_NAME} PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-        set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+        set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_realsense ${LIBRARY_NAME}_opencv)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_opencv_realsense" OPENCV_REALSENSE_UTILS LIBRARY_LINK_TARGETS)
     endif ()
 endif ()
 
 if (USE_EIGEN)
     # EIGEN_UTILS
-    set(LIB_NAME "${LIBRARY_NAME}_eigen")
-    add_library(${LIB_NAME} ${EIGEN_UTILS})
-    target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    target_include_directories(${LIB_NAME} PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>
-            )
-    set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+    set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen" EIGEN_UTILS LIBRARY_LINK_TARGETS)
 
     if (USE_JSON)
         # EIGEN_JSON_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_eigen_json")
-        add_library(${LIB_NAME} ${EIGEN_JSON_UTILS})
-        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_json)
-        target_include_directories(${LIB_NAME} PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-        set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+        set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_json)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_json" EIGEN_JSON_UTILS LIBRARY_LINK_TARGETS)
     endif ()
 
     if (USE_OPENCV)
         # EIGEN_OPENCV_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_eigen_opencv")
-        add_library(${LIB_NAME} ${EIGEN_OPENCV_UTILS})
-        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_opencv)
-        target_include_directories(${LIB_NAME} PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-        set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+        set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_opencv)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_opencv" EIGEN_OPENCV_UTILS LIBRARY_LINK_TARGETS)
     endif ()
 
     if (USE_REALSENSE)
         # EIGEN_REALSENSE_UTILS
-        set(LIB_NAME "${LIBRARY_NAME}_eigen_realsense")
-        add_library(${LIB_NAME} ${EIGEN_REALSENSE_UTILS})
-        target_link_libraries(${LIB_NAME} ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_realsense)
-        target_include_directories(${LIB_NAME} PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:include>
-                )
-        set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
+        set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_realsense)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_realsense" EIGEN_REALSENSE_UTILS LIBRARY_LINK_TARGETS)
     endif ()
 endif ()
 
@@ -423,16 +370,8 @@ append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
 
-set(LIB_NAME ${TARGET_LIBRARY})
-add_library(${LIB_NAME} ${UTILS})
-target_link_libraries(${LIB_NAME} ${ANDREI_UTILS_REQUIRED_LIBS})
-# needed for cmake to correctly generate AndreiUtilsConfig.cmake to include the include directory of the libary :)
-target_include_directories(${LIB_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        )
-set(ALL_INSTALL_TARGETS ${LIB_NAME} ${ALL_INSTALL_TARGETS})
-set(ANDREI_UTILS_REQUIRED_LIBS ${LIB_NAME} ${ANDREI_UTILS_REQUIRED_LIBS})
+AndreiUtilsAddTarget("${TARGET_LIBRARY}" UTILS ANDREI_UTILS_REQUIRED_LIBS)
+set(ANDREI_UTILS_REQUIRED_LIBS ${TARGET_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
 
 message(${ANDREI_UTILS_REQUIRED_LIBS})
 add_executable(TestAndreiUtils main.cpp)
