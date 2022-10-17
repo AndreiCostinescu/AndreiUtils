@@ -20,37 +20,40 @@ namespace AndreiUtils {
             uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
             int channels = 1);
 
-    bool readImageHeader(std::ifstream *fin, int &height, int &width, StandardTypes &type, int &channels);
+    bool readImageHeader(std::ifstream &in, int &height, int &width, StandardTypes &type, int &channels);
 
-    bool readImageData(std::ifstream *fin, uint8_t *image, int nrBytes);
+    bool readImageData(std::ifstream &in, uint8_t *image, int nrBytes);
 
-    bool readImageBinary(std::ifstream *fin, uint8_t *&image, int &height, int &width, StandardTypes &type,
+    bool readImageBinary(std::ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
                          int &channels);
 
-    bool readImageBinary(std::ifstream *fin, uint8_t *image, int &height, int &width, StandardTypes &type,
+    bool readImageBinary(std::ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type,
                          int &channels, int nrBytes);
 
-    bool readColorImageBinary(std::ifstream *fin, uint8_t *&image, int &height, int &width, StandardTypes &type);
+    bool readColorImageBinary(std::ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type);
 
-    bool readColorImageBinary(std::ifstream *fin, uint8_t *image, int &height, int &width, StandardTypes &type,
+    bool readColorImageBinary(std::ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type,
                               int nrBytes);
 
-    bool readDepthImageBinary(std::ifstream *fin, uint16_t *&depth, int &height, int &width);
+    bool readDepthImageBinary(std::ifstream &in, uint16_t *&depth, int &height, int &width);
 
-    bool readDepthImageBinary(std::ifstream *fin, uint16_t *depth, int &height, int &width, int nrBytes);
+    bool readDepthImageBinary(std::ifstream &in, uint16_t *depth, int &height, int &width, int nrBytes);
 
-    bool readDepthImageBinary(std::ifstream *fin, double *&depth, int &height, int &width);
+    bool readDepthImageBinary(std::ifstream &in, double *&depth, int &height, int &width);
 
-    bool readDepthImageBinary(std::ifstream *fin, double *depth, int &height, int &width, int nrBytes);
+    bool readDepthImageBinary(std::ifstream &in, double *depth, int &height, int &width, int nrBytes);
 
-    void writeImageBinary(std::ofstream *fout, const uint8_t *image, int height, int width, StandardTypes type,
+    void writeImageBinary(std::ofstream &out, const uint8_t *image, int height, int width, StandardTypes type,
                           int channels);
 
-    void writeColorImageBinary(std::ofstream *fout, const uint8_t *image, int height, int width, StandardTypes type);
+    void writeColorImageBinary(std::ofstream &out, uint8_t const *image, int height, int width, StandardTypes type);
 
-    void writeDepthImageBinary(std::ofstream *fout, const uint16_t *depth, int height, int width);
+    void writeDepthImageBinary(std::ofstream &out, uint16_t const *depth, int height, int width);
 
-    void writeDepthImageBinary(std::ofstream *fout, const double *depth, int height, int width);
+    void writeDepthImageBinary(std::ofstream &out, double const *depth, int height, int width);
+
+    void writeDepthImageBinaryConvert(std::ofstream &out, double const *depth, int height, int width,
+                                      double conversionFactor = 1000);
 
     void swapColorImageChannels(uint8_t *image, int nrElements, int channels,
                                 const std::vector<std::pair<int, int>> &channelSwaps);
