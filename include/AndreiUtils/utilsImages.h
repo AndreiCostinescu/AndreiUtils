@@ -43,6 +43,12 @@ namespace AndreiUtils {
 
     bool readDepthImageBinary(std::ifstream &in, double *depth, int &height, int &width, int nrBytes);
 
+    bool readDepthImageBinaryConvert(std::ifstream &in, double *&depth, int &height, int &width,
+                                     double conversionFactor = 1000);
+
+    bool readDepthImageBinaryConvert(std::ifstream &in, double *depth, int &height, int &width, int nrBytes,
+                                     double conversionFactor = 1000);
+
     void writeImageBinary(std::ofstream &out, const uint8_t *image, int height, int width, StandardTypes type,
                           int channels);
 
