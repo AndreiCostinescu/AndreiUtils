@@ -7,7 +7,6 @@
 
 #include <AndreiUtils/enums/ImageDistortionModel.h>
 #include <AndreiUtils/json.hpp>
-#include <AndreiUtils/utilsOpenMP.hpp>
 #include <vector>
 
 namespace AndreiUtils {
