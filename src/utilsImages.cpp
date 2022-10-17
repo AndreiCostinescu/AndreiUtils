@@ -2,27 +2,23 @@
 // Created by Andrei on 20-Oct-21.
 //
 
-#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsImages.h>
-#include <AndreiUtils/utilsOpenMP.hpp>
+#include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsBinarySerialization.hpp>
 #include <cstring>
 #include <functional>
+#include <iostream>
 
+#ifdef WITH_OPENMP
+#include <AndreiUtils/utilsOpenMP.hpp>
+#endif
+
+using namespace AndreiUtils;
 using namespace std;
 
-void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
-                                    int width, int channels) {
-    if (rotation == RotationType::NO_ROTATION) {
-        return;
-    }
-
-    int nrBytesPerElement = getStandardTypeByteAmount(imageType);
-    int rowIncrement = width * channels;
-    int nrElements = height * rowIncrement * nrBytesPerElement;
-    auto *copy = new uint8_t[nrElements];
-    fastMemCopy(copy, data, nrElements);
-
-    int newHeight, newWidth;
+void AndreiUtils::imageDataRotationInto(uint8_t *dst, uint8_t *data, RotationType rotation, StandardTypes imageType,
+                                        int height, int width, int channels) {
+    int newHeight, newWidth, rowIncrement = width * channels, nrBytesPerElement = getStandardTypeByteAmount(imageType);
     function<int(int, int, int)> getCopyIndex;
     switch (rotation) {
         case LEFT_90: {
@@ -61,13 +57,31 @@ void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, Standa
             for (int k = 0; k < channels; k++) {
                 dataIndex = i * newRowIncrement + j * channels + k;
                 copyIndex = getCopyIndex(i, j, k);
-                memcpy(data + dataIndex, copy + copyIndex, nrBytesPerElement);
+                memcpy(dst + copyIndex, data + dataIndex, nrBytesPerElement);
             }
         }
     }
 }
 
-void AndreiUtils::imageDataRotationWithDesiredParameters(
+uint8_t *AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
+                                        int width, int channels) {
+    if (rotation == RotationType::NO_ROTATION) {
+        return data;
+    }
+
+    int nrElements = height * width * channels * getStandardTypeByteAmount(imageType);
+    auto *copy = new uint8_t[nrElements];
+    #ifdef WITH_OPENMP
+    fastMemCopy(copy, data, nrElements);
+    #else
+    memcpy(copy, data, nrElements);
+    #endif
+
+    imageDataRotationInto(copy, data, rotation, imageType, height, width, channels);
+    return copy;
+}
+
+uint8_t *AndreiUtils::imageDataRotationWithDesiredParameters(
         uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
         int channels) {
     return imageDataRotation(data, applyRotation, imageType,
@@ -76,8 +90,7 @@ void AndreiUtils::imageDataRotationWithDesiredParameters(
                              channels);
 }
 
-bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, AndreiUtils::StandardTypes &type,
-                                  int &channels) {
+bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, StandardTypes &type, int &channels) {
     try {
         deserialize(in, height);
         deserialize(in, width);
@@ -272,7 +285,7 @@ void AndreiUtils::writeDepthImageBinaryConvert(ofstream &out, const double *dept
 }
 
 void AndreiUtils::swapColorImageChannels(uint8_t *image, int nrElements, int channels,
-                                         const std::vector<std::pair<int, int>> &channelSwaps) {
+                                         vector<pair<int, int>> const &channelSwaps) {
     for (const auto &channelSwap: channelSwaps) {
         if (channelSwap.first >= channels || channelSwap.second >= channels || channelSwap.first < 0 ||
             channelSwap.second < 0) {

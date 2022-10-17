@@ -13,10 +13,13 @@
 #include <vector>
 
 namespace AndreiUtils {
-    void imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height, int width,
-                           int channels = 1);
+    void imageDataRotationInto(uint8_t *dst, uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
+                               int width, int channels = 1);
 
-    void imageDataRotationWithDesiredParameters(
+    uint8_t *imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height, int width,
+                               int channels = 1);
+
+    uint8_t *imageDataRotationWithDesiredParameters(
             uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
             int channels = 1);
 
