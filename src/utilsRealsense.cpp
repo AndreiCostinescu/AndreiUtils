@@ -6,7 +6,10 @@
 #include <AndreiUtils/utils.hpp>
 #include <cstring>
 #include <librealsense2/rsutil.h>
-#include <iostream>
+
+#ifdef WITH_OPENMP
+#include <AndreiUtils/utilsOpenMP.hpp>
+#endif
 
 using namespace rs2;
 using namespace std;
@@ -64,12 +67,22 @@ void AndreiUtils::frameToBytes(const rs2::frame &f, uint8_t **data, int &h, int 
     }
     if (copyData) {
         size_t nrBytes = w * h * c * elementSize;
+        #ifdef WITH_OPENMP
         fastMemCopy(*data, (const uint8_t *) f.get_data(), nrBytes);
+        #else
+        memcpy(*data, (const uint8_t *) f.get_data(), nrBytes);
+        #endif
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
             // Switch BGR to RGB format
+            #ifdef WITH_OPENMP
             fastForLoop<uint8_t>(*data, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
                 swapData(array[i], array[i + 2]);
             }, 3);
+            #else
+            for (size_t i = 0; i < nrBytes; i += 3) {
+                swapData(data[i], data[i + 2]);
+            }
+            #endif
         }
     } else {
         *data = (uint8_t *) f.get_data();
@@ -94,8 +107,14 @@ void AndreiUtils::depthFrameToMeters(const rs2::depth_frame &f, double *&data, c
     frameToBytes(f, (uint8_t **) &tmpData, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
     if (data != nullptr) {
+        #ifdef WITH_OPENMP
         fastSrcOp<uint16_t, double>(data, (uint16_t *) tmpData, dataElements,
                                     [&](const uint16_t &x) { return (double) x * f.get_units(); });
+        #else
+        for (size_t i = 0; i < dataElements; i++) {
+            data[i] = double(tmpData[i]) * f.get_units();
+        }
+        #endif
     }
     delete[] tmpData;
 }
@@ -105,9 +124,15 @@ void AndreiUtils::depthFrameToMilliMeters(const rs2::depth_frame &f, uint16_t *&
     frameToBytes(f, (uint8_t **) &data, dataType, dataElements * sizeof(uint16_t));
     assert (dataType == convertFrameTypeToDataType(2, 1));
     if (data != nullptr) {
+        #ifdef WITH_OPENMP
         fastSrcOp<uint16_t, uint16_t>(data, data, dataElements, [&](const uint16_t &x) {
             return (uint16_t) ((double) x * f.get_units() * 1000);
         });
+        #else
+        for (size_t i = 0; i < dataElements; i++) {
+            data[i] = uint16_t(double(data[i]) * f.get_units() * 1000);
+        }
+        #endif
     }
 }
 
@@ -172,7 +197,8 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
             forceWindowUsage, farthestAllowedDepth);
 }
 
-void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *intrinsics, float point[3], float (&pixel)[2]) {
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *intrinsics, float point[3],
+                                                       float (&pixel)[2]) {
     // project pixel from point in 3D
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
