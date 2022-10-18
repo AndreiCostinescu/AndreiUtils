@@ -16,8 +16,9 @@ SymmetryJsonSerializer::SymmetryJsonSerializer(Symmetry &s) : sConst(nullptr), s
 void SymmetryJsonSerializer::toJson(nlohmann::json &j) const {
     j["type"] = this->sConst->type;
     vector<double> v(3);
+    auto symmetryAxis = this->sConst->axis.normalized();
     for (int i = 0; i < 3; i++) {
-        v[i] = this->sConst->axis[i];
+        v[i] = symmetryAxis[i];
     }
     j["axis"] = v;
     for (int i = 0; i < 3; i++) {
@@ -38,6 +39,7 @@ void SymmetryJsonSerializer::fromJson(const nlohmann::json &j) {
     for (int i = 0; i < 3; i++) {
         this->s->axis[i] = v[i];
     }
+    this->s->axis.normalize();
     if (j.contains("axisDisplacementFromOrigin")) {
         v = j.at("axisDisplacementFromOrigin").get<vector<double>>();
         for (int i = 0; i < 3; i++) {
