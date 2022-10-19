@@ -22,6 +22,8 @@ namespace AndreiUtils {
 
         Symmetry();
 
+        AndreiUtils::Posed getSymmetricTransformation() const;
+
         std::vector<AndreiUtils::Posed> createSymmetricPoses(std::vector<AndreiUtils::Posed> const &poses) const;
 
         AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose) const;
