@@ -9,6 +9,8 @@ using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
 
+double const Symmetry::pi_2(2 * M_PI);
+
 Symmetry::Symmetry() : type(), axis(), axisDisplacementFromOrigin(), range() {}
 
 Posed Symmetry::getSymmetricTransformation(double rangeValue) const {
@@ -53,4 +55,25 @@ Posed Symmetry::createSymmetricPose(Posed const &pose, double const &rangeValue)
 
 Posed Symmetry::createSymmetricPose(Posed const &pose) const {
     return this->getSymmetricTransformation() * pose;
+}
+
+bool Symmetry::checkIfOrientationFitsSymmetry(Quaterniond const &q, double axisSimilarityThreshold) const {
+    AngleAxisd qAxisAngle(q);
+    double &qAngle = qAxisAngle.angle();  // <- this is always in [0, pi]
+    Vector3d &qAxis = qAxisAngle.axis();
+
+    bool posCheck = (qAxis - this->axis).norm() <= axisSimilarityThreshold;
+    bool negCheck = (qAxis + this->axis).norm() <= axisSimilarityThreshold;
+    if (!posCheck && !negCheck) {
+        return false;
+    }
+
+    if (posCheck) {
+        // symmetry axis == qAxis
+        return lessEqual(this->range.first, qAngle) && lessEqual(qAngle, this->range.second);
+    }
+
+    // symmetry axis == -qAxis
+    return lessEqual(Symmetry::pi_2 - this->range.second, qAngle) &&
+           lessEqual(qAngle, Symmetry::pi_2 - this->range.first);
 }
