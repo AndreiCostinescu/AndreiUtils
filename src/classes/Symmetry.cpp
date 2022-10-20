@@ -60,6 +60,9 @@ Posed Symmetry::createSymmetricPose(Posed const &pose) const {
 bool Symmetry::checkIfOrientationFitsSymmetry(Quaterniond const &q, double axisSimilarityThreshold) const {
     AngleAxisd qAxisAngle(q);
     double &qAngle = qAxisAngle.angle();  // <- this is always in [0, pi]
+    if (AndreiUtils::equal<double>(qAngle, 0)) {
+        return true;
+    }
     Vector3d &qAxis = qAxisAngle.axis();
 
     bool posCheck = (qAxis - this->axis).norm() <= axisSimilarityThreshold;
