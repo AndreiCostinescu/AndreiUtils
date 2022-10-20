@@ -22,9 +22,16 @@ namespace AndreiUtils {
 
         Symmetry();
 
+        AndreiUtils::Posed getSymmetricTransformation(double rangeValue) const;
+
         AndreiUtils::Posed getSymmetricTransformation() const;
 
+        std::vector<AndreiUtils::Posed> createSymmetricPoses(std::vector<AndreiUtils::Posed> const &poses,
+                                                             double const &rangeValue) const;
+
         std::vector<AndreiUtils::Posed> createSymmetricPoses(std::vector<AndreiUtils::Posed> const &poses) const;
+
+        AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose, double const &rangeValue) const;
 
         AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose) const;
     };
