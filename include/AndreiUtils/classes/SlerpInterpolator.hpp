@@ -5,22 +5,20 @@
 #ifndef ANDREIUTILS_SLERPINTERPOLATOR_HPP
 #define ANDREIUTILS_SLERPINTERPOLATOR_HPP
 
+#include <AndreiUtils/classes/Interpolator.hpp>
 #include <Eigen/Dense>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace AndreiUtils {
     template<class T>
-    class SlerpInterpolator {
+    class SlerpInterpolator : public Interpolator<Eigen::Quaternion<T>> {
     public:
         using InterpolationType = Eigen::Quaternion<T>;
 
         SlerpInterpolator() = default;
 
-        ~SlerpInterpolator() {
-            this->clear();
-        }
+        ~SlerpInterpolator() = default;
 
         static T singleInterpolation(InterpolationType const &start, InterpolationType const &end, double const &tau) {
             return start.slerp(tau, end);
@@ -76,21 +74,6 @@ namespace AndreiUtils {
 
             return *this;
         }
-
-        void clear() {
-            this->result.clear();
-        }
-
-        std::vector<InterpolationType> &getResult() {
-            return this->result;
-        }
-
-        [[nodiscard]] std::vector<InterpolationType> const &getResult() const {
-            return this->result;
-        }
-
-    protected:
-        std::vector<InterpolationType> result;
     };
 }
 

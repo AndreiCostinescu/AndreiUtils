@@ -5,19 +5,17 @@
 #ifndef ANDREIUTILS_LINEARINTERPOLATOR_HPP
 #define ANDREIUTILS_LINEARINTERPOLATOR_HPP
 
+#include <AndreiUtils/classes/Interpolator.hpp>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace AndreiUtils {
     template<class T>
-    class LinearInterpolator {
+    class LinearInterpolator : public Interpolator<T> {
     public:
         LinearInterpolator() = default;
 
-        ~LinearInterpolator() {
-            this->clear();
-        }
+        ~LinearInterpolator() = default;
 
         static T singleInterpolation(T const &start, T const &end, double const &tau) {
             return start + tau * (end - start);
@@ -78,21 +76,6 @@ namespace AndreiUtils {
 
             return *this;
         }
-
-        void clear() {
-            this->result.clear();
-        }
-
-        std::vector<T> &getResult() {
-            return this->result;
-        }
-
-        [[nodiscard]] std::vector<T> const &getResult() const {
-            return this->result;
-        }
-
-    protected:
-        std::vector<T> result;
     };
 }
 

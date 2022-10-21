@@ -5,19 +5,20 @@
 #ifndef ANDREIUTILS_POSEINTERPOLATOR_HPP
 #define ANDREIUTILS_POSEINTERPOLATOR_HPP
 
+#include <AndreiUtils/classes/Interpolator.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <stdexcept>
+#include <string>
 
 namespace AndreiUtils {
     template<class T>
-    class PoseInterpolator {
+    class PoseInterpolator : public Interpolator<DualQuaternion<T>> {
     public:
         using InterpolationType = DualQuaternion<T>;
 
         PoseInterpolator() = default;
 
-        ~PoseInterpolator() {
-            this->clear();
-        }
+        ~PoseInterpolator() = default;
 
         static T singleInterpolation(InterpolationType const &start, InterpolationType const &end, double const &tau) {
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
@@ -86,21 +87,6 @@ namespace AndreiUtils {
 
             return *this;
         }
-
-        void clear() {
-            this->result.clear();
-        }
-
-        std::vector<InterpolationType> &getResult() {
-            return this->result;
-        }
-
-        [[nodiscard]] std::vector<InterpolationType> const &getResult() const {
-            return this->result;
-        }
-
-    protected:
-        std::vector<InterpolationType> result;
     };
 }
 
