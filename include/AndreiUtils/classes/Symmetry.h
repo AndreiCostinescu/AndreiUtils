@@ -34,6 +34,11 @@ namespace AndreiUtils {
         AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose, double const &rangeValue) const;
 
         AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose) const;
+
+        bool checkIfOrientationFitsSymmetry(Eigen::Quaterniond const &q, double axisSimilarityThreshold) const;
+
+    protected:
+        static double const pi_2;
     };
 }
 

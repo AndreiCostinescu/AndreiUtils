@@ -27,6 +27,8 @@ void SymmetryJsonSerializer::toJson(nlohmann::json &j) const {
     j["axisDisplacementFromOrigin"] = v;
     if (this->sConst->type == "rotation") {
         pair<double, double> degRange(rad2Deg(this->sConst->range.first), rad2Deg(this->sConst->range.second));
+        bringValueInCircularInterval<double>(degRange.first, 0, 360);
+        bringValueInCircularInterval<double>(degRange.second, 0, 360);
         j["range"] = degRange;
     } else {
         j["range"] = this->sConst->range;
@@ -48,6 +50,8 @@ void SymmetryJsonSerializer::fromJson(const nlohmann::json &j) {
     }
     this->s->range = j.at("range").get<pair<double, double>>();
     if (this->s->type == "rotation") {
+        bringValueInCircularInterval<double>(this->s->range.first, 0, 360);
+        bringValueInCircularInterval<double>(this->s->range.second, 0, 360);
         this->s->range.first = deg2Rad(this->s->range.first);
         this->s->range.second = deg2Rad(this->s->range.second);
     }

@@ -100,6 +100,24 @@ namespace AndreiUtils {
     inline T average(T const &a, T const &b) {
         return a + (b - a) / 2;
     }
+
+    template<typename T>
+    void bringValueInCircularInterval(T &v, T const &minInterval, T const &maxInterval, double tol = 1e-9) {
+        T intervalSize = maxInterval - minInterval;
+        while (AndreiUtils::less<T>(v, minInterval, tol)) {
+            v += intervalSize;
+        }
+        while (AndreiUtils::less<T>(maxInterval, v, tol)) {
+            v -= intervalSize;
+        }
+    }
+
+    template<typename T>
+    T getValueInCircularInterval(T const &v, T const &minInterval, T const &maxInterval, double tol = 1e-9) {
+        T vCopy = v;
+        bringValueInCircularInterval(vCopy, minInterval, maxInterval, tol);
+        return vCopy;
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
