@@ -5,7 +5,6 @@
 #ifndef ANDREIUTILS_UTILSQUATERNIONS_HPP
 #define ANDREIUTILS_UTILSQUATERNIONS_HPP
 
-#include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <Eigen/Dense>
 #include <vector>
 
