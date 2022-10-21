@@ -19,7 +19,25 @@ namespace AndreiUtils {
             this->clear();
         }
 
-        void compute(T const &start, T const &end, int steps, bool withStart = true, bool withEnd = true) {
+        static T singleInterpolation(T const &start, T const &end, double const &tau) {
+            return start + tau * (end - start);
+        }
+
+        LinearInterpolator &compute(T const &start, double const &stepSize, T const &end) {
+            this->clear();
+
+            T diff = end - start;
+            for (T tau = 0.; tau <= 1.;) {
+                // add the interpolated pose
+                this->result.push_back(start + tau * diff);
+                tau = tau + stepSize;
+            }
+
+            return *this;
+        }
+
+        LinearInterpolator &compute(T const &start, T const &end, int steps, bool withStart = true,
+                                    bool withEnd = true) {
             if (withStart + withEnd > steps) {
                 throw std::runtime_error(
                         "Number of steps smaller than the minimum requested: " + std::to_string(withStart + withEnd));
@@ -44,16 +62,21 @@ namespace AndreiUtils {
                     this->result[i] = this->result[i - 1] + increment;
                 }
             }
+
+            return *this;
         }
 
         // interpolationPoints[i] should be \in [0, 1] for interpolation inside interval and not \in for extrapolation
-        void compute(T const &start, T const &end, std::vector<double> const &interpolationPoints) {
+        LinearInterpolator &compute(T const &start, T const &end, std::vector<double> const &interpolationPoints) {
             this->clear();
             this->result.resize(interpolationPoints.size());
+
             T diff = end - start;
             for (int i = 0; i < interpolationPoints.size(); i++) {
                 this->result[i] = start + interpolationPoints[i] * diff;
             }
+
+            return *this;
         }
 
         void clear() {

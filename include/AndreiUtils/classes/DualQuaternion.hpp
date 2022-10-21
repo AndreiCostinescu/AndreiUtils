@@ -6,7 +6,7 @@
 #define ANDREIUTILS_DUALQUATERNION_HPP
 
 #include <AndreiUtils/utils.hpp>
-#include <AndreiUtils/utilsEigen.hpp>
+#include <AndreiUtils/utilsQuaternions.hpp>
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
@@ -97,8 +97,8 @@ namespace AndreiUtils {
         }
 
         // inspired by Riddhiman's function
-        DualQuaternion powScrew(double const &a) const {
-            double theta = this->rotationAngle(), n;  // Theta in radians (ALWAYS)
+        DualQuaternion powScrew(T const &a) const {
+            T theta = this->rotationAngle(), n;  // Theta in radians (ALWAYS)
             DualQuaternion res;
 
             if (theta == 0) {
@@ -107,15 +107,15 @@ namespace AndreiUtils {
                 n = 0.5 * theta;
             }
 
-            double cos_n = cos(n);
-            double cos_a_n = cos(a * n);
-            double sin_n = sin(n);
-            double sin_a_n = sin(a * n);
+            T cos_n = cos(n);
+            T cos_a_n = cos(a * n);
+            T sin_n = sin(n);
+            T sin_a_n = sin(a * n);
 
-            double tmp = -(2 * this->d.w() / sin_n);
-            double tmp_cos_2 = 0.5 * tmp * cos_n;
+            T tmp = -(2 * this->d.w() / sin_n);
+            T tmp_cos_2 = 0.5 * tmp * cos_n;
 
-            Eigen::Vector3d u, v;
+            Eigen::Matrix<T, 3, 1> u, v;
             u.x() = this->r.x();
             u.y() = this->r.y();
             u.z() = this->r.z();
@@ -130,7 +130,7 @@ namespace AndreiUtils {
             res.r.y() = u.y() * sin_a_n;
             res.r.z() = u.z() * sin_a_n;
 
-            double tmp_a_2 = 0.5 * tmp * a;
+            T tmp_a_2 = 0.5 * tmp * a;
 
             res.d.w() = -tmp_a_2 * sin_a_n;
             res.d.x() = (v.x() * sin_a_n) + (tmp_a_2 * u.x() * cos_a_n);
@@ -177,7 +177,7 @@ namespace AndreiUtils {
         }
 
         // inspired by DQ::pow function
-        DualQuaternion powGeom(double const &a) const {
+        DualQuaternion powGeom(T const &a) const {
             DualQuaternion res = a * this->log();
             return res.exp();
         }
@@ -235,11 +235,11 @@ namespace AndreiUtils {
             return inv;
         }
 
-        bool equal(DualQuaternion const &other, T const & tol = 1e-9) const {
+        bool equal(DualQuaternion const &other, T const &tol = 1e-9) const {
             return qEqual(this->r, other.r, tol) && qEqual(this->d, other.d, tol);
         }
 
-        bool notEqual(DualQuaternion const &other, T const & tol = 1e-9) const {
+        bool notEqual(DualQuaternion const &other, T const &tol = 1e-9) const {
             return !this->equal(other, tol);
         }
 
@@ -351,6 +351,12 @@ namespace AndreiUtils {
             M.template block<3, 3>(0, 0) = q.getRotationAsMatrix();  // Extract rotational information
             M.col(3).template topRows<3>() = q.getTranslation();  // Extract translation information
             return M;
+        }
+
+        DualQuaternion sclerp(T const &tau, DualQuaternion const &q) {
+            DualQuaternion thisNormed = this->normalized(), qNormed = q.normalized();
+            DualQuaternion qAsSeenFromThis = thisNormed.dualQuaternionInverse() * qNormed;
+            return (tau == 0) ? thisNormed : thisNormed * qAsSeenFromThis.powScrew(tau);
         }
 
         friend std::ostream &operator<<(std::ostream &os, const DualQuaternion &q) {

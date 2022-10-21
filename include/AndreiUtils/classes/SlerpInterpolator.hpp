@@ -22,7 +22,24 @@ namespace AndreiUtils {
             this->clear();
         }
 
-        void compute(InterpolationType const &start, InterpolationType const &end, int steps, bool withStart = true, bool withEnd = true) {
+        static T singleInterpolation(InterpolationType const &start, InterpolationType const &end, double const &tau) {
+            return start.slerp(tau, end);
+        }
+
+        SlerpInterpolator &compute(InterpolationType const &start, T const &stepSize, InterpolationType const &end) {
+            this->clear();
+
+            for (T tau = 0.; tau <= 1.;) {
+                // add the interpolated pose
+                this->result.push_back(start.slerp(tau, end));
+                tau = tau + stepSize;
+            }
+
+            return *this;
+        }
+
+        SlerpInterpolator &compute(InterpolationType const &start, InterpolationType const &end, int steps,
+                                   bool withStart = true, bool withEnd = true) {
             if (withStart + withEnd > steps) {
                 throw std::runtime_error(
                         "Number of steps smaller than the minimum requested: " + std::to_string(withStart + withEnd));
@@ -43,15 +60,21 @@ namespace AndreiUtils {
             for (int i = withStart; i < stopIndex; i++) {
                 this->result[i] = start.slerp(double(i + !withStart) / interpolationSteps, end);
             }
+
+            return *this;
         }
 
         // interpolationPoints[i] should be \in [0, 1] for interpolation inside interval and not \in for extrapolation
-        void compute(InterpolationType const &start, InterpolationType const &end, std::vector<double> const &interpolationPoints) {
+        SlerpInterpolator &compute(InterpolationType const &start, InterpolationType const &end,
+                                   std::vector<double> const &interpolationPoints) {
             this->clear();
             this->result.resize(interpolationPoints.size());
+
             for (int i = 0; i < interpolationPoints.size(); i++) {
                 this->result[i] = start.slerp(interpolationPoints[i], end);
             }
+
+            return *this;
         }
 
         void clear() {
