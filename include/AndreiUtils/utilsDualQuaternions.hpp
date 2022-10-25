@@ -7,6 +7,7 @@
 
 #include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/utilsQuaternions.hpp>
+#include <AndreiUtils/utilsVector.hpp>
 
 namespace AndreiUtils {
     template<typename T>
