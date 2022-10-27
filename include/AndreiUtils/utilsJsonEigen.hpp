@@ -166,9 +166,9 @@ namespace AndreiUtils {
 
     class SymmetryJsonSerializer {
     public:
-        SymmetryJsonSerializer(Symmetry const &s);
+        explicit SymmetryJsonSerializer(Symmetry const &s);
 
-        SymmetryJsonSerializer(Symmetry &s);
+        explicit SymmetryJsonSerializer(Symmetry &s);
 
         void toJson(nlohmann::json &j) const;
 
@@ -181,9 +181,9 @@ namespace AndreiUtils {
 
     class MotionDeviceIntrinsicParametersJsonSerializer {
     public:
-        MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters const &m);
+        explicit MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters const &m);
 
-        MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters &m);
+        explicit MotionDeviceIntrinsicParametersJsonSerializer(MotionDeviceIntrinsicParameters &m);
 
         void toJson(nlohmann::json &j) const;
 
@@ -196,9 +196,9 @@ namespace AndreiUtils {
 
     class MotionDeviceCaptureParametersJsonSerializer {
     public:
-        MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters const &m);
+        explicit MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters const &m);
 
-        MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters &m);
+        explicit MotionDeviceCaptureParametersJsonSerializer(MotionDeviceCaptureParameters &m);
 
         void toJson(nlohmann::json &j) const;
 
