@@ -151,7 +151,7 @@ namespace AndreiUtils {
             }
             if (setItems != 9) {
                 throw std::runtime_error(
-                        "Poorly formatted xml data for EigenMatrixJsonSerializer: " + std::string(node));
+                        "Poorly formatted xml data for EigenMatrixOpenCVSerializer: " + std::string(node));
             }
             if (Rows != -1) {
                 if (this->rows != -1 && Rows != this->rows) {
