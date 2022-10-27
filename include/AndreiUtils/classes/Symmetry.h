@@ -10,12 +10,8 @@
 #include <string>
 
 namespace AndreiUtils {
-    class SymmetryJsonSerializer;
-
     class Symmetry {
     public:
-        friend class SymmetryJsonSerializer;
-
         std::string type;
         Eigen::Vector3d axis, axisDisplacementFromOrigin;
         std::pair<double, double> range;

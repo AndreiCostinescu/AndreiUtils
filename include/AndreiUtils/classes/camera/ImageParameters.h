@@ -5,8 +5,6 @@
 #ifndef ANDREIUTILS_IMAGEPARAMETERS_H
 #define ANDREIUTILS_IMAGEPARAMETERS_H
 
-#include <AndreiUtils/json.hpp>
-
 namespace AndreiUtils {
     class ImageParameters {
     public:
@@ -18,23 +16,7 @@ namespace AndreiUtils {
 
         void setImageParameters(int _h, int _w);
 
-        void toJson(nlohmann::json &j) const;
-
-        void fromJson(const nlohmann::json &j);
-
         int h, w;
-    };
-}
-
-namespace nlohmann {
-    template<> struct adl_serializer<AndreiUtils::ImageParameters> {
-        static void to_json(nlohmann::json& j, const AndreiUtils::ImageParameters& p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json& j, AndreiUtils::ImageParameters& p) {
-            p.fromJson(j);
-        }
     };
 }
 

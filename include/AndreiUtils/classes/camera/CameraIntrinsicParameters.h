@@ -6,7 +6,6 @@
 #define ANDREIUTILS_CAMERAINTRINSICPARAMETERS_HPP
 
 #include <AndreiUtils/enums/ImageDistortionModel.h>
-#include <AndreiUtils/json.hpp>
 #include <vector>
 
 namespace AndreiUtils {
@@ -34,10 +33,6 @@ namespace AndreiUtils {
 
         std::vector<float> getDistortionCoefficientsAsVector() const;
 
-        void toJson(nlohmann::json &j) const;
-
-        void fromJson(const nlohmann::json &j);
-
         int nrDistortionCoefficients;
         double fx, fy, ppx, ppy;
         float *distortionCoefficients;
@@ -45,19 +40,6 @@ namespace AndreiUtils {
 
     protected:
         void copyDataFromOther(const CameraIntrinsicParameters &other);
-    };
-}
-
-namespace nlohmann {
-    template<>
-    struct adl_serializer<AndreiUtils::CameraIntrinsicParameters> {
-        static void to_json(nlohmann::json &j, const AndreiUtils::CameraIntrinsicParameters &p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json &j, AndreiUtils::CameraIntrinsicParameters &p) {
-            p.fromJson(j);
-        }
     };
 }
 

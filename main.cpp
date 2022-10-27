@@ -10,6 +10,7 @@
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
+#include <AndreiUtils/classes/SuperCube.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
@@ -1297,6 +1298,45 @@ void testStringFindFunctions() {
     cout << a.rfind(b, 0) << endl;
 }
 
+class TmpClass : public SuperCubeData<3> {
+public:
+    IndexType getIndex() const override {
+        return {0, 0, 0};
+    }
+
+    void saveBinary(std::ofstream &bin) const override {
+        ;
+    }
+
+    void readBinary(std::ifstream &bin) override {
+        ;
+    }
+
+    void update(TmpClass const &tmp) const {
+        ;
+    }
+};
+
+namespace nlohmann {
+    template<>
+    struct adl_serializer<TmpClass> {
+        static void to_json(nlohmann::json &j, const TmpClass &v) {}
+
+        static void from_json(const nlohmann::json &j, TmpClass &v) {}
+    };
+}
+
+void testSuperCube() {
+    SuperCube<TmpClass, 3, 1, 1> x;
+    x.saveBinary("123.txt");
+    x.setData(TmpClass());
+    SuperCube<TmpClass, 3, 1, 0> y;
+    // SuperCube<TmpClass, 3, 1, -1> z;
+    // SuperCube<TmpClass, 3, 0, 1> z;
+    // SuperCube<TmpClass, 0, 1, 1> z;
+    nlohmann::json j = x;
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1337,7 +1377,8 @@ int main() {
     // testSpliceVector();
     // testPythonInterface();
     // testMoveSemantics();
-    testStringFindFunctions();
+    // testStringFindFunctions();
+    testSuperCube();
 
     return 0;
 }

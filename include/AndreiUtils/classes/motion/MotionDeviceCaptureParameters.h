@@ -9,12 +9,8 @@
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
-    class MotionDeviceCaptureParametersJsonSerializer;
-
     class MotionDeviceCaptureParameters {
     public:
-        friend class MotionDeviceCaptureParametersJsonSerializer;
-
         MotionDeviceCaptureParameters();
 
         MotionDeviceCaptureParameters(const double &fps, const MotionDeviceIntrinsicParameters &intrinsics);

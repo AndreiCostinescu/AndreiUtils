@@ -5,16 +5,11 @@
 #ifndef ANDREIUTILS_MOTIONDEVICEINTRINSICPARAMETERS_H
 #define ANDREIUTILS_MOTIONDEVICEINTRINSICPARAMETERS_H
 
-#include <AndreiUtils/json.hpp>
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
-    class MotionDeviceInstrinsicParametersJsonSerializer;
-
     class MotionDeviceIntrinsicParameters {
     public:
-        friend class MotionDeviceInstrinsicParametersJsonSerializer;
-
         MotionDeviceIntrinsicParameters();
 
         MotionDeviceIntrinsicParameters(Eigen::MatrixXd data, Eigen::VectorXd biasVariances,
@@ -22,8 +17,9 @@ namespace AndreiUtils {
 
         virtual ~MotionDeviceIntrinsicParameters();
 
-        void setMotionDeviceIntrinsicParameters(const Eigen::MatrixXd &_data, const Eigen::VectorXd &_biasVariances,
-                                                const Eigen::VectorXd &_noiseVariances);
+        void setMotionDeviceIntrinsicParameters(Eigen::MatrixXd const &_data, Eigen::VectorXd const &_biasVariances,
+                                                Eigen::VectorXd const &_noiseVariances);
+
         Eigen::MatrixXd data;
         Eigen::VectorXd biasVariances, noiseVariances;
     };
