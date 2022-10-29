@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsCamera.h>
 #include <AndreiUtils/utils.hpp>
+#include <cassert>
 #include <cfloat>
 
 using namespace AndreiUtils;

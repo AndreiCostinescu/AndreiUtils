@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsRealsense.h>
 #include <AndreiUtils/utils.hpp>
+#include <cassert>
 #include <cstring>
 #include <librealsense2/rsutil.h>
 
