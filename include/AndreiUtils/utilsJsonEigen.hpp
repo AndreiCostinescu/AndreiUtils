@@ -264,15 +264,24 @@ namespace nlohmann {
         using T = AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, Depth>;
 
         static void to_json(nlohmann::json &j, T const &data) {
+            j = data.subCubes;
+        }
+
+        static void from_json(nlohmann::json const &j, T &data) {
+            data.subCubes = j.get<std::map<int, typename T::SubCube>>();
+        }
+    };
+
+    template<typename Type, int SpatialDimension, int SpatialDivision>
+    struct adl_serializer<AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, 0>> {
+        using T = AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, 0>;
+
+        static void to_json(nlohmann::json &j, T const &data) {
             j = data.data;
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
-            if (Depth == 0) {
-                data.data = j.get<std::map<int, typename T::Data>>();
-            } else {
-                data.data = j.get<std::map<int, T>>();
-            }
+            data.data = j.get<typename T::Data>();
         }
     };
 }

@@ -33,7 +33,9 @@
 // #include <librealsense2/rs.hpp>
 
 #ifdef WITH_OPENMP
+
 #include <AndreiUtils/utilsOpenMP.hpp>
+
 #endif
 
 using namespace AndreiUtils;
@@ -796,6 +798,7 @@ void testOpenCVMatrixAccessors() {
 }
 
 #ifdef WITH_OPENMP
+
 void testOMPUtils() {
     cout << "Default settings:" << endl;
     printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
@@ -841,6 +844,7 @@ void testFastForLoop() {
     });
     printVector(v);
 }
+
 #endif
 
 void testPrintingImagesOpenCV() {
@@ -1301,7 +1305,10 @@ void testStringFindFunctions() {
 class TmpClass : public SuperCubeData<3> {
 public:
     IndexType getIndex() const override {
-        return {0, 0, 0};
+        RandomNumberGenerator<double> r(0, 20);
+        IndexType sample{r.sample(), r.sample(), r.sample()};
+        cout << "Sample: " << sample.transpose() << endl;
+        return sample;
     }
 
     void saveBinary(std::ofstream &bin) const override {
@@ -1326,14 +1333,49 @@ namespace nlohmann {
     };
 }
 
+template<int Dim, int Div, int Depth>
+void printSuperCubeData(string const &preText, int index, SuperCube<TmpClass, Dim, Div, Depth> const &s) {
+    cout << "At " << preText << " = " << index << ": " << s.getNrCubes() << "; " << s.getVolume().transpose()
+         << "; " << s.getSubCubeVolume().transpose() << "; " << s.getCubeMinCorner().transpose() << "; "
+         << s.getCubeMaxCorner().transpose() << endl;
+}
+
 void testSuperCube() {
-    SuperCube<TmpClass, 3, 1, 1> x;
+    using S = SuperCube<TmpClass, 3, 10, 3>;
+    S::DataIndex a = 10 * S::DataIndex::Ones(), b = S::DataIndex::Ones(), res;
+    S::DimensionIndex c = S::DimensionIndex::Ones();
+    (a - b).array().cwiseQuotient(c.template cast<double>().array());
+    res = ((a - b).array() / c.cast<double>().array()).matrix();
+    cout << res.transpose() << endl;
+
+    S x({10, 5, 2}, {0, 0, 0}, {20, 20, 20});
+
     x.saveBinary("123.txt");
     x.setData(TmpClass());
-    SuperCube<TmpClass, 3, 1, 0> y;
+    x.setData(TmpClass());
+    x.setData(TmpClass());
+    x.setData(TmpClass());
+
+    printSuperCubeData("Index-3", 0, x);
+    for (auto const &data_2: x.getAllData()) {
+        printSuperCubeData("Index-2", data_2.first, data_2.second);
+        for (auto const &data_1: data_2.second.getAllData()) {
+            printSuperCubeData("Index-1", data_1.first, data_1.second);
+            for (auto const &data_0: data_1.second.getAllData()) {
+                printSuperCubeData("Index-0", data_0.first, data_0.second);
+                for (auto const &data: data_0.second.getAllData()) {
+                    cout << "At Data Level = " << data.first << ": OK" << endl;
+                }
+            }
+        }
+    }
+
+    // SuperCube<TmpClass, 3, 1, 0> y;
+
     // SuperCube<TmpClass, 3, 1, -1> z;
     // SuperCube<TmpClass, 3, 0, 1> z;
     // SuperCube<TmpClass, 0, 1, 1> z;
+
     nlohmann::json j = x;
 }
 
