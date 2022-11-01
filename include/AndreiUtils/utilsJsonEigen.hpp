@@ -264,11 +264,13 @@ namespace nlohmann {
         using T = AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, Depth>;
 
         static void to_json(nlohmann::json &j, T const &data) {
-            j = data.subCubes;
+            // TODO: serialize other data (e.g. the min- and maxCorner and size)
+            j = data.subCubes.subCubes;
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
-            data.subCubes = j.get<std::map<int, typename T::SubCube>>();
+            // TODO: deserialize other data (e.g. the min- and maxCorner and size) and set the parent pointer correctly!
+            data.subCubes.subCubes = j.get<std::map<int, typename T::SubCube>>();
         }
     };
 
