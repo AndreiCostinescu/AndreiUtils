@@ -40,6 +40,15 @@ namespace AndreiUtils {
         SuperCubeOutOfRangeException() : std::runtime_error("Out of SuperCube representation range!") {}
     };
 
+    class SuperCubeDataNotInstantiatedException : std::runtime_error {
+    public:
+        SuperCubeDataNotInstantiatedException() : std::runtime_error("SuperCube data is not yet instantiated!") {}
+
+        SuperCubeDataNotInstantiatedException(int depth, int index) :
+                std::runtime_error("SuperCube data at depth " + std::to_string(depth) + " and " +
+                                   std::to_string(index) + " is not yet instantiated!") {}
+    };
+
     template<typename T, int SpatialDimensions, int SpatialDivision, int Depth>
     class SuperCubeInterface {
     public:
@@ -91,13 +100,27 @@ namespace AndreiUtils {
             this->setData(f, p, verbose);
         }
 
-        void setData(DataIndex const &f, Data const &p, bool verbose = false) {
-            this->setData(f, p, verbose, "");
+        void setData(DataIndex const &dataIndex, Data const &p, bool verbose = false) {
+            this->setData(dataIndex, p, verbose, "");
         }
 
-        virtual void setData(DataIndex const &f, Data const &p, bool verbose, std::string output) = 0;
+        virtual void setData(DataIndex const &dataIndex, Data const &p, bool verbose, std::string output) = 0;
 
-        virtual Data &getData(DimensionIndex f) = 0;
+        Data &getData() {
+            return this->data;
+        }
+
+        Data const &getData() const {
+            return this->data;
+        }
+
+        virtual Data const &getData(DataIndex const &dataIndex) const = 0;
+
+        virtual Data &getData(DataIndex const &dataIndex) = 0;
+
+        virtual Data const &getData(DimensionIndex const &dimensionIndex) const = 0;
+
+        virtual Data &getData(DimensionIndex const &dimensionIndex) = 0;
 
         void saveBinary(std::string const &filename) const {
             std::ofstream bin(filename, std::ios::binary | std::ios::out);
@@ -145,8 +168,21 @@ namespace AndreiUtils {
         Data data;
 
         void computeSubCubeVolume() {
-            this->subCubeVolume = ((this->maxCorner - this->minCorner).array().cwiseQuotient(
-                    this->size.template cast<double>().array()));
+            this->subCubeVolume = ((this->maxCorner - this->minCorner).cwiseQuotient(
+                    this->size.template cast<double>()));
+        }
+
+        DataIndex getCubeMidPoint() const {
+            return average(this->minCorner, this->maxCorner);
+        }
+
+        bool isIndexInsideCube(DataIndex const &dataIndex) const {
+            for (int i = 0; i < SuperCubeInterface::dimensions; i++) {
+                if (dataIndex[i] < this->minCorner[i] || dataIndex[i] >= this->maxCorner[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         DataIndex getSubCubeMinCorner(DimensionIndex const &dimensionIndex) {
@@ -155,13 +191,13 @@ namespace AndreiUtils {
             std::cout << this->minCorner.transpose() << std::endl;
             std::cout << dimensionIndex.transpose() << std::endl;
             std::cout << this->subCubeVolume.transpose() << std::endl;
-            auto tmp = (dimensionIndex.template cast<double>().array().
-                    template cwiseProduct(this->subCubeVolume.array())).matrix();
+            auto tmp = (dimensionIndex.template cast<double>().
+                    template cwiseProduct(this->subCubeVolume)).matrix();
             std::cout << tmp.transpose() << std::endl;
             std::cout << (this->minCorner + tmp).transpose() << std::endl;
             //*/
-            return this->minCorner + (dimensionIndex.template cast<double>().array().
-                    template cwiseProduct(this->subCubeVolume.array())).matrix();
+            return this->minCorner + (dimensionIndex.template cast<double>().
+                    template cwiseProduct(this->subCubeVolume)).matrix();
         }
 
         DataIndex getSubCubeMinCorner(DataIndex const &dataIndex) {
@@ -264,8 +300,54 @@ namespace AndreiUtils {
             storedData->setData(f, p, verbose, output);
         }
 
-        Data &getData(DimensionIndex f) override {
-            ;
+        Data const &getData(DataIndex const &dataIndex) const override {
+            if (this->isIndexInsideCube(dataIndex)) {
+                try {
+                    int cubeIndex = this->cubeIndexFromData(dataIndex);
+                    SubCube const *subCube;
+                    if (!this->subCubes.getIfContains(cubeIndex, subCube)) {
+                        throw SuperCubeDataNotInstantiatedException();
+                    }
+                    return subCube->getData(dataIndex);
+                } catch (SuperCubeOutOfRangeException &e) {
+                    throw std::runtime_error("This should have been caught by the isIndexInsideCube function!");
+                }
+            }
+            if (this->parent == nullptr) {
+                throw SuperCubeOutOfRangeException();
+            }
+            return this->parent->getData(dataIndex);
+        }
+
+        Data &getData(DataIndex const &dataIndex) override {
+            if (this->isIndexInsideCube(dataIndex)) {
+                try {
+                    int cubeIndex = this->cubeIndexFromData(dataIndex);
+                    SubCube *subCube;
+                    if (!this->subCubes.getIfContains(cubeIndex, subCube)) {
+                        throw SuperCubeDataNotInstantiatedException();
+                    }
+                    return subCube->getData(dataIndex);
+                } catch (SuperCubeOutOfRangeException &e) {
+                    throw std::runtime_error("This should have been caught by the isIndexInsideCube function!");
+                }
+            }
+            if (this->parent == nullptr) {
+                throw SuperCubeOutOfRangeException();
+            }
+            return this->parent->getData(dataIndex);
+        }
+
+        Data const &getData(DimensionIndex const &localIndex) const override {
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
+                    template cwiseProduct(this->volume);
+            return this->getData(std::move(i));
+        }
+
+        Data &getData(DimensionIndex const &localIndex) override {
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
+                    template cwiseProduct(this->volume);
+            return this->getData(std::move(i));
         }
 
         std::map<int, SubCube> const &getAllData() const {
@@ -371,20 +453,56 @@ namespace AndreiUtils {
 
         void setData(DataIndex const &f, Data const &p, bool verbose, std::string output) override {
             int i = this->cubeIndexFromData(f);
+            // std::cout << "Depth = " << 0 << "; i = " << i << ": " << this << std::endl;
             if (i != 0) {
                 throw SuperCubeOutOfRangeException();
             }
             this->data.update(p);
         }
 
-        Data &getData(DimensionIndex f) override {
-            if (f == DimensionIndex::Zero()) {
+        Data const &getData(DataIndex const &dataIndex) const override {
+            if (this->isIndexInsideCube(dataIndex)) {
                 return this->data;
             }
             if (this->parent == nullptr) {
                 throw SuperCubeOutOfRangeException();
             }
-            // TODO: process neighbor index!
+            return this->parent->getData(dataIndex);
+        }
+
+        Data &getData(DataIndex const &dataIndex) override {
+            if (this->isIndexInsideCube(dataIndex)) {
+                return this->data;
+            }
+            if (this->parent == nullptr) {
+                throw SuperCubeOutOfRangeException();
+            }
+            return this->parent->getData(dataIndex);
+        }
+
+        Data const &getData(DimensionIndex const &localIndex) const override {
+            if (localIndex == DimensionIndex::Zero()) {
+                return this->data;
+            }
+            if (this->parent == nullptr) {
+                throw SuperCubeOutOfRangeException();
+            }
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
+                    template cwiseProduct(this->volume);
+            // std::cout << "Parent volume: " << this->parent->getVolume().transpose() << std::endl;
+            return this->parent->getData(std::move(i));
+        }
+
+        Data &getData(DimensionIndex const &localIndex) override {
+            if (localIndex == DimensionIndex::Zero()) {
+                return this->data;
+            }
+            if (this->parent == nullptr) {
+                throw SuperCubeOutOfRangeException();
+            }
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
+                    template cwiseProduct(this->volume);
+            return this->parent->getData(std::move(i));
         }
 
         std::map<int, Data> getAllData() const {
