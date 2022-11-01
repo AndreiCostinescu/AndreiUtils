@@ -139,19 +139,63 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    void mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
-        if (mapContains(container, key)) {
+    typename std::map<T1, T2, C, A>::iterator
+    mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+        auto x = container.insert({key, value});
+        if (!x.second) {
             throw std::runtime_error("Key already is in container!");
         }
-        container.insert({key, value});
+        return x.first;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 &&value) {
+        auto x = container.insert(std::make_pair(key, std::forward<T2>(value)));
+        if (!x.second) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        return x.first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    void mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
-        if (mapContains(container, key)) {
+    typename std::map<T1, T2, C, A>::iterator
+    mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+        auto x = container.insert({const_cast<T1 *>(key), value});
+        if (!x.second) {
             throw std::runtime_error("Key already is in container!");
         }
-        container.insert({const_cast<T1 *>(key), value});
+        return x.first;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 &&value) {
+        auto x = container.insert(std::make_pair(const_cast<T1 *>(key), std::forward<T2>(value)));
+        if (!x.second) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        return x.first;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>, typename... Args>
+    typename std::map<T1, T2, C, A>::iterator
+    mapEmplace(std::map<T1, T2, C, A> &container, T1 const &key, Args &&... args) {
+        auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(key),
+                                   std::forward_as_tuple(args...));
+        if (!x.second) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        return x.first;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>, typename... Args>
+    typename std::map<T1, T2, C, A>::iterator
+    mapEmplace(std::map<T1, T2, C, A> &container, T1 const *key, Args &&... args) {
+        auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(const_cast<T1 *>(key)),
+                                   std::forward_as_tuple(args...));
+        if (!x.second) {
+            throw std::runtime_error("Key already is in container!");
+        }
+        return x.first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
