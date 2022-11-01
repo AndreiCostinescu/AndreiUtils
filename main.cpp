@@ -1379,6 +1379,46 @@ void testSuperCube() {
     nlohmann::json j = x;
 }
 
+class MapEmplaceTestClass {
+public:
+    double a, b;
+    int c;
+
+    MapEmplaceTestClass(double a, double b, int c) : a(a), b(b), c(c) {}
+};
+
+void testMapEmplace() {
+    using S = SuperCube<TmpClass, 3, 1>;
+    using SMap = map<int, S>;
+    SMap t;
+    S s({0, 0, 0}, {1, 1, 1});
+    t.insert(std::make_pair(1, std::forward<S>(std::move(s))));
+    // SMap::value_type p = std::make_pair(1, s);
+    // t.insert(std::move(p));
+    // t[1] = s;
+
+    map<int, MapEmplaceTestClass> m;
+    mapAdd(m, 42, {1, 2, 3});
+
+    auto x = mapEmplace(m, 0, 24., 48., 10);
+    cout << x->first << endl;
+    cout << x->second.a << ", " << x->second.b << ", " << x->second.c << endl;
+    x->second.a *= 2;
+    x->second.b /= 4;
+    x->second.c += 5;
+    printMapConvertValue<int, MapEmplaceTestClass>(m, [](MapEmplaceTestClass const &_x) {
+        return "{" + to_string(_x.a) + ", " + to_string(_x.b) + ", " + to_string(_x.c) + "}";
+    });
+
+    map<char, int> mymap;
+    mymap.emplace('x', 100);
+    mymap.emplace('y', 200);
+    mymap.emplace('z', 100);
+
+    std::cout << "mymap contains:";
+    printMap(mymap);
+}
+
 int main() {
     cout << "Hello World!" << endl;
     // eigenTesting();
@@ -1421,6 +1461,7 @@ int main() {
     // testMoveSemantics();
     // testStringFindFunctions();
     testSuperCube();
+    // testMapEmplace();
 
     return 0;
 }
