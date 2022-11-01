@@ -95,16 +95,16 @@ namespace AndreiUtils {
 
         virtual ~SuperCubeInterface() = default;
 
-        void setData(Data const &p, bool verbose = false) {
-            DataIndex f = p.getIndex() - this->minCorner;  // ensure that the index is inside the cube!
-            this->setData(f, p, verbose);
+        void setData(Data const &newData, bool verbose = false) {
+            DataIndex dataIndex = newData.getIndex() - this->minCorner;  // ensure that the index is inside the cube!
+            this->setData(dataIndex, newData, verbose);
         }
 
-        void setData(DataIndex const &dataIndex, Data const &p, bool verbose = false) {
-            this->setData(dataIndex, p, verbose, "");
+        void setData(DataIndex const &dataIndex, Data const newData, bool verbose = false) {
+            this->setData(dataIndex, newData, verbose, "");
         }
 
-        virtual void setData(DataIndex const &dataIndex, Data const &p, bool verbose, std::string output) = 0;
+        virtual void setData(DataIndex const &dataIndex, Data const &newData, bool verbose, std::string output) = 0;
 
         Data &getData() {
             return this->data;
@@ -185,7 +185,7 @@ namespace AndreiUtils {
             return true;
         }
 
-        DataIndex getSubCubeMinCorner(DimensionIndex const &dimensionIndex) {
+        DataIndex getSubCubeMinCorner(DimensionIndex const &dimensionIndex) const {
             /*
             std::cout << "getSubCubeMinCorner:" << std::endl;
             std::cout << this->minCorner.transpose() << std::endl;
@@ -200,17 +200,16 @@ namespace AndreiUtils {
                     template cwiseProduct(this->subCubeVolume)).matrix();
         }
 
-        DataIndex getSubCubeMinCorner(DataIndex const &dataIndex) {
+        DataIndex getSubCubeMinCorner(DataIndex const &dataIndex) const {
             return this->getSubCubeMinCorner(this->convertDataToIndex(dataIndex));
         }
 
-        DataIndex getSubCubeMinCorner(int const &cubeIndex) {
+        DataIndex getSubCubeMinCorner(int const &cubeIndex) const {
             return this->getSubCubeMinCorner(this->localIndexFromCubeIndex(cubeIndex));
         }
 
-        DimensionIndex convertDataToIndex(DataIndex const &dataIndex) {
-            return ((dataIndex - this->minCorner).array().cwiseQuotient(
-                    this->subCubeVolume.array())).template cast<int>();
+        DimensionIndex convertDataToIndex(DataIndex const &dataIndex) const {
+            return ((dataIndex - this->minCorner).cwiseQuotient(this->subCubeVolume)).template cast<int>();
         }
 
         int cubeIndexFromData(DataIndex const &dataIndex) const {
@@ -231,7 +230,7 @@ namespace AndreiUtils {
             return cubeIndex;
         }
 
-        DimensionIndex localIndexFromCubeIndex(int cubeIndex) {
+        DimensionIndex localIndexFromCubeIndex(int cubeIndex) const {
             DimensionIndex localIndex;
             for (int i = SuperCubeInterface::dimensions - 1; i >= 0; i--) {
                 localIndex[i] = cubeIndex % this->size[i];
@@ -279,8 +278,8 @@ namespace AndreiUtils {
                            DataIndex const &maxCorner) :
                 Base(0, minCorner, maxCorner, nrCubesPerDimension), parent(nullptr) {}
 
-        void setData(DataIndex const &f, Data const &p, bool verbose, std::string output) override {
-            int i = this->cubeIndexFromData(f);
+        void setData(DataIndex const &dataIndex, Data const &newData, bool verbose, std::string output) override {
+            int i = this->cubeIndexFromData(dataIndex);
             /*
             std::cout << "At Depth: " << Depth << std::endl;
             std::cout << "Cube Index from Data: " << i << std::endl;
@@ -292,12 +291,12 @@ namespace AndreiUtils {
             }
             if (!this->subCubes.getIfContains(i, storedData)) {
                 // std::cout << "Adding new sub cube..." << std::endl;
-                DataIndex subCubeMinCorner = this->getSubCubeMinCorner(f);
+                DataIndex subCubeMinCorner = this->getSubCubeMinCorner(dataIndex);
                 // std::cout << "subCubeMinCorner = " << subCubeMinCorner.transpose() << std::endl;
                 storedData = &this->subCubes.set(
                         i, {*this, i, subCubeMinCorner, subCubeMinCorner + this->subCubeVolume});
             }
-            storedData->setData(f, p, verbose, output);
+            storedData->setData(dataIndex, newData, verbose, output);
         }
 
         Data const &getData(DataIndex const &dataIndex) const override {
@@ -451,13 +450,13 @@ namespace AndreiUtils {
         friend nlohmann::adl_serializer<SuperCube<T, SpatialDimension, SpatialDivision, 0>, void>;
         friend TopCube;
 
-        void setData(DataIndex const &f, Data const &p, bool verbose, std::string output) override {
-            int i = this->cubeIndexFromData(f);
+        void setData(DataIndex const &dataIndex, Data const &newData, bool verbose, std::string output) override {
+            int i = this->cubeIndexFromData(dataIndex);
             // std::cout << "Depth = " << 0 << "; i = " << i << ": " << this << std::endl;
             if (i != 0) {
                 throw SuperCubeOutOfRangeException();
             }
-            this->data.update(p);
+            this->data.update(newData);
         }
 
         Data const &getData(DataIndex const &dataIndex) const override {
