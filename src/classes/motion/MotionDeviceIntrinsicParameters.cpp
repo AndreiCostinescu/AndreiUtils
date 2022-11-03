@@ -18,8 +18,14 @@ MotionDeviceIntrinsicParameters::MotionDeviceIntrinsicParameters(
 MotionDeviceIntrinsicParameters::~MotionDeviceIntrinsicParameters() = default;
 
 void MotionDeviceIntrinsicParameters::setMotionDeviceIntrinsicParameters(
-        const MatrixXd &_data, const VectorXd &_biasVariances, const VectorXd &_noiseVariances) {
+        MatrixXd const &_data, VectorXd const &_biasVariances, VectorXd const &_noiseVariances) {
     this->data = _data;
     this->biasVariances = _biasVariances;
     this->noiseVariances = _noiseVariances;
+}
+
+void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParameters const &other) {
+    this->data = other.data;
+    this->biasVariances = other.biasVariances;
+    this->noiseVariances = other.noiseVariances;
 }

@@ -7,6 +7,7 @@
 
 #include <AndreiUtils/classes/camera/ImageCaptureParametersWithIntrinsics.h>
 #include <AndreiUtils/classes/camera/ImageParameters.h>
+#include <AndreiUtils/json.hpp>
 
 namespace nlohmann {
     template<>
@@ -73,7 +74,7 @@ namespace nlohmann {
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
-            data.setParentParameters(j.get<AndreiUtils::ImageCaptureParameters>());
+            data.ImageCaptureParameters::setFromOther(j.get<AndreiUtils::ImageCaptureParameters>());
             data.intrinsics = j.at("intrinsics").get<AndreiUtils::CameraIntrinsicParameters>();
         }
     };

@@ -19,6 +19,8 @@ namespace AndreiUtils {
 
         ~ImageCaptureParametersWithIntrinsics() override;
 
+        void setFromOther(ImageCaptureParametersWithIntrinsics const &other);
+
         CameraIntrinsicParameters intrinsics;
     };
 }

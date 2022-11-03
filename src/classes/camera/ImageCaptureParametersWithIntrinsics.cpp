@@ -13,3 +13,8 @@ ImageCaptureParametersWithIntrinsics::ImageCaptureParametersWithIntrinsics(
         ImageCaptureParameters(fps, size), intrinsics(intrinsics) {}
 
 ImageCaptureParametersWithIntrinsics::~ImageCaptureParametersWithIntrinsics() = default;
+
+void ImageCaptureParametersWithIntrinsics::setFromOther(ImageCaptureParametersWithIntrinsics const &other) {
+    this->ImageCaptureParameters::setFromOther(other);
+    this->intrinsics = other.intrinsics;
+}
