@@ -6,9 +6,10 @@
 #define ANDREIUTILS_UTILSJSON_HPP
 
 #include <AndreiUtils/classes/camera/ImageCaptureParametersWithIntrinsics.h>
+#include <AndreiUtils/classes/camera/ImageParameters.h>
 
 namespace nlohmann {
-    template<class T>
+    template<>
     struct adl_serializer<AndreiUtils::ImageParameters> {
         using T = AndreiUtils::ImageParameters;
 
@@ -34,15 +35,15 @@ namespace nlohmann {
             j["fy"] = data.fy;
             j["ppx"] = data.ppx;
             j["ppy"] = data.ppy;
-            j["distortionModel"] = convertImageDistortionModelToString(data.distortionModel);
+            j["distortionModel"] = AndreiUtils::convertImageDistortionModelToString(data.distortionModel);
             j["distortionCoefficients"] = data.getDistortionCoefficientsAsVector();
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
             data.setImageParameters(j.at("fx").get<double>(), j.at("fy").get<double>(), j.at("ppx").get<double>(),
                                      j.at("ppy").get<double>());
-            data.setDistortionParameters(convertStringToImageDistortionModel(j.at("distortionModel").get<string>()),
-                                          j.at("distortionCoefficients").get<vector<float>>());
+            data.setDistortionParameters(AndreiUtils::convertStringToImageDistortionModel(j.at("distortionModel").get<std::string>()),
+                                          j.at("distortionCoefficients").get<std::vector<float>>());
         }
     };
 
@@ -58,7 +59,7 @@ namespace nlohmann {
 
         static void from_json(nlohmann::json const &j, T &data) {
             data.fps = j.at("fps").get<double>();
-            data.size = j.at("size").get<ImageParameters>();
+            data.size = j.at("size").get<AndreiUtils::ImageParameters>();
         }
     };
 
@@ -67,13 +68,13 @@ namespace nlohmann {
         using T = AndreiUtils::ImageCaptureParametersWithIntrinsics;
 
         static void to_json(nlohmann::json &j, T const &data) {
-            j = (AndreiUtils::AndreiUtils::ImageCaptureParameters) data;
+            j = (AndreiUtils::ImageCaptureParameters) data;
             j["intrinsics"] = data.intrinsics;
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
-            data = j.get<AndreiUtils::ImageCaptureParameters>();
-            data.intrinsics = j.at("intrinsics").get<CameraIntrinsicParameters>();
+            data.setParentParameters(j.get<AndreiUtils::ImageCaptureParameters>());
+            data.intrinsics = j.at("intrinsics").get<AndreiUtils::CameraIntrinsicParameters>();
         }
     };
 }
