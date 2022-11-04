@@ -3,14 +3,12 @@
 //
 
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
-#include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/PythonInterface.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
-#include <AndreiUtils/classes/SuperCube.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
@@ -18,10 +16,8 @@
 #include <AndreiUtils/classes/graph/DFS.hpp>
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
-#include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
-#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJsonEigen.hpp>
@@ -102,94 +98,6 @@ void testPointerReference() {
     cout << "b = " << b << "; t = " << *t.a << endl;
 }
 
-void timeTesting() {
-    SystemTimePoint t;
-    cout << convertChronoToStringWithSubseconds(t) << endl;
-    cout << endl << endl << endl;
-
-    auto now = std::chrono::system_clock::now();
-    string time;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%us-%pns", ":");
-    cout << "Initial time = " << time << endl;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%ns", ":");
-    cout << "Initial time = " << time << endl;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%ms-%pus-%pns", ":");
-    cout << "Initial time = " << time << endl;
-
-    auto x = AndreiUtils::convertStringToChronoWithSubseconds(time, "%Y-%m-%d-%H-%M-%S", "%ms-%pus-%pns", ":");
-
-    auto d = x.time_since_epoch();
-    // UTC: +1:00
-    using Days = std::chrono::duration<int, std::ratio_multiply<std::chrono::hours::period, std::ratio<24>>::type>;
-    Days days = std::chrono::duration_cast<Days>(d);
-    d -= days;
-    auto hours = std::chrono::duration_cast<std::chrono::hours>(d);
-    d -= hours;
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(d);
-    d -= minutes;
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
-    d -= seconds;
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(d);
-    d -= milliseconds;
-    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(d);
-    d -= microseconds;
-    auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(d);
-    cout << hours.count() << ":" << minutes.count() << ":" << seconds.count() << ":" << milliseconds.count() << ":"
-         << microseconds.count() << ":" << nanoseconds.count() << endl;
-
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ns", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%pns", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%us", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%pus", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ms", ":") << endl;
-}
-
-void timeAddingTesting() {
-    SystemTimePoint now = SystemClock::now();
-    auto d = now.time_since_epoch();
-    auto nanoseconds = chrono::duration_cast<chrono::nanoseconds>(d);
-    d -= nanoseconds;
-
-    SystemTimePoint t(d);
-
-    SystemTimePoint stD(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<86400, 1>>(1.5)));
-    SystemTimePoint stH(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<3600, 1>>(1.5)));
-    SystemTimePoint stM(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<60, 1>>(1.5)));
-    SystemTimePoint stS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(1.5)));
-    SystemTimePoint stMS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, milli>(1.5)));
-    SystemTimePoint stUS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, micro>(1.5)));
-    SystemTimePoint stNS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, nano>(1.5)));
-    cout << convertChronoToStringWithSubseconds(stD) << endl;
-    cout << convertChronoToStringWithSubseconds(stH) << endl;
-    cout << convertChronoToStringWithSubseconds(stM) << endl;
-    cout << convertChronoToStringWithSubseconds(stS) << endl;
-    cout << convertChronoToStringWithSubseconds(stMS) << endl;
-    cout << convertChronoToStringWithSubseconds(stUS) << endl;
-    cout << convertChronoToStringWithSubseconds(stNS) << endl;
-
-    cout << convertChronoToStringWithSubseconds(now) << endl;
-    cout << convertChronoToStringWithSubseconds(t) << endl;
-    cout << "d  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "d")) << endl;
-    cout << "h  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "h")) << endl;
-    cout << "min: " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "min")) << endl;
-    cout << "s  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "s")) << endl;
-    cout << "ms : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ms")) << endl;
-    cout << "us : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "us")) << endl;
-    cout << "ns : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ns")) << endl;
-}
-
-void testMapKeys() {
-    map<string, int> x{
-            {"72", 1},
-            {"60", 2},
-            {"48", 3},
-            {"36", 4},
-            {"24", 5},
-            {"12", 6},
-    };
-    printVector(getMapKeys(x));
-}
-
 void testJsonNull() {
     nlohmann::json j = nullptr;
     cout << "JSON CONTENT: " << j.dump() << endl;
@@ -205,108 +113,6 @@ function<void()> testLambdaCaptureScopeFunction() {
 void testLambdaCaptureScope() {
     auto f = testLambdaCaptureScopeFunction();
     f();
-}
-
-void testDualQuaternions() {
-    cout << setprecision(16);
-    cout << DualQuaternion<double>::zero << endl;
-    cout << DualQuaternion<double>::one << endl;
-    cout << DualQuaternion<double>::i << endl;
-    cout << DualQuaternion<double>::j << endl;
-    cout << DualQuaternion<double>::k << endl;
-    cout << DualQuaternion<double>::e << endl;
-    cout << DualQuaternion<double>::ei << endl;
-    cout << DualQuaternion<double>::ej << endl;
-    cout << DualQuaternion<double>::ek << endl;
-
-    Vector3d t(1, 2, 3);
-    Vector3d p(4, 2, 3);
-    vector<double> angles;
-    // angles = {M_PI_2, 0, M_PI};
-    // angles = {0, 0, M_PI};
-    angles = {M_PI_2, 0, 0};
-    Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
-    DualQuaternion<double> q(r, t), qCopy;
-
-    cout << "q = " << q << endl;
-    cout << "Log of q = " << q.log() << endl;
-    cout << "Exp of Log of q = " << q.log().exp() << endl;
-    cout << "Exp of Log of q == q?: " << q.log().exp().equal(q) << endl;
-
-    qCopy = q;
-    cout << "qCopy == q: " << (qCopy == q) << endl;
-    qCopy = qCopy.addTranslation({0, 0, 1});
-    cout << "qCopy != q: " << (qCopy != q) << endl;
-
-    cout << "qCopy = " << qCopy << endl;
-    cout << "Log of qCopy = " << qCopy.log() << endl;
-    cout << "Exp of Log of qCopy = " << qCopy.log().exp() << endl;
-    cout << "Exp of Log of qCopy == qCopy?: " << qCopy.log().exp().equal(qCopy) << endl;
-
-    auto qNorm = q.norm();
-    auto qCopyNorm = qCopy.norm();
-    cout << qNorm << endl;
-    cout << qCopyNorm << endl;
-    cout << qCopyNorm.coefficientsAsEigen() << endl;
-
-    cout << "q = " << q << endl;
-    cout << printVectorToString(angles) << endl;
-    cout << q.getTranslation().transpose() << endl;
-    cout << q.transform(p).transpose() << endl;
-    cout << q.getTransformationMatrix() << endl;
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << endl;
-    cout << endl;
-
-    cout << "Inverse:" << endl;
-    DualQuaternion<double> qInv = q.dualQuaternionInverse();
-    cout << "qInv = " << qInv << endl;
-
-    cout << "qInv = " << qInv << endl;
-    cout << "Log of qInv = " << qInv.log() << endl;
-    cout << "Exp of Log of qInv = " << qInv.log().exp() << endl;
-    cout << "Exp of Log of qInv == qInv?: " << qInv.log().exp().equal(qInv) << endl;
-    cout << endl;
-
-    cout << "q * qInv = " << q * qInv << endl;
-    cout << "qInv * q = " << qInv * q << endl;
-    cout << endl;
-
-    Eigen::Matrix<double, 8, 1> coeffs;
-    coeffs.topRows(4) = q.getRotation().coeffs().cast<double>();
-    coeffs.bottomRows(4) = q.getDual().coeffs().cast<double>();
-
-    cout << q.coefficientNorm() << endl;
-    cout << qInv.coefficientNorm() << endl;
-    q.normalize();
-    qInv.normalize();
-    cout << q.coefficientNorm() << endl;
-    cout << qInv.coefficientNorm() << endl;
-    cout << "q - qInv = " << q - qInv << endl;
-    cout << (qInv - q).coefficientNorm() << endl;
-    cout << (q - qInv).coefficientNorm() << endl;
-    cout << "q    = " << q << endl;
-    cout << "qInv = " << qInv << endl;
-    cout << average(vector<DualQuaternion<double>>({q, qInv})) << endl;
-
-    cout << endl << endl;
-
-    cout << q.getTranslation().transpose() << ", " << q << endl;
-    p = Vector3d(2, -31, 1);
-    auto q1 = q.addTranslation(p);
-    cout << q1.getTranslation().transpose() << ", " << q1 << endl;
-    cout << endl;
-
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q
-         << endl;
-    // angles = {M_PI / 4, M_PI / 3, -M_PI / 6};
-    angles = {-M_PI_2, M_PI, 0};
-    r = qFromEulerAngles<double>(angles, "zyx");
-    auto q2 = q.addRotation(r);
-    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", "
-         << q2 << endl;
-    cout << endl;
-
-    cout << q.powScrew(0.5) << endl;
 }
 
 void testStringAllocation() {
@@ -357,70 +163,6 @@ void testCrossBilateralFilter() {
     float x, y;
     filter.filter(11, 11, m, x, y);
     cout << "x = " << x << ", y = " << y << endl;
-}
-
-void testSortMultipleVectorsBasedOnOneCriterion() {
-    vector<double> x(10);
-    std::iota(x.begin(), x.end(), 10);
-    vector<int> y(10);
-    std::iota(y.begin(), y.end(), 4);
-    shuffle(y.begin(), y.end(), std::mt19937(std::random_device()()));
-    vector<string> z(10);
-    for (int i = 0; i < z.size(); i++) {
-        if (i == 0) {
-            z[i] = "1";
-        } else {
-            z[i] = z[i - 1] + "1";
-        }
-    }
-    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) {
-        return a < b;
-    });
-    printVector(x);
-    printVector(y);
-    printVector(z);
-    printVector(permutation);
-    sortMultipleVectorsBasedOnPermutation(permutation, x, y, z);
-    printVector(x);
-    printVector(y);
-    printVector(z);
-}
-
-void testAccessTimeInMapVsVector() {
-    int64_t N = 1e8 + 1;
-    vector<int64_t> v(N);
-    map<int64_t, bool> m;
-    Timer t;
-    double time;
-    t.start();
-    for (int64_t i = 0; i < N; i++) {
-        v[i] = i;
-        m[i] = true;
-    }
-    time = t.measure(TimeUnit::SECOND);
-    cout << "Initialization took " << time << endl;
-
-    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
-                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
-                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
-                               static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
-    bool res;
-    for (const auto &q: queries) {
-        t.start();
-        res = vectorContains(v, q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in vector took " << time << ": res = " << res << endl;
-
-        t.start();
-        auto iter = find(v.begin(), v.end(), q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in vector took " << time << ": res = " << (iter != v.end()) << endl;
-
-        t.start();
-        res = mapContains(m, q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in map took " << time << ": res = " << res << endl;
-    }
 }
 
 class A {
@@ -655,24 +397,6 @@ void testHashable() {
     // mC[cObj3] = 3;  // Compiler error
 }
 
-void testMapFiltering() {
-    map<int, int> x;
-    for (int i = 0; i < 20; i++) {
-        x[i] = i - 5;
-    }
-    auto y = getFilteredMapBasedOnPredicate(x, (std::function<bool(int const &, int const &)>) [](const int &key,
-                                                                                                  const int &value) {
-        // return false;
-        // return true;
-        // return key % 3;
-        return value % 4 != 0;
-    });
-    cout << "Printing map:" << endl;
-    printMap(x);
-    printMap(y);
-    cout << "Done!" << endl;
-}
-
 void testDynamicCast() {
     A objA;
     B objB;
@@ -887,105 +611,6 @@ void testOpenCVMatrixCropReference() {
     }
 }
 
-void testMapRefAccessing() {
-    map<int, int> x;
-    x[0] = 0;
-    x[1] = 1;
-    x[2] = 2;
-    x[3] = 3;
-    x[4] = 4;
-    int value = 42;
-    int *valuePtr = nullptr;
-    int const *valueConstPtr = nullptr;
-
-    // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
-
-    cout << mapGetIfContains(x, -1, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, -1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 0, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    value = 42;
-
-    cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << "Update valuePtr..." << endl;
-    *valuePtr = 42;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-    int &valueRef = *valuePtr;
-
-    cout << mapGetIfContains(x, 2, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << "Update valueRef..." << endl;
-    valueRef = 69;
-    *valuePtr = -42;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    // ------------------ NOW CHECK MAP_GET FUNCTIONS ------------------
-
-    try {
-        mapGet(x, -1);
-    } catch (exception &e) {
-        if (strcmp(e.what(), "Element not found in map!") != 0) {
-            throw e;
-        }
-    }
-
-    value = mapGet(x, 0);
-    cout << "value = " << value << endl;
-    value = 5;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    int &valueRef2 = mapGet(x, 4);
-    cout << "valueRef2 = " << valueRef2 << endl;
-    valueRef2 = 5;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    int &valueRef3 = mapGet(x, 1);
-    valueRef3 = -14;
-    cout << "valueRef3 = " << valueRef3 << endl;
-    cout << "valueRef  = " << valueRef << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-}
-
 void testMixedDataContainer() {
     nlohmann::json x;
     x["24"] = 25;
@@ -1064,48 +689,6 @@ void testGraph() {
     g.removeNode(1);
 }
 
-void testMapCopy() {
-    map<int, int> x, y;
-    x[0] = 0;
-    x[1] = 1;
-    x[2] = 1;
-    y = x;
-    y[0] = 42;
-
-    printMap(x);
-    cout << endl << endl;
-    printMap(y);
-}
-
-void testVectorAppendFunctions() {
-    Eigen::Vector3d x(1, 2, 3);
-    vector<double> y{1, 2, 3, 4, 5, 6, 7};
-    printVector(x.data(), 3);
-    printVector(y);
-    vector<double> res, res2;
-    vectorAppendInPlace(res, y);
-    printVector(res);
-    vectorAppendInPlace(res, x.data(), 3);
-    printVector(res);
-    res2 = vectorAppend(y, x.data(), 3);
-    printVector(res2);
-    res2 = vectorAppend(res, x.data(), 3);
-    printVector(res2);
-    res2 = vectorAppend(res, y);
-    printVector(res2);
-    cout << "Done" << endl;
-}
-
-void testVectorEquals() {
-    Eigen::Vector3d x(1, 2, 3);
-    vector<double> y{1, 2, 3, 4, 5, 6, 7};
-    vector<double> res, res2;
-    vectorAppendInPlace(res, y);
-    cout << vectorEquals(y, res) << endl;
-    vectorAppendInPlace(res, x.data(), 3);
-    cout << vectorEquals(y, res) << endl;
-}
-
 void testRandom() {
     RandomNumberGenerator<int> randomInt(1, 10);
     for (int i = 0; i < 20; i++) {
@@ -1145,138 +728,11 @@ void testInterpolation() {
     printVector(sx.getResult());
 }
 
-void testSpliceVector() {
-    int n = 10;
-    vector<double> x(n);
-    for (int i = 0; i < n; i++) {
-        x[i] = i + 1;
-    }
-    printVector(spliceVector(x, 0, 9));
-    printVector(spliceVector(x, 1, 8));
-}
-
 void testPythonInterface() {
     PythonInterface p("hello_world", {"print_hello", "return_hello"});
     p.callFunction("print_hello");
     auto res = p.callFunction("return_hello");
     cout << res.cast<string>() << endl;
-}
-
-template<typename T>
-class E {
-public:
-    explicit E(T *data = nullptr) : data(data), ownsData(false) {}
-
-    explicit E(T &&data) : data(new T(std::move(data))), ownsData(true) {}
-
-    explicit E(T &data) = delete;
-
-    E(E const &other) : data(other.data), ownsData(false) {}
-
-    E(E &&other) noexcept: data(other.data), ownsData(other.ownsData) {
-        other.ownsData = false;
-        other.reset();
-    }
-
-    E &operator=(E const &other) {
-        if (&other != this) {
-            this->discardData();
-            this->data = other.data;
-            this->ownsData = false;
-        }
-        return *this;
-    }
-
-    E &operator=(E &&other) noexcept {
-        if (&other != this) {
-            this->discardData();
-            this->data = other.data;
-            this->ownsData = other.ownsData;
-            other.ownsData = false;
-            other.reset();
-        }
-        return *this;
-    }
-
-    virtual ~E() {
-        this->reset();
-    }
-
-    void reset() {
-        this->discardData();
-        this->ownsData = false;
-        this->data = nullptr;
-    }
-
-    void discardData() {
-        if (this->ownsData) {
-            cout << "Call delete!" << endl;
-            delete this->data;
-            this->data = nullptr;
-            this->ownsData = false;
-        }
-    }
-
-    T *data;
-    bool ownsData;
-};
-
-template<typename T>
-void printRValueData(E<T> &&v) {
-    cout << "v.data = " << v.data << "; owns it = " << v.ownsData;
-    if (v.data != nullptr) {
-        cout << "; with value = " << *(v.data);
-    }
-    cout << endl;
-}
-
-template<typename T>
-void printRValueData(E<T> &v) = delete;
-
-template<typename T>
-void allowOnlyRValues(T &&v) {
-    printRValueData(std::forward<T>(v));
-    printRValueData(std::forward<T>(v));
-}
-
-template<typename T>
-void allowOnlyRValues(T &v) = delete;
-
-void testMoveSemantics() {
-    E<int> a(42);
-    printRValueData(std::move(a));
-    cout << endl;
-    E<int> b = std::move(a);  // move assignment
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    cout << endl;
-    E<int> c(std::move(b));  // move constructor
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    cout << endl;
-    E<int> d = c;  // copy assignment
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    cout << endl;
-    E<int> e(c);  // copy constructor from c
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    printRValueData(std::move(e));
-    cout << endl;
-    E<int> f(d);  // copy constructor from d
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    printRValueData(std::move(e));
-    printRValueData(std::move(f));
-    cout << endl;
-    allowOnlyRValues(E<int>(69));
 }
 
 void testStringFindFunctions() {
@@ -1302,214 +758,35 @@ void testStringFindFunctions() {
     cout << a.rfind(b, 0) << endl;
 }
 
-class TmpClass : public SuperCubeData<3> {
-public:
-    Eigen::Vector3d v;
-
-    TmpClass() : v(-1 * Eigen::Vector3d::Ones()) {}
-
-    TmpClass(double x, double y, double z) : v({x, y, z}) {}
-
-    IndexType getIndex() const override {
-        if (v.x() < 0 && v.y() < 0 && v.z() < 0) {
-            RandomNumberGenerator<double> r(0, 20);
-            IndexType sample{r.sample(), r.sample(), r.sample()};
-            cout << "Sample: " << sample.transpose() << endl;
-            return sample;
-        }
-        return v;
-    }
-
-    void saveBinary(std::ofstream &bin) const override {
-        ;
-    }
-
-    void readBinary(std::ifstream &bin) override {
-        ;
-    }
-
-    void update(TmpClass const &tmp) {
-        cout << "Called update on data: " << this->v.transpose() << " with update " << tmp.v.transpose() << endl;
-        this->v = tmp.v;
-    }
-};
-
-namespace nlohmann {
-    template<>
-    struct adl_serializer<TmpClass> {
-        static void to_json(nlohmann::json &j, const TmpClass &v) {}
-
-        static void from_json(const nlohmann::json &j, TmpClass &v) {}
-    };
-}
-
-template<int Dim, int Div, int Depth>
-void printSuperCubeData(string const &preText, int index, SuperCube<TmpClass, Dim, Div, Depth> const &s) {
-    cout << "At " << preText << " = " << index << ": " << s.getNrCubes() << "; " << s.getVolume().transpose()
-         << "; " << s.getSubCubeVolume().transpose() << "; " << s.getCubeMinCorner().transpose() << "; "
-         << s.getCubeMaxCorner().transpose() << endl;
-}
-
-void testSuperCube() {
-    using S = SuperCube<TmpClass, 3, 10, 3>;
-    S::DataIndex a = 10 * S::DataIndex::Ones(), b = S::DataIndex::Ones(), res;
-    S::DimensionIndex c = S::DimensionIndex::Ones();
-    S::DataIndex tmp = (a - b).cwiseQuotient(c.template cast<double>());
-    res = ((a - b).array() / c.cast<double>().array()).matrix();
-    cout << res.transpose() << endl;
-
-    //*
-    S x({10, 5, 2}, {0, 0, 0}, {20, 20, 20});
-
-    x.saveBinary("123.txt");
-    x.setData(TmpClass());
-    x.setData(TmpClass());
-    x.setData(TmpClass());
-    x.setData(TmpClass());
-
-    printSuperCubeData("Index-3", 0, x);
-    for (auto const &data_2: x.getAllData()) {
-        printSuperCubeData("Index-2", data_2.first, data_2.second);
-        for (auto const &data_1: data_2.second.getAllData()) {
-            printSuperCubeData("Index-1", data_1.first, data_1.second);
-            for (auto const &data_0: data_1.second.getAllData()) {
-                printSuperCubeData("Index-0", data_0.first, data_0.second);
-                for (auto const &data: data_0.second.getAllData()) {
-                    cout << "At Data Level = " << data.first << ": OK" << endl;
-                }
-            }
-        }
-    }
-
-    SuperCube<TmpClass, 3, 3, 2> y({0, 0, 0}, {9, 9, 9});
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            for (int k = 0; k < 9; k++) {
-                y.setData(TmpClass(i, j, k));
-            }
-        }
-    }
-
-    printSuperCubeData("Index-2", 0, y);
-    for (auto const &data_1: y.getAllData()) {
-        printSuperCubeData("Index-1", data_1.first, data_1.second);
-        for (auto const &data_0: data_1.second.getAllData()) {
-            printSuperCubeData("Index-0", data_0.first, data_0.second);
-            for (auto const &data: data_0.second.getAllData()) {
-                cout << "At Data Level = " << data.first << ": " << data.second.v.transpose() << endl;
-                try {
-                    TmpClass const &neighborData = data_0.second.getData(S::DimensionIndex{0, 0, 1});
-                    cout << "Z-Neighbor Data: " << neighborData.v.transpose() << endl;
-                } catch (SuperCubeOutOfRangeException &e) {
-                    cout << "Next neighbor in z-direction is out of range!" << endl;
-                }
-                try {
-                    TmpClass const &neighborData = data_0.second.getData(S::DimensionIndex{0, 1, 0});
-                    cout << "Y-Neighbor Data: " << neighborData.v.transpose() << endl;
-                } catch (SuperCubeOutOfRangeException &e) {
-                    cout << "Next neighbor in y-direction is out of range!" << endl;
-                }
-                try {
-                    TmpClass const &neighborData = data_0.second.getData(S::DimensionIndex{1, 0, 0});
-                    cout << "X-Neighbor Data: " << neighborData.v.transpose() << endl;
-                } catch (SuperCubeOutOfRangeException &e) {
-                    cout << "Next neighbor in x-direction is out of range!" << endl;
-                }
-            }
-        }
-    }
-
-    // SuperCube<TmpClass, 3, 1, -1> z;
-    // SuperCube<TmpClass, 3, 0, 1> z;
-    // SuperCube<TmpClass, 0, 1, 1> z;
-
-    nlohmann::json j = x;
-    //*/
-}
-
-class MapEmplaceTestClass {
-public:
-    double a, b;
-    int c;
-
-    MapEmplaceTestClass(double a, double b, int c) : a(a), b(b), c(c) {}
-};
-
-void testMapEmplace() {
-    using S = SuperCube<TmpClass, 3, 1>;
-    using SMap = map<int, S>;
-    SMap t;
-    S s({0, 0, 0}, {1, 1, 1});
-    t.insert(std::make_pair(1, std::forward<S>(std::move(s))));
-    // SMap::value_type p = std::make_pair(1, s);
-    // t.insert(std::move(p));
-    // t[1] = s;
-
-    map<int, MapEmplaceTestClass> m;
-    mapAdd(m, 42, {1, 2, 3});
-
-    auto x = mapEmplace(m, 0, 24., 48., 10);
-    cout << x->first << endl;
-    cout << x->second.a << ", " << x->second.b << ", " << x->second.c << endl;
-    x->second.a *= 2;
-    x->second.b /= 4;
-    x->second.c += 5;
-    printMapConvertValue<int, MapEmplaceTestClass>(m, [](MapEmplaceTestClass const &_x) {
-        return "{" + to_string(_x.a) + ", " + to_string(_x.b) + ", " + to_string(_x.c) + "}";
-    });
-
-    map<char, int> mymap;
-    mymap.emplace('x', 100);
-    mymap.emplace('y', 200);
-    mymap.emplace('z', 100);
-
-    std::cout << "mymap contains:";
-    printMap(mymap);
-}
-
 int main() {
     cout << "Hello World!" << endl;
+
     // eigenTesting();
     // fileTesting();
     // realsenseDistortionString();
-    // timeTesting();
-    // timeAddingTesting();
     // testPointerReference();
-    // testMapKeys();
     // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
-    // testSortMultipleVectorsBasedOnOneCriterion();
-    // testAccessTimeInMapVsVector();
     // testTypeCreator();
     // testJsonArraySerialization();
     // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
-    // testMapFiltering();
     // testDynamicCast();
     // testOpenCVMatrixAccessors();
     // testOMPUtils();
     // testPrintingImagesOpenCV();
     // testFastForLoop();
     // testOpenCVMatrixCropReference();
-    // testMapRefAccessing();
     // testMixedDataContainer();
     // testGraph();
-    // testMapCopy();
-    // testVectorAppendFunctions();
-    // testVectorEquals();
     // testRandom();
     // testInterpolation();
-    // testSpliceVector();
     // testPythonInterface();
-    // testMoveSemantics();
     // testStringFindFunctions();
-    testSuperCube();
-    // testMapEmplace();
 
     return 0;
 }
