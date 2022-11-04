@@ -25,6 +25,9 @@ void MotionDeviceIntrinsicParameters::setMotionDeviceIntrinsicParameters(
 }
 
 void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParameters const &other) {
+    if (this == &other) {
+        return;
+    }
     this->data = other.data;
     this->biasVariances = other.biasVariances;
     this->noiseVariances = other.noiseVariances;

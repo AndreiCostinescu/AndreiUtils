@@ -15,6 +15,9 @@ ImageCaptureParametersWithIntrinsics::ImageCaptureParametersWithIntrinsics(
 ImageCaptureParametersWithIntrinsics::~ImageCaptureParametersWithIntrinsics() = default;
 
 void ImageCaptureParametersWithIntrinsics::setFromOther(ImageCaptureParametersWithIntrinsics const &other) {
+    if (this == &other) {
+        return;
+    }
     this->ImageCaptureParameters::setFromOther(other);
     this->intrinsics = other.intrinsics;
 }

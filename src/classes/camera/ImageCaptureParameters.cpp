@@ -13,6 +13,9 @@ ImageCaptureParameters::ImageCaptureParameters(double fps, ImageParameters const
 ImageCaptureParameters::~ImageCaptureParameters() = default;
 
 void ImageCaptureParameters::setFromOther(ImageCaptureParameters const &other) {
+    if (this == &other) {
+        return;
+    }
     this->fps = other.fps;
     this->size = other.size;
 }
