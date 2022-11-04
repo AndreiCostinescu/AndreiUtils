@@ -3,8 +3,11 @@
 //
 
 #include <AndreiUtils/utilsVector.hpp>
+#include <Eigen/Dense>
+#include <random>
 
 using namespace AndreiUtils;
+using namespace Eigen;
 using namespace std;
 
 void testSortMultipleVectorsBasedOnOneCriterion() {

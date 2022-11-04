@@ -123,3 +123,10 @@ void testAccessTimeInMapVsVector() {
     }
 }
 
+int main() {
+    cout << "Hello World!" << endl;
+
+    testAccessTimeInMapVsVector();
+
+    return 0;
+}

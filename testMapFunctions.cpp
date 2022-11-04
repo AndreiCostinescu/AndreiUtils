@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/utilsMap.hpp>
+#include <AndreiUtils/utilsVector.hpp>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -24,8 +25,7 @@ void testMapFiltering() {
     for (int i = 0; i < 20; i++) {
         x[i] = i - 5;
     }
-    auto y = getFilteredMapBasedOnPredicate(x, (std::function<bool(int const &, int const &)>) [](const int &key,
-                                                                                                  const int &value) {
+    auto y = getFilteredMapBasedOnPredicate<int, int>(x, [](const int &key, const int &value) {
         // return false;
         // return true;
         // return key % 3;
@@ -158,12 +158,11 @@ public:
 };
 
 void testMapEmplace() {
-    using S = SuperCube<TmpClass, 3, 1>;
-    using SMap = map<int, S>;
-    SMap t;
-    S s({0, 0, 0}, {1, 1, 1});
-    t.insert(std::make_pair(1, std::forward<S>(std::move(s))));
-    // SMap::value_type p = std::make_pair(1, s);
+    using TMap = map<int, MapEmplaceTestClass>;
+    TMap t;
+    MapEmplaceTestClass s(10.0, -6.9, 3);
+    t.insert(std::make_pair(1, std::forward<typename TMap::mapped_type>(s)));
+    // TMap::value_type p = std::make_pair(1, s);
     // t.insert(std::move(p));
     // t[1] = s;
 
