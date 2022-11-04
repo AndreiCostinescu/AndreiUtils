@@ -5,12 +5,19 @@
 #ifndef ANDREIUTILS_UTILS_HPP
 #define ANDREIUTILS_UTILS_HPP
 
+#include <AndreiUtils/traits/InstanceOf.hpp>
 #include <cmath>
 #include <type_traits>
 #include <stdexcept>
 #include <utility>
 
 namespace AndreiUtils {
+    template<typename TypeCheck, typename InstanceType>
+    bool instanceOf(InstanceType const &val) {
+        return InstanceOf<TypeCheck, InstanceType,
+                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val);
+    }
+
     template<typename T>
     void swapData(T &a, T &b) {
         T t(std::move(a));

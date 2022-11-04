@@ -758,6 +758,34 @@ void testStringFindFunctions() {
     cout << a.rfind(b, 0) << endl;
 }
 
+void testInstanceOf() {
+    B b;
+    int _tmp = 1;
+    Test e(_tmp);
+    A *a = &b;
+    A c;
+
+    cout << "A is polymorphic? " << is_polymorphic<A>::value << endl;
+    cout << "B is polymorphic? " << is_polymorphic<B>::value << endl;
+    cout << "Test is polymorphic? " << is_polymorphic<Test>::value << endl;
+    cout << "A* is polymorphic? " << is_polymorphic<A *>::value << endl;
+    cout << "B* is polymorphic? " << is_polymorphic<B *>::value << endl;
+    cout << "Test* is polymorphic? " << is_polymorphic<Test *>::value << endl;
+
+    cout << "a instance of A?: " << instanceOf<A>(a) << endl;
+    cout << "b instance of A?: " << instanceOf<A>(b) << endl;
+    cout << "c instance of A?: " << instanceOf<A>(c) << endl;
+    cout << "e instance of A?: " << instanceOf<A>(e) << endl;
+    cout << "a instance of B?: " << instanceOf<B>(a) << endl;
+    cout << "b instance of B?: " << instanceOf<B>(b) << endl;
+    cout << "c instance of B?: " << instanceOf<B>(c) << endl;
+    cout << "e instance of B?: " << instanceOf<B>(e) << endl;
+    cout << "a instance of Test?: " << instanceOf<Test>(a) << endl;
+    cout << "b instance of Test?: " << instanceOf<Test>(b) << endl;
+    cout << "c instance of Test?: " << instanceOf<Test>(c) << endl;
+    cout << "e instance of Test?: " << instanceOf<Test>(e) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -787,6 +815,7 @@ int main() {
     // testInterpolation();
     // testPythonInterface();
     // testStringFindFunctions();
+    testInstanceOf();
 
     return 0;
 }
