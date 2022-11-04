@@ -32,3 +32,12 @@ void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParamete
     this->biasVariances = other.biasVariances;
     this->noiseVariances = other.noiseVariances;
 }
+
+void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParameters &&other) {
+    if (this == &other) {
+        return;
+    }
+    this->data = std::move(other.data);
+    this->biasVariances = std::move(other.biasVariances);
+    this->noiseVariances = std::move(other.noiseVariances);
+}

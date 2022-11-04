@@ -18,6 +18,8 @@ namespace AndreiUtils {
 
         void setFromOther(ImageCaptureParameters const &other);
 
+        void setFromOther(ImageCaptureParameters &&other);
+
         double fps;
         ImageParameters size;
     };

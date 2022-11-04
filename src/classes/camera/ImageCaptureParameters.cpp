@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/classes/camera/ImageCaptureParameters.h>
+#include <utility>
 
 using namespace AndreiUtils;
 
@@ -18,4 +19,12 @@ void ImageCaptureParameters::setFromOther(ImageCaptureParameters const &other) {
     }
     this->fps = other.fps;
     this->size = other.size;
+}
+
+void ImageCaptureParameters::setFromOther(ImageCaptureParameters &&other) {
+    if (this == &other) {
+        return;
+    }
+    this->fps = other.fps;
+    this->size = std::move(other.size);
 }

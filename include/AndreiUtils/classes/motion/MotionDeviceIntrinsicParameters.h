@@ -22,6 +22,8 @@ namespace AndreiUtils {
 
         void setFromOther(MotionDeviceIntrinsicParameters const &other);
 
+        void setFromOther(MotionDeviceIntrinsicParameters &&other);
+
         Eigen::MatrixXd data;
         Eigen::VectorXd biasVariances, noiseVariances;
     };

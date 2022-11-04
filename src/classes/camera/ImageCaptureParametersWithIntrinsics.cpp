@@ -21,3 +21,11 @@ void ImageCaptureParametersWithIntrinsics::setFromOther(ImageCaptureParametersWi
     this->ImageCaptureParameters::setFromOther(other);
     this->intrinsics = other.intrinsics;
 }
+
+void ImageCaptureParametersWithIntrinsics::setFromOther(ImageCaptureParametersWithIntrinsics &&other) {
+    if (this == &other) {
+        return;
+    }
+    this->ImageCaptureParameters::setFromOther(other);
+    this->intrinsics = std::move(other.intrinsics);
+}
