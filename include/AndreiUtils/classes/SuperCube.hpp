@@ -211,25 +211,38 @@ namespace AndreiUtils {
         }
 
         DimensionIndex convertDataToIndex(DataIndex const &dataIndex) const {
-            return ((dataIndex - this->minCorner).cwiseQuotient(this->subCubeVolume)).template cast<int>();
-        }
-
-        int cubeIndexFromData(DataIndex const &dataIndex) const {
-            int cubeIndex = 0, powDivision = 1;
-            // DimensionIndex index;
+            DimensionIndex dimIndex;
             for (int i = SuperCubeInterface::dimensions - 1; i >= 0; i--) {
                 if (dataIndex[i] < this->minCorner[i] || dataIndex[i] >= this->maxCorner[i]) {
                     std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose() << ", max = "
                               << this->maxCorner.transpose() << std::endl;
                     throw SuperCubeOutOfRangeException();
                 }
-                int pFloor = int(floor((dataIndex[i] - this->minCorner[i]) / this->subCubeVolume[i]));
-                // index[i] = pFloor;
-                cubeIndex += powDivision * pFloor;
-                powDivision *= this->size[i];
+
+                // std::cout << dataIndex[i] << ", " << this->minCorner[i] << std::endl;
+                double const subRes = dataIndex[i] - this->minCorner[i];
+                // std::cout << subRes << ", " << this->subCubeVolume[i] << std::endl;
+                double const divRes = subRes / this->subCubeVolume[i];
+                // std::cout << divRes << std::endl;
+                int pFloor = int(divRes);
+                if (AndreiUtils::equal<double>(pFloor + 1, divRes, 1e-12)) {
+                    ++pFloor;
+                }
+                // std::cout << pFloor << std::endl;
+                dimIndex[i] = pFloor;
             }
-            // std::cout << index.transpose() << std::endl;
-            return cubeIndex;
+            return dimIndex;
+            // return ((dataIndex - this->minCorner).cwiseQuotient(this->subCubeVolume)).template cast<int>();
+        }
+
+        int cubeIndexFromData(DataIndex const &dataIndex) const {
+            try {
+                return this->cubeIndexFromLocalIndex(this->convertDataToIndex(dataIndex));
+            } catch (SuperCubeOutOfRangeException &e) {
+                std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose() << ", max = "
+                          << this->maxCorner.transpose() << std::endl;
+                throw e;
+            }
         }
 
         DimensionIndex localIndexFromCubeIndex(int cubeIndex) const {
