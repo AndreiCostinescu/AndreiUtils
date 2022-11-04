@@ -6,6 +6,8 @@
 #define ANDREIUTILS_SUPERCUBE_HPP
 
 #include <AndreiUtils/utilsBinarySerialization.hpp>
+#include <AndreiUtils/utilsMap.hpp>
+#include <AndreiUtils/utils.hpp>
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
@@ -96,8 +98,7 @@ namespace AndreiUtils {
         virtual ~SuperCubeInterface() = default;
 
         void setData(Data const &newData, bool verbose = false) {
-            DataIndex dataIndex = newData.getIndex() - this->minCorner;  // ensure that the index is inside the cube!
-            this->setData(dataIndex, newData, verbose);
+            this->setData(newData.getIndex(), newData, verbose, "");
         }
 
         void setData(DataIndex const &dataIndex, Data const newData, bool verbose = false) {
@@ -162,14 +163,15 @@ namespace AndreiUtils {
 
     protected:
         static int const dimensions = SpatialDimensions, division = SpatialDivision, depth = Depth;
-        DataIndex minCorner, maxCorner, volume, subCubeVolume;  // min = inclusive, max = exclusive
+        DataIndex minCorner, maxCorner;  // min = inclusive, max = exclusive
+        DataIndex volume;  // = max - min
+        DataIndex subCubeVolume;  // = volume / size
         DimensionIndex size;  // each dimension from 0 until size[dim] - 1
         int nrCubes, parentIndex;
         Data data;
 
         void computeSubCubeVolume() {
-            this->subCubeVolume = ((this->maxCorner - this->minCorner).cwiseQuotient(
-                    this->size.template cast<double>()));
+            this->subCubeVolume = (this->volume.cwiseQuotient(this->size.template cast<double>()));
         }
 
         DataIndex getCubeMidPoint() const {
@@ -240,15 +242,15 @@ namespace AndreiUtils {
         }
 
         int cubeIndexFromLocalIndex(DimensionIndex const &localIndex) const {
-            int cubeIndex = 0, powDivision = 1;
+            int cubeIndex = 0, powMultiplier = 1;
             for (int i = SuperCubeInterface::dimensions - 1; i >= 0; i--) {
                 if (localIndex[i] < 0 || localIndex[i] >= this->size[i]) {
                     std::cout << localIndex.transpose() << ", min = " << DataIndex::Zero().transpose() << ", max = "
                               << this->size.transpose() << std::endl;
                     throw SuperCubeOutOfRangeException();
                 }
-                cubeIndex += powDivision * localIndex[i];
-                powDivision *= this->size[i];
+                cubeIndex += powMultiplier * localIndex[i];
+                powMultiplier *= this->size[i];
             }
             return cubeIndex;
         }
