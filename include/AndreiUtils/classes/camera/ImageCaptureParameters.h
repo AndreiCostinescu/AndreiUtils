@@ -16,6 +16,8 @@ namespace AndreiUtils {
 
         virtual ~ImageCaptureParameters();
 
+        void setFromOther(ImageCaptureParameters const &other);
+
         double fps;
         ImageParameters size;
     };
