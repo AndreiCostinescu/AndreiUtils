@@ -11,6 +11,7 @@
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/classes/TypeHelper.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
@@ -40,7 +41,7 @@ using namespace std;
 
 class Test {
 public:
-    explicit Test(int &data) : a(&data) {}
+    explicit Test(R<int> data) : a(&data) {}
 
     int *a;
 };
@@ -165,34 +166,34 @@ void testCrossBilateralFilter() {
     cout << "x = " << x << ", y = " << y << endl;
 }
 
-class A {
+class A_ {
 public:
-    virtual ~A() = default;
+    virtual ~A_() = default;
 };
 
-class B : virtual public A {
+class B_ : virtual public A_ {
 public:
-    bool operator<(const B &other) const {
+    bool operator<(CR<B_> other) const {
         return true;
     }
 };
 
-class C : virtual public A {
+class C_ : virtual public A_ {
 };
 
-class D : public B, public C {
+class D_ : public B_, public C_ {
 };
 
 void testTypeCreator() {
-    TypeCreator<A> creator;
-    creator.registerTypeCreator("A", []() { return new A(); });
-    creator.registerTypeCreator("B", []() { return new B(); });
-    creator.registerTypeCreator("C", []() { return new C(); });
-    creator.registerTypeCreator("D", []() { return new D(); });
+    TypeCreator<A_> creator;
+    creator.registerTypeCreator("A", []() { return new A_(); });
+    creator.registerTypeCreator("B", []() { return new B_(); });
+    creator.registerTypeCreator("C", []() { return new C_(); });
+    creator.registerTypeCreator("D", []() { return new D_(); });
     auto c = creator.createType("C");
-    auto a = dynamic_cast<A *>(c);
-    auto b = dynamic_cast<B *>(c);
-    auto d = dynamic_cast<D *>(c);
+    auto a = dynamic_cast<A_ *>(c);
+    auto b = dynamic_cast<B_ *>(c);
+    auto d = dynamic_cast<D_ *>(c);
     cout << a << endl;
     cout << b << endl;
     cout << c << endl;
@@ -339,8 +340,8 @@ void testUnionFind() {
 
 namespace std {
     template<>
-    struct hash<B> {
-        size_t operator()(const B &b) const noexcept {
+    struct hash<B_> {
+        size_t operator()(CR<B_> b) const noexcept {
             return 0;
         }
     };
@@ -366,28 +367,28 @@ void testHashable() {
     cout << std::is_default_constructible<std::hash<int>>::value << endl;
     cout << std::is_default_constructible<std::hash<float>>::value << endl;
     cout << std::is_default_constructible<std::hash<double>>::value << endl;
-    cout << std::is_default_constructible<std::hash<B>>::value << endl;
-    cout << std::is_default_constructible<std::hash<C>>::value << endl;
+    cout << std::is_default_constructible<std::hash<B_>>::value << endl;
+    cout << std::is_default_constructible<std::hash<C_>>::value << endl;
 
     cout << is_hashable<int>::value << endl;
     cout << is_hashable<float>::value << endl;
     cout << is_hashable<double>::value << endl;
-    cout << is_hashable<B>::value << endl;
-    cout << is_hashable<C>::value << endl;
+    cout << is_hashable<B_>::value << endl;
+    cout << is_hashable<C_>::value << endl;
 
-    auto b = std::hash<B>();
-    // auto c = std::hash<C>();  // Compiler error!
+    auto b = std::hash<B_>();
+    // auto c = std::hash<C_>();  // Compiler error!
 
-    map<B, int> mB;
-    map<C, int> mC;
-    B bObj1, bObj2, bObj3;
-    C cObj1, cObj2, cObj3;
+    map<B_, int> mB;
+    map<C_, int> mC;
+    B_ bObj1, bObj2, bObj3;
+    C_ cObj1, cObj2, cObj3;
 
     // is_detected<std::less<int>::operator()>;
     // is_detected<std::less<int>::operator(), int>;
     // is_detected<std::less<C>::operator(), C, C>;
 
-    cout << is_hashable<map<B, int>::key_compare>::value << endl;
+    cout << is_hashable<map<B_, int>::key_compare>::value << endl;
 
     mB[bObj1] = 1;
     mB[bObj2] = 2;
@@ -398,10 +399,10 @@ void testHashable() {
 }
 
 void testDynamicCast() {
-    A objA;
-    B objB;
-    C objC;
-    D objD;
+    A_ objA;
+    B_ objB;
+    C_ objC;
+    D_ objD;
     auto *a = &objA;
     auto *b = &objB;
     auto *c = &objC;
@@ -413,44 +414,44 @@ void testDynamicCast() {
     cout << d << endl;
     cout << endl;
 
-    A *tmp;
-    tmp = dynamic_cast<A *>(a);
+    A_ *tmp;
+    tmp = dynamic_cast<A_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(b);
+    tmp = dynamic_cast<A_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(c);
+    tmp = dynamic_cast<A_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(d);
-    cout << tmp << endl;
-    cout << endl;
-
-    tmp = dynamic_cast<B *>(a);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(b);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(c);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(d);
+    tmp = dynamic_cast<A_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<C *>(a);
+    tmp = dynamic_cast<B_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(b);
+    tmp = dynamic_cast<B_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(c);
+    tmp = dynamic_cast<B_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(d);
+    tmp = dynamic_cast<B_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<D *>(a);
+    tmp = dynamic_cast<C_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(b);
+    tmp = dynamic_cast<C_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(c);
+    tmp = dynamic_cast<C_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(d);
+    tmp = dynamic_cast<C_ *>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<D_ *>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
@@ -759,31 +760,83 @@ void testStringFindFunctions() {
 }
 
 void testInstanceOf() {
-    B b;
+    B_ b;
     int _tmp = 1;
     Test e(_tmp);
-    A *a = &b;
-    A c;
+    A_ *a = &b;
+    A_ c;
 
-    cout << "A is polymorphic? " << is_polymorphic<A>::value << endl;
-    cout << "B is polymorphic? " << is_polymorphic<B>::value << endl;
+    cout << "A is polymorphic? " << is_polymorphic<A_>::value << endl;
+    cout << "B is polymorphic? " << is_polymorphic<B_>::value << endl;
     cout << "Test is polymorphic? " << is_polymorphic<Test>::value << endl;
-    cout << "A* is polymorphic? " << is_polymorphic<A *>::value << endl;
-    cout << "B* is polymorphic? " << is_polymorphic<B *>::value << endl;
+    cout << "A* is polymorphic? " << is_polymorphic<A_ *>::value << endl;
+    cout << "B* is polymorphic? " << is_polymorphic<B_ *>::value << endl;
     cout << "Test* is polymorphic? " << is_polymorphic<Test *>::value << endl;
 
-    cout << "a instance of A?: " << instanceOf<A>(a) << endl;
-    cout << "b instance of A?: " << instanceOf<A>(b) << endl;
-    cout << "c instance of A?: " << instanceOf<A>(c) << endl;
-    cout << "e instance of A?: " << instanceOf<A>(e) << endl;
-    cout << "a instance of B?: " << instanceOf<B>(a) << endl;
-    cout << "b instance of B?: " << instanceOf<B>(b) << endl;
-    cout << "c instance of B?: " << instanceOf<B>(c) << endl;
-    cout << "e instance of B?: " << instanceOf<B>(e) << endl;
+    cout << "a instance of A?: " << instanceOf<A_>(a) << endl;
+    cout << "b instance of A?: " << instanceOf<A_>(b) << endl;
+    cout << "c instance of A?: " << instanceOf<A_>(c) << endl;
+    cout << "e instance of A?: " << instanceOf<A_>(e) << endl;
+    cout << "a instance of B?: " << instanceOf<B_>(a) << endl;
+    cout << "b instance of B?: " << instanceOf<B_>(b) << endl;
+    cout << "c instance of B?: " << instanceOf<B_>(c) << endl;
+    cout << "e instance of B?: " << instanceOf<B_>(e) << endl;
     cout << "a instance of Test?: " << instanceOf<Test>(a) << endl;
     cout << "b instance of Test?: " << instanceOf<Test>(b) << endl;
     cout << "c instance of Test?: " << instanceOf<Test>(c) << endl;
     cout << "e instance of Test?: " << instanceOf<Test>(e) << endl;
+}
+
+void testTypes() {
+    int a = 24;
+    int *aPtr = &a;
+    int const *aCPtr = &a;
+    int volatile *aVPtr = &a;
+    int volatile const *aCVPtr = &a;
+
+    if (std::is_same<CR<CP<V<int>>>, VCPCR<int>>::value) {
+        cout << "Types are the same!" << endl;
+    }
+
+    C<int> x0 = a;
+    P<int> x1 = aPtr;
+    R<int> x2 = a;
+    U<int> x3 = std::move(a);
+    V<int> x4 = a;
+
+    CP<int> x5 = aPtr;
+    CR<int> x6 = a;
+    CU<int> x7 = std::move(a);
+    PC<int> x8 = aPtr;
+    PR<int> x9 = aPtr;
+    PU<int> x10 = std::move(aPtr);
+    VC<int> x11 = a;
+    VP<int> x12 = aPtr;
+    VR<int> x13 = a;
+    VU<int> x14 = std::move(a);
+
+    CPC<int> x15 = aPtr;
+    CPR<int> x16 = aCPtr;
+    CPU<int> x17 = std::move(aPtr);
+    PCR<int> x18 = aPtr;
+    PCU<int> x19 = std::move(aPtr);
+    VCP<int> x20 = &a;
+    VCR<int> x21 = a;
+    VCU<int> x22 = std::move(a);
+    VPC<int> x23 = &a;
+    VPR<int> x24 = aVPtr;
+    VPU<int> x25 = std::move(aVPtr);
+
+    CPCR<int> x26 = aCPtr;
+    CPCU<int> x27 = std::move(aCPtr);
+    VCPC<int> x28 = &a;
+    VCPR<int> x29 = aCVPtr;
+    VCPU<int> x30 = std::move(aCVPtr);
+    VPCR<int> x31 = aVPtr;
+    VPCU<int> x32 = std::move(aVPtr);
+
+    VCPCR<int> x33 = aCVPtr;
+    VCPCU<int> x34 = std::move(aCVPtr);
 }
 
 int main() {
@@ -815,7 +868,8 @@ int main() {
     // testInterpolation();
     // testPythonInterface();
     // testStringFindFunctions();
-    testInstanceOf();
+    // testInstanceOf();
+    testTypes();
 
     return 0;
 }
