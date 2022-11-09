@@ -5,6 +5,7 @@
 #ifndef ANDREIUTILS_UTILSQUATERNIONS_HPP
 #define ANDREIUTILS_UTILSQUATERNIONS_HPP
 
+#include <AndreiUtils/classes/TypeHelper.hpp>
 #include <Eigen/Dense>
 #include <vector>
 
@@ -30,87 +31,87 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    Eigen::Quaternion<T> qxRotation(T const &angle) {
+    Eigen::Quaternion<T> qxRotation(CR<T> angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
     }
 
     template<class T>
-    Eigen::Quaternion<T> qyRotation(T const &angle) {
+    Eigen::Quaternion<T> qyRotation(CR<T> angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitY()));
     }
 
     template<class T>
-    Eigen::Quaternion<T> qzRotation(T const &angle) {
+    Eigen::Quaternion<T> qzRotation(CR<T> angle) {
         return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitZ()));
     }
 
     template<class T>
-    Eigen::Quaternion<T> qMulScalar(Eigen::Quaternion<T> const &q, T const &scalar) {
+    Eigen::Quaternion<T> qMulScalar(CR<Eigen::Quaternion<T>> q, CR<T> scalar) {
         return Eigen::Quaternion<T>(q.coeffs() * scalar);
     }
 
     template<class T>
-    Eigen::Quaternion<T> qDivScalar(Eigen::Quaternion<T> const &q, T const &scalar) {
+    Eigen::Quaternion<T> qDivScalar(CR<Eigen::Quaternion<T>> q, CR<T> scalar) {
         return Eigen::Quaternion<T>(q.coeffs() / scalar);
     }
 
     // q1 == q2
     template<class T>
-    bool qEqual(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2, T const &tol = T(1e-9)) {
+    bool qEqual(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2, CR<T> tol = T(1e-9)) {
         return equal(q1.w(), q2.w(), tol) && equal(q1.x(), q2.x(), tol) && equal(q1.y(), q2.y(), tol) &&
                equal(q1.z(), q2.z(), tol);
     }
 
     // q1 != q2
     template<class T>
-    bool qNotEqual(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2, T const &tol = T(1e-9)) {
+    bool qNotEqual(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2, CR<T> tol = T(1e-9)) {
         return !qEqual(q1, q2, tol);
     }
 
     // q1 + q2
     template<class T>
-    Eigen::Quaternion<T> qAdd(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2) {
+    Eigen::Quaternion<T> qAdd(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2) {
         return Eigen::Quaternion<T>(q1.coeffs() + q2.coeffs());
     }
 
     // q1 += q2
     template<class T>
-    void qIncrement(Eigen::Quaternion<T> &q1, Eigen::Quaternion<T> const &q2) {
+    void qIncrement(Eigen::Quaternion<T> &q1, CR<Eigen::Quaternion<T>> q2) {
         q1.coeffs() += q2.coeffs();
     }
 
     // q1 - q2
     template<class T>
-    Eigen::Quaternion<T> qDiff(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2) {
+    Eigen::Quaternion<T> qDiff(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2) {
         return Eigen::Quaternion<T>(q1.coeffs() - q2.coeffs());
     }
 
     // q1 - q2: alias for qDiff
     template<class T>
-    Eigen::Quaternion<T> qSub(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2) {
+    Eigen::Quaternion<T> qSub(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2) {
         return qDiff(q1, q2);
     }
 
     // q1 -= q2
     template<class T>
-    void qDecrement(Eigen::Quaternion<T> &q1, Eigen::Quaternion<T> const &q2) {
+    void qDecrement(Eigen::Quaternion<T> &q1, CR<Eigen::Quaternion<T>> q2) {
         q1.coeffs() -= q2.coeffs();
     }
 
     template<class T>
-    double qCoefficientSquareSum(Eigen::Quaternion<T> const &q) {
+    double qCoefficientSquareSum(CR<Eigen::Quaternion<T>> q) {
         return q.coeffs().squaredNorm();
     }
 
     // -q
     template<class T>
-    Eigen::Quaternion<T> qNeg(Eigen::Quaternion<T> const &q) {
+    Eigen::Quaternion<T> qNeg(CR<Eigen::Quaternion<T>> q) {
         return Eigen::Quaternion<T>(-q.coeffs());
     }
 
     // log(q)
     template<class T>
-    Eigen::Quaternion<T> qLog(Eigen::Quaternion<T> const &q) {
+    Eigen::Quaternion<T> qLog(CR<Eigen::Quaternion<T>> q) {
         T qNorm = q.norm();
         Eigen::Matrix<T, 3, 1> x = acos(q.w() / qNorm) * q.vec().normalized();
         return Eigen::Quaternion<T>(log(qNorm), x.x(), x.y(), x.z());
@@ -118,7 +119,7 @@ namespace AndreiUtils {
 
     // exp(q)
     template<class T>
-    Eigen::Quaternion<T> qExp(Eigen::Quaternion<T> const &q) {
+    Eigen::Quaternion<T> qExp(CR<Eigen::Quaternion<T>> q) {
         Eigen::Matrix<T, 3, 1> x = q.vec();
         T xNorm = x.norm();
         return qMulScalar(Eigen::Quaternion<T>(Eigen::AngleAxis<T>(xNorm, x.normalized())), exp(q.w()));
@@ -126,12 +127,12 @@ namespace AndreiUtils {
 
     // orientation: q1 == q2
     template<class T>
-    bool qEqualOrientation(Eigen::Quaternion<T> const &q1, Eigen::Quaternion<T> const &q2, T const &tol = T(1e-9)) {
+    bool qEqualOrientation(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2, CR<T> tol = T(1e-9)) {
         return qEqual(q1, q2) || qEqual(q1, qNeg(q2));
     }
 
     template<class T>
-    Eigen::Quaternion<T> vToQ(Eigen::Matrix<T, 3, 1> const &v) {
+    Eigen::Quaternion<T> vToQ(CR<Eigen::Matrix<T, 3, 1>> v) {
         Eigen::Quaternion<T> q;
         q.w() = 0;
         q.vec() = v;
@@ -139,7 +140,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    Eigen::Matrix<T, 3, 1> qRotate(Eigen::Quaternion<T> const &q, Eigen::Matrix<T, 3, 1> const &v) {
+    Eigen::Matrix<T, 3, 1> qRotate(CR<Eigen::Quaternion<T>> q, CR<Eigen::Matrix<T, 3, 1>> v) {
         return (q * vToQ(v) * q.inverse()).vec();
     }
 
@@ -147,7 +148,7 @@ namespace AndreiUtils {
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     //*/
     template<class T>
-    Eigen::Quaternion<T> qFromEulerAngles(T const *angles, size_t const &size, std::string const &format = "xyz") {
+    Eigen::Quaternion<T> qFromEulerAngles(CP<T> angles, CR<size_t> size, CR<std::string> format = "xyz") {
         Eigen::Quaternion<T> q = qIdentity<T>();
         if (size > format.size()) {
             throw std::runtime_error("Not all angles have the format specified!");
@@ -171,7 +172,7 @@ namespace AndreiUtils {
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     //*/
     template<class T>
-    Eigen::Quaternion<T> qFromEulerAngles(std::vector<T> const &angles, std::string const &format = "xyz") {
+    Eigen::Quaternion<T> qFromEulerAngles(CR<std::vector<T>> angles, CR<std::string> format = "xyz") {
         return qFromEulerAngles(angles.data(), angles.size(), format);
     }
 
@@ -179,12 +180,12 @@ namespace AndreiUtils {
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     */
     template<class T>
-    Eigen::Quaternion<T> qFromEulerAngles(const Eigen::Matrix<T, 3, 1> &angles, const std::string &format = "xyz") {
+    Eigen::Quaternion<T> qFromEulerAngles(CR<Eigen::Matrix<T, 3, 1>> angles, CR<std::string> format = "xyz") {
         return qFromEulerAngles(angles.data(), 3, format);
     }
 
     template<class T>
-    Eigen::Quaternion<T> qFromRotationMatrix(const Eigen::Matrix<T, 3, 3> &rot) {
+    Eigen::Quaternion<T> qFromRotationMatrix(CR<Eigen::Matrix<T, 3, 3>> rot) {
         return Eigen::Quaternion<T>(rot);
     }
 
@@ -192,7 +193,7 @@ namespace AndreiUtils {
     Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
     */
     template<class T>
-    Eigen::Matrix<T, 3, 1> eulerAnglesFromQ(const Eigen::Quaternion<T> &q, const std::string &format = "xyz") {
+    Eigen::Matrix<T, 3, 1> eulerAnglesFromQ(CR<Eigen::Quaternion<T>> q, CR<std::string> format = "xyz") {
         if (format.size() < 3) {
             throw std::runtime_error("Format " + format + " does not specify axis for each euler angle value");
         }
@@ -215,7 +216,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    Eigen::Matrix<T, 3, 1> qToRPY(const Eigen::Quaternion<T> &q) {
+    Eigen::Matrix<T, 3, 1> qToRPY(CR<Eigen::Quaternion<T>> q) {
         // first rotate around X, then round Y and finally around Z => R = Rx * Ry * Rz
         // x points left, y points front, z point up
         Eigen::Matrix<T, 3, 1> euler;
@@ -248,7 +249,7 @@ namespace AndreiUtils {
 
 namespace std {
     template<class T>
-    ostream &operator<<(ostream &os, const Eigen::Quaternion<T> &q) {
+    ostream &operator<<(ostream &os, CR<Eigen::Quaternion<T>> q) {
         os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
         return os;
     }
