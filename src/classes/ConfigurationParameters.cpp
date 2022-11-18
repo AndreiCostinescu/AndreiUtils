@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/ConfigurationParameters.hpp>
 #include <AndreiUtils/utilsJson.h>
+#include <AndreiUtils/utilsString.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -75,7 +76,14 @@ bool ConfigurationParameters::has(string const &parameterName) const {
 }
 
 ConfigurationParameters ConfigurationParameters::getSubConfig(string const &subParametersFor) const {
-    return ConfigurationParameters(this->config.at(subParametersFor), subParametersFor);
+    if (!AndreiUtils::contains(subParametersFor, "/")) {
+        return ConfigurationParameters(this->config.at(subParametersFor), subParametersFor);
+    }
+    ConfigurationParameters subConfig = *this;
+    for (auto const &subSubParametersFor: AndreiUtils::splitString(subParametersFor, "/")) {
+        subConfig = ConfigurationParameters(subConfig.config.at(subSubParametersFor), subSubParametersFor);
+    }
+    return subConfig;
 }
 
 bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {
