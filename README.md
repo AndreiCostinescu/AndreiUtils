@@ -3,8 +3,9 @@ https://bitbucket.org/AndreiCostinescu/AndreiUtils
 
 ## Building the Library
 - Clone the repository: <br>
-  git clone https://bitbucket.org/AndreiCostinescu/AndreiUtils.git
-- ```
+  ```git clone https://bitbucket.org/AndreiCostinescu/AndreiUtils.git```
+- Build instructions: <br>
+  ```
   cd AndreiUtils
   mkdir <BUILD_FOLDER_NAME>
   cd <BUILD_FOLDER_NAME>
@@ -43,7 +44,7 @@ message("AndreiUtils libraries are ${AndreiUtils_LIBRARY}")
 add_executable(TestAndreiUtils main.cpp)
 target_link_libraries(TestAndreiUtils ${AndreiUtils_LIBRARY})
 ```
-Check the [Library Components](#markdown-header-library-components) section for all available components of the library. 
+Check the [Library Components](#markdown-header-library-components) section for all available components of the library. <br> 
 There's no need for including the include directories of ```AndreiUtils``` explicitly; by linking to ```${AndreiUtils_LIBRARY}``` the include directories are automatically set correctly. 
 
 ### Library Components
