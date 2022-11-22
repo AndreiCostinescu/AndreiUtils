@@ -54,6 +54,8 @@ namespace AndreiUtils {
 
         ConfigurationParameters getSubConfig(std::string const &subParametersFor) const;
 
+        nlohmann::json const &getJson(std::string const &parameterName) const;
+
         nlohmann::json &getJson();
 
         nlohmann::json const &getJson() const;

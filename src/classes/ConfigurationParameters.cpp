@@ -106,6 +106,13 @@ bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {
     return false;
 }
 
+json const &ConfigurationParameters::getJson(string const &parameterName) const {
+    if (!this->initialized) {
+        throw std::runtime_error("ConfigurationParameters not initialized!");
+    }
+    return this->config.at(parameterName);
+}
+
 json &ConfigurationParameters::getJson() {
     return this->config;
 }
