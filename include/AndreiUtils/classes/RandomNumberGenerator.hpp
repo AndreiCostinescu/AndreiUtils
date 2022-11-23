@@ -29,8 +29,11 @@ namespace AndreiUtils {
     protected:
         std::random_device rd;
         std::default_random_engine engine;
+        // if floating point type: range is [minValue, maxValue); if integral type: range is [minValue, maxValue]
         typename uniform_distribution_type<T>::Type distribution;
     };
+
+    extern RandomNumberGenerator<double> double01Sampler;
 }
 
 #endif //ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP

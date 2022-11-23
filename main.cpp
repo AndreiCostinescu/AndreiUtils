@@ -696,9 +696,8 @@ void testRandom() {
         cout << randomInt.sample() << endl;
     }
     cout << endl << endl;
-    RandomNumberGenerator<double> randomDouble(0, 1);
     for (int i = 0; i < 20; i++) {
-        cout << randomDouble.sample() << endl;
+        cout << double01Sampler.sample() << endl;
     }
     cout << endl << endl;
 
