@@ -1,8 +1,9 @@
 //
-// Created by Andrei on 17.09.21.
+// Created by Andrei Costinescu on 17.09.21.
 //
 
 #include <AndreiUtils/utilsEigenGeometry.h>
+#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 
 using namespace Eigen;
 
@@ -22,6 +23,15 @@ Matrix3d AndreiUtils::zRotation(double angle) {
     Matrix3d z;
     z << cos(angle), -sin(angle), 0, sin(angle), cos(angle), 0, 0, 0, 1;
     return z;
+}
+
+Vector3d AndreiUtils::sampleDirection() {
+    return Vector3d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample()).normalized();
+}
+
+Quaterniond AndreiUtils::sampleOrientation() {
+    return Quaterniond(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample(),
+                       double01Sampler.sample()).normalized();
 }
 
 Matrix4d AndreiUtils::quaternionConjugateDerivative() {
@@ -162,8 +172,8 @@ Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderZYX(const Vector3
     return q;
 }
 
-Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(const Vector3d &euler,
-                                                                                               bool componentOrderXYZ) {
+Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
+        const Vector3d &euler, bool componentOrderXYZ) {
     int xIndex = 2 - 2 * componentOrderXYZ;
     int yIndex = 1;
     int zIndex = 2 * componentOrderXYZ;

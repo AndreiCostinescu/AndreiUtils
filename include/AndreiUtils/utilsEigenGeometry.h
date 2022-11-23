@@ -1,5 +1,5 @@
 //
-// Created by Andrei on 17.09.21.
+// Created by Andrei Costinescu on 17.09.21.
 //
 
 #ifndef ANDREIUTILS_UTILSEIGENGEOMETRY_H
@@ -13,6 +13,10 @@ namespace AndreiUtils {
     Eigen::Matrix3d yRotation(double angle);
 
     Eigen::Matrix3d zRotation(double angle);
+
+    Eigen::Vector3d sampleDirection();
+
+    Eigen::Quaterniond sampleOrientation();
 
     Eigen::Matrix4d quaternionConjugateDerivative();
 
