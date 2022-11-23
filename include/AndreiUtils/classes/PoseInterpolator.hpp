@@ -5,8 +5,8 @@
 #ifndef ANDREIUTILS_POSEINTERPOLATOR_HPP
 #define ANDREIUTILS_POSEINTERPOLATOR_HPP
 
-#include <AndreiUtils/classes/Interpolator.hpp>
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/Interpolator.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -20,20 +20,22 @@ namespace AndreiUtils {
 
         ~PoseInterpolator() = default;
 
-        static T singleInterpolation(InterpolationType const &start, InterpolationType const &end, double const &tau) {
+        static InterpolationType singleInterpolation(InterpolationType const &start, InterpolationType const &end,
+                                                     double const &tau) {
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
             return startNormed.sclerp(tau, endNormed);
         }
 
-        PoseInterpolator &compute(InterpolationType const &start, T const &stepSize, InterpolationType const &end) {
+        PoseInterpolator &compute(InterpolationType const &start, double const &stepSize,
+                                  InterpolationType const &end) {
             this->clear();
 
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
             InterpolationType endToStart = startNormed.dualQuaternionInverse() * endNormed;
 
-            for (T tau = 0.; tau <= 1.;) {
+            for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
-                this->result.push_back((tau == 0) ? startNormed : startNormed * endToStart.powScrew(tau));
+                this->result.emplace_back((tau == 0) ? startNormed : startNormed * endToStart.powScrew(tau));
                 tau = tau + stepSize;
             }
 

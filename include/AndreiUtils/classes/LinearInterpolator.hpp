@@ -13,29 +13,33 @@ namespace AndreiUtils {
     template<class T>
     class LinearInterpolator : public Interpolator<T> {
     public:
+        using InterpolationType = T;
+
         LinearInterpolator() = default;
 
         ~LinearInterpolator() = default;
 
-        static T singleInterpolation(T const &start, T const &end, double const &tau) {
+        static InterpolationType singleInterpolation(InterpolationType const &start, InterpolationType const &end,
+                                                     double const &tau) {
             return start + tau * (end - start);
         }
 
-        LinearInterpolator &compute(T const &start, double const &stepSize, T const &end) {
+        LinearInterpolator &compute(InterpolationType const &start, double const &stepSize,
+                                    InterpolationType const &end) {
             this->clear();
 
-            T diff = end - start;
-            for (T tau = 0.; tau <= 1.;) {
+            InterpolationType diff = end - start;
+            for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
-                this->result.push_back(start + tau * diff);
+                this->result.emplace_back(start + tau * diff);
                 tau = tau + stepSize;
             }
 
             return *this;
         }
 
-        LinearInterpolator &compute(T const &start, T const &end, int steps, bool withStart = true,
-                                    bool withEnd = true) {
+        LinearInterpolator &compute(InterpolationType const &start, InterpolationType const &end, int steps,
+                                    bool withStart = true, bool withEnd = true) {
             if (withStart + withEnd > steps) {
                 throw std::runtime_error(
                         "Number of steps smaller than the minimum requested: " + std::to_string(withStart + withEnd));
@@ -51,7 +55,7 @@ namespace AndreiUtils {
                 this->result.back() = end;
             }
 
-            T increment = (end - start) / (steps + 1 - withStart - withEnd);
+            InterpolationType increment = (end - start) / (steps + 1 - withStart - withEnd);
             int stopIndex = steps - withEnd;
             for (int i = withStart; i < stopIndex; i++) {
                 if (i == 0) {
@@ -65,11 +69,12 @@ namespace AndreiUtils {
         }
 
         // interpolationPoints[i] should be \in [0, 1] for interpolation inside interval and not \in for extrapolation
-        LinearInterpolator &compute(T const &start, T const &end, std::vector<double> const &interpolationPoints) {
+        LinearInterpolator &compute(InterpolationType const &start, InterpolationType const &end,
+                                    std::vector<double> const &interpolationPoints) {
             this->clear();
             this->result.resize(interpolationPoints.size());
 
-            T diff = end - start;
+            InterpolationType diff = end - start;
             for (int i = 0; i < interpolationPoints.size(); i++) {
                 this->result[i] = start + interpolationPoints[i] * diff;
             }

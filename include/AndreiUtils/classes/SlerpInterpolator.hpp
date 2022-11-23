@@ -20,16 +20,18 @@ namespace AndreiUtils {
 
         ~SlerpInterpolator() = default;
 
-        static T singleInterpolation(InterpolationType const &start, InterpolationType const &end, double const &tau) {
+        static InterpolationType singleInterpolation(InterpolationType const &start, InterpolationType const &end,
+                                                     double const &tau) {
             return start.slerp(tau, end);
         }
 
-        SlerpInterpolator &compute(InterpolationType const &start, T const &stepSize, InterpolationType const &end) {
+        SlerpInterpolator &compute(InterpolationType const &start, double const &stepSize,
+                                   InterpolationType const &end) {
             this->clear();
 
-            for (T tau = 0.; tau <= 1.;) {
+            for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
-                this->result.push_back(start.slerp(tau, end));
+                this->result.emplace_back(start.slerp(tau, end));
                 tau = tau + stepSize;
             }
 
