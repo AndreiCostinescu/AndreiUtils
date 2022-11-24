@@ -114,11 +114,16 @@ void testDualQuaternions() {
     cout << q.powScrew(0.5) << endl;
 }
 
-void testTranslationTheSame() {
+void testTheSameOperations() {
     Vector3d p{-0.473938, 0.11523, 1.18481};
     for (int i = 0; i < 10; i++) {
-        Posed q{sampleOrientation(), p};
+        Quaterniond rot = sampleOrientation();
+        Posed q{rot, p};
         cout << q.getTranslation().transpose() << endl;
+        cout << q << endl;
+        cout << Posed(qIdentity<double>(), p) * Posed(rot, Vector3d::Zero()) << endl;
+
+        cout << endl;
     }
 }
 
@@ -126,7 +131,7 @@ int main() {
     cout << "Hello World!" << endl;
 
     // testDualQuaternions();
-    testTranslationTheSame();
+    testTheSameOperations();
 
     return 0;
 }

@@ -345,6 +345,10 @@ namespace AndreiUtils {
             return DualQuaternion(q * this->r, this->getTranslation());
         }
 
+        DualQuaternion addRotationRight(CR<Eigen::Quaternion<T>> q) const {
+            return DualQuaternion(this->r * q, this->getTranslation());
+        }
+
         DualQuaternion addTranslation(CR<Eigen::Matrix<T, 3, 1>> t) const {
             return DualQuaternion(this->r, t + this->getTranslation());
         }
