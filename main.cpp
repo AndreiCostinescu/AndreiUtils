@@ -5,7 +5,6 @@
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
-#include <AndreiUtils/classes/PythonInterface.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
@@ -15,13 +14,11 @@
 #include <AndreiUtils/classes/UnionFind.hpp>
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
-#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
-#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsOpenCV.h>
 #include <AndreiUtils/utilsOpenCV.hpp>
@@ -46,20 +43,9 @@ public:
     int *a;
 };
 
-void eigenTesting() {
+void eigenOpenCVTesting() {
     Matrix2i m = Matrix2i::Identity();
     m(0, 1) = 2;
-    nlohmann::json j = m;
-    cout << "Json from matrix m " << endl << m << endl << j << endl;
-    Matrix2i m2 = j.get<MatrixXi>();
-    cout << "Reconstructed matrix:" << endl << m2 << endl;
-
-    Vector3f v(5, 3.6, 21);
-    j = v;
-    cout << "Json from vector v " << endl << v << endl << j << endl;
-    Vector3f v2 = j.get<Vector3f>();
-    cout << "Reconstructed vector:" << endl << v2 << endl;
-
     cv::FileStorage wfs("tmp.xml", cv::FileStorage::WRITE);
     m(1, 0) = 3;
     wfs << "matrix" << m;
@@ -97,11 +83,6 @@ void testPointerReference() {
     cout << "b = " << b << "; t = " << *t.a << endl;
     b = 4;
     cout << "b = " << b << "; t = " << *t.a << endl;
-}
-
-void testJsonNull() {
-    nlohmann::json j = nullptr;
-    cout << "JSON CONTENT: " << j.dump() << endl;
 }
 
 function<void()> testLambdaCaptureScopeFunction() {
@@ -199,14 +180,6 @@ void testTypeCreator() {
     cout << c << endl;
     cout << d << endl;
     delete c;
-}
-
-void testJsonArraySerialization() {
-    nlohmann::json j = readJsonFile("../testJsonOutput.json");
-    j["data"] = {110, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    j["name"] = "dummy data 2";
-    j["isDummy"] = false;
-    writeJsonFile("../testJsonOutput.json", j);
 }
 
 void testIntegralAndUnsignedTypes() {
@@ -613,12 +586,13 @@ void testOpenCVMatrixCropReference() {
 }
 
 void testMixedDataContainer() {
-    nlohmann::json x;
-    x["24"] = 25;
+    vector<string> x(5, "Hello World!");
     MixedDataContainer c;
+    int data = 25;
+    c.addData("24", &data);
     c.addData("json", &x);
-    auto tmp = *(c.getData<nlohmann::json>("json"));
-    cout << tmp.dump() << endl;
+    auto tmp = *(c.getData<vector<string>>("json"));
+    cout << printVectorToString(tmp) << endl;
 }
 
 void testGraph() {
@@ -728,13 +702,6 @@ void testInterpolation() {
     printVector(sx.getResult());
 }
 
-void testPythonInterface() {
-    PythonInterface p("hello_world", {"print_hello", "return_hello"});
-    p.callFunction("print_hello");
-    auto res = p.callFunction("return_hello");
-    cout << res.cast<string>() << endl;
-}
-
 void testStringFindFunctions() {
     string a = "abdabdad";
     string b = "a";
@@ -841,17 +808,15 @@ void testTypes() {
 int main() {
     cout << "Hello World!" << endl;
 
-    // eigenTesting();
+    // eigenOpenCVTesting();
     // fileTesting();
     // realsenseDistortionString();
     // testPointerReference();
-    // testJsonNull();
     // testLambdaCaptureScope();
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testCrossBilateralFilter();
     // testTypeCreator();
-    // testJsonArraySerialization();
     // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
@@ -865,7 +830,6 @@ int main() {
     // testGraph();
     // testRandom();
     // testInterpolation();
-    // testPythonInterface();
     // testStringFindFunctions();
     // testInstanceOf();
     testTypes();
