@@ -15,7 +15,7 @@ namespace AndreiUtils {
         // memcpy(dst, src, sizeof(T) * size);
         // dst and src are predetermined shared in gcc 7?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(dst, src, size) default(none)
         #else
         #pragma omp parallel for shared(size) default(none)
@@ -39,7 +39,7 @@ namespace AndreiUtils {
     void fastATimesSrcPlusB(T *const dst, T const *const src, size_t size, T a, T b) {
         // dst and src are predetermined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(dst, src, size, a, b) default(none)
         #else
         #pragma omp parallel for shared(size, a, b) default(none)
@@ -56,7 +56,7 @@ namespace AndreiUtils {
     void fastSrcOp(T *const dst, T const *const src, size_t size, std::function<T(T const &)> op) {
         // dst and src are predetermined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(dst, src, size, op) default(none)
         #else
         #pragma omp parallel for shared(size, op) default(none)
@@ -73,7 +73,7 @@ namespace AndreiUtils {
     void fastSrcOp(Tout *const dst, Tin const *const src, size_t size, std::function<Tout(Tin const &)> op) {
         // dst and src are predetermined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(dst, src, size, op) default(none)
         #else
         #pragma omp parallel for shared(size, op) default(none)
@@ -91,7 +91,7 @@ namespace AndreiUtils {
                      size_t increment = 1) {
         // array is predetermined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(array, size, increment, op) default(none)
         #else
         #pragma omp parallel for shared(size, increment, op) default(none)
@@ -109,7 +109,7 @@ namespace AndreiUtils {
                      size_t increment = 1) {
         // array is predefined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(array, size, increment, op) default(none)
         #else
         #pragma omp parallel for shared(size, increment, op) default(none)
@@ -127,7 +127,7 @@ namespace AndreiUtils {
                      size_t increment = 1) {
         // array is predefined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(array, size, increment, op) default(none)
         #else
         #pragma omp parallel for shared(size, increment, op) default(none)
@@ -145,7 +145,7 @@ namespace AndreiUtils {
                      size_t increment = 1) {
         // array is predefined shared?!
         #ifdef __GNUG__
-        #if __GNUG__ > 7
+        #if __GNUG__ > 8
         #pragma omp parallel for shared(array, size, increment, op) default(none)
         #else
         #pragma omp parallel for shared(size, increment, op) default(none)
