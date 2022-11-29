@@ -17,6 +17,8 @@
 #include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
+#include <AndreiUtils/utilsEigen.hpp>
+#include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
@@ -805,6 +807,20 @@ void testTypes() {
     VCPCU<int> x34 = std::move(aCVPtr);
 }
 
+void testEigenMatrixAddSub() {
+    Eigen::Matrix3d x;
+    x.setZero();
+    cout << addComponentWise<double>(x, -1) << endl;
+    Eigen::Vector4f y;
+    y.setZero();
+    cout << addComponentWise<float>(y, 4) << endl;
+
+    for (int i=0; i<10; i++) {
+        cout << sampleOrientation() << endl;
+        cout << sampleDirection().transpose() << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -832,7 +848,8 @@ int main() {
     // testInterpolation();
     // testStringFindFunctions();
     // testInstanceOf();
-    testTypes();
+    // testTypes();
+    testEigenMatrixAddSub();
 
     return 0;
 }

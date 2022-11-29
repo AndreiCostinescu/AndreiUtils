@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
+#include <AndreiUtils/utilsEigen.hpp>
 
 using namespace Eigen;
 
@@ -26,12 +27,14 @@ Matrix3d AndreiUtils::zRotation(double angle) {
 }
 
 Vector3d AndreiUtils::sampleDirection() {
-    return Vector3d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample()).normalized();
+    return addComponentWise(Vector3d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample()),
+                            -0.5).normalized();
 }
 
 Quaterniond AndreiUtils::sampleOrientation() {
-    return Quaterniond(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample(),
-                       double01Sampler.sample()).normalized();
+    return Quaterniond(
+            subComponentWise(Vector4d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample(),
+                                      double01Sampler.sample()), 0.5)).normalized();
 }
 
 Matrix4d AndreiUtils::quaternionConjugateDerivative() {

@@ -83,6 +83,18 @@ namespace AndreiUtils {
         return a;
     }
 
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> addComponentWise(
+            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+        return m.array() + v;
+    }
+
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> subComponentWise(
+            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+        return m.array() - v;
+    }
+
     template<class T, int N>
     Eigen::Matrix<T, -1, N> convertVectorsToMatrixRows(const std::vector<Eigen::Matrix<T, N, 1>> &rows) {
         Eigen::Matrix<T, -1, N> m = Eigen::Matrix<T, -1, N>::Zero(rows.size(), N);
