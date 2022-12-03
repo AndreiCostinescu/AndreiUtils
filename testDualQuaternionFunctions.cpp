@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>
 #include <iomanip>
@@ -127,11 +128,19 @@ void testTheSameOperations() {
     }
 }
 
+void testLowPassFilterQuaternion() {
+    QuaternionLowPassFilter<double> qFilter(0.3, 0.3);
+    qFilter.resetFilterValue(qIdentity<double>());
+    qFilter.filter({0, 0, 1, 0});
+    cout << qFilter.getFilterValue() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testDualQuaternions();
-    testTheSameOperations();
+    // testTheSameOperations();
+    testLowPassFilterQuaternion();
 
     return 0;
 }
