@@ -358,6 +358,19 @@ namespace AndreiUtils {
         }
         return m;
     }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    std::map<T1, T2, C, A> mapAppend(std::map<T1, T2, C, A> const &container,
+                                     std::map<T1, T2, C, A> const &valuesToBeAppended) {
+        auto res = container;
+        res.insert(valuesToBeAppended.begin(), valuesToBeAppended.end());
+        return res;
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void mapAppendInPlace(std::map<T1, T2, C, A> &container, std::map<T1, T2, C, A> const &valuesToBeAppended) {
+        container.insert(valuesToBeAppended.begin(), valuesToBeAppended.end());
+    }
 }
 
 #endif //ANDREIUTILS_MAPUTILS_HPP
