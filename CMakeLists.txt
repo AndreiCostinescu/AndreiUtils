@@ -74,7 +74,7 @@ message("Use json set to ${USE_JSON}")
 message("Use opencv set to ${USE_OPENCV}")
 message("Use openmp set to ${USE_OPENMP}")
 message("Use pthread set to ${USE_PTHREAD}")
-message("Use python set to ${USE_REALSENSE}")
+message("Use python set to ${USE_PYTHON}")
 message("Use realsense set to ${USE_REALSENSE}")
 
 if (WIN32)
