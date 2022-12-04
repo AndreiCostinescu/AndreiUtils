@@ -31,7 +31,7 @@ namespace AndreiUtils {
     bool mapGetIfContains(std::map<T1, T2, C, A> const &container, T1 const &key, T2 &value) {
         const auto &data = container.find(key);
         if (data != container.end()) {
-            value = data->second;
+            value = data->second;  // copy data
             return true;
         }
         return false;
@@ -87,6 +87,72 @@ namespace AndreiUtils {
         const auto &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = &data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element is found, gets a copy of the element's value in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
+    bool mapGetIfContains(std::map<T1, T2 *, C, A> const &container, T1 const &key, T2 &value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = *data->second;  // copy data
+            return true;
+        }
+        return false;
+    }
+
+    // if element is found, gets a copy of the element's value in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 const *>>>
+    bool mapGetIfContains(std::map<T1, T2 const *, C, A> const &container, T1 const &key, T2 &value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = *data->second;  // copy data
+            return true;
+        }
+        return false;
+    }
+
+    // if element is found, gets a const pointer-copy of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
+    bool mapGetIfContains(std::map<T1, T2 *, C, A> const &container, T1 const &key, T2 const *&value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
+    bool mapGetIfContains(std::map<T1 *, T2 *, C, A> const &container, T1 const *const &key, T2 &value) {
+        const auto &data = container.find(const_cast<T1 *>(key));
+        if (data != container.end()) {
+            value = *data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 const *>>>
+    bool mapGetIfContains(std::map<T1 *, T2 const *, C, A> const &container, T1 const *const &key, T2 &value) {
+        const auto &data = container.find(const_cast<T1 *>(key));
+        if (data != container.end()) {
+            value = *data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // if element (having a pointer as key) is found, gets a const pointer-copy of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
+    bool mapGetIfContains(std::map<T1 *, T2 *, C, A> const &container, T1 const *const &key, T2 const *&value) {
+        const auto &data = container.find(const_cast<T1 *>(key));
+        if (data != container.end()) {
+            value = data->second;
             return true;
         }
         return false;
