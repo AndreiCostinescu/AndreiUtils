@@ -427,4 +427,11 @@ if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
 endif ()
 
+if (${USE_OPENMP})
+    set(EXECUTABLE TestAndreiUtilsOpenMP)
+    add_executable(${EXECUTABLE} testOpenMPFunctions.cpp)
+    target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+    target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+endif ()
+
 include(cmake/installConfig.cmake)

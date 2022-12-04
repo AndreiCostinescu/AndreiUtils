@@ -28,12 +28,6 @@
 #include <iostream>
 // #include <librealsense2/rs.hpp>
 
-#ifdef WITH_OPENMP
-
-#include <AndreiUtils/utilsOpenMP.hpp>
-
-#endif
-
 using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
@@ -497,56 +491,6 @@ void testOpenCVMatrixAccessors() {
     delete m4;
 }
 
-#ifdef WITH_OPENMP
-
-void testOMPUtils() {
-    cout << "Default settings:" << endl;
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    cout << endl;
-
-    cout << "After setting #omp threads to 12:" << endl;
-    setNumberOfOMPThreads(12);
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-}
-
-void testFastForLoop() {
-    vector<int> v(4 * maxNumberOfOMPThreads());
-    printVector(v);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-    setNumberOfOMPThreads(16);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-}
-
-#endif
-
 void testPrintingImagesOpenCV() {
     cv::Mat m = cv::Mat(300, 300, CV_8U);
     m.setTo(100);
@@ -815,7 +759,7 @@ void testEigenMatrixAddSub() {
     y.setZero();
     cout << addComponentWise<float>(y, 4) << endl;
 
-    for (int i=0; i<10; i++) {
+    for (int i = 0; i < 10; i++) {
         cout << sampleOrientation() << endl;
         cout << sampleDirection().transpose() << endl;
     }
@@ -838,9 +782,7 @@ int main() {
     // testHashable();
     // testDynamicCast();
     // testOpenCVMatrixAccessors();
-    // testOMPUtils();
     // testPrintingImagesOpenCV();
-    // testFastForLoop();
     // testOpenCVMatrixCropReference();
     // testMixedDataContainer();
     // testGraph();
