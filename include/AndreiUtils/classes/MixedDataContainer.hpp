@@ -168,7 +168,6 @@ namespace AndreiUtils {
         template<typename T>
         std::function<void(void *)> defaultDeleter() {
             return [](void *_data) {
-                std::cout << "Enter default deleter " << std::endl;
                 delete (typename std::remove_reference<T>::type *) _data;
             };
         }
