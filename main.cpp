@@ -2,6 +2,7 @@
 // Created by Andrei on 05.10.21.
 //
 
+#include <AndreiUtils/classes/AnyType.h>
 #include <AndreiUtils/classes/CrossBilateralFilter.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
@@ -765,6 +766,61 @@ void testEigenMatrixAddSub() {
     }
 }
 
+void testAnyType() {
+    AnyType x;
+    x = 24;
+    cout << (x.get<int>() == 25) << " " << x.get<int>() << endl;
+    try {
+        cout << (x.get<string>() == "Hello World!") << endl;
+    } catch (runtime_error &e) {
+        if (e.what() != string("Wrong type to cast to!")) {
+            throw e;
+        }
+    }
+    x = string("Hello World!");
+    cout << x.get<string>() << endl;
+}
+
+template<typename T>
+struct type_name {
+    static string name() { return ""; }
+};
+
+template<>
+struct type_name<A_> {
+    static string name() { return "A"; }
+};
+
+template<>
+struct type_name<B_> {
+    static string name() { return "B"; }
+};
+
+template<>
+struct type_name<C_> {
+    static string name() { return "C"; }
+};
+
+template<>
+struct type_name<D_> {
+    static string name() { return "D"; }
+};
+
+template<typename T>
+struct tmp {
+    static string tmpF(T &t) {
+        return type_name<T>::name();
+    }
+};
+
+void testTypeTraitsWithPointers() {
+    A_ *a;
+    B_ b;
+    a = &b;
+    // cout << tmp::tmpF(b) << endl;
+    // cout << tmp::tmpF(a) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -791,7 +847,8 @@ int main() {
     // testStringFindFunctions();
     // testInstanceOf();
     // testTypes();
-    testEigenMatrixAddSub();
+    // testEigenMatrixAddSub();
+    testAnyType();
 
     return 0;
 }

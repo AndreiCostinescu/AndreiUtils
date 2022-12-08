@@ -170,6 +170,7 @@ set(UTILS_CLASSES_GRAPH
         )
 
 SET(UTILS_CLASSES
+        src/classes/AnyType.cpp
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
         src/classes/MixedDataContainer.cpp
