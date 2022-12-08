@@ -163,20 +163,20 @@ class D_ : public B_, public C_ {
 };
 
 void testTypeCreator() {
-    TypeCreator<A_> creator;
-    creator.registerTypeCreator("A", []() { return new A_(); });
-    creator.registerTypeCreator("B", []() { return new B_(); });
-    creator.registerTypeCreator("C", []() { return new C_(); });
-    creator.registerTypeCreator("D", []() { return new D_(); });
+    SharedTypeCreator<A_> creator;
+    creator.registerTypeCreator("A", []() { return make_shared<A_>(); });
+    creator.registerTypeCreator("B", []() { return make_shared<B_>(); });
+    creator.registerTypeCreator("C", []() { return make_shared<C_>(); });
+    creator.registerTypeCreator("D", []() { return make_shared<D_>(); });
     auto c = creator.createType("C");
-    auto a = dynamic_cast<A_ *>(c);
-    auto b = dynamic_cast<B_ *>(c);
-    auto d = dynamic_cast<D_ *>(c);
+    auto a = dynamic_pointer_cast<A_>(c);
+    auto b = dynamic_pointer_cast<B_>(c);
+    auto d = dynamic_pointer_cast<D_>(c);
     cout << a << endl;
     cout << b << endl;
     cout << c << endl;
     cout << d << endl;
-    delete c;
+    c.reset();
 }
 
 void testIntegralAndUnsignedTypes() {
