@@ -8,6 +8,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <sstream>
 #include <string>
@@ -150,6 +151,30 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a const pointer-copy of the element in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
     bool mapGetIfContains(std::map<T1 *, T2 *, C, A> const &container, T1 const *const &key, T2 const *&value) {
+        const auto &data = container.find(const_cast<T1 *>(key));
+        if (data != container.end()) {
+            value = data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // SHARED_PTR: if element is found, gets a const pointer-copy of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
+    bool mapGetIfContains(std::map<T1, std::shared_ptr<T2>, C, A> const &container, T1 const &key,
+                          std::shared_ptr<T2 const> &value) {
+        const auto &data = container.find(key);
+        if (data != container.end()) {
+            value = data->second;
+            return true;
+        }
+        return false;
+    }
+
+    // SHARED_PTR: if element (having a pointer as key) is found, gets a const pointer-copy of the element in the variable value
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
+    bool mapGetIfContains(std::map<T1 *, std::shared_ptr<T2>, C, A> const &container, T1 const *const &key,
+                          std::shared_ptr<T2 const> &value) {
         const auto &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = data->second;
