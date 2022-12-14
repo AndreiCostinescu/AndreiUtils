@@ -11,6 +11,7 @@
 #include <functional>
 #include <iostream>
 #include <numeric>
+#include <set>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -487,6 +488,13 @@ namespace AndreiUtils {
     template<typename T>
     std::vector<T> spliceVector(std::vector<T> const &v, int startIndex, int endIndex) {
         return {v.begin() + startIndex, v.begin() + endIndex + 1};
+    }
+
+    template<typename T>
+    std::vector<T> removeDuplicates(std::vector<T> const &v) {
+        std::set<T> s(v.begin(), v.end());
+        std::vector<T> res(s.begin(), s.end());
+        return res;
     }
 }
 

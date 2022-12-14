@@ -76,6 +76,18 @@ void testSpliceVector() {
     printVector(spliceVector(x, 1, 8));
 }
 
+void testRemoveDuplicates() {
+    vector<int> x{10, 10, 10, 10, 1, 12, 13, 14, 1, 1, 1};
+    set<int> s(x.begin(), x.end());
+    for (auto &data: s) {
+        cout << data << endl;
+    }
+    vector<int> v(s.begin(), s.end());
+    printVector(v);
+    printVector(x);
+    printVector(removeDuplicates(x));
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -83,6 +95,7 @@ int main() {
     // testVectorAppendFunctions();
     // testVectorEquals();
     // testSpliceVector();
+    testRemoveDuplicates();
 
     return 0;
 }
