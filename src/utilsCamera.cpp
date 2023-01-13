@@ -131,8 +131,8 @@ void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], const CameraIntrin
         y *= r / rd;
     }
 
-    point[0] = (float) depth * x;
-    point[1] = (float) depth * y;
+    point[0] = depth * x;
+    point[1] = depth * y;
     point[2] = depth;
 }
 
