@@ -199,9 +199,9 @@ SET(UTILS_REALSENSE)
 if (USE_EIGEN)
     # depends on eigen
     SET(UTILS_EIGEN
-            src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp
+            src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp src/utilsEigenSVD.cpp
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
-            src/classes/Symmetry.cpp src/enums/EigenLeastSquaresSolver.cpp)
+            src/classes/Symmetry.cpp src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
