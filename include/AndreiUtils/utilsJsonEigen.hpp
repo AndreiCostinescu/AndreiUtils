@@ -136,6 +136,7 @@ namespace nlohmann {
 
             typedef std::vector<Scalar> V;
             V jsonData = j["data"].get<V>();
+            data.setZero(currentRows, currentCols);
             for (int r = 0; r < currentRows; r++) {
                 for (int c = 0; c < currentCols; c++) {
                     data(r, c) = jsonData[r * currentCols + c];
