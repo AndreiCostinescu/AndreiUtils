@@ -19,17 +19,14 @@ namespace AndreiUtils {
     };
 
     class PythonInterface {
-    protected:
-        static PythonInterpreterGuard guard;
-        std::map<std::string, py::function> functions;
-        py::module module;
-
     public:
         PythonInterface();
 
-        PythonInterface(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames);
+        PythonInterface(std::string const &moduleName, std::vector<std::string> const &toImportFunctionNames);
 
-        void reInitialize(const std::string &moduleName, const std::vector<std::string> &toImportFunctionNames);
+        virtual ~PythonInterface();
+
+        void reInitialize(std::string const &moduleName, std::vector<std::string> const &toImportFunctionNames);
 
         std::map<std::string, py::function> &getFunctions();
 
@@ -43,6 +40,15 @@ namespace AndreiUtils {
             }
             return (*functionPtr)(args...);
         }
+
+        void cleanup();
+
+        [[nodiscard]] size_t getFunctionSize() const;
+
+    protected:
+        static PythonInterpreterGuard guard;
+        std::map<std::string, py::function> functions;
+        py::module module;
     };
 }
 
