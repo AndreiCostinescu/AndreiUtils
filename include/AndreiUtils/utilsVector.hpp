@@ -6,6 +6,7 @@
 #define ANDREIUTILS_UTILSVECTOR_HPP
 
 #include <algorithm>
+#include <AndreiUtils/enums/StabilityCriterionOperation.h>
 #include <AndreiUtils/utils.hpp>
 #include <cstring>
 #include <functional>
@@ -388,41 +389,71 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool isSequenceStable(std::vector<T> const &sequence, const T &avg,
-                          const std::function<double(const T &, const T &)> &op, double stabilityThreshold = 0.5,
-                          bool verbose = false) {
-        double sumOfSquaredDifferences = 0.;
+    bool isSequenceStable(std::vector<T> const &sequence, T const &avg,
+                          std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 0.5,
+                          StabilityCriterionOperation criterion = SUM, bool verbose = false) {
+        double stabilityCoefficient = 0.;
         for (const auto &element: sequence) {
-            sumOfSquaredDifferences += op(element, avg);
+            switch (criterion) {
+                case AVERAGE_OF_SUM:
+                case SUM: {
+                    stabilityCoefficient += op(element, avg);
+                    break;
+                }
+                case AVERAGE_OF_SUM_OF_SQUARES: {
+                    stabilityCoefficient += pow(op(element, avg), 2);
+                    break;
+                }
+                default: {
+                    throw std::runtime_error("Unknown StabilityCriterionOperation!");
+                    break;
+                }
+            }
+        }
+        switch (criterion) {
+            case AVERAGE_OF_SUM:
+            case AVERAGE_OF_SUM_OF_SQUARES: {
+                stabilityCoefficient /= sequence.size();
+                break;
+            }
+            case SUM: {
+                break;
+            }
+            default: {
+                throw std::runtime_error("Unknown StabilityCriterionOperation!");
+                break;
+            }
         }
         if (verbose) {
-            std::cout << "Sum of squared differences for relative pose = " << sumOfSquaredDifferences << std::endl;
+            std::cout << "Stability coefficient = " << stabilityCoefficient << std::endl;
         }
-        return sumOfSquaredDifferences < stabilityThreshold;
+        return stabilityCoefficient < stabilityThreshold;
     }
 
     template<class T>
-    bool isSequenceStable(std::vector<T> const &sequence, const T &avg, double stabilityThreshold = 0.5,
+    bool isSequenceStable(std::vector<T> const &sequence, T const &avg, double stabilityThreshold = 0.5,
+                          StabilityCriterionOperation criterion = SUM, bool verbose = false) {
+        return isSequenceStable(sequence, avg, [](T const &t1, T const &t2) { return std::abs(t1 - t2); },
+                                stabilityThreshold, criterion, verbose);
+    }
+
+    template<class T>
+    bool isSequenceStable(std::vector<T> const &sequence, double stabilityThreshold = 0.5,
+                          StabilityCriterionOperation criterion = SUM, bool verbose = false) {
+        if (sequence.empty()) {
+            return true;
+        }
+        return isSequenceStable(sequence, average(sequence), stabilityThreshold, criterion, verbose);
+    }
+
+    template<class T>
+    bool isSequenceStable(std::vector<T> const &sequence, std::function<double(T const &, T const &)> const &op,
+                          double stabilityThreshold = 0.5, StabilityCriterionOperation criterion = SUM,
                           bool verbose = false) {
-        return isSequenceStable(sequence, avg, [](const T &t1, const T &t2) { return std::abs(t1 - t2); },
-                                stabilityThreshold, verbose);
-    }
-
-    template<class T>
-    bool isSequenceStable(std::vector<T> const &sequence, double stabilityThreshold = 0.5, bool verbose = false) {
         if (sequence.empty()) {
             return true;
         }
-        return isSequenceStable(sequence, average(sequence), stabilityThreshold, verbose);
-    }
-
-    template<class T>
-    bool isSequenceStable(std::vector<T> const &sequence, std::function<double(const T &, const T &)> const &op,
-                          double stabilityThreshold = 0.5, bool verbose = false) {
-        if (sequence.empty()) {
-            return true;
-        }
-        return isSequenceStable(sequence, average(sequence), op, stabilityThreshold, verbose);
+        return isSequenceStable(sequence, average(sequence), op, stabilityThreshold, criterion, verbose);
     }
 
     template<class T>

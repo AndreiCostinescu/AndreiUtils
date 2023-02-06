@@ -250,13 +250,14 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
-        bool isWindowStable(double stabilityThreshold = 1e-9, bool verbose = false) const {
-            return isSequenceStable(this->getData(), stabilityThreshold, verbose);
+        bool isWindowStable(double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                            bool verbose = false) const {
+            return isSequenceStable(this->getData(), stabilityThreshold, criterion, verbose);
         }
 
-        bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
-            return isSequenceStable(this->getData(), op, stabilityThreshold, verbose);
+        bool isWindowStable(std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+            return isSequenceStable(this->getData(), op, stabilityThreshold, criterion, verbose);
         }
 
     protected:
@@ -374,17 +375,17 @@ namespace AndreiUtils {
             return this->validData;
         }
 
-        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
+        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold,
-                                    verbose);
+                                    criterion, verbose);
         }
 
         bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            InvalidValuesHandlingMode invalidValuesHandlingMode,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
+                            InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold,
-                                    verbose);
+                                    criterion, verbose);
         }
 
     protected:
