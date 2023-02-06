@@ -66,6 +66,14 @@ option(WITH_OPENMP "Build the code with openmp" OFF)
 option(WITH_PTHREAD "Build the code with pthread" OFF)
 option(WITH_PYTHON "Build the code with pybind" OFF)
 option(WITH_REALSENSE "Build the code with librealsense" OFF)
+option(WITH_PCL_OPTIMIZATION_FLAGS "Use optimization flags used by PCL to compile a compatible interface to EIGEN types" ON)
+set(PCL_OPTIMIZATION_FLAGS)
+if (${WITH_PCL_OPTIMIZATION_FLAGS})
+    find_package(PCL REQUIRED COMPONENTS common)
+    get_target_property(OUTPUT pcl_common INTERFACE_COMPILE_OPTIONS)
+    set(PCL_OPTIMIZATION_FLAGS ${OUTPUT})
+    message(STATUS "PCL optimization flags = ${PCL_OPTIMIZATION_FLAGS}")
+endif ()
 
 set(OPENCV_VERSION "" CACHE STRING "The opencv version to use in the project")
 set(PYBIND11_PYTHON_VERSION "3.7" CACHE STRING "The python version to use in the project")
@@ -340,18 +348,18 @@ endif ()
 if (USE_EIGEN)
     # EIGEN_UTILS
     set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
-    AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen" EIGEN_UTILS LIBRARY_LINK_TARGETS)
+    AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen" EIGEN_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
 
     if (USE_OPENCV)
         # EIGEN_OPENCV_UTILS
         set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_opencv)
-        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_opencv" EIGEN_OPENCV_UTILS LIBRARY_LINK_TARGETS)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_opencv" EIGEN_OPENCV_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
     endif ()
 
     if (USE_REALSENSE)
         # EIGEN_REALSENSE_UTILS
         set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_realsense)
-        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_realsense" EIGEN_REALSENSE_UTILS LIBRARY_LINK_TARGETS)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_realsense" EIGEN_REALSENSE_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
     endif ()
 endif ()
 
@@ -376,7 +384,7 @@ append(${LIBRARY_NAME} UTILS_USE_PROJECT)
 set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
 
-AndreiUtilsAddTarget("${TARGET_LIBRARY}" UTILS ANDREI_UTILS_REQUIRED_LIBS)
+AndreiUtilsAddTarget("${TARGET_LIBRARY}" UTILS ANDREI_UTILS_REQUIRED_LIBS PCL_OPTIMIZATION_FLAGS)
 set(ANDREI_UTILS_REQUIRED_LIBS ${TARGET_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
 
 if (${USE_OPENCV})
