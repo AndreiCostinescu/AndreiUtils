@@ -289,6 +289,20 @@ namespace AndreiUtils {
         return x.first;
     }
 
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
+    void mapAddIfNotContains(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+        if (!mapContains(container, key)) {
+            mapEmplace(container, key, value);
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
+    void mapAddIfNotContains(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+        if (!mapContains(container, const_cast<T1 *>(key))) {
+            mapEmplace(container, const_cast<T1 *>(key), value);
+        }
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapDelete(std::map<T1, T2, C, A> &container, T1 const &key) {
         return (container.erase(key) > 0);
