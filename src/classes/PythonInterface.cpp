@@ -10,7 +10,7 @@ using namespace std;
 
 PythonInterpreterGuard PythonInterface::guard;  // NOLINT(cert-err58-cpp)
 
-PythonInterface::PythonInterface() : module(), functions() {}
+PythonInterface::PythonInterface() noexcept : module(), functions() {}
 
 PythonInterface::PythonInterface(string const &moduleName, vector<string> const &toImportFunctionNames) :
         PythonInterface() {

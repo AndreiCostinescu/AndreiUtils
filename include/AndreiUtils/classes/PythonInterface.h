@@ -20,7 +20,7 @@ namespace AndreiUtils {
 
     class PythonInterface {
     public:
-        PythonInterface();
+        PythonInterface() noexcept;
 
         PythonInterface(std::string const &moduleName, std::vector<std::string> const &toImportFunctionNames);
 
