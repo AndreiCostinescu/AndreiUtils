@@ -109,6 +109,31 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    bool inRangeLELE(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return lessEqual(min, value, tol) && lessEqual(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLLE(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return less(min, value, tol) && lessEqual(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLEL(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return lessEqual(min, value, tol) && less(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLL(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return less(min, value, tol) && less(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRange(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return inRangeLELE(value, min, max, tol);
+    }
+
+    template<typename T>
     void bringValueInCircularInterval(T &v, T const &minInterval, T const &maxInterval, double tol = 1e-9) {
         T intervalSize = maxInterval - minInterval;
         while (AndreiUtils::less<T>(v, minInterval, tol)) {
