@@ -87,6 +87,7 @@ namespace AndreiUtils {
             this->d.x() = coefficients[5];
             this->d.y() = coefficients[6];
             this->d.z() = coefficients[7];
+            this->normalize();
         }
 
         [[nodiscard]] double coefficientNorm() const {
