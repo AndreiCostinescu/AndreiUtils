@@ -596,7 +596,7 @@ void testTypes() {
 
     CPC<int> x15 = aPtr;
     CPR<int> x16 = aCPtr;
-    CPU<int> x17 = std::move(aPtr);
+    CPU<int> x17 = std::move(aCPtr);
     PCR<int> x18 = aPtr;
     PCU<int> x19 = std::move(aPtr);
     VCP<int> x20 = &a;
