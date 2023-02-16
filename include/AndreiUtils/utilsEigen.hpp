@@ -140,14 +140,14 @@ namespace AndreiUtils {
     bool checkInsideTriangles(
             Eigen::Matrix<T, 3, 1> const &p0, Eigen::Matrix<T, 3, -1> const &surfaceMatrix,
             Eigen::Matrix<T, -1, 3> const &otherShiftedPoints, Eigen::Index const &surfacePointCount,
-            Eigen::Index const &otherPointCount, Eigen::Matrix<T, 3, -1> *otherSurfaceMatrix,
-            Eigen::Matrix<T, 3, 1> *otherProjectedP0, bool verbose) {
+            Eigen::Index const &otherPointCount, Eigen::Matrix<T, 3, -1> *otherSurfaceMatrix = nullptr,
+            Eigen::Matrix<T, 3, 1> *otherProjectedP0 = nullptr, bool verbose = false) {
         bool withSettingOtherData = otherSurfaceMatrix != nullptr && otherProjectedP0 != nullptr;
         Eigen::Matrix3d leastSquaresMatrixA;
         leastSquaresMatrixA.col(2) = surfaceMatrix.col(surfacePointCount - 1);
         Eigen::Matrix3Xd coefficients;
         for (int surfaceVectorPairIndex = 0; surfaceVectorPairIndex < surfacePointCount - 2; ++surfaceVectorPairIndex) {
-            leastSquaresMatrixA.leftCols<2>() = surfaceMatrix.middleCols<2>(surfaceVectorPairIndex);
+            leastSquaresMatrixA.template leftCols<2>() = surfaceMatrix.template middleCols<2>(surfaceVectorPairIndex);
             coefficients = AndreiUtils::leastSquares(leastSquaresMatrixA, otherShiftedPoints.transpose());
             if (verbose) {
                 std::cout << "Coefficient matrix =" << std::endl << coefficients << std::endl;

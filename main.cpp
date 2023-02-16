@@ -687,6 +687,10 @@ void testTypeTraitsWithPointers() {
     // cout << tmp::tmpF(a) << endl;
 }
 
+void testSurfaceTriangle() {
+    checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -709,7 +713,8 @@ int main() {
     // testInstanceOf();
     // testTypes();
     // testEigenMatrixAddSub();
-    testAnyType();
+    // testAnyType();
+    testSurfaceTriangle();
 
     return 0;
 }
