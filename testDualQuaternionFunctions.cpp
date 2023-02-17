@@ -172,13 +172,21 @@ void testTransformationMatrixToDualQuaternion() {
     cout << qFromRotationMatrix((Matrix3d)  m2.transpose()) << endl;
 }
 
+void testRotationEquivalence() {
+    Vector3d v(4, 2, 3);
+    Posed q(sampleOrientation(), qZero<double>());
+    cout << q.rotate(v).transpose() << endl;
+    cout << (q.getRotationAsMatrix() * v).transpose() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testDualQuaternions();
     // testTheSameOperations();
     // testLowPassFilterQuaternion();
-    testTransformationMatrixToDualQuaternion();
+    // testTransformationMatrixToDualQuaternion();
+    testRotationEquivalence();
 
     return 0;
 }
