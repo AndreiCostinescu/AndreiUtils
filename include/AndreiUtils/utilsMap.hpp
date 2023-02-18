@@ -418,9 +418,37 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void filterAndOperateOnMap(std::map<T1, T2, C, A> &container,
+                               std::function<void(typename std::map<T1, T2, C, A>::iterator const &)> const &op,
+                               std::function<bool(T1 const &, T2 const &)> const &predicate) {
+        for (auto elem = container.cbegin(); elem != container.cend();) {
+            op(elem);
+            if (predicate(elem->first, elem->second)) {
+                elem = container.erase(elem);
+            } else {
+                ++elem;
+            }
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void filterAndOperateOnMap(std::map<T1, T2, C, A> &container,
+                               std::function<void(typename std::map<T1, T2, C, A>::iterator &)> const &op,
+                               std::function<bool(T1 const &, T2 const &)> const &predicate) {
+        for (auto elem = container.begin(); elem != container.end();) {
+            op(elem);
+            if (predicate(elem->first, elem->second)) {
+                elem = container.erase(elem);
+            } else {
+                ++elem;
+            }
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void filterMapBasedOnPredicate(std::map<T1, T2, C, A> &container,
                                    std::function<bool(T1 const &, T2 const &)> const &predicate) {
-        for (auto elem = container.begin(); elem != container.end();) {
+        for (auto elem = container.cbegin(); elem != container.cend();) {
             if (predicate(elem->first, elem->second)) {
                 elem = container.erase(elem);
             } else {
