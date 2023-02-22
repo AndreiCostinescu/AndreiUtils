@@ -160,9 +160,9 @@ namespace AndreiUtils {
             return this->dataSize;
         }
 
-        void addData(T newData) {
+        void addData(T &&newData) {
             assert(this->size > 0);
-            this->data[this->index] = newData;
+            this->data[this->index] = std::move(newData);
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -173,9 +173,9 @@ namespace AndreiUtils {
             // std::cout << this->index << "; " << this->dataSize << "; " << this->size << "; " << std::endl;
         }
 
-        void addMoveData(T &newData) {
+        void addCopyData(T const &newData) {
             assert(this->size > 0);
-            this->data[this->index] = std::move(newData);
+            this->data[this->index] = newData;
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -293,16 +293,16 @@ namespace AndreiUtils {
     public:
         explicit SlidingWindowWithInvalidValues(unsigned size = 0) : SlidingWindow<T>(size), validData(size) {}
 
-        void addData(T newData, bool valid = true) {
+        void addData(T &&newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addData(newData);
+            SlidingWindow<T>::addData(std::move(newData));
         }
 
-        void addMoveData(T &newData, bool valid = true) {
+        void addCopyData(T const &newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addMoveData(newData);
+            SlidingWindow<T>::addCopyData(newData);
         }
 
         T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters,
