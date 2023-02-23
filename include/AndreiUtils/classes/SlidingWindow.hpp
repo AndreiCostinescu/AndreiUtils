@@ -31,8 +31,13 @@ namespace AndreiUtils {
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
                 // this->index = fastMin(this->index, this->containerDataSize + 1);
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
@@ -101,8 +106,13 @@ namespace AndreiUtils {
                                    unsigned index) :
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
