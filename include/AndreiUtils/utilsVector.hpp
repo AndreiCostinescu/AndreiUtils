@@ -79,7 +79,7 @@ namespace AndreiUtils {
 
     template<class T>
     bool vectorContains(std::vector<T> const &container, std::function<bool(T const &)> const &predicate,
-                        std::size_t *position = nullptr) {
+                        std::size_t *const &position = nullptr) {
         for (size_t i = 0; i < container.size(); i++) {
             if (predicate(container[i])) {
                 if (position != nullptr) {
@@ -92,7 +92,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorContains(std::vector<T> const &container, T const &key, std::size_t *position = nullptr) {
+    bool vectorContains(std::vector<T> const &container, T const &key, std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -104,7 +104,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T *&key, std::size_t *position = nullptr) {
+    bool vectorContains(std::vector<T *> const &container, T *&key, std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -116,7 +116,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T *const &key, std::size_t *position = nullptr) {
+    bool vectorContains(std::vector<T *> const &container, T *const &key, std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -128,7 +128,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T const *&key, std::size_t *position = nullptr) {
+    bool vectorContains(std::vector<T *> const &container, T const *&key, std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -140,7 +140,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorContains(const std::vector<T *> &container, T const *const &key, std::size_t *position = nullptr) {
+    bool vectorContains(std::vector<T *> const &container, T const *const &key,
+                        std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -152,19 +153,54 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void vectorRemoveFirstValueMatch(std::vector<T> &container, T const &value) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, T const &value) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
                 container.erase(i);
-                return;
+                return true;
             }
         }
+        return false;
+    }
+
+    template<class T>
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
+        for (auto i = container.begin(); i != container.end(); ++i) {
+            if (predicate(*i)) {
+                container.erase(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, std::function<bool(T const &)> const &predicate,
+                                     T &removedData) {
+        for (auto i = container.begin(); i != container.end(); ++i) {
+            if (predicate(*i)) {
+                removedData = std::move(*i);
+                container.erase(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     template<class T>
     void vectorRemoveAllValueMatches(std::vector<T> &container, T const &value) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
+                container.erase(i);
+                i--;
+            }
+        }
+    }
+
+    template<class T>
+    void vectorRemoveAllValueMatches(std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
+        for (auto i = container.begin(); i != container.end(); ++i) {
+            if (predicate(*i)) {
                 container.erase(i);
                 i--;
             }
