@@ -74,6 +74,10 @@ void testSpliceVector() {
     }
     printVector(spliceVector(x, 0, 9));
     printVector(spliceVector(x, 1, 8));
+
+    printVector(spliceVector(x, 6, 4));
+    printVector(spliceVector(x, 0, -1));
+    printVector(spliceVector(x, 10, 9));
 }
 
 void testRemoveDuplicates() {
@@ -94,8 +98,8 @@ int main() {
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testVectorAppendFunctions();
     // testVectorEquals();
-    // testSpliceVector();
-    testRemoveDuplicates();
+    testSpliceVector();
+    // testRemoveDuplicates();
 
     return 0;
 }

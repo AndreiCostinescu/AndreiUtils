@@ -99,8 +99,13 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T clamp(T const &v, T const &minV, T const &maxV) {
+    [[nodiscard]] inline T clamp(T const &v, T const &minV, T const &maxV) {
         return fastMin(fastMax(v, minV), maxV);
+    }
+
+    template<typename T>
+    void clampInPlace(T &v, T const &minV, T const &maxV) {
+        v = clamp(v, minV, maxV);
     }
 
     template<typename T>

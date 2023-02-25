@@ -518,6 +518,11 @@ namespace AndreiUtils {
      */
     template<typename T>
     std::vector<T> spliceVector(std::vector<T> const &v, int startIndex, int endIndex) {
+        if (startIndex > endIndex) {
+            return {};
+        }
+        startIndex = AndreiUtils::clamp<size_t>(startIndex, 0, v.size() - 1);
+        endIndex = AndreiUtils::clamp<size_t>(endIndex, 0, v.size() - 1);
         return {v.begin() + startIndex, v.begin() + endIndex + 1};
     }
 
