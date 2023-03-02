@@ -5,6 +5,7 @@
 #ifndef ANDREIUTILS_UTILSOPENCV_HPP
 #define ANDREIUTILS_UTILSOPENCV_HPP
 
+#include <AndreiUtils/utils.hpp>
 #include <functional>
 #include <opencv2/opencv.hpp>
 
@@ -81,6 +82,16 @@ namespace AndreiUtils {
             }
             return (ReturnType) m->template at<MatrixElementType>(_y, _x);
         };
+    }
+
+    template<typename T>
+    cv::Point_<T> clampX(cv::Point_<T> const &p, T const &min, T const &max) {
+        return {AndreiUtils::clamp<T>(p.x, min, max), p.y};
+    }
+
+    template<typename T>
+    cv::Point_<T> clampY(cv::Point_<T> const &p, T const &min, T const &max) {
+        return {p.x, AndreiUtils::clamp<T>(p.y, min, max)};
     }
 }
 
