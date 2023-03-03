@@ -15,7 +15,9 @@ namespace AndreiUtils {
     template<typename NodeId=int, typename EdgeId=std::string>
     class Graph {
         using NodeT = Node<NodeId>;
+        using NodeTPtr = std::shared_ptr<NodeT>;
         using EdgeT = Edge<EdgeId, NodeId>;
+        using EdgeTPtr = std::shared_ptr<EdgeT>;
         using EdgeIdFunction = std::function<EdgeId(NodeId const &, NodeId const &)>;
     public:
         explicit Graph(bool withMultipleEdges = false, bool withSelfEdges = false) :
@@ -25,33 +27,15 @@ namespace AndreiUtils {
                 nodes(other.nodes), edges(other.edges), edgesFromNodeIds(other.edgesFromNodeIds),
                 neighbors(other.neighbors), withMultipleEdges(other.withMultipleEdges),
                 withSelfEdges(other.withSelfEdges), incomingEdges(other.incomingEdges),
-                outgoingEdges(other.outgoingEdges) {
-            for (auto const &allocatedData: other.allocatedNodes) {
-                this->allocatedNodes[allocatedData.first] = false;
-            }
-            for (auto const &allocatedData: other.allocatedEdges) {
-                this->allocatedEdges[allocatedData.first] = false;
-            }
-        }
+                outgoingEdges(other.outgoingEdges) {}
 
         Graph(Graph &&other) noexcept:
                 nodes(std::move(other.nodes)), edges(std::move(other.edges)),
                 edgesFromNodeIds(std::move(other.edgesFromNodeIds)), neighbors(std::move(other.neighbors)),
-                allocatedNodes(std::move(other.allocatedNodes)), allocatedEdges(std::move(other.allocatedEdges)),
-                withMultipleEdges(std::move(other.withMultipleEdges)), incomingEdges(std::move(other.incomingEdges)),
-                outgoingEdges(std::move(other.outgoingEdges)), withSelfEdges(std::move(other.withSelfEdges)) {}
+                withMultipleEdges(std::move(other.withMultipleEdges)), withSelfEdges(std::move(other.withSelfEdges)),
+                incomingEdges(std::move(other.incomingEdges)), outgoingEdges(std::move(other.outgoingEdges)) {}
 
         virtual ~Graph() {
-            for (auto const &allocatedData: this->allocatedNodes) {
-                if (allocatedData.second) {
-                    delete mapGet(this->nodes, allocatedData.first);
-                }
-            }
-            for (auto const &allocatedData: this->allocatedEdges) {
-                if (allocatedData.second) {
-                    delete mapGet(this->edges, allocatedData.first);
-                }
-            }
             this->clear();
         }
 
@@ -67,12 +51,6 @@ namespace AndreiUtils {
             this->incomingEdges = other.incomingEdges;
             this->outgoingEdges = other.outgoingEdges;
             this->neighbors = other.neighbors;
-            for (auto const &allocatedData: other.allocatedNodes) {
-                this->allocatedNodes[allocatedData.first] = false;
-            }
-            for (auto const &allocatedData: other.allocatedEdges) {
-                this->allocatedEdges[allocatedData.first] = false;
-            }
             return *this;
         }
 
@@ -88,9 +66,7 @@ namespace AndreiUtils {
             this->incomingEdges = std::move(other.incomingEdges);
             this->outgoingEdges = std::move(other.outgoingEdges);
             this->neighbors = std::move(other.neighbors);
-            this->allocatedNodes = std::move(other.allocatedNodes);
-            this->allocatedEdges = std::move(other.allocatedEdges);
-            other.clear();
+            // other.clear();
             return *this;
         }
 
@@ -98,23 +74,21 @@ namespace AndreiUtils {
             this->withMultipleEdges = false;
             this->withSelfEdges = false;
             this->nodes.clear();
-            this->allocatedNodes.clear();
             this->edges.clear();
-            this->allocatedEdges.clear();
             this->incomingEdges.clear();
             this->outgoingEdges.clear();
             this->edgesFromNodeIds.clear();
             this->neighbors.clear();
         }
 
-        void addNode(NodeId const &n, NodeData *nodeData = nullptr, bool passOwnership = false) {
-            this->addNode(new NodeT(n, nodeData, passOwnership), true);
+        void addNode(NodeId const &n, std::shared_ptr<NodeData> nodeData = nullptr) {
+            this->addNode(std::make_shared<NodeT>(n, std::move(nodeData)));
         }
 
         // the function only accepts r-values as nodeData parameter
         template<class T>
         void addNode(NodeId const &n, T &&nodeData) {
-            this->addNode(new NodeT(n, std::move(nodeData)), true);
+            this->addNode(std::make_shared<NodeT>(n, std::move(nodeData)));
         }
 
         // needed for the above to only accept r-values
@@ -123,41 +97,41 @@ namespace AndreiUtils {
 
         // this will allocate new data; only accept r-values
         void addNode(NodeT &&n) {
-            this->addNode(new NodeT(std::move(n)), true);
+            this->addNode(std::make_shared<NodeT>(std::move(n)));
         }
 
         // needed for the above to only accept r-values
         void addNode(NodeT &n) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
-        void addNode(NodeT *n) {
-            this->addNode(n, false);
+        void addNode(std::shared_ptr<NodeT> n) {
+            this->addNode(std::move(n));
         }
 
         void removeNode(NodeId const &nodeId) {
-            NodeT *const &node = mapGet(this->nodes, nodeId);
+            NodeTPtr const &node = mapGet(this->nodes, nodeId);
             this->removeNode(node);
         }
 
         void removeNode(NodeT const &node) {
-            this->removeNode(&node);
+            this->removeNode(node.getId());
         }
 
         void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId,
-                     EdgeData *edgeData = nullptr, bool passOwnership = false) {
-            this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
-                                    [&](NodeT const &_n1, NodeT const &_n2) {
-                                        return createEdgeId(_n1.getId(), _n2.getId());
-                                    }, edgeData, passOwnership), true);
+                     std::shared_ptr<EdgeData> edgeData = nullptr) {
+            this->addEdge(EdgeT(mapGet(this->nodes, n1), mapGet(this->nodes, n2),
+                                [&](NodeT const &_n1, NodeT const &_n2) {
+                                    return createEdgeId(_n1.getId(), _n2.getId());
+                                }, std::move(edgeData)));
         }
 
         // the function only accepts r-values as edgeData parameter
         template<class T>
         void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId, T &&edgeData) {
-            this->addEdge(new EdgeT(*mapGet(this->nodes, n1), *mapGet(this->nodes, n2),
-                                    [&](NodeT const &_n1, NodeT const &_n2) {
-                                        return createEdgeId(_n1.getId(), _n2.getId());
-                                    }, std::move(edgeData)), true);
+            this->addEdge(EdgeT(mapGet(this->nodes, n1), mapGet(this->nodes, n2),
+                                [&](NodeT const &_n1, NodeT const &_n2) {
+                                    return createEdgeId(_n1.getId(), _n2.getId());
+                                }, std::move(edgeData)));
         }
 
         // needed for the above to only accept r-values
@@ -166,15 +140,15 @@ namespace AndreiUtils {
 
         // this will allocate new data; only accept r-values
         void addEdge(EdgeT &&e) {
-            this->addEdge(new EdgeT(std::move(e)), true);
+            this->addEdge(std::make_shared<EdgeT>(std::move(e)));
         }
 
         // needed for the above to only accept r-values
         void addEdge(EdgeT &e) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
-        void addEdge(EdgeT *e) {
-            this->addEdge(e, false);
+        void addEdge(std::shared_ptr<EdgeT> e) {
+            this->addEdge(std::move(e));
         }
 
         // Don't allow setting the edgeData here (if EdgeData derived class has pointers this will create a copy)
@@ -183,17 +157,17 @@ namespace AndreiUtils {
             auto convert = [&](NodeT const &_n1, NodeT const &_n2) { return createEdgeId(_n1.getId(), _n2.getId()); };
             auto &_n1 = mapGet(this->nodes, n1);
             auto &_n2 = mapGet(this->nodes, n2);
-            this->addEdge(new EdgeT(*_n1, *_n2, convert), true);
-            this->addEdge(new EdgeT(*_n2, *_n1, convert), true);
+            this->addEdge(EdgeT(_n1, _n2, convert));
+            this->addEdge(EdgeT(_n2, _n1, convert));
         }
 
         void removeEdge(EdgeId const &edgeId) {
-            EdgeT *const &edge = mapGet(this->edges, edgeId);
+            EdgeTPtr const &edge = mapGet(this->edges, edgeId);
             this->removeEdge(edge);
         }
 
         void removeEdge(EdgeT const &edge) {
-            this->removeEdge(&edge);
+            this->removeEdge(edge.getId());
         }
 
         void removeEdges(NodeId const &n1, NodeId const &n2) {
@@ -202,78 +176,78 @@ namespace AndreiUtils {
             }
         }
 
-        inline size_t getNrNodes() const {
+        [[nodiscard]] size_t getNrNodes() const {
             return this->nodes.size();
         }
 
-        inline size_t getNrEdges() const {
+        [[nodiscard]] size_t getNrEdges() const {
             return this->edges.size();
         }
 
-        std::map<NodeId, NodeT *const> &getNodes() {
+        [[nodiscard]] std::map<NodeId, NodeTPtr const> &getNodes() {
             return this->nodes;
         }
 
-        std::map<NodeId, NodeT *const> const &getNodes() const {
+        [[nodiscard]] std::map<NodeId, NodeTPtr const> const &getNodes() const {
             return this->nodes;
         }
 
-        std::map<EdgeId, EdgeT *const> &getEdges() {
+        [[nodiscard]] std::map<EdgeId, EdgeTPtr const> &getEdges() {
             return this->edges;
         }
 
-        std::map<EdgeId, EdgeT *const> const &getEdges() const {
+        [[nodiscard]] std::map<EdgeId, EdgeTPtr const> const &getEdges() const {
             return this->edges;
         }
 
-        bool hasNode(NodeId const &nodeId) const {
+        [[nodiscard]] bool hasNode(NodeId const &nodeId) const {
             return mapContains(this->nodes, nodeId);
         }
 
-        bool hasEdge(EdgeId const &edgeId) const {
+        [[nodiscard]] bool hasEdge(EdgeId const &edgeId) const {
             return mapContains(this->edges, edgeId);
         }
 
-        NodeT const *getNode(NodeId const &nodeId) const {
+        [[nodiscard]] NodeTPtr const &getNode(NodeId const &nodeId) const {
             return mapGet(this->nodes, nodeId);
         }
 
-        EdgeT const *getEdge(EdgeId const &edgeId) const {
+        [[nodiscard]] EdgeTPtr const &getEdge(EdgeId const &edgeId) const {
             return mapGet(this->edges, edgeId);
         }
 
-        std::map<EdgeT *, bool> const &getEdges(std::pair<NodeId, NodeId> const &edgeId) const {
+        [[nodiscard]] std::map<EdgeTPtr, bool> const &getEdges(std::pair<NodeId, NodeId> const &edgeId) const {
             return mapGet(this->edgesFromNodeIds, edgeId);
         }
 
-        std::map<NodeId, std::map<NodeT *, int>> const &getNeighbors() const {
+        [[nodiscard]] std::map<NodeId, std::map<NodeTPtr, int>> const &getNeighbors() const {
             return this->neighbors;
         }
 
-        std::map<NodeT *, int> const *getNeighbors(NodeT const *const n) const {
+        [[nodiscard]] std::map<NodeTPtr, int> const *getNeighbors(NodeTPtr const &n) const {
             return this->getNeighbors(n->getId());
         }
 
-        std::map<NodeT *, int> const *getNeighbors(NodeId const &nId) const {
+        [[nodiscard]] std::map<NodeTPtr, int> const *getNeighbors(NodeId const &nId) const {
             if (!mapContains(this->neighbors, nId)) {
                 return nullptr;
             }
             return &mapGet(this->neighbors, nId);
         }
 
-        std::map<NodeId, std::map<EdgeT *, bool>> &getIncomingEdgesForEachNode() {
+        [[nodiscard]] std::map<NodeId, std::map<EdgeTPtr, bool>> &getIncomingEdgesForEachNode() {
             return this->incomingEdges;
         }
 
-        std::map<NodeId, std::map<EdgeT *, bool>> const &getIncomingEdgesForEachNode() const {
+        [[nodiscard]] std::map<NodeId, std::map<EdgeTPtr, bool>> const &getIncomingEdgesForEachNode() const {
             return this->incomingEdges;
         }
 
-        std::map<NodeId, std::map<EdgeT *, bool>> &getOutgoingEdgesForEachNode() {
+        [[nodiscard]] std::map<NodeId, std::map<EdgeTPtr, bool>> &getOutgoingEdgesForEachNode() {
             return this->outgoingEdges;
         }
 
-        std::map<NodeId, std::map<EdgeT *, bool>> const &getOutgoingEdgesForEachNode() const {
+        [[nodiscard]] std::map<NodeId, std::map<EdgeTPtr, bool>> const &getOutgoingEdgesForEachNode() const {
             return this->outgoingEdges;
         }
 
@@ -282,9 +256,9 @@ namespace AndreiUtils {
                 throw std::runtime_error("Edge to be changed already exists in the graph!");
             }
             auto &edge = mapGet(this->edges, edgeId);
-            NodeT *const &newN1 = mapGet(this->nodes, newN1Id);
-            NodeT *const &newN2 = mapGet(this->nodes, newN2Id);
-            NodeT *const &n2 = edge->getN2();
+            NodeTPtr const &newN1 = mapGet(this->nodes, newN1Id);
+            NodeTPtr const &newN2 = mapGet(this->nodes, newN2Id);
+            NodeTPtr const &n2 = edge->getN2();
             NodeId const &n1Id = edge->getN1()->getId(), &n2Id = n2->getId();
 
             if (n1Id == newN1Id && n2Id == newN2Id) {
@@ -314,27 +288,26 @@ namespace AndreiUtils {
             edge->update(newEdgeId, newN1, newN2);
             if (edgeId != newEdgeId) {
                 mapDelete(this->edges, edgeId);
-                mapAdd<EdgeId, EdgeT *const>(this->edges, newEdgeId, edge);
+                mapAdd<EdgeId, EdgeTPtr const>(this->edges, newEdgeId, edge);
                 this->allocatedEdges[newEdgeId] = this->allocatedEdges[edgeId];
                 mapDelete(this->allocatedEdges, edgeId);
             }
         }
 
     protected:
-        void addNode(NodeT *node, bool allocatedData) {
+        void addNode(NodeTPtr const &node, bool allocatedData) {
             if (node == nullptr) {
                 throw std::runtime_error("Node can not be a nullptr!");
             }
             if (mapContains(this->nodes, node->getId())) {
                 throw std::runtime_error("Node is already present in the graph!");
             }
-            mapAdd<NodeId, NodeT *const>(this->nodes, node->getId(), node);
-            this->allocatedNodes[node->getId()] = allocatedData;
+            mapAdd<NodeId, NodeTPtr const>(this->nodes, node->getId(), node);
             this->incomingEdges[node->getId()];  // create the empty-map value
             this->outgoingEdges[node->getId()];  // create the empty-map value
         }
 
-        void addEdge(EdgeT *edge, bool allocatedData) {
+        void addEdge(EdgeTPtr const &edge, bool allocatedData) {
             if (edge == nullptr) {
                 throw std::runtime_error("Edge can not be a nullptr!");
             }
@@ -353,51 +326,50 @@ namespace AndreiUtils {
             if (!mapContains(this->nodes, edge->getN2()->getId())) {
                 throw std::runtime_error("Edge's n2 is not present in the graph's nodes. Add it first!");
             }
-            if (mapContains(this->edges, edge->getId())) {
+            if (mapContains(this->edges, edge->getId())) {  // even if edge have same nodes, assign different id!
                 throw std::runtime_error("Edge is already present in the graph!");
             }
-            mapAdd<EdgeId, EdgeT *const>(this->edges, edge->getId(), edge);
-            this->allocatedEdges[edge->getId()] = allocatedData;
+            mapAdd<EdgeId, EdgeTPtr const>(this->edges, edge->getId(), edge);
             this->edgesFromNodeIds[{edge->getN1()->getId(), edge->getN2()->getId()}][edge] = true;
             this->neighbors[edge->getN1()->getId()][edge->getN2()]++;
             this->incomingEdges[edge->getN2()->getId()][edge] = true;
             this->outgoingEdges[edge->getN1()->getId()][edge] = true;
         }
 
-        void removeNode(NodeT const *node) {
+        void removeNode(NodeTPtr const &node) {
             // delete node from edgesFromNodeIds
             auto nodeId = node->getId();
-            std::vector<EdgeT *> toRemoveEdges;
+            std::vector<EdgeTPtr const *> toRemoveEdges;
             std::vector<NodeId> toRemoveEdgeNodeIds;
             for (auto const &edgeData: mapGet(this->incomingEdges, nodeId)) {
-                toRemoveEdges.push_back(edgeData.first);
+                toRemoveEdges.push_back(&edgeData.first);
                 toRemoveEdgeNodeIds.push_back(edgeData.first->getN1()->getId());
             }
             for (size_t i = 0; i < toRemoveEdges.size(); i++) {
                 auto &n1Id = toRemoveEdgeNodeIds[i];
                 mapDelete(this->edgesFromNodeIds, std::make_pair(n1Id, nodeId));
-                this->removeEdge(toRemoveEdges[i]);
+                this->removeEdge(*toRemoveEdges[i]);
                 // Delete all the neighbors where node is an incoming node
                 mapDelete(this->neighbors[n1Id], node);
             }
             toRemoveEdges.clear();
             toRemoveEdgeNodeIds.clear();
             for (auto const &edgeData: mapGet(this->outgoingEdges, nodeId)) {
-                toRemoveEdges.push_back(edgeData.first);
+                toRemoveEdges.push_back(&edgeData.first);
                 toRemoveEdgeNodeIds.push_back(edgeData.first->getN1()->getId());
             }
             for (size_t i = 0; i < toRemoveEdges.size(); i++) {
                 mapDelete(this->edgesFromNodeIds, std::make_pair(nodeId, toRemoveEdgeNodeIds[i]));
-                this->removeEdge(toRemoveEdges[i]);
+                this->removeEdge(*toRemoveEdges[i]);
             }
             mapDelete(this->incomingEdges, nodeId);
             mapDelete(this->outgoingEdges, nodeId);
 
             mapDelete(this->neighbors, nodeId);
-            this->deleteNode(node, nodeId);
+            this->deleteNode(nodeId);
         }
 
-        void removeEdge(EdgeT const *edge) {
+        void removeEdge(EdgeTPtr const &edge) {
             mapDelete(this->incomingEdges[edge->getN2()->getId()], edge);
             mapDelete(this->outgoingEdges[edge->getN1()->getId()], edge);
 
@@ -408,35 +380,25 @@ namespace AndreiUtils {
                 mapDelete(this->neighbors[edge->getN1()->getId()], edge->getN2());
             }
 
-            this->deleteEdge(edge, edgeId);
+            this->deleteEdge(edgeId);
         }
 
-        void deleteNode(NodeT const *node, NodeId nodeId) {
+        void deleteNode(NodeId nodeId) {
             // don't make nodeId a reference; once node is deleted the reference points to bad memory
-            if (mapGet(this->allocatedNodes, nodeId)) {
-                delete node;
-            }
             mapDelete(this->nodes, nodeId);
-            mapDelete(this->allocatedNodes, nodeId);
         }
 
-        void deleteEdge(EdgeT const *edge, EdgeId edgeId) {
+        void deleteEdge(EdgeId edgeId) {
             // don't make edgeId a reference; once edge is deleted the reference points to bad memory
-            if (mapGet(this->allocatedEdges, edgeId)) {
-                delete edge;
-            }
             mapDelete(this->edges, edgeId);
-            mapDelete(this->allocatedEdges, edgeId);
         }
 
         bool withMultipleEdges, withSelfEdges;
-        std::map<NodeId, NodeT *const> nodes;
-        std::map<NodeId, bool> allocatedNodes;
-        std::map<EdgeId, EdgeT *const> edges;
-        std::map<EdgeId, bool> allocatedEdges;
-        std::map<NodeId, std::map<EdgeT *, bool>> incomingEdges, outgoingEdges;
-        std::map<std::pair<NodeId, NodeId>, std::map<EdgeT *, bool>> edgesFromNodeIds;
-        std::map<NodeId, std::map<NodeT *, int>> neighbors;  // outgoing neighbors
+        std::map<NodeId, NodeTPtr const> nodes;
+        std::map<EdgeId, EdgeTPtr const> edges;
+        std::map<NodeId, std::map<EdgeTPtr, bool>> incomingEdges, outgoingEdges;
+        std::map<std::pair<NodeId, NodeId>, std::map<EdgeTPtr, bool>> edgesFromNodeIds;
+        std::map<NodeId, std::map<NodeTPtr, int>> neighbors;  // outgoing neighbors; int for counting multiple edges
     };
 }
 

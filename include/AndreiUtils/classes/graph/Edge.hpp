@@ -14,101 +14,77 @@ namespace AndreiUtils {
     template<typename EdgeId=std::string, typename NodeId=int>
     class Edge {
         using NodeT = Node<NodeId>;
+        using NodeTPtr = std::shared_ptr<Node<NodeId>>;
+        using EdgeDataPtr = std::shared_ptr<EdgeData>;
         using EdgeIdFunction = std::function<EdgeId(NodeT const &, NodeT const &)>;
     public:
-        Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr), ownsData(false) {}
+        Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr) {}
 
-        Edge(EdgeId id, NodeT *n1, NodeT *n2) : id(id), n1(n1), n2(n2), data(nullptr), ownsData(false) {}
+        Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2) :
+                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {}
 
-        Edge(EdgeId id, NodeT &n1, NodeT &n2) : id(id), n1(&n1), n2(&n2), data(nullptr), ownsData(false) {}
-
-        Edge(EdgeId id, NodeT *n1, NodeT *n2, EdgeData *data, bool passOwnership = false) :
-                id(id), n1(n1), n2(n2), data(data), ownsData(passOwnership) {}
+        Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, EdgeDataPtr data) :
+                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(std::move(data)) {}
 
         // this only accepts r-values as data parameter
         template<class T>
-        Edge(EdgeId id, NodeT *n1, NodeT *n2, T &&data) :
-                id(id), n1(n1), n2(n2), data(nullptr), ownsData(true) {
+        Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, T &&data) :
+                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
-            this->data = new T(std::move(data));
+            this->data = std::make_shared<T>(std::move(data));
         }
 
         // needed for the above to only accept r-values
         template<class T>
-        Edge(EdgeId id, NodeT *n1, NodeT *n2, T &data) = delete;
+        Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, T &data) = delete;
 
-        Edge(EdgeId id, NodeT &n1, NodeT &n2, EdgeData *data, bool passOwnership = false) :
-                id(id), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
+        Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes) :
+                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {}
 
-        // this only accepts r-values as data parameter
-        template<class T>
-        Edge(EdgeId id, NodeT &n1, NodeT &n2, T &&data) :
-                id(id), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
-            static_assert(std::is_base_of<EdgeData, T>::value,
-                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
-            this->data = new T(std::move(data));
-        }
-
-        // needed for the above to only accept r-values
-        template<class T>
-        Edge(EdgeId id, NodeT &n1, NodeT &n2, T &data) = delete;
-
-        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes) :
-                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(false) {}
-
-        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, EdgeData *data, bool passOwnership = false)
-                : id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(data), ownsData(passOwnership) {}
+        Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes, EdgeDataPtr data) :
+                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(std::move(data)) {}
 
         // the constructor only accepts r-values as data parameter
         template<class T>
-        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, T &&data) :
-                id(createIdFromNodes(n1, n2)), n1(&n1), n2(&n2), data(nullptr), ownsData(true) {
+        Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes, T &&data) :
+                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
-            this->data = new T(std::move(data));
+            this->data = std::make_shared<T>(std::move(data));
         }
 
         // needed for the above to only accept r-values
         template<class T>
-        Edge(NodeT &n1, NodeT &n2, EdgeIdFunction const &createIdFromNodes, T &data) = delete;
+        Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes, T &data) = delete;
 
-        Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data), ownsData(false) {}
+        Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data) {}
 
-        Edge(Edge &&other) noexcept: id(other.id), n1(other.n1), n2(other.n2), data(other.data),
-                                     ownsData(other.ownsData) {
-            other.ownsData = false;
-            other.reset();
-        }
+        Edge(Edge &&other) noexcept: id(std::move(other.id)), n1(std::move(other.n1)), n2(std::move(other.n2)),
+                                     data(std::move(other.data)) {}
 
         Edge &operator=(Edge const &other) {
             if (&other != this) {
-                this->discardData();
                 this->id = other.id;
                 this->n1 = other.n1;
                 this->n2 = other.n2;
                 this->data = other.data;
-                this->ownsData = false;
             }
             return *this;
         }
 
         Edge &operator=(Edge &&other) noexcept {
             if (&other != this) {
-                this->discardData();
-                this->id = other.id;
-                this->n1 = other.n1;
-                this->n2 = other.n2;
-                this->data = other.data;
-                this->ownsData = other.ownsData;
-                other.ownsData = false;
-                other.reset();
+                this->id = std::move(other.id);
+                this->n1 = std::move(other.n1);
+                this->n2 = std::move(other.n2);
+                this->data = std::move(other.data);
             }
             return *this;
         }
 
         virtual ~Edge() {
-            this->reset();
+            this->data.reset();
         }
 
         inline EdgeId &getId() {
@@ -119,41 +95,46 @@ namespace AndreiUtils {
             return this->id;
         }
 
-        inline NodeT *&getN1() {
+        inline NodeTPtr &getN1() {
             return this->n1;
         }
 
-        inline NodeT *const &getN1() const {
+        inline NodeTPtr const &getN1() const {
             return this->n1;
         }
 
-        inline NodeT *&getN2() {
+        inline NodeTPtr &getN2() {
             return this->n2;
         }
 
-        inline NodeT *const &getN2() const {
+        inline NodeTPtr const &getN2() const {
             return this->n2;
         }
 
-        inline EdgeData *&getData() {
+        inline EdgeDataPtr &getData() {
             return this->data;
         }
 
-        inline EdgeData *const &getData() const {
+        inline EdgeDataPtr const &getData() const {
             return this->data;
         }
 
         template<class T>
-        T *getData() const {
+        T *getDataPtr() const {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
-            return dynamic_cast<T *>(this->data);
+            return dynamic_cast<T *>(this->data.get());
         }
 
-        void setData(EdgeData *_data, bool passOwnership = false) {
-            this->discardData();
-            this->data = _data;
-            this->ownsData = passOwnership;
+        template<class T>
+        std::shared_ptr<T> getData() const {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            return std::dynamic_pointer_cast<T>(this->data);
+        }
+
+        void setData(EdgeDataPtr _data) {
+            this->data = std::move(_data);
         }
 
         // the function only accepts r-values as _data parameter
@@ -161,48 +142,28 @@ namespace AndreiUtils {
         void setData(T &&_data) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
-            this->discardData();
-            this->data = new T(std::move(_data));
-            this->ownsData = true;
+            this->data = std::make_shared<T>(std::move(_data));
         }
 
         // needed for the above to only accept r-values
         template<class T>
         void setData(T &_data) = delete;
 
-        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2) {
+        void update(EdgeId const &_id, NodeTPtr const &_n1, NodeTPtr const &_n2) {
             this->id = _id;
             this->n1 = _n1;
             this->n2 = _n2;
         }
 
-        void update(EdgeId const &_id, NodeT *const &_n1, NodeT *const &_n2, EdgeData *_data,
-                    bool passOwnership = false) {
+        void update(EdgeId const &_id, NodeTPtr const &_n1, NodeTPtr const &_n2, EdgeDataPtr _data) {
             this->update(_id, _n1, _n2);
-            this->setData(_data, passOwnership);
+            this->setData(std::move(_data));
         }
 
     protected:
-        void reset() {
-            this->discardData();
-            this->ownsData = false;
-            this->data = nullptr;
-            this->n1 = nullptr;
-            this->n2 = nullptr;
-        }
-
-        void discardData() {
-            if (this->ownsData) {
-                delete this->data;
-                this->data = nullptr;
-                this->ownsData = false;
-            }
-        }
-
         EdgeId id;
-        NodeT *n1, *n2;
-        EdgeData *data;
-        bool ownsData;
+        std::shared_ptr<NodeT> n1, n2;
+        std::shared_ptr<EdgeData> data;
     };
 }
 
