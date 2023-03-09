@@ -82,13 +82,18 @@ namespace AndreiUtils {
         }
 
         void addNode(NodeId const &n, std::shared_ptr<NodeData> nodeData = nullptr) {
-            this->addNode(std::make_shared<NodeT>(n, std::move(nodeData)));
+            this->addNodeImpl(std::make_shared<NodeT>(n, std::move(nodeData)));
+        }
+
+        template<class T>
+        void addNode(NodeId const &n, std::shared_ptr<T> nodeData) {
+            this->addNodeImpl(std::make_shared<NodeT>(n, std::move(nodeData)));
         }
 
         // the function only accepts r-values as nodeData parameter
         template<class T>
         void addNode(NodeId const &n, T &&nodeData) {
-            this->addNode(std::make_shared<NodeT>(n, std::move(nodeData)));
+            this->addNodeImpl(std::make_shared<NodeT>(n, std::move(nodeData)));
         }
 
         // needed for the above to only accept r-values
@@ -97,15 +102,15 @@ namespace AndreiUtils {
 
         // this will allocate new data; only accept r-values
         void addNode(NodeT &&n) {
-            this->addNode(std::make_shared<NodeT>(std::move(n)));
+            this->addNodeImpl(std::make_shared<NodeT>(std::move(n)));
         }
 
         // needed for the above to only accept r-values
         void addNode(NodeT &n) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
-        void addNode(std::shared_ptr<NodeT> n) {
-            this->addNode(std::move(n));
+        void addNode(NodeTPtr n) {
+            this->addNodeImpl(std::move(n));
         }
 
         void removeNode(NodeId const &nodeId) {
@@ -119,6 +124,15 @@ namespace AndreiUtils {
 
         void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId,
                      std::shared_ptr<EdgeData> edgeData = nullptr) {
+            this->addEdge(EdgeT(mapGet(this->nodes, n1), mapGet(this->nodes, n2),
+                                [&](NodeT const &_n1, NodeT const &_n2) {
+                                    return createEdgeId(_n1.getId(), _n2.getId());
+                                }, std::move(edgeData)));
+        }
+
+        template<typename T>
+        void addEdge(NodeId const &n1, NodeId const &n2, EdgeIdFunction const &createEdgeId,
+                     std::shared_ptr<T> edgeData) {
             this->addEdge(EdgeT(mapGet(this->nodes, n1), mapGet(this->nodes, n2),
                                 [&](NodeT const &_n1, NodeT const &_n2) {
                                     return createEdgeId(_n1.getId(), _n2.getId());
@@ -140,15 +154,15 @@ namespace AndreiUtils {
 
         // this will allocate new data; only accept r-values
         void addEdge(EdgeT &&e) {
-            this->addEdge(std::make_shared<EdgeT>(std::move(e)));
+            this->addEdgeImpl(std::make_shared<EdgeT>(std::move(e)));
         }
 
         // needed for the above to only accept r-values
         void addEdge(EdgeT &e) = delete;
 
         // this will not allocate new data and any changes within the graph will be reflected on the outside data
-        void addEdge(std::shared_ptr<EdgeT> e) {
-            this->addEdge(std::move(e));
+        void addEdge(EdgeTPtr e) {
+            this->addEdgeImpl(std::move(e));
         }
 
         // Don't allow setting the edgeData here (if EdgeData derived class has pointers this will create a copy)
@@ -295,7 +309,7 @@ namespace AndreiUtils {
         }
 
     protected:
-        void addNode(NodeTPtr const &node, bool allocatedData) {
+        void addNodeImpl(NodeTPtr const &node) {
             if (node == nullptr) {
                 throw std::runtime_error("Node can not be a nullptr!");
             }
@@ -307,7 +321,7 @@ namespace AndreiUtils {
             this->outgoingEdges[node->getId()];  // create the empty-map value
         }
 
-        void addEdge(EdgeTPtr const &edge, bool allocatedData) {
+        void addEdgeImpl(EdgeTPtr const &edge) {
             if (edge == nullptr) {
                 throw std::runtime_error("Edge can not be a nullptr!");
             }

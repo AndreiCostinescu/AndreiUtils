@@ -26,6 +26,14 @@ namespace AndreiUtils {
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, EdgeDataPtr data) :
                 id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(std::move(data)) {}
 
+        template<class T>
+        Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, std::shared_ptr<T> data) :
+                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
+            static_assert(std::is_base_of<EdgeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::EdgeData");
+            this->data = std::move(data);
+        }
+
         // this only accepts r-values as data parameter
         template<class T>
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, T &&data) :

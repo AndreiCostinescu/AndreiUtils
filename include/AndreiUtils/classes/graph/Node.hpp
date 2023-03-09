@@ -13,12 +13,20 @@
 namespace AndreiUtils {
     template<typename NodeId=int>
     class Node {
+        using NodeDataPtr = std::shared_ptr<NodeData>;
     public:
         Node() : id(), data(nullptr) {}
 
         explicit Node(NodeId id) : id(std::move(id)), data(nullptr) {}
 
-        Node(NodeId id, std::shared_ptr<NodeData> data) : id(std::move(id)), data(std::move(data)) {}
+        Node(NodeId id, NodeDataPtr data) : id(std::move(id)), data(std::move(data)) {}
+
+        template<typename T>
+        Node(NodeId id, std::shared_ptr<T> data) : id(std::move(id)), data(nullptr) {
+            static_assert(std::is_base_of<NodeData, T>::value,
+                          "The template parameter T is not a derived class of AndreiUtils::NodeData");
+            this->data = std::move(data);
+        }
 
         // this only accepts r-values as the data parameter
         template<class T>
@@ -64,11 +72,11 @@ namespace AndreiUtils {
             return this->id;
         }
 
-        inline std::shared_ptr<NodeData> &getData() {
+        inline NodeDataPtr &getData() {
             return this->data;
         }
 
-        inline std::shared_ptr<NodeData> const &getData() const {
+        inline NodeDataPtr const &getData() const {
             return this->data;
         }
 
@@ -86,7 +94,7 @@ namespace AndreiUtils {
             return std::dynamic_pointer_cast<T>(this->data);
         }
 
-        void setData(std::shared_ptr<NodeData> _data) {
+        void setData(NodeDataPtr _data) {
             this->data = std::move(_data);  // this resets the pointer internally
         }
 
@@ -103,9 +111,8 @@ namespace AndreiUtils {
         void setData(T &_data) = delete;
 
     protected:
-
         NodeId id;
-        std::shared_ptr<NodeData> data;
+        NodeDataPtr data;
     };
 }
 
