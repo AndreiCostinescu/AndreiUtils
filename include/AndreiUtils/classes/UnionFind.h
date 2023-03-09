@@ -5,6 +5,7 @@
 #ifndef ANDREIUTILS_UNIONFIND_H
 #define ANDREIUTILS_UNIONFIND_H
 
+#include <cstddef>
 #include <vector>
 
 namespace AndreiUtils {

@@ -34,11 +34,11 @@ namespace AndreiUtils {
         PoseDecoupledInterpolator &compute(InterpolationType const &start, double const &stepSize,
                                            InterpolationType const &end) {
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
-            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>.compute(
+            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>().compute(
                     startNormed.getTranslation(), stepSize, endNormed.getTranslation()).getResult();
-            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>.compute(
+            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>().compute(
                     startNormed.getRotation(), stepSize, endNormed.getRotation()).getResult();
-            this->setResult(steps, interpolatedQuaternions, interpolatedPositions);
+            this->setResult(interpolatedPositions.size(), interpolatedQuaternions, interpolatedPositions);
             return *this;
         }
 
@@ -50,9 +50,9 @@ namespace AndreiUtils {
             }
 
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
-            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>.compute(
+            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>().compute(
                     startNormed.getTranslation(), endNormed.getTranslation(), steps, withStart, withEnd).getResult();
-            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>.compute(
+            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>().compute(
                     startNormed.getRotation(), endNormed.getRotation(), steps, withStart, withEnd).getResult();
             this->setResult(steps, interpolatedQuaternions, interpolatedPositions);
             return *this;
@@ -62,9 +62,9 @@ namespace AndreiUtils {
         PoseDecoupledInterpolator &compute(InterpolationType const &start, InterpolationType const &end,
                                            std::vector<double> const &interpolationPoints) {
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
-            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>.compute(
+            std::vector<Eigen::Vector3d> interpolatedPositions = LinearInterpolator<Eigen::Matrix<T, 3, 1>>().compute(
                     startNormed.getTranslation(), endNormed.getTranslation(), interpolationPoints).getResult();
-            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>.compute(
+            std::vector<Eigen::Quaterniond> interpolatedQuaternions = SlerpInterpolator<T>().compute(
                     startNormed.getRotation(), endNormed.getRotation(), interpolationPoints).getResult();
             this->setResult(interpolationPoints.size(), interpolatedQuaternions, interpolatedPositions);
             return *this;

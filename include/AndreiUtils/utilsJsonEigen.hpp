@@ -35,7 +35,7 @@ namespace nlohmann {
     template<class T>
     struct adl_serializer<Eigen::Matrix<T, 3, 1>> {
         static void to_json(nlohmann::json &j, const Eigen::Matrix<T, 3, 1> &v) {
-            j = std::vector<double>{v(0), v(1)};
+            j = std::vector<double>{v(0), v(1), v(2)};
         }
 
         static void from_json(const nlohmann::json &j, Eigen::Matrix<T, 3, 1> &v) {
@@ -136,6 +136,7 @@ namespace nlohmann {
 
             typedef std::vector<Scalar> V;
             V jsonData = j["data"].get<V>();
+            data.setZero(currentRows, currentCols);
             for (int r = 0; r < currentRows; r++) {
                 for (int c = 0; c < currentCols; c++) {
                     data(r, c) = jsonData[r * currentCols + c];

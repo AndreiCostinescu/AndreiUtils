@@ -2,7 +2,7 @@
 // Created by Andrei on 05.10.21.
 //
 
-#include <AndreiUtils/classes/CrossBilateralFilter.hpp>
+#include <AndreiUtils/classes/AnyType.h>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
@@ -14,23 +14,15 @@
 #include <AndreiUtils/classes/UnionFind.hpp>
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
-#include <AndreiUtils/traits/Container2DEigen.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
+#include <AndreiUtils/utilsEigen.hpp>
+#include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
-#include <AndreiUtils/utilsOpenCV.h>
-#include <AndreiUtils/utilsOpenCV.hpp>
-#include <AndreiUtils/utilsTime.h>
 #include <iostream>
 // #include <librealsense2/rs.hpp>
-
-#ifdef WITH_OPENMP
-
-#include <AndreiUtils/utilsOpenMP.hpp>
-
-#endif
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -42,20 +34,6 @@ public:
 
     int *a;
 };
-
-void eigenOpenCVTesting() {
-    Matrix2i m = Matrix2i::Identity();
-    m(0, 1) = 2;
-    cv::FileStorage wfs("tmp.xml", cv::FileStorage::WRITE);
-    m(1, 0) = 3;
-    wfs << "matrix" << m;
-    wfs.release();
-    cv::FileStorage rfs("tmp.xml", cv::FileStorage::READ);
-    MatrixXi m3;
-    rfs["matrix"] >> m3;
-    rfs.release();
-    cout << "Reconstructed matrix:" << endl << m3 << endl;
-}
 
 void fileTesting() {
     cout << getCurrentDirectory(true) << endl;
@@ -133,20 +111,6 @@ void testFloatSlidingWindow() {
     }
 }
 
-void testCrossBilateralFilter() {
-    cout << ModifiableContainer2D<int>::isContainer2D << endl;
-    cout << ModifiableContainer2D<double>::isContainer2D << endl;
-    cout << ModifiableContainer2D<cv::Mat>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::Matrix3d>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::MatrixXf>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::Vector2d>::isContainer2D << endl;
-    Eigen::MatrixXd m = Eigen::MatrixXd::Identity(21, 21);
-    CrossBilateralFilter filter(5);
-    float x, y;
-    filter.filter(11, 11, m, x, y);
-    cout << "x = " << x << ", y = " << y << endl;
-}
-
 class A_ {
 public:
     virtual ~A_() = default;
@@ -166,20 +130,20 @@ class D_ : public B_, public C_ {
 };
 
 void testTypeCreator() {
-    TypeCreator<A_> creator;
-    creator.registerTypeCreator("A", []() { return new A_(); });
-    creator.registerTypeCreator("B", []() { return new B_(); });
-    creator.registerTypeCreator("C", []() { return new C_(); });
-    creator.registerTypeCreator("D", []() { return new D_(); });
+    SharedTypeCreator<A_> creator;
+    creator.registerTypeCreator("A", []() { return make_shared<A_>(); });
+    creator.registerTypeCreator("B", []() { return make_shared<B_>(); });
+    creator.registerTypeCreator("C", []() { return make_shared<C_>(); });
+    creator.registerTypeCreator("D", []() { return make_shared<D_>(); });
     auto c = creator.createType("C");
-    auto a = dynamic_cast<A_ *>(c);
-    auto b = dynamic_cast<B_ *>(c);
-    auto d = dynamic_cast<D_ *>(c);
+    auto a = dynamic_pointer_cast<A_>(c);
+    auto b = dynamic_pointer_cast<B_>(c);
+    auto d = dynamic_pointer_cast<D_>(c);
     cout << a << endl;
     cout << b << endl;
     cout << c << endl;
     cout << d << endl;
-    delete c;
+    c.reset();
 }
 
 void testIntegralAndUnsignedTypes() {
@@ -434,157 +398,6 @@ void testDynamicCast() {
     // delete d;
 }
 
-void testOpenCVMatrixAccessors() {
-    cv::Mat m1(10, 10, CV_64F);
-    m1.setTo(1);
-    auto getElement = getMatrixElementAccessor<double, int>(m1, 10);
-    cout << getElement(10, 10) << endl;
-    cout << getElement(4, 10) << endl;
-    cout << getElement(1, 1) << endl;
-    cout << getElement(5, 5) << endl;
-    cout << getElement(1, -1) << endl;
-    cout << getElement(1, -1) << endl;
-    cout << endl;
-
-    cv::Mat *m2 = &m1;
-    m1.setTo(4);
-    cout << "m2 = " << m2 << endl;
-    auto getElementPtr = getMatrixElementAccessor<double, int>(m2, 14);
-    cout << getElementPtr(10, 10) << endl;
-    cout << getElementPtr(4, 10) << endl;
-    cout << getElementPtr(1, 1) << endl;
-    cout << getElementPtr(5, 5) << endl;
-    cout << getElementPtr(1, -1) << endl;
-    cout << getElementPtr(1, -1) << endl;
-    cout << endl;
-
-    auto *m3 = new cv::Mat(10, 10, CV_64F);
-    m3->setTo(64);
-    cout << "m3 = " << m3 << endl;
-    auto getElementPtr2 = getMatrixElementAccessor<double, int>(m3, 19);
-    cout << getElementPtr2(10, 10) << endl;
-    cout << getElementPtr2(4, 10) << endl;
-    cout << getElementPtr2(1, 1) << endl;
-    cout << getElementPtr2(5, 5) << endl;
-    cout << getElementPtr2(1, -1) << endl;
-    cout << getElementPtr2(1, -1) << endl;
-    cout << endl;
-    delete m3;
-
-    const auto *m4 = new cv::Mat(10, 10, CV_64F);
-    cout << "m4 = " << m4 << endl;
-    auto getElementPtr3 = getMatrixElementAccessor<double, int>(m4, 69);
-    cout << getElementPtr3(10, 10) << endl;
-    cout << getElementPtr3(4, 10) << endl;
-    cout << getElementPtr3(1, 1) << endl;
-    cout << getElementPtr3(5, 5) << endl;
-    cout << getElementPtr3(1, -1) << endl;
-    cout << getElementPtr3(1, -1) << endl;
-    cout << endl;
-
-    auto const *const &m5 = m4;
-    cout << "m5 = " << m5 << endl;
-    auto getElementPtr4 = getMatrixElementAccessor<double, float>(m5, 2.4);
-    cout << getElementPtr4(10, 10) << endl;
-    cout << getElementPtr4(4, 10) << endl;
-    cout << getElementPtr4(1, 1) << endl;
-    cout << getElementPtr4(5, 5) << endl;
-    cout << getElementPtr4(1, -1) << endl;
-    cout << getElementPtr4(1, -1) << endl;
-    cout << endl;
-    delete m4;
-}
-
-#ifdef WITH_OPENMP
-
-void testOMPUtils() {
-    cout << "Default settings:" << endl;
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    cout << endl;
-
-    cout << "After setting #omp threads to 12:" << endl;
-    setNumberOfOMPThreads(12);
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-}
-
-void testFastForLoop() {
-    vector<int> v(4 * maxNumberOfOMPThreads());
-    printVector(v);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-    setNumberOfOMPThreads(16);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-}
-
-#endif
-
-void testPrintingImagesOpenCV() {
-    cv::Mat m = cv::Mat(300, 300, CV_8U);
-    m.setTo(100);
-    displayImage(m, "GrayScale");
-    for (int i = 0; i < 4; i++) {
-        for (int v = 0; v < 256; v++) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(2);
-        }
-        for (int v = 255; v >= 0; v--) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(2);
-        }
-    }
-    cout << "Finished visualization!" << endl;
-    cv::waitKey();
-    cout << "END PROGRAM!" << endl;
-}
-
-void testOpenCVMatrixCropReference() {
-    cv::Mat m = cv::Mat(300, 300, CV_8U);
-    m.setTo(100);
-
-    for (int i = 0; i < 4; i++) {
-        for (int v = 0; v < 256; v++) {
-            cv::Mat view = m(cv::Range(100, 200), cv::Range(100, 200));
-            view.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(10);
-        }
-        for (int v = 255; v >= 0; v--) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(10);
-        }
-    }
-}
-
 void testMixedDataContainer() {
     vector<string> x(5, "Hello World!");
     MixedDataContainer c;
@@ -783,7 +596,7 @@ void testTypes() {
 
     CPC<int> x15 = aPtr;
     CPR<int> x16 = aCPtr;
-    CPU<int> x17 = std::move(aPtr);
+    CPU<int> x17 = std::move(aCPtr);
     PCR<int> x18 = aPtr;
     PCU<int> x19 = std::move(aPtr);
     VCP<int> x20 = &a;
@@ -805,34 +618,103 @@ void testTypes() {
     VCPCU<int> x34 = std::move(aCVPtr);
 }
 
+void testEigenMatrixAddSub() {
+    Eigen::Matrix3d x;
+    x.setZero();
+    cout << addComponentWise<double>(x, -1) << endl;
+    Eigen::Vector4f y;
+    y.setZero();
+    cout << addComponentWise<float>(y, 4) << endl;
+
+    for (int i = 0; i < 10; i++) {
+        cout << sampleOrientation() << endl;
+        cout << sampleDirection().transpose() << endl;
+    }
+}
+
+void testAnyType() {
+    AnyType x;
+    x = 24;
+    cout << (x.get<int>() == 25) << " " << x.get<int>() << endl;
+    try {
+        cout << (x.get<string>() == "Hello World!") << endl;
+    } catch (runtime_error &e) {
+        if (e.what() != string("Wrong type to cast to!")) {
+            throw e;
+        }
+    }
+    x = string("Hello World!");
+    cout << x.get<string>() << endl;
+}
+
+template<typename T>
+struct type_name {
+    static string name() { return ""; }
+};
+
+template<>
+struct type_name<A_> {
+    static string name() { return "A"; }
+};
+
+template<>
+struct type_name<B_> {
+    static string name() { return "B"; }
+};
+
+template<>
+struct type_name<C_> {
+    static string name() { return "C"; }
+};
+
+template<>
+struct type_name<D_> {
+    static string name() { return "D"; }
+};
+
+template<typename T>
+struct tmp {
+    static string tmpF(T &t) {
+        return type_name<T>::name();
+    }
+};
+
+void testTypeTraitsWithPointers() {
+    A_ *a;
+    B_ b;
+    a = &b;
+    // cout << tmp::tmpF(b) << endl;
+    // cout << tmp::tmpF(a) << endl;
+}
+
+void testSurfaceTriangle() {
+    checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    // eigenOpenCVTesting();
     // fileTesting();
     // realsenseDistortionString();
     // testPointerReference();
     // testLambdaCaptureScope();
     // testStringAllocation();
     // testFloatSlidingWindow();
-    // testCrossBilateralFilter();
     // testTypeCreator();
     // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
     // testDynamicCast();
-    // testOpenCVMatrixAccessors();
-    // testOMPUtils();
-    // testPrintingImagesOpenCV();
-    // testFastForLoop();
-    // testOpenCVMatrixCropReference();
     // testMixedDataContainer();
     // testGraph();
     // testRandom();
     // testInterpolation();
     // testStringFindFunctions();
     // testInstanceOf();
-    testTypes();
+    // testTypes();
+    // testEigenMatrixAddSub();
+    // testAnyType();
+    testSurfaceTriangle();
 
     return 0;
 }

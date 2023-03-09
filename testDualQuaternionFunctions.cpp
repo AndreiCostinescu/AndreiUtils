@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>
 #include <iomanip>
@@ -127,11 +128,65 @@ void testTheSameOperations() {
     }
 }
 
+void testLowPassFilterQuaternion() {
+    QuaternionLowPassFilter<double> qFilter(0.3, 0.3);
+    qFilter.resetFilterValue(qIdentity<double>());
+    qFilter.filter({0, 0, 1, 0});
+    cout << qFilter.getFilterValue() << endl;
+}
+
+void testTransformationMatrixToDualQuaternion() {
+    Eigen::Matrix4d m;
+    m.setZero();
+    m(0, 1) = 1;
+    m(1, 2) = 1;
+    m(2, 0) = -1;
+    m(0, 3) = 10;
+    m(1, 3) = 20;
+    m(2, 3) = 30;
+    m(3, 3) = 1;
+
+    Matrix3d m1 = m.block<3, 3>(0, 0);
+    Matrix3d m2;
+    m2.setZero();
+    m2(0, 2) = -1;
+    m2(1, 0) = 1;
+    m2(2, 1) = -1;
+
+    cout << Eigen::Quaterniond(m1) << endl;
+    cout << Eigen::Quaterniond(m2) << endl;
+
+    auto q1 = Quaterniond(-0.5, -0.5, 0.5, 0.5);
+    auto q2 = Quaterniond(0.5, -0.5, -0.5, 0.5);
+    auto q3 = Quaterniond(-0.5, 0.5, 0.5, -0.5);
+    auto q4 = Quaterniond(0.5, 0.5, 0.5, -0.5);
+    cout << q1 << endl;
+    cout << q1.toRotationMatrix() << endl;
+    cout << q2 << endl;
+    cout << q2.toRotationMatrix() << endl;
+    cout << q3 << endl;
+    cout << q3.toRotationMatrix() << endl;
+    cout << q4 << endl;
+    cout << q4.toRotationMatrix() << endl;
+
+    cout << qFromRotationMatrix((Matrix3d)  m2.transpose()) << endl;
+}
+
+void testRotationEquivalence() {
+    Vector3d v(4, 2, 3);
+    Posed q(sampleOrientation(), qZero<double>());
+    cout << q.rotate(v).transpose() << endl;
+    cout << (q.getRotationAsMatrix() * v).transpose() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testDualQuaternions();
-    testTheSameOperations();
+    // testTheSameOperations();
+    // testLowPassFilterQuaternion();
+    // testTransformationMatrixToDualQuaternion();
+    testRotationEquivalence();
 
     return 0;
 }

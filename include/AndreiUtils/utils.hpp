@@ -99,13 +99,43 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T clamp(T const &v, T const &minV, T const &maxV) {
+    [[nodiscard]] inline T clamp(T const &v, T const &minV, T const &maxV) {
         return fastMin(fastMax(v, minV), maxV);
+    }
+
+    template<typename T>
+    void clampInPlace(T &v, T const &minV, T const &maxV) {
+        v = clamp(v, minV, maxV);
     }
 
     template<typename T>
     inline T average(T const &a, T const &b) {
         return a + (b - a) / 2;
+    }
+
+    template<typename T>
+    bool inRangeLELE(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return lessEqual(min, value, tol) && lessEqual(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLLE(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return less(min, value, tol) && lessEqual(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLEL(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return lessEqual(min, value, tol) && less(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRangeLL(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return less(min, value, tol) && less(value, max, tol);
+    }
+
+    template<typename T>
+    bool inRange(T const &value, T const &min, T const &max, double const &tol = 1e-9) {
+        return inRangeLELE(value, min, max, tol);
     }
 
     template<typename T>

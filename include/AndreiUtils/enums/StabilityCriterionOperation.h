@@ -1,0 +1,16 @@
+//
+// Created by Andrei on 27.01.23.
+//
+
+#ifndef ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H
+#define ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H
+
+namespace AndreiUtils {
+    enum StabilityCriterionOperation {
+        SUM = 0,
+        AVERAGE_OF_SUM,
+        AVERAGE_OF_SUM_OF_SQUARES
+    };
+}
+
+#endif //ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H

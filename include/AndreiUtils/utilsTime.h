@@ -5,14 +5,12 @@
 #ifndef ANDREIUTILS_UTILSTIME_H
 #define ANDREIUTILS_UTILSTIME_H
 
+#include <AndreiUtils/classes/TimePoint.hpp>
 #include <AndreiUtils/enums/TimeUnit.h>
 #include <chrono>
 #include <string>
 
 namespace AndreiUtils {
-    using SystemClock = std::chrono::system_clock;
-    using SystemTimePoint = std::chrono::time_point<SystemClock>;
-
     std::string convertChronoToString(const SystemTimePoint &time, const std::string &format = "%Y-%m-%d-%H-%M-%S");
 
     SystemTimePoint convertStringToChrono(const std::string &time, const std::string &format = "%Y-%m-%d-%H-%M-%S");

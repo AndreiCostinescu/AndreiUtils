@@ -62,12 +62,12 @@ namespace AndreiUtils {
 
         virtual ~DualQuaternion() = default;
 
-        std::vector<T> coefficients() const {
+        [[nodiscard]] std::vector<T> coefficients() const {
             return {this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
                     this->d.z()};
         }
 
-        Eigen::Matrix<T, 8, 1> coefficientsAsEigen() const {
+        [[nodiscard]] Eigen::Matrix<T, 8, 1> coefficientsAsEigen() const {
             Eigen::Matrix<T, 8, 1> res;
             res << this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
                     this->d.z();
@@ -87,16 +87,17 @@ namespace AndreiUtils {
             this->d.x() = coefficients[5];
             this->d.y() = coefficients[6];
             this->d.z() = coefficients[7];
+            this->normalize();
         }
 
-        double coefficientNorm() const {
+        [[nodiscard]] double coefficientNorm() const {
             Eigen::Matrix<double, 8, 1> coefficients;
             coefficients.topRows(4) = this->r.coeffs().template cast<double>();
             coefficients.bottomRows(4) = this->d.coeffs().template cast<double>();
             return coefficients.norm();
         }
 
-        double coefficientSquareSum() const {
+        [[nodiscard]] double coefficientSquareSum() const {
             Eigen::Matrix<double, 8, 1> coefficients;
             coefficients.topRows(4) = this->r.coeffs().template cast<double>();
             coefficients.bottomRows(4) = this->d.coeffs().template cast<double>();
@@ -104,20 +105,20 @@ namespace AndreiUtils {
         }
 
         template<class CastType>
-        DualQuaternion<CastType> cast() const {
+        [[nodiscard]] DualQuaternion<CastType> cast() const {
             return {this->r.template cast<CastType>(), this->d.template cast<CastType>()};
         }
 
-        T rotationAngle() const {
+        [[nodiscard]] T rotationAngle() const {
             return Eigen::AngleAxis<T>(this->r).angle();
         }
 
-        Eigen::Matrix<T, 3, 1> rotationAxis() const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> rotationAxis() const {
             return Eigen::AngleAxis<T>(this->r).axis();
         }
 
         // inspired by Riddhiman's function
-        DualQuaternion powScrew(CR<T> a) const {
+        [[nodiscard]] DualQuaternion powScrew(CR<T> a) const {
             T theta = this->rotationAngle(), n;  // Theta in radians (ALWAYS)
             DualQuaternion res;
 
@@ -161,7 +162,7 @@ namespace AndreiUtils {
         }
 
         // inspired by DQ::log function
-        DualQuaternion log() const {
+        [[nodiscard]] DualQuaternion log() const {
             // Verify if the object caller is a unit DQ
             if (this->norm() != DualQuaternion::identity()) {
                 throw std::runtime_error("Bad log() call: Not a unit dual quaternion");
@@ -179,7 +180,7 @@ namespace AndreiUtils {
         }
 
         // inspired by DQ::exp function
-        DualQuaternion exp() const {
+        [[nodiscard]] DualQuaternion exp() const {
             if (this->r.w() != 0 && this->d.w() != 0) {
                 throw std::runtime_error(
                         "Bad exp() call: Exponential operation is defined only for pure dual quaternions.");
@@ -197,13 +198,13 @@ namespace AndreiUtils {
         }
 
         // inspired by DQ::pow function
-        DualQuaternion powGeom(CR<T> a) const {
+        [[nodiscard]] DualQuaternion powGeom(CR<T> a) const {
             DualQuaternion res = a * this->log();
             return res.exp();
         }
 
         // inspired by DQ::norm function
-        DualQuaternion norm() const {
+        [[nodiscard]] DualQuaternion norm() const {
             /*
             return DualQuaternion(this->r * this->r.conjugate(),
                                   qAdd(this->r * this->d.conjugate(), this->d * this->r.conjugate()));
@@ -226,29 +227,29 @@ namespace AndreiUtils {
             //*/
         }
 
-        DualQuaternion normalized() const {
+        [[nodiscard]] DualQuaternion normalized() const {
             DualQuaternion res = *this;
             res.normalize();
             return res;
         }
 
-        DualQuaternion conjugate() const {
+        [[nodiscard]] DualQuaternion conjugate() const {
             return DualQuaternion(this->r.conjugate(), this->d.conjugate());
         }
 
-        DualQuaternion quaternionConjugate() const {
+        [[nodiscard]] DualQuaternion quaternionConjugate() const {
             return this->conjugate();
         }
 
-        DualQuaternion dualConjugate() const {
+        [[nodiscard]] DualQuaternion dualConjugate() const {
             return DualQuaternion(this->r, qNeg(this->d));
         }
 
-        DualQuaternion quaternionDualConjugate() const {
+        [[nodiscard]] DualQuaternion quaternionDualConjugate() const {
             return DualQuaternion(this->r.conjugate(), this->d.conjugate()).dualConjugate();
         }
 
-        DualQuaternion dualQuaternionInverse() const {
+        [[nodiscard]] DualQuaternion dualQuaternionInverse() const {
             DualQuaternion inv;
             inv.r = this->r.conjugate();
             inv.d = qNeg(inv.r * this->d * inv.r);
@@ -327,49 +328,49 @@ namespace AndreiUtils {
             return (*this);
         }
 
-        Eigen::Matrix<T, 3, 1> transform(CR<Eigen::Matrix<T, 3, 1>> p) const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> transform(CR<Eigen::Matrix<T, 3, 1>> p) const {
             return ((*this) * DualQuaternion(qIdentity<T>(), vToQ(p)) *
                     this->quaternionDualConjugate()).getDual().vec();
         }
 
-        Eigen::Matrix<T, 3, 1> rotate(CR<Eigen::Matrix<T, 3, 1>> v) const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> rotate(CR<Eigen::Matrix<T, 3, 1>> v) const {
             return ((*this) * DualQuaternion(vToQ(v), qZero<T>()) *
                     this->quaternionDualConjugate()).getRotation().vec();
         }
 
-        Eigen::Matrix<T, 3, 1> translate(CR<Eigen::Matrix<T, 3, 1>> t) const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> translate(CR<Eigen::Matrix<T, 3, 1>> t) const {
             return ((*this) * DualQuaternion(qZero<T>(), vToQ(t)) * this->quaternionDualConjugate()).getTranslation();
         }
 
-        DualQuaternion addRotation(CR<Eigen::Quaternion<T>> q) const {
+        [[nodiscard]] DualQuaternion addRotation(CR<Eigen::Quaternion<T>> q) const {
             return DualQuaternion(q * this->r, this->getTranslation());
         }
 
-        DualQuaternion addRotationRight(CR<Eigen::Quaternion<T>> q) const {
+        [[nodiscard]] DualQuaternion addRotationRight(CR<Eigen::Quaternion<T>> q) const {
             return DualQuaternion(this->r * q, this->getTranslation());
         }
 
-        DualQuaternion addTranslation(CR<Eigen::Matrix<T, 3, 1>> t) const {
+        [[nodiscard]] DualQuaternion addTranslation(CR<Eigen::Matrix<T, 3, 1>> t) const {
             return DualQuaternion(this->r, t + this->getTranslation());
         }
 
-        Eigen::Quaternion<T> getRotation() const {
+        [[nodiscard]] Eigen::Quaternion<T> getRotation() const {
             return this->r;
         }
 
-        Eigen::Matrix<T, 3, 3> getRotationAsMatrix() const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 3> getRotationAsMatrix() const {
             return this->r.toRotationMatrix();
         }
 
-        Eigen::Quaternion<T> getDual() const {
+        [[nodiscard]] Eigen::Quaternion<T> getDual() const {
             return this->d;
         }
 
-        Eigen::Matrix<T, 3, 1> getTranslation() const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation() const {
             return qMulScalar(this->d * this->r.conjugate(), T(2)).vec();
         }
 
-        Eigen::Matrix<T, 4, 4> getTransformationMatrix() const {
+        [[nodiscard]] Eigen::Matrix<T, 4, 4> getTransformationMatrix() const {
             auto q = this->normalized();
             Eigen::Matrix<T, 4, 4> M = Eigen::Matrix<T, 4, 4>::Identity();
             M.template block<3, 3>(0, 0) = q.getRotationAsMatrix();  // Extract rotational information
@@ -377,7 +378,7 @@ namespace AndreiUtils {
             return M;
         }
 
-        DualQuaternion sclerp(CR<T> tau, CR<DualQuaternion> q) {
+        [[nodiscard]] DualQuaternion sclerp(CR<T> tau, CR<DualQuaternion> q) {
             DualQuaternion thisNormed = this->normalized(), qNormed = q.normalized();
             DualQuaternion qAsSeenFromThis = thisNormed.dualQuaternionInverse() * qNormed;
             return (tau == 0) ? thisNormed : thisNormed * qAsSeenFromThis.powScrew(tau);

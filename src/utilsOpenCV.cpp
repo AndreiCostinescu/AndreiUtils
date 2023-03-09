@@ -213,3 +213,7 @@ void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
     recoverPoseFrom2dAnd3dPoints(tVec, rMat, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                  intrinsics.ppy, intrinsics.distortionCoefficients);
 }
+
+Point2i AndreiUtils::castFromPointDouble(Point2d const &p) {
+    return {int(p.x), int(p.y)};
+};

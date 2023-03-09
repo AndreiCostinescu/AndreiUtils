@@ -31,8 +31,13 @@ namespace AndreiUtils {
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
                 // this->index = fastMin(this->index, this->containerDataSize + 1);
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
@@ -101,8 +106,13 @@ namespace AndreiUtils {
                                    unsigned index) :
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
@@ -160,9 +170,9 @@ namespace AndreiUtils {
             return this->dataSize;
         }
 
-        void addData(T newData) {
+        void addData(T &&newData) {
             assert(this->size > 0);
-            this->data[this->index] = newData;
+            this->data[this->index] = std::move(newData);
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -173,9 +183,9 @@ namespace AndreiUtils {
             // std::cout << this->index << "; " << this->dataSize << "; " << this->size << "; " << std::endl;
         }
 
-        void addMoveData(T &newData) {
+        void addCopyData(T const &newData) {
             assert(this->size > 0);
-            this->data[this->index] = std::move(newData);
+            this->data[this->index] = newData;
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -250,13 +260,14 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
-        bool isWindowStable(double stabilityThreshold = 1e-9, bool verbose = false) const {
-            return isSequenceStable(this->getData(), stabilityThreshold, verbose);
+        bool isWindowStable(double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                            bool verbose = false) const {
+            return isSequenceStable(this->getData(), stabilityThreshold, criterion, verbose);
         }
 
-        bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
-            return isSequenceStable(this->getData(), op, stabilityThreshold, verbose);
+        bool isWindowStable(std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+            return isSequenceStable(this->getData(), op, stabilityThreshold, criterion, verbose);
         }
 
     protected:
@@ -292,16 +303,16 @@ namespace AndreiUtils {
     public:
         explicit SlidingWindowWithInvalidValues(unsigned size = 0) : SlidingWindow<T>(size), validData(size) {}
 
-        void addData(T newData, bool valid = true) {
+        void addData(T &&newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addData(newData);
+            SlidingWindow<T>::addData(std::move(newData));
         }
 
-        void addMoveData(T &newData, bool valid = true) {
+        void addCopyData(T const &newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addMoveData(newData);
+            SlidingWindow<T>::addCopyData(newData);
         }
 
         T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters,
@@ -374,17 +385,17 @@ namespace AndreiUtils {
             return this->validData;
         }
 
-        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
+        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold,
-                                    verbose);
+                                    criterion, verbose);
         }
 
         bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            InvalidValuesHandlingMode invalidValuesHandlingMode,
-                            double stabilityThreshold = 1e-9, bool verbose = false) const {
+                            InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold,
-                                    verbose);
+                                    criterion, verbose);
         }
 
     protected:

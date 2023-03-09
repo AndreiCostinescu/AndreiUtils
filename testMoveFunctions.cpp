@@ -2,8 +2,10 @@
 // Created by Andrei on 03.11.22.
 //
 
+#include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <iostream>
 
+using namespace AndreiUtils;
 using namespace std;
 
 template<typename T>
@@ -123,10 +125,73 @@ void testMoveSemantics() {
     allowOnlyRValues(E<int>(69));
 }
 
+class F {
+public:
+    explicit F(int a) : a(a) {}
+
+    F(F const &other) = default;
+
+    F(F &&other) noexcept: a(other.a) {
+        other.a = 0;
+    }
+
+    F &operator=(F const &other) {
+        if (this != &other) {
+            this->a = other.a;
+        }
+        return *this;
+    }
+
+    F &operator=(F &&other) noexcept {
+        if (this != &other) {
+            this->a = other.a;
+            other.a = 0;
+        }
+        return *this;
+    }
+
+    int a;
+};
+
+void testMixedDataContainerWithNonPointerAdd() {
+    MixedDataContainer x;
+    F a(42);
+    F &b = a;
+    F const &f = a;
+    std::remove_reference<F &>::type *c = &a;
+    x.addData("a", a, true);
+    cout << a.a << endl;
+    cout << b.a << endl;
+    cout << c->a << endl;
+    cout << f.a << endl;
+    x.addData("b", b, true);
+    cout << a.a << endl;
+    cout << b.a << endl;
+    cout << c->a << endl;
+    cout << f.a << endl;
+    x.addData("c", c, true);
+    cout << a.a << endl;
+    cout << b.a << endl;
+    cout << c->a << endl;
+    cout << f.a << endl;
+    x.addData("f", f, true);
+    cout << a.a << endl;
+    cout << b.a << endl;
+    cout << c->a << endl;
+    cout << f.a << endl;
+    x.addData("d", std::move(a), true);
+    cout << a.a << endl;
+    cout << b.a << endl;
+    cout << c->a << endl;
+    cout << f.a << endl;
+    x.addData("e", F(3), true);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    testMoveSemantics();
+    // testMoveSemantics();
+    testMixedDataContainerWithNonPointerAdd();
 
     return 0;
 }

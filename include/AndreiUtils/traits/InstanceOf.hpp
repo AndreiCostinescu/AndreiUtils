@@ -29,4 +29,5 @@ namespace AndreiUtils {
         }
     };
 }
+
 #endif //ANDREIUTILS_INSTANCEOF_HPP
