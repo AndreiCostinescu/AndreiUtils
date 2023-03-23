@@ -55,6 +55,10 @@ namespace AndreiUtils {
             return this->typeCreators;
         }
 
+        [[nodiscard]] bool isTypeRegistered(TypeID const &type) const {
+            return AndreiUtils::mapContains(this->typeCreators, type);
+        }
+
     protected:
         std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsType)>> typeCreators;
     };
@@ -199,6 +203,10 @@ namespace AndreiUtils {
 
         virtual std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsType)>> &getRegisteredTypes() {
             return this->typeCreators;
+        }
+
+        [[nodiscard]] bool isTypeRegistered(TypeID const &type) const {
+            return AndreiUtils::mapContains(this->typeCreators, type);
         }
 
     protected:
