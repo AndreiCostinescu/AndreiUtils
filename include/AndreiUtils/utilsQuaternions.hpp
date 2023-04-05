@@ -128,7 +128,7 @@ namespace AndreiUtils {
     // orientation: q1 == q2
     template<class T>
     bool qEqualOrientation(CR<Eigen::Quaternion<T>> q1, CR<Eigen::Quaternion<T>> q2, CR<T> tol = T(1e-9)) {
-        return qEqual(q1, q2) || qEqual(q1, qNeg(q2));
+        return qEqual(q1, q2, tol) || qEqual(q1, qNeg(q2), tol);
     }
 
     template<class T>
