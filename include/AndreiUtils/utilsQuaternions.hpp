@@ -6,6 +6,7 @@
 #define ANDREIUTILS_UTILSQUATERNIONS_HPP
 
 #include <AndreiUtils/classes/TypeHelper.hpp>
+#include <AndreiUtils/utils.hpp>
 #include <Eigen/Dense>
 #include <vector>
 
