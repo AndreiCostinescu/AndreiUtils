@@ -11,35 +11,39 @@
 #include <string>
 
 namespace AndreiUtils {
-    std::string convertChronoToString(const SystemTimePoint &time, const std::string &format = "%Y-%m-%d-%H-%M-%S");
+    std::string convertChronoToString(SystemTimePoint const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S");
 
-    SystemTimePoint convertStringToChrono(const std::string &time, const std::string &format = "%Y-%m-%d-%H-%M-%S");
+    SystemTimePoint convertStringToChrono(std::string const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S");
+
+    std::string convertChronoToStringWithSubsecondsCustomJoin(SystemTimePoint const &time, std::string const &joiner);
+
+    SystemTimePoint convertStringToChronoWithSubsecondsCustomJoin(std::string const &time, std::string const &joiner);
 
     std::string convertChronoToStringWithSubseconds(
-            const SystemTimePoint &time, const std::string &format = "%Y-%m-%d-%H-%M-%S",
-            const std::string &subsecondFormat = "%ns", const std::string &joiner = ":");
+            SystemTimePoint const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S",
+            std::string const &subsecondFormat = "%ns", std::string const &joiner = ":");
 
     SystemTimePoint convertStringToChronoWithSubseconds(
-            const std::string &time, const std::string &format = "%Y-%m-%d-%H-%M-%S",
-            const std::string &subsecondFormat = "%ns", const std::string &joiner = ":");
+            std::string const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S",
+            std::string const &subsecondFormat = "%ns", std::string const &joiner = ":");
 
-    SystemTimePoint addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const std::string &timeUnit);
+    SystemTimePoint addDeltaTime(SystemTimePoint const &timePoint, double deltaT, std::string const &timeUnit);
 
-    SystemTimePoint addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit);
+    SystemTimePoint addDeltaTime(SystemTimePoint const &timePoint, double deltaT, TimeUnit timeUnit);
 
-    SystemTimePoint getTimePoint(double t, const std::string &timeUnit);
+    SystemTimePoint getTimePoint(double t, std::string const &timeUnit);
 
     SystemTimePoint getTimePoint(double t, TimeUnit timeUnit);
 
-    double getTime(const SystemTimePoint &t, const std::string &timeUnit);
+    double getTime(SystemTimePoint const &t, std::string const &timeUnit);
 
-    double getTime(const SystemTimePoint &t, TimeUnit timeUnit);
+    double getTime(SystemTimePoint const &t, TimeUnit timeUnit);
 
-    double getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, const std::string &timeUnit);
+    double getTimeDiff(SystemTimePoint const &t1, SystemTimePoint const &t2, std::string const &timeUnit);
 
-    double getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, TimeUnit timeUnit);
+    double getTimeDiff(SystemTimePoint const &t1, SystemTimePoint const &t2, TimeUnit timeUnit);
 
-    double getTime(double t, const std::string &timeUnit);
+    double getTime(double t, std::string const &timeUnit);
 
     double getTime(double t, TimeUnit timeUnit);
 
@@ -63,10 +67,10 @@ namespace AndreiUtils {
 
     void getDateFromNow(int &year, int &month, int &day);
 
-    void updateTime(const clock_t &newTime, clock_t &prevTime, bool updatePrevTime = false,
+    void updateTime(clock_t const &newTime, clock_t &prevTime, bool updatePrevTime = false,
                     float *difference = nullptr);
 
-    void updateTime(const clock_t &newTime, clock_t &prevTime, bool updatePrevTime = false,
+    void updateTime(clock_t const &newTime, clock_t &prevTime, bool updatePrevTime = false,
                     double *difference = nullptr);
 
     clock_t createDeltaTime(double fps = 0.0, double deltaSec = 0.0);

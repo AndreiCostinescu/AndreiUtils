@@ -16,7 +16,7 @@ typedef ratio<3600 * 24> daysRatio;
 typedef ratio<3600> hoursRatio;
 typedef ratio<60> minutesRatio;
 
-string AndreiUtils::convertChronoToString(const SystemTimePoint &time, const string &format) {
+string AndreiUtils::convertChronoToString(SystemTimePoint const &time, string const &format) {
     time_t timeStruct;
     stringstream ss;
     timeStruct = system_clock::to_time_t(time);
@@ -26,7 +26,7 @@ string AndreiUtils::convertChronoToString(const SystemTimePoint &time, const str
     return ss.str();
 }
 
-time_point<system_clock> AndreiUtils::convertStringToChrono(const string &time, const string &format) {
+SystemTimePoint AndreiUtils::convertStringToChrono(string const &time, string const &format) {
     tm tm = {};
     stringstream ss;
     ss.clear();
@@ -36,8 +36,16 @@ time_point<system_clock> AndreiUtils::convertStringToChrono(const string &time, 
     return system_clock::from_time_t(mktime(&tm));
 }
 
-string AndreiUtils::convertChronoToStringWithSubseconds(const SystemTimePoint &time, const string &format,
-                                                        const string &subsecondFormat, const string &joiner) {
+string AndreiUtils::convertChronoToStringWithSubsecondsCustomJoin(SystemTimePoint const &time, string const &joiner) {
+    return convertChronoToStringWithSubseconds(time, "%Y-%m-%d-%H-%M-%S", "%ns", joiner);
+}
+
+SystemTimePoint AndreiUtils::convertStringToChronoWithSubsecondsCustomJoin(string const &time, string const &joiner) {
+    return convertStringToChronoWithSubseconds(time, "%Y-%m-%d-%H-%M-%S", "%ns", joiner);
+}
+
+string AndreiUtils::convertChronoToStringWithSubseconds(SystemTimePoint const &time, string const &format,
+                                                        string const &subsecondFormat, string const &joiner) {
     if (joiner.empty()) {
         AndreiUtils::myWarning("The subsecond joiner string is empty... "
                                "Reconstructing the original time from the string will not work!");
@@ -72,8 +80,8 @@ string AndreiUtils::convertChronoToStringWithSubseconds(const SystemTimePoint &t
     return res + joiner + subsecondRes;
 }
 
-time_point<system_clock> AndreiUtils::convertStringToChronoWithSubseconds(
-        const string &time, const string &format, const string &subsecondFormat, const string &joiner) {
+SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(
+        string const &time, string const &format, string const &subsecondFormat, string const &joiner) {
     if (joiner.empty()) {
         string message = "The subsecond joiner part is empty... Can not reconstruct subsecond part."
                          "Will reconstruct only using format = " + format;
@@ -190,15 +198,15 @@ chrono::duration<double> convertDurationFromTimeUnit(double t, TimeUnit timeUnit
     //*/
 }
 
-SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, const string &timeUnit) {
+SystemTimePoint AndreiUtils::addDeltaTime(SystemTimePoint const &timePoint, double deltaT, string const &timeUnit) {
     return addDeltaTime(timePoint, deltaT, convertStringToTimeUnit(timeUnit));
 }
 
-SystemTimePoint AndreiUtils::addDeltaTime(const SystemTimePoint &timePoint, double deltaT, TimeUnit timeUnit) {
+SystemTimePoint AndreiUtils::addDeltaTime(SystemTimePoint const &timePoint, double deltaT, TimeUnit timeUnit) {
     return timePoint + chrono::duration_cast<nanoseconds>(convertDurationFromTimeUnit(deltaT, timeUnit));
 }
 
-SystemTimePoint AndreiUtils::getTimePoint(double t, const string &timeUnit) {
+SystemTimePoint AndreiUtils::getTimePoint(double t, string const &timeUnit) {
     return getTimePoint(t, convertStringToTimeUnit(timeUnit));
 }
 
@@ -206,23 +214,23 @@ SystemTimePoint AndreiUtils::getTimePoint(double t, TimeUnit timeUnit) {
     return SystemTimePoint(chrono::duration_cast<nanoseconds>(convertDurationFromTimeUnit(t, timeUnit)));
 }
 
-double AndreiUtils::getTime(const SystemTimePoint &t, const std::string &timeUnit) {
+double AndreiUtils::getTime(SystemTimePoint const &t, string const &timeUnit) {
     return getTime(t, convertStringToTimeUnit(timeUnit));
 }
 
-double AndreiUtils::getTime(const SystemTimePoint &t, TimeUnit timeUnit) {
+double AndreiUtils::getTime(SystemTimePoint const &t, TimeUnit timeUnit) {
     return chrono::duration<double>(t.time_since_epoch()).count() * getMultiplicationFactorRelativeToSeconds(timeUnit);
 }
 
-double AndreiUtils::getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, const std::string &timeUnit) {
+double AndreiUtils::getTimeDiff(SystemTimePoint const &t1, SystemTimePoint const &t2, string const &timeUnit) {
     return getTimeDiff(t1, t2, convertStringToTimeUnit(timeUnit));
 }
 
-double AndreiUtils::getTimeDiff(const SystemTimePoint &t1, const SystemTimePoint &t2, TimeUnit timeUnit) {
+double AndreiUtils::getTimeDiff(SystemTimePoint const &t1, SystemTimePoint const &t2, TimeUnit timeUnit) {
     return chrono::duration<double>(t1 - t2).count() * getMultiplicationFactorRelativeToSeconds(timeUnit);
 }
 
-double AndreiUtils::getTime(double t, const std::string &timeUnit) {
+double AndreiUtils::getTime(double t, string const &timeUnit) {
     return getTime(t, convertStringToTimeUnit(timeUnit));
 }
 
@@ -281,7 +289,7 @@ void AndreiUtils::getDateFromNow(int &year, int &month, int &day) {
     AndreiUtils::getDateFromTime(now, year, month, day);
 }
 
-void AndreiUtils::updateTime(const clock_t &newTime, clock_t &prevTime, bool updatePrevTime, float *difference) {
+void AndreiUtils::updateTime(clock_t const &newTime, clock_t &prevTime, bool updatePrevTime, float *difference) {
     assert(updatePrevTime || difference != nullptr);
     if (difference != nullptr) {
         *difference = ((float) (newTime - prevTime)) / CLOCKS_PER_SEC;
@@ -291,7 +299,7 @@ void AndreiUtils::updateTime(const clock_t &newTime, clock_t &prevTime, bool upd
     }
 }
 
-void AndreiUtils::updateTime(const clock_t &newTime, clock_t &prevTime, bool updatePrevTime, double *difference) {
+void AndreiUtils::updateTime(clock_t const &newTime, clock_t &prevTime, bool updatePrevTime, double *difference) {
     assert(updatePrevTime || difference != nullptr);
     if (difference != nullptr) {
         *difference = ((double) (newTime - prevTime)) / CLOCKS_PER_SEC;
