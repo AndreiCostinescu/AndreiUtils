@@ -316,9 +316,15 @@ namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMap(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
                   std::string const &itemSeparator = "\n") {
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            std::cout << containerItem.first << keyValueSeparator << containerItem.second << itemSeparator;
+            if (!firstItem) {
+                std::cout << itemSeparator;
+            }
+            std::cout << containerItem.first << keyValueSeparator << containerItem.second;
+            firstItem = false;
         }
+        std::cout << std::endl;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
@@ -326,38 +332,59 @@ namespace AndreiUtils {
                   std::function<std::string(T1 const &)> const &keyStringConversion,
                   std::function<std::string(T2 const &)> const &valueStringConversion,
                   std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (!firstItem) {
+                std::cout << itemSeparator;
+            }
             std::cout << keyStringConversion(containerItem.first) << keyValueSeparator
-                      << valueStringConversion(containerItem.second) << itemSeparator;
+                      << valueStringConversion(containerItem.second);
+            firstItem = false;
         }
+        std::cout << std::endl;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertKey(std::map<T1, T2, C, A> const &container,
                             std::function<std::string(T1 const &)> const &keyStringConversion,
                             std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            std::cout << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second
-                      << itemSeparator;
+            if (!firstItem) {
+                std::cout << itemSeparator;
+            }
+            std::cout << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second;
+            firstItem = false;
         }
+        std::cout << std::endl;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertValue(std::map<T1, T2, C, A> const &container,
                               std::function<std::string(T2 const &)> const &valueStringConversion,
                               std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            std::cout << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second)
-                      << itemSeparator;
+            if (!firstItem) {
+                std::cout << itemSeparator;
+            }
+            std::cout << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second);
+            firstItem = false;
         }
+        std::cout << std::endl;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     std::string printMapToString(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
                                  std::string const &itemSeparator = "\n") {
         std::stringstream ss;
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            ss << containerItem.first << keyValueSeparator << containerItem.second << itemSeparator;
+            if (!firstItem) {
+                ss << itemSeparator;
+            }
+            ss << containerItem.first << keyValueSeparator << containerItem.second;
+            firstItem = false;
         }
         return ss.str();
     }
@@ -369,9 +396,14 @@ namespace AndreiUtils {
                                  std::string const &keyValueSeparator = " -> ",
                                  std::string const &itemSeparator = "\n") {
         std::stringstream ss;
+        bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (!firstItem) {
+                ss << itemSeparator;
+            }
             ss << keyStringConversion(containerItem.first) << keyValueSeparator
-               << valueStringConversion(containerItem.second) << itemSeparator;
+               << valueStringConversion(containerItem.second);
+            firstItem = false;
         }
         return ss.str();
     }
@@ -382,9 +414,13 @@ namespace AndreiUtils {
                                            std::string const &keyValueSeparator = " -> ",
                                            std::string const &itemSeparator = "\n") {
         std::stringstream ss;
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            ss << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second
-               << itemSeparator;
+            if (!firstItem) {
+                ss << itemSeparator;
+            }
+            ss << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second;
+            firstItem = false;
         }
         return ss.str();
     }
@@ -395,9 +431,13 @@ namespace AndreiUtils {
                                              std::string const &keyValueSeparator = " -> ",
                                              std::string const &itemSeparator = "\n") {
         std::stringstream ss;
+        bool firstItem = true;
         for (auto const &containerItem: container) {
-            ss << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second)
-               << itemSeparator;
+            if (!firstItem) {
+                ss << itemSeparator;
+            }
+            ss << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second);
+            firstItem = false;
         }
         return ss.str();
     }
