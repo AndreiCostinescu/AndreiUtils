@@ -17,20 +17,20 @@
 namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
     bool mapContains(std::map<T1, T2, C, A> const &container, T1 const &key) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         return data != container.end();
     }
 
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
     bool mapContains(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         return data != container.end();
     }
 
     // if element is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapGetIfContains(std::map<T1, T2, C, A> const &container, T1 const &key, T2 &value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = data->second;  // copy data
             return true;
@@ -52,7 +52,7 @@ namespace AndreiUtils {
     // if element is found, gets a (const) pointer-reference of the element in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     bool mapGetIfContains(std::map<T1, T2, C, A> const &container, T1 const &key, T2 const *&value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = &data->second;
             return true;
@@ -63,7 +63,7 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
     bool mapGetIfContains(std::map<T1 *, T2, C, A> const &container, T1 const *const &key, T2 &value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = data->second;
             return true;
@@ -85,7 +85,7 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a (const) pointer-reference of the element in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
     bool mapGetIfContains(std::map<T1 *, T2, C, A> const &container, T1 const *const &key, T2 const *&value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = &data->second;
             return true;
@@ -96,7 +96,7 @@ namespace AndreiUtils {
     // if element is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
     bool mapGetIfContains(std::map<T1, T2 *, C, A> const &container, T1 const &key, T2 &value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = *data->second;  // copy data
             return true;
@@ -107,7 +107,7 @@ namespace AndreiUtils {
     // if element is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 const *>>>
     bool mapGetIfContains(std::map<T1, T2 const *, C, A> const &container, T1 const &key, T2 &value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = *data->second;  // copy data
             return true;
@@ -118,7 +118,7 @@ namespace AndreiUtils {
     // if element is found, gets a const pointer-copy of the element in the variable value
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
     bool mapGetIfContains(std::map<T1, T2 *, C, A> const &container, T1 const &key, T2 const *&value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = data->second;
             return true;
@@ -129,7 +129,7 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
     bool mapGetIfContains(std::map<T1 *, T2 *, C, A> const &container, T1 const *const &key, T2 &value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = *data->second;
             return true;
@@ -140,7 +140,7 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a copy of the element's value in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 const *>>>
     bool mapGetIfContains(std::map<T1 *, T2 const *, C, A> const &container, T1 const *const &key, T2 &value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = *data->second;
             return true;
@@ -151,7 +151,7 @@ namespace AndreiUtils {
     // if element (having a pointer as key) is found, gets a const pointer-copy of the element in the variable value
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
     bool mapGetIfContains(std::map<T1 *, T2 *, C, A> const &container, T1 const *const &key, T2 const *&value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = data->second;
             return true;
@@ -163,7 +163,7 @@ namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2 *>>>
     bool mapGetIfContains(std::map<T1, std::shared_ptr<T2>, C, A> const &container, T1 const &key,
                           std::shared_ptr<T2 const> &value) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data != container.end()) {
             value = data->second;
             return true;
@@ -175,7 +175,7 @@ namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2 *>>>
     bool mapGetIfContains(std::map<T1 *, std::shared_ptr<T2>, C, A> const &container, T1 const *const &key,
                           std::shared_ptr<T2 const> &value) {
-        const auto &data = container.find(const_cast<T1 *>(key));
+        auto const &data = container.find(const_cast<T1 *>(key));
         if (data != container.end()) {
             value = data->second;
             return true;
@@ -203,7 +203,7 @@ namespace AndreiUtils {
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
-        const auto &data = container.find(key);
+        auto const &data = container.find(key);
         if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
         }
@@ -314,43 +314,50 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    void printMap(std::map<T1, T2, C, A> const &container) {
-        for (const auto &containerItem: container) {
-            std::cout << containerItem.first << " -> " << containerItem.second << std::endl;
+    void printMap(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
+                  std::string const &itemSeparator = "\n") {
+        for (auto const &containerItem: container) {
+            std::cout << containerItem.first << keyValueSeparator << containerItem.second << itemSeparator;
         }
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMap(std::map<T1, T2, C, A> const &container,
                   std::function<std::string(T1 const &)> const &keyStringConversion,
-                  std::function<std::string(T2 const &)> const &valueStringConversion) {
-        for (const auto &containerItem: container) {
-            std::cout << keyStringConversion(containerItem.first) << " -> "
-                      << valueStringConversion(containerItem.second) << std::endl;
+                  std::function<std::string(T2 const &)> const &valueStringConversion,
+                  std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        for (auto const &containerItem: container) {
+            std::cout << keyStringConversion(containerItem.first) << keyValueSeparator
+                      << valueStringConversion(containerItem.second) << itemSeparator;
         }
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertKey(std::map<T1, T2, C, A> const &container,
-                            std::function<std::string(T1 const &)> const &keyStringConversion) {
-        for (const auto &containerItem: container) {
-            std::cout << keyStringConversion(containerItem.first) << " -> " << containerItem.second << std::endl;
+                            std::function<std::string(T1 const &)> const &keyStringConversion,
+                            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        for (auto const &containerItem: container) {
+            std::cout << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second
+                      << itemSeparator;
         }
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertValue(std::map<T1, T2, C, A> const &container,
-                              std::function<std::string(T2 const &)> const &valueStringConversion) {
-        for (const auto &containerItem: container) {
-            std::cout << containerItem.first << " -> " << valueStringConversion(containerItem.second) << std::endl;
+                              std::function<std::string(T2 const &)> const &valueStringConversion,
+                              std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        for (auto const &containerItem: container) {
+            std::cout << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second)
+                      << itemSeparator;
         }
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::string printMapToString(std::map<T1, T2, C, A> const &container) {
+    std::string printMapToString(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
+                                 std::string const &itemSeparator = "\n") {
         std::stringstream ss;
-        for (const auto &containerItem: container) {
-            ss << containerItem.first << " -> " << containerItem.second << std::endl;
+        for (auto const &containerItem: container) {
+            ss << containerItem.first << keyValueSeparator << containerItem.second << itemSeparator;
         }
         return ss.str();
     }
@@ -358,31 +365,39 @@ namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     std::string printMapToString(std::map<T1, T2, C, A> const &container,
                                  std::function<std::string(T1 const &)> const &keyStringConversion,
-                                 std::function<std::string(T2 const &)> const &valueStringConversion) {
+                                 std::function<std::string(T2 const &)> const &valueStringConversion,
+                                 std::string const &keyValueSeparator = " -> ",
+                                 std::string const &itemSeparator = "\n") {
         std::stringstream ss;
-        for (const auto &containerItem: container) {
-            ss << keyStringConversion(containerItem.first) << " -> " << valueStringConversion(containerItem.second)
-               << std::endl;
+        for (auto const &containerItem: container) {
+            ss << keyStringConversion(containerItem.first) << keyValueSeparator
+               << valueStringConversion(containerItem.second) << itemSeparator;
         }
         return ss.str();
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     std::string printMapToStringConvertKey(std::map<T1, T2, C, A> const &container,
-                                           std::function<std::string(T1 const &)> const &keyStringConversion) {
+                                           std::function<std::string(T1 const &)> const &keyStringConversion,
+                                           std::string const &keyValueSeparator = " -> ",
+                                           std::string const &itemSeparator = "\n") {
         std::stringstream ss;
-        for (const auto &containerItem: container) {
-            ss << keyStringConversion(containerItem.first) << " -> " << containerItem.second << std::endl;
+        for (auto const &containerItem: container) {
+            ss << keyStringConversion(containerItem.first) << keyValueSeparator << containerItem.second
+               << itemSeparator;
         }
         return ss.str();
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     std::string printMapToStringConvertValue(std::map<T1, T2, C, A> const &container,
-                                             std::function<std::string(T2 const &)> const &valueStringConversion) {
+                                             std::function<std::string(T2 const &)> const &valueStringConversion,
+                                             std::string const &keyValueSeparator = " -> ",
+                                             std::string const &itemSeparator = "\n") {
         std::stringstream ss;
-        for (const auto &containerItem: container) {
-            ss << containerItem.first << " -> " << valueStringConversion(containerItem.second) << std::endl;
+        for (auto const &containerItem: container) {
+            ss << containerItem.first << keyValueSeparator << valueStringConversion(containerItem.second)
+               << itemSeparator;
         }
         return ss.str();
     }
@@ -391,7 +406,7 @@ namespace AndreiUtils {
     std::vector<T1> getMapKeys(std::map<T1, T2, C, A> const &container) {
         std::vector<T1> keys(container.size());
         int i = 0;
-        for (const auto &elem: container) {
+        for (auto const &elem: container) {
             keys[i++] = elem.first;
         }
         return keys;
@@ -401,7 +416,7 @@ namespace AndreiUtils {
     std::vector<T2> getMapValues(std::map<T1, T2, C, A> const &container) {
         std::vector<T2> values(container.size());
         int i = 0;
-        for (const auto &elem: container) {
+        for (auto const &elem: container) {
             values[i++] = elem.second;
         }
         return values;
