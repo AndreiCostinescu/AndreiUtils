@@ -201,7 +201,7 @@ namespace AndreiUtils {
             this->dataSize = 0;
         }
 
-        T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters) const {
+        T convolve(std::vector<typename get_vector_type_for_convolution<T>::type> const &parameters) const {
             if (parameters.size() != this->dataSize) {
                 throw std::runtime_error("Can not convolve with different parameter sizes!");
             }
@@ -232,7 +232,7 @@ namespace AndreiUtils {
             return this->data[this->latestIndex()];
         }
 
-        const T &getLatest() const {
+        T const &getLatest() const {
             return this->data[this->latestIndex()];
         }
 
@@ -240,8 +240,40 @@ namespace AndreiUtils {
             return this->data[this->earliestIndex()];
         }
 
-        const T &getEarliest() const {
+        T const &getEarliest() const {
             return this->data[this->earliestIndex()];
+        }
+
+        T &getValueAtIndexFromRight(size_t const &_index) {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromRight!");
+            }
+            size_t i = (this->index + this->size - 1 - _index) % this->size;
+            return this->data[i];
+        }
+
+        T const &getValueAtIndexFromRight(size_t const &_index) const {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromRight!");
+            }
+            size_t i = (this->index + this->size - 1 - _index) % this->size;
+            return this->data[i];
+        }
+
+        T &getValueAtIndexFromLeft(size_t const &_index) {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromLeft!");
+            }
+            size_t i = (this->index + this->size - this->dataSize + _index) % this->size;
+            return this->data[i];
+        }
+
+        T const &getValueAtIndexFromLeft(size_t const &_index) const {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromLeft!");
+            }
+            size_t i = (this->index + this->size - this->dataSize + _index) % this->size;
+            return this->data[i];
         }
 
         std::vector<T> &getData() {
