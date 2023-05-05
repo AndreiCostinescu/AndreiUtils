@@ -113,7 +113,7 @@ foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES
             if ((NOT DEFINED PYBIND11_PYTHON_VERSION) OR ("${PYBIND11_PYTHON_VERSION}" STREQUAL ""))
                 set(PYBIND11_PYTHON_VERSION @PYBIND11_PYTHON_VERSION@)
             endif ()
-            find_package(Python3 ${PYBIND11_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
+            find_package(Python3 ${PYBIND11_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Interpreter Development)
             message("Found package python with version ${PYBIND11_PYTHON_VERSION}")
         endif ()
         if ((NOT DEFINED PYBIND11_FOUND) OR (NOT ${PYBIND11_FOUND}))
