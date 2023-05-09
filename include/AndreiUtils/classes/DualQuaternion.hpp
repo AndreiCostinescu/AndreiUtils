@@ -23,6 +23,12 @@ namespace AndreiUtils {
             return q;
         }
 
+        static DualQuaternion createFromCoefficients(CR<Eigen::Matrix<T, 8, 1>> coefficients) {
+            DualQuaternion<T> q;
+            q.fromCoefficients(coefficients);
+            return q;
+        }
+
         explicit DualQuaternion(CR<T> q0 = T(0), CR<T> q1 = T(0), CR<T> q2 = T(0), CR<T> q3 = T(0),
                                 CR<T> q4 = T(0), CR<T> q5 = T(0), CR<T> q6 = T(0), CR<T> q7 = T(0)) :
                 r(q0, q1, q2, q3), d(q4, q5, q6, q7) {}
@@ -87,6 +93,22 @@ namespace AndreiUtils {
             this->d.x() = coefficients[5];
             this->d.y() = coefficients[6];
             this->d.z() = coefficients[7];
+            this->normalize();
+        }
+
+        void fromCoefficients(CR<Eigen::Matrix<T, 8, 1>> coefficients) {
+            if (coefficients.size() != 8) {
+                throw std::runtime_error(
+                        "Coefficients' size is not 8 (is " + std::to_string(coefficients.size()) + ")!");
+            }
+            this->r.w() = coefficients(0);
+            this->r.x() = coefficients(1);
+            this->r.y() = coefficients(2);
+            this->r.z() = coefficients(3);
+            this->d.w() = coefficients(4);
+            this->d.x() = coefficients(5);
+            this->d.y() = coefficients(6);
+            this->d.z() = coefficients(7);
             this->normalize();
         }
 
