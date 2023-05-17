@@ -114,7 +114,7 @@ namespace AndreiUtils {
             mapSet(this->deleters, id, deleter);
         }
 
-        void *getData(std::string const &id) const;
+        [[nodiscard]] void *getData(std::string const &id) const;
 
         template<typename T>
         T *getData(std::string const &id) const {
@@ -125,9 +125,9 @@ namespace AndreiUtils {
 
         template<typename T>
         bool getDataIfContains(std::string const &id, T *&res) const {
-            void *_res = nullptr;
-            if (this->getDataIfContains(id, _res)) {
-                res = (T *) _res;
+            void *resTmp = nullptr;
+            if (this->getDataIfContains(id, resTmp)) {
+                res = (T *) resTmp;
                 return true;
             }
             return false;
@@ -135,20 +135,20 @@ namespace AndreiUtils {
 
         template<typename T>
         void updateData(std::string const &id, T const &x) {
-            void *_data;
-            if (!AndreiUtils::mapGetIfContains(this->data, id, _data)) {
+            void *dataTmp;
+            if (!AndreiUtils::mapGetIfContains(this->data, id, dataTmp)) {
                 throw std::runtime_error("Can not update data in container if no data is present (id = " + id + ")");
             }
-            *(T *) _data = x;
+            *(T *) dataTmp = x;
         }
 
         std::map<std::string, void *>::iterator begin();
 
         std::map<std::string, void *>::iterator end();
 
-        std::map<std::string, void *>::const_iterator begin() const;
+        [[nodiscard]] std::map<std::string, void *>::const_iterator begin() const;
 
-        std::map<std::string, void *>::const_iterator end() const;
+        [[nodiscard]] std::map<std::string, void *>::const_iterator end() const;
 
     protected:
         void removeData(std::string const &id) {
