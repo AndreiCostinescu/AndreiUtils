@@ -225,25 +225,28 @@ namespace AndreiUtils {
             return res.exp();
         }
 
-        // https://math.stackexchange.com/q/4445771 and Appendix A2 of https://users.cs.utah.edu/~ladislav/kavan08geometric/kavan08geometric.pdf
         [[nodiscard]] DualQuaternion norm() const {
             /*
             return DualQuaternion(this->r * this->r.conjugate(),
                                   qAdd(this->r * this->d.conjugate(), this->d * this->r.conjugate()));
+            /*/
             DualQuaternion norm = this->conjugate() * (*this);
             norm.r.w() = sqrt(norm.r.w());
             norm.d.w() /= (2 * norm.r.w());  // why???
             //*/
+
+            /*
+            // https://math.stackexchange.com/q/4445771 and Appendix A2 of https://users.cs.utah.edu/~ladislav/kavan08geometric/kavan08geometric.pdf
             DualQuaternion norm;
             norm.r = qZero<T>();
             norm.r.w() = this->r.norm();
             norm.d = qDivScalar(this->r.conjugate() * this->d, norm.r.w());
+            //*/
             return norm;
         }
 
-        // https://math.stackexchange.com/q/4445771 and Appendix A2 of https://users.cs.utah.edu/~ladislav/kavan08geometric/kavan08geometric.pdf
         void normalize() {
-            // *this = (*this) * (this->norm().dualQuaternionInverse());
+            *this = (*this) * (this->norm().dualQuaternionInverse());
             /*
             T norm = this->r.norm();
             if (equal(norm, T(0))) {
@@ -251,11 +254,14 @@ namespace AndreiUtils {
             }
             this->r.normalize();
             //*/
+            /*
+            // https://math.stackexchange.com/q/4445771 and Appendix A2 of https://users.cs.utah.edu/~ladislav/kavan08geometric/kavan08geometric.pdf
             auto qr = this->r;
             auto qd = this->d;
             auto normQR = qr.norm();
             this->d = qDivScalar(qSub(qd, qDivScalar(qr * qr.conjugate() * qd, normQR * normQR)), normQR);
             this->r = qDivScalar(qr, normQR);
+            //*/
         }
 
         [[nodiscard]] DualQuaternion normalized() const {

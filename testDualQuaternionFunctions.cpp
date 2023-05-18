@@ -169,7 +169,7 @@ void testTransformationMatrixToDualQuaternion() {
     cout << q4 << endl;
     cout << q4.toRotationMatrix() << endl;
 
-    cout << qFromRotationMatrix((Matrix3d)  m2.transpose()) << endl;
+    cout << qFromRotationMatrix((Matrix3d) m2.transpose()) << endl;
 }
 
 void testRotationEquivalence() {
@@ -179,6 +179,46 @@ void testRotationEquivalence() {
     cout << (q.getRotationAsMatrix() * v).transpose() << endl;
 }
 
+void testNormalization() {
+    Posed q(0.166411, -0.482188, 0.493274, -0.00571844, 4.46284e-60, 0.106648, -0.0645096, 6.95262e-310);
+    cout << q << endl;
+    cout << "Norm of q = " << q.norm() << endl;
+    q.normalize();
+    cout << "After normalize: " << q << endl;
+    cout << "Norm of q = " << q.norm() << endl;
+    q.normalize();
+    cout << "After normalize 2: " << q << endl;
+    cout << "Norm of q = " << q.norm() << endl;
+}
+
+void testTranslationDelta() {
+    vector<double> tmpData = {-0.0009003758676818849, 0.04833426661985106, -0.9988211726304295, 0.0,
+                              0.9997362675189353, 0.022541214719883684, 0.00018959817640538056, 0.0,
+                              0.022524240269260587, -0.9985768060327067, -0.048342745617214196, 0.0,
+                              0.3305606906144228, 0.12850723493527194, 0.2173939959466131, 1.0};
+    Vector3d referenceT(0.3305606906144228, 0.12850723493527194, 0.2173939959466131);
+    Matrix4d T;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            T(i, j) = tmpData[i + 4 * j];
+        }
+    }
+    cout << T << endl;
+    cout << qFromRotationMatrix((Matrix3d) T.block<3, 3>(0, 0)) << endl;
+    Posed qRef(T);
+    cout << qRef << "; " << qRef.getTranslation().transpose() << endl;
+    cout << qRef.norm() << endl;
+    cout << qRef.normalized() << "; " << qRef.normalized().getTranslation().transpose() << endl;
+
+    Posed q(0.493275, 0.506182, 0.517635, -0.482187, -0.0645096, -0.00571899, 0.166411, 0.106648);
+    cout << q << endl;
+    cout << "Norm of q = " << q.norm() << endl;
+    q.normalize();
+    cout << q.getTranslation() << endl;
+    Posed tmp(q.getRotation(), Vector3d{1, 1, 1});
+    cout << tmp.getTranslation() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -186,7 +226,8 @@ int main() {
     // testTheSameOperations();
     // testLowPassFilterQuaternion();
     // testTransformationMatrixToDualQuaternion();
-    testRotationEquivalence();
+    // testRotationEquivalence();
+    testTranslationDelta();
 
     return 0;
 }
