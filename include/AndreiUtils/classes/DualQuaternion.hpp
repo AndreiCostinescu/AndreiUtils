@@ -139,17 +139,32 @@ namespace AndreiUtils {
             return Eigen::AngleAxis<T>(this->r).axis();
         }
 
-        // inspired by Riddhiman's function
+        // inspired by Riddhiman's function and https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_dual_quaternion_operations.html#dual_quaternion_sclerp
         [[nodiscard]] DualQuaternion powScrew(CR<T> a) const {
-            T theta = this->rotationAngle(), n;  // Theta in radians (ALWAYS)
+            // https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_conversions.html#screw_parameters_from_dual_quaternion
+            // https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_conversions.html#dual_quaternion_from_screw_parameters
+            // https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_utils.html#check_screw_parameters
+            T theta = this->rotationAngle();  // Theta in radians (ALWAYS)
             DualQuaternion res;
 
-            if (theta == 0) {
-                n = theta;
-            } else {
-                n = 0.5 * theta;
+            if (AndreiUtils::equal(theta, T(0))) {
+                // pure translation
+                Eigen::Matrix<T, 3, 1> translation = 2 * (this->d * this->r.conjugate()).vec();
+                T translationNorm = translation.norm(), distance;
+                if (AndreiUtils::equal(translationNorm, T(0))) {
+                    translation = Eigen::Matrix<T, 3, 1>{0, 0, 1};
+                    distance = 0;
+                } else {
+                    translation /= translationNorm;
+                    distance = translationNorm * a;
+                }
+                res.r = qIdentity<T>();
+                res.d.w() = 0;
+                res.d.vec() = 0.5 * distance * translation;
+                return res;
             }
 
+            T n = 0.5 * theta;
             T cos_n = cos(n);
             T cos_a_n = cos(a * n);
             T sin_n = sin(n);
@@ -162,20 +177,24 @@ namespace AndreiUtils {
             u.x() = this->r.x();
             u.y() = this->r.y();
             u.z() = this->r.z();
-            u /= sin_n;
+            u /= sin_n;  // u = screw_axis
             v.x() = this->d.x() - tmp_cos_2 * u.x();
             v.y() = this->d.y() - tmp_cos_2 * u.y();
             v.z() = this->d.z() - tmp_cos_2 * u.z();
-            v /= sin_n;
+            v /= sin_n;  // v = moment
 
+            // real_w = cos_half_angle
             res.r.w() = cos_a_n;
+            // real_vec = sin_half_angle * screw_axis
             res.r.x() = u.x() * sin_a_n;
             res.r.y() = u.y() * sin_a_n;
             res.r.z() = u.z() * sin_a_n;
 
+            // half_distance
             T tmp_a_2 = 0.5 * tmp * a;
-
+            // dual_w = -half_distance * sin_half_angle
             res.d.w() = -tmp_a_2 * sin_a_n;
+            // dual_vec = (moment * sin_half_angle + half_distance * screw_axis * cos_half_angle)
             res.d.x() = (v.x() * sin_a_n) + (tmp_a_2 * u.x() * cos_a_n);
             res.d.y() = (v.y() * sin_a_n) + (tmp_a_2 * u.y() * cos_a_n);
             res.d.z() = (v.z() * sin_a_n) + (tmp_a_2 * u.z() * cos_a_n);

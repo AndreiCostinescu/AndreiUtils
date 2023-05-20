@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
+#include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>
 #include <iomanip>
@@ -219,6 +220,16 @@ void testTranslationDelta() {
     cout << tmp.getTranslation() << endl;
 }
 
+void testInterpolation() {
+    Posed start(0.503886, 0.486674, 0.484643, -0.523792, -0.0852132, 0.00675892, 0.16508, 0.0770467);
+    Posed goal(0.503886, 0.486674, 0.484643, -0.523792, -0.0243781, -0.0562269, 0.0996041, 0.0164655);
+    PoseInterpolator<double> p;
+    auto const &res = p.compute(start, goal, 10).getResult();
+    for (auto const &pose: res) {
+        cout << pose << " (t = " << pose.getTranslation().transpose() << ")" << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -227,7 +238,8 @@ int main() {
     // testLowPassFilterQuaternion();
     // testTransformationMatrixToDualQuaternion();
     // testRotationEquivalence();
-    testTranslationDelta();
+    // testTranslationDelta();
+    testInterpolation();
 
     return 0;
 }
