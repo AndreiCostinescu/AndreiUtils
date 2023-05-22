@@ -414,7 +414,11 @@ namespace AndreiUtils {
             return DualQuaternion(this->r, t + this->getTranslation());
         }
 
-        [[nodiscard]] Eigen::Quaternion<T> getRotation() const {
+        [[nodiscard]] Eigen::Quaternion<T> const &getRotation() const {
+            return this->r;
+        }
+
+        [[nodiscard]] Eigen::Quaternion<T> &getRotation() {
             return this->r;
         }
 
@@ -422,7 +426,11 @@ namespace AndreiUtils {
             return this->r.toRotationMatrix();
         }
 
-        [[nodiscard]] Eigen::Quaternion<T> getDual() const {
+        [[nodiscard]] Eigen::Quaternion<T> const &getDual() const {
+            return this->d;
+        }
+
+        [[nodiscard]] Eigen::Quaternion<T> &getDual() {
             return this->d;
         }
 
