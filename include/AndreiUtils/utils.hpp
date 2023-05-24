@@ -174,6 +174,11 @@ namespace AndreiUtils {
         bringValueInCircularInterval(vCopy, minInterval, maxInterval, tol);
         return vCopy;
     }
+
+    template<typename T>
+    T sign(bool positive) {
+        return positive ? T(1) : T(-1);
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP
