@@ -13,6 +13,8 @@ namespace AndreiUtils {
     Eigen::MatrixXd readEigenData(const std::string &file);
 
     void writeEigenData(const std::string &file, const Eigen::MatrixXd &m);
+
+    bool isOrthonormal(Eigen::Matrix3d const &m);
 }
 
 #endif //ANDREIUTILS_UTILSEIGEN_H

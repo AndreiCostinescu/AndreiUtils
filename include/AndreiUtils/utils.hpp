@@ -176,8 +176,13 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    T sign(bool positive) {
+    T signPosNeg(bool positive) {
         return positive ? T(1) : T(-1);
+    }
+
+    template<typename T>
+    int signOf(T val) {
+        return (T(0) < val) - (val < T(0));
     }
 }
 
