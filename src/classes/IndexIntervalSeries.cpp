@@ -29,12 +29,12 @@ string IndexIntervalSeries::toString(int getOnlyLatest) const {
         int startIndex = fastMax(seriesSize, getOnlyLatest) - getOnlyLatest;
         result = printVectorToString<pair<int, int>>(spliceVector(this->series, startIndex, seriesSize - 1),
                                                      [](pair<int, int> const &p) {
-                                                         return "[" + to_string(p.first) + "," + to_string(p.second) +
+                                                         return "[" + to_string(p.first) + ", " + to_string(p.second) +
                                                                 "]";
                                                      });
     } else {
         result = printVectorToString<pair<int, int>>(this->series, [](pair<int, int> const &p) {
-            return "[" + to_string(p.first) + "," + to_string(p.second) + "]";
+            return "[" + to_string(p.first) + ", " + to_string(p.second) + "]";
         });
     }
     return result;
