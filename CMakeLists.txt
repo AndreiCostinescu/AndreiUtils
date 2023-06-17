@@ -198,6 +198,7 @@ SET(UTILS_CLASSES
         src/classes/AnyType.cpp
         src/classes/Buffer.cpp
         src/classes/GaussianKernel.cpp
+        src/classes/IndexIntervalSeries.cpp
         src/classes/MixedDataContainer.cpp
         src/classes/RandomNumberGenerator.cpp
         src/classes/Timer.cpp
