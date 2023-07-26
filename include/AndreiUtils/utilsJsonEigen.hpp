@@ -172,7 +172,46 @@ namespace nlohmann {
         }
 
         static void from_json(nlohmann::json const &j, AndreiUtils::DualQuaternion<T> &q) {
-            q.fromCoefficients(j.get<std::vector<T>>());
+            if (!j.is_array()) {
+                throw std::runtime_error("Can't convert non-arrays to poses");
+            }
+            if (j.size() == 8 && j[0].is_number()) {
+                q.fromCoefficients(j.get<std::vector<T>>());
+                return;
+            }
+            q = AndreiUtils::Posed::one;
+            for (auto const &jIntern: j.get<std::vector<nlohmann::json>>()) {
+                if (!jIntern.is_array()) {
+                    throw std::runtime_error("Can't convert non-internal-arrays to poses");
+                }
+                if (jIntern.size() != 3) {
+                    throw std::runtime_error("Unknown format for pose-composition data!");
+                }
+                if (jIntern[0].is_number()) {
+                    q = q.addTranslation(
+                            {jIntern[0].get<double>(), jIntern[1].get<double>(), jIntern[2].get<double>()});
+                } else if (!jIntern[0].is_string()) {
+                    throw std::runtime_error("Can't convert non-string-starting arrays to orientations");
+                } else {
+                    double angle;
+                    if (jIntern[0].get<std::string>() == "d") {
+                        angle = AndreiUtils::deg2Rad(jIntern[1].get<double>());
+                    } else if (jIntern[0].get<std::string>() == "r") {
+                        angle = jIntern[1].get<double>();
+                    } else {
+                        throw std::runtime_error("Unknown angle-axis angle format specification!");
+                    }
+                    Eigen::Vector3d axis;
+                    if (!jIntern[2].is_array() || jIntern[2].size() != 3) {
+                        throw std::runtime_error("Can't convert angle-axis axis if it's not a 3-dim vector data!");
+                    }
+                    axis.x() = jIntern[2][0].get<double>();
+                    axis.y() = jIntern[2][1].get<double>();
+                    axis.z() = jIntern[2][2].get<double>();
+                    axis.normalize();
+                    q = q.addRotationRight(Eigen::Quaterniond(Eigen::AngleAxisd(angle, axis)));
+                }
+            }
         }
     };
 
