@@ -92,14 +92,34 @@ void testRemoveDuplicates() {
     printVector(removeDuplicates(x));
 }
 
+void testEigenDataAsArray() {
+    Matrix<double, 2, 3> bb;
+    bb << -0.113, -0.113, -0.003, 0.113, 0.113, 0.016;
+    cout << bb << endl;
+    cout << bb(0) << endl;
+    cout << bb(1) << endl;
+    cout << bb(2) << endl;
+    cout << bb(3) << endl;
+    cout << bb(4) << endl;
+    cout << bb(5) << endl;
+    cout << bb(0, 0) << endl;
+    cout << bb(0, 1) << endl;
+    cout << bb(0, 2) << endl;
+    cout << bb(1, 0) << endl;
+    cout << bb(1, 1) << endl;
+    cout << bb(1, 2) << endl;
+    cout << printVectorToString(vectorFromArray(bb.transpose().data(), 6)) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testSortMultipleVectorsBasedOnOneCriterion();
     // testVectorAppendFunctions();
     // testVectorEquals();
-    testSpliceVector();
+    // testSpliceVector();
     // testRemoveDuplicates();
+    testEigenDataAsArray();
 
     return 0;
 }
