@@ -17,6 +17,14 @@ namespace AndreiUtils {
             return DualQuaternion::one;
         }
 
+        static DualQuaternion createFromCoefficients(
+                CR<T> q0 = T(0), CR<T> q1 = T(0), CR<T> q2 = T(0), CR<T> q3 = T(0),
+                CR<T> q4 = T(0), CR<T> q5 = T(0), CR<T> q6 = T(0), CR<T> q7 = T(0)) {
+            DualQuaternion<T> q;
+            q.fromCoefficients(q0, q1, q2, q3, q4, q5, q6, q7);
+            return q;
+        }
+
         static DualQuaternion createFromCoefficients(CR<std::vector<T>> coefficients) {
             DualQuaternion<T> q;
             q.fromCoefficients(coefficients);
@@ -78,6 +86,19 @@ namespace AndreiUtils {
             res << this->r.w(), this->r.x(), this->r.y(), this->r.z(), this->d.w(), this->d.x(), this->d.y(),
                     this->d.z();
             return res;
+        }
+
+        void fromCoefficients(CR<T> q0 = T(0), CR<T> q1 = T(0), CR<T> q2 = T(0), CR<T> q3 = T(0),
+                              CR<T> q4 = T(0), CR<T> q5 = T(0), CR<T> q6 = T(0), CR<T> q7 = T(0)) {
+            this->r.w() = q0;
+            this->r.x() = q1;
+            this->r.y() = q2;
+            this->r.z() = q3;
+            this->d.w() = q4;
+            this->d.x() = q5;
+            this->d.y() = q6;
+            this->d.z() = q7;
+            this->normalize();
         }
 
         void fromCoefficients(CR<std::vector<T>> coefficients) {
