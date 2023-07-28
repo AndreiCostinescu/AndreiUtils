@@ -20,7 +20,8 @@ namespace AndreiUtils {
         }
 
         void filter(Eigen::Quaternion<T> const &q) {
-            double dist = 2 * std::acos((this->filterValue * q.conjugate()).w());
+            auto tmp = (this->filterValue * q.conjugate()).normalized();
+            double dist = 2 * std::acos(AndreiUtils::clamp<double>(tmp.w(), -1, 1));
             double gain = (dist / M_PI) * this->range + this->low;
             this->filterValue = this->filterValue.slerp(gain, q);
         }
