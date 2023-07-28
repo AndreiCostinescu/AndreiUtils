@@ -33,13 +33,13 @@ namespace AndreiUtils {
                                              startNormed.getTranslation(), endNormed.getTranslation()));
         }
 
-        PoseDecoupledInterpolator &compute(InterpolationType const &start, double const &stepSize,
+        PoseDecoupledInterpolator &compute(InterpolationType const &start, double const &timeStepSize,
                                            InterpolationType const &end) {
             InterpolationType startNormed = start.normalized(), endNormed = end.normalized();
             std::vector<PosType> interpolatedPositions = LinearInterpolator<PosType>().compute(
-                    startNormed.getTranslation(), stepSize, endNormed.getTranslation()).getResult();
+                    startNormed.getTranslation(), timeStepSize, endNormed.getTranslation()).getResult();
             std::vector<RotType> interpolatedQuaternions = SlerpInterpolator<T>().compute(
-                    startNormed.getRotation(), stepSize, endNormed.getRotation()).getResult();
+                    startNormed.getRotation(), timeStepSize, endNormed.getRotation()).getResult();
             this->setResult(interpolatedPositions.size(), interpolatedQuaternions, interpolatedPositions);
             return *this;
         }

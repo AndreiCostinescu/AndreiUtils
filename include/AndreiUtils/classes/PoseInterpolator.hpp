@@ -26,7 +26,7 @@ namespace AndreiUtils {
             return startNormed.sclerp(tau, endNormed);
         }
 
-        PoseInterpolator &compute(InterpolationType const &start, double const &stepSize,
+        PoseInterpolator &compute(InterpolationType const &start, double const &timeStepSize,
                                   InterpolationType const &end) {
             this->clear();
 
@@ -36,7 +36,7 @@ namespace AndreiUtils {
             for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
                 this->result.emplace_back((tau == 0) ? startNormed : startNormed * endToStart.powScrew(tau));
-                tau = tau + stepSize;
+                tau = tau + timeStepSize;
             }
 
             return *this;

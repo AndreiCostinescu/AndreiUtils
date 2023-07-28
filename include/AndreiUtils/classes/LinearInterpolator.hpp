@@ -24,7 +24,7 @@ namespace AndreiUtils {
             return start + tau * (end - start);
         }
 
-        LinearInterpolator &compute(InterpolationType const &start, double const &stepSize,
+        LinearInterpolator &compute(InterpolationType const &start, double const &timeStepSize,
                                     InterpolationType const &end) {
             this->clear();
 
@@ -32,7 +32,7 @@ namespace AndreiUtils {
             for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
                 this->result.emplace_back(start + tau * diff);
-                tau = tau + stepSize;
+                tau = tau + timeStepSize;
             }
 
             return *this;

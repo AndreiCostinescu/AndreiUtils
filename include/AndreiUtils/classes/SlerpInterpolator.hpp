@@ -25,14 +25,14 @@ namespace AndreiUtils {
             return start.slerp(tau, end);
         }
 
-        SlerpInterpolator &compute(InterpolationType const &start, double const &stepSize,
+        SlerpInterpolator &compute(InterpolationType const &start, double const &timeStepSize,
                                    InterpolationType const &end) {
             this->clear();
 
             for (double tau = 0.; tau <= 1.;) {
                 // add the interpolated pose
                 this->result.emplace_back(start.slerp(tau, end));
-                tau = tau + stepSize;
+                tau = tau + timeStepSize;
             }
 
             return *this;
