@@ -15,7 +15,7 @@ namespace AndreiUtils {
 
         explicit IndexIntervalSeries(int consecutiveMissingFramesForSameIntervalThreshold);
 
-        void addIndex(int newIndex);
+        virtual void addIndex(int newIndex);
 
         [[nodiscard]] std::string toString(int getOnlyLatest = -1) const;
 
