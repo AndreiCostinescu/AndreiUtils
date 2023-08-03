@@ -184,10 +184,14 @@ namespace nlohmann {
                 if (!jIntern.is_array()) {
                     throw std::runtime_error("Can't convert non-internal-arrays to poses");
                 }
-                if (jIntern.size() != 3) {
+                if (jIntern.size() != 3 && jIntern.size() != 4) {
                     throw std::runtime_error("Unknown format for pose-composition data!");
                 }
-                if (jIntern[0].is_number()) {
+                if (jIntern.size() == 4) {
+                    // Assume quaternion components
+                    q = q.addRotationRight(Eigen::Quaterniond{jIntern[0].get<double>(), jIntern[1].get<double>(),
+                                                              jIntern[2].get<double>(), jIntern[3].get<double>()});
+                } else if (jIntern[0].is_number()) {
                     q = q.addTranslation(
                             {jIntern[0].get<double>(), jIntern[1].get<double>(), jIntern[2].get<double>()});
                 } else if (!jIntern[0].is_string()) {
