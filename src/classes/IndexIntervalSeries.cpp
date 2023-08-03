@@ -10,12 +10,12 @@ using namespace std;
 
 IndexIntervalSeries::IndexIntervalSeries() : IndexIntervalSeries(0) {}
 
-IndexIntervalSeries::IndexIntervalSeries(int consecutiveMissingFramesForSameIntervalThreshold) :
-        consecutiveMissingFramesForSameIntervalThreshold(consecutiveMissingFramesForSameIntervalThreshold) {}
+IndexIntervalSeries::IndexIntervalSeries(int maxNumberOfConsecutiveMissingFramesForSameInterval) :
+        maxNumberOfConsecutiveMissingFramesForSameInterval(maxNumberOfConsecutiveMissingFramesForSameInterval) {}
 
 void IndexIntervalSeries::addIndex(int newIndex) {
     if (!this->series.empty() &&
-        this->series.back().second + 1 + this->consecutiveMissingFramesForSameIntervalThreshold >= newIndex) {
+        this->series.back().second + 1 + this->maxNumberOfConsecutiveMissingFramesForSameInterval >= newIndex) {
         this->series.back().second = newIndex;
     } else {
         this->series.emplace_back(pair<int, int>(newIndex, newIndex));
@@ -42,6 +42,10 @@ string IndexIntervalSeries::toString(int getOnlyLatest) const {
 
 size_t IndexIntervalSeries::getSize() const {
     return this->series.size();
+}
+
+std::vector<std::pair<int, int>> &IndexIntervalSeries::getSeries() {
+    return this->series;
 }
 
 std::vector<std::pair<int, int>> const &IndexIntervalSeries::getSeries() const {

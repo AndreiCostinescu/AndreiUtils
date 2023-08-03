@@ -13,7 +13,7 @@ namespace AndreiUtils {
     public:
         IndexIntervalSeries();
 
-        explicit IndexIntervalSeries(int consecutiveMissingFramesForSameIntervalThreshold);
+        explicit IndexIntervalSeries(int maxNumberOfConsecutiveMissingFramesForSameInterval);
 
         virtual void addIndex(int newIndex);
 
@@ -21,10 +21,12 @@ namespace AndreiUtils {
 
         [[nodiscard]] size_t getSize() const;
 
+        [[nodiscard]] std::vector<std::pair<int, int>> &getSeries();
+
         [[nodiscard]] std::vector<std::pair<int, int>> const &getSeries() const;
 
     protected:
-        int consecutiveMissingFramesForSameIntervalThreshold;
+        int maxNumberOfConsecutiveMissingFramesForSameInterval;
         std::vector<std::pair<int, int>> series;
     };
 }

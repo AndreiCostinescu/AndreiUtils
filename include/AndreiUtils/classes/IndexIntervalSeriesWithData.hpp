@@ -11,10 +11,10 @@ namespace AndreiUtils {
     template<typename DataType>
     class IndexIntervalSeriesWithData : public IndexIntervalSeries {
     public:
-        IndexIntervalSeriesWithData() : IndexIntervalSeries(0) {}
+        IndexIntervalSeriesWithData() : IndexIntervalSeries(0), seriesData() {}
 
-        explicit IndexIntervalSeriesWithData(int consecutiveMissingFramesForSameIntervalThreshold) :
-                IndexIntervalSeries(consecutiveMissingFramesForSameIntervalThreshold) {}
+        explicit IndexIntervalSeriesWithData(int maxNumberOfConsecutiveMissingFramesForSameInterval) :
+                IndexIntervalSeries(maxNumberOfConsecutiveMissingFramesForSameInterval), seriesData() {}
 
         void addIndex(int newIndex) override {
             this->addIndexAndMoveData(newIndex, std::move(DataType()));
@@ -56,6 +56,10 @@ namespace AndreiUtils {
                 }
             }
             sequenceData->template emplace_back(std::move(data));
+        }
+
+        [[nodiscard]] std::map<int, std::vector<DataType>> &getSeriesData() {
+            return this->seriesData;
         }
 
         [[nodiscard]] std::map<int, std::vector<DataType>> const &getSeriesData() const {
