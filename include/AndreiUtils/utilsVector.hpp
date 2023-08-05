@@ -532,6 +532,17 @@ namespace AndreiUtils {
         memcpy(container.data() + containerSize, valuesToBeAppended, size * sizeof(T));
     }
 
+    template<class T>
+    void vectorMoveAppendInPlace(std::vector<T> &container, std::vector<T> &&valuesToBeAppended) {
+        if (container.empty()) {
+            container = std::move(valuesToBeAppended);
+        } else {
+            container.reserve(container.size() + valuesToBeAppended.size());
+            std::move(std::begin(valuesToBeAppended), std::end(valuesToBeAppended), std::back_inserter(container));
+            valuesToBeAppended.clear();
+        }
+    }
+
     template<typename T>
     bool vectorEquals(std::vector<T> const &v1, std::vector<T> const &v2) {
         if (v1.size() != v2.size()) {

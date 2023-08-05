@@ -229,7 +229,9 @@ if (USE_EIGEN)
     SET(UTILS_EIGEN
             src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp src/utilsEigenSVD.cpp
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
-            src/classes/Symmetry.cpp src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
+            src/classes/trajectory/Trajectory.cpp src/classes/trajectory/TrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
+            src/classes/Symmetry.cpp
+            src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
