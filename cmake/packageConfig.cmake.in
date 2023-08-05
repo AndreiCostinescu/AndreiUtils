@@ -85,7 +85,7 @@ foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES
         if ((NOT DEFINED Eigen3_FOUND) OR (NOT ${Eigen3_FOUND}))
             if ("${EIGEN_VERSION}" STREQUAL "")
                 if ("${EIGEN3_VERSION}" STREQUAL "")
-                    find_package(Eigen3 REQUIRED)
+                    find_package(Eigen3 @EIGEN_VERSION@ REQUIRED)
                 else ()
                     find_package(Eigen3 ${EIGEN3_VERSION} REQUIRED)
                 endif ()
@@ -99,7 +99,7 @@ foreach(__@PROJECT_NAME@_EXTRA_PACKAGE_LOWERCASE ${@PROJECT_NAME@_EXTRA_PACKAGES
             ((NOT DEFINED OPENCV_HIGHGUI_FOUND) OR (NOT ${OPENCV_HIGHGUI_FOUND}) OR (NOT DEFINED OpenCV_highgui_FOUND) OR (NOT ${OpenCV_highgui_FOUND})) OR
             ((NOT DEFINED OPENCV_CALIB3D_FOUND) OR (NOT ${OPENCV_CALIB3D_FOUND}) OR (NOT DEFINED OpenCV_calib3d_FOUND) OR (NOT ${OpenCV_calib3d_FOUND})))
             if ("${OPENCV_VERSION}" STREQUAL "")
-                find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui calib3d)
+                find_package(OpenCV @OPENCV_VERSION@ REQUIRED COMPONENTS core imgproc highgui calib3d)
             else ()
                 find_package(OpenCV ${OPENCV_VERSION} REQUIRED COMPONENTS core imgproc highgui calib3d)
             endif ()
