@@ -75,7 +75,8 @@ if (${WITH_PCL_OPTIMIZATION_FLAGS})
     message(STATUS "PCL optimization flags = ${PCL_OPTIMIZATION_FLAGS}")
 endif ()
 
-set(OPENCV_VERSION "" CACHE STRING "The opencv version to use in the project")
+set(EIGEN_VERSION "3.4" CACHE STRING "The eigen version to use in the project")
+set(OPENCV_VERSION "4" CACHE STRING "The opencv version to use in the project")
 set(PYBIND11_PYTHON_VERSION "3.7" CACHE STRING "The python version to use in the project")
 
 # used only when using AndreiUtils as a submodule/subdirectory in the upper project
@@ -111,7 +112,11 @@ else (WIN32)
 endif (WIN32)
 
 if (USE_EIGEN)
-    find_package(Eigen3 REQUIRED)
+    if ("${EIGEN_VERSION}" STREQUAL "")
+        find_package(Eigen3 REQUIRED)
+    else ()
+        find_package(Eigen3 ${EIGEN_VERSION} REQUIRED)
+    endif ()
     set(ANDREI_UTILS_REQUIRED_LIBS Eigen3::Eigen ${ANDREI_UTILS_REQUIRED_LIBS})
     set(ANDREI_UTILS_EIGEN_REQUIRED_LIBS Eigen3::Eigen ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS})
 endif ()
