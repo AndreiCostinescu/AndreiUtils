@@ -5,7 +5,10 @@
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/classes/PoseInterpolator.hpp>
+#include <AndreiUtils/classes/PoseDecoupledInterpolator.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
+#include <AndreiUtils/utilsJsonEigen.hpp>
+#include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>
 #include <iomanip>
 #include <iostream>
@@ -230,6 +233,90 @@ void testInterpolation() {
     }
 }
 
+void testNormalizationInterpolation() {
+    Posed dq1, dq2;
+    Eigen::Quaterniond q1(0.01033028, 0.1294797, 0.0124287, 0.999145);
+    Eigen::Quaterniond q2(0.996145, 0.0284797, 0.0214287, 0.00333028);
+    cout << q1.norm() << endl;
+    cout << q2.norm() << endl;
+    PoseDecoupledInterpolator<double> i1;
+    PoseInterpolator<double> i2;
+    for (auto const &dq: i1.compute({q1, qZero<double>()}, {q2, qZero<double>()}, 1000).getResult()) {
+        cout << dq.getRotation().norm() << ": " << dq.coefficientsAsEigen().transpose() << endl;
+    }
+    cout << endl << endl;
+    for (auto const &dq: i2.compute({q1, qZero<double>()}, {q2, qZero<double>()}, 1000).getResult()) {
+        cout << dq.getRotation().norm() << ": " << dq.coefficientsAsEigen().transpose() << endl;
+    }
+}
+
+void testSameTranslationNegatedQuaternion() {
+    Quaterniond q1(AngleAxisd(deg2Rad(180.), Vector3d(0, 1, -1).normalized()));
+    Vector3d t1(-0.035, 0.017, 0.26);  // prev y = 0.025
+    Posed p(q1, t1);
+    cout << p.getTranslation().transpose() << endl;
+    cout << (-p).getTranslation().transpose() << endl;
+}
+
+void playgroundGraspCupFromTop() {
+    AngleAxisd tmpAA(deg2Rad(120.), Vector3d(1, 1, -1).normalized());
+    AngleAxisd tmpAA2(deg2Rad(-90.), Vector3d(0, 0, 1).normalized());
+    Quaterniond q1Prev(tmpAA);
+    // tmpAA * tmpAA2 = q1
+    Quaterniond tmp(AngleAxisd(deg2Rad(180.), Vector3d(0, 1, -1).normalized()));
+    Quaterniond q1(tmp * qxRotation(-0.70)); // previously -0.65
+    // Vector3d t1(-0.0225, 0.022, 0.26);  // prev y = 0.025
+    Vector3d t1(-0.035, 0.017, 0.26);  // prev y = 0.025
+    cout << "ApproachPose: " << printVectorToString(Posed(q1, t1).coefficients()) << endl;
+
+    Quaterniond &q2 = q1;
+    Vector3d t2(-0.035, 0.015, 0.17);  // previously x=-0.0225, y=0.028/0.024
+    cout << "GraspPose: " << printVectorToString(Posed(q2, t2).coefficients()) << endl;
+
+    Quaterniond q3 = q1 * qxRotation(0.08);
+    Vector3d t3 = t2 - Vector3d{0, 0, 0.006};
+    cout << "ReleasePoseRelativeToObjectGoal: " << printVectorToString(Posed(q3, t3).coefficients()) << endl;
+
+    Quaterniond &q4 = q3;
+    Vector3d t4 = t3 + Vector3d{0, 0, 0.1};
+    cout << "PostReleasePoseRelativeToObjectGoal: " << printVectorToString(Posed(q4, t4).coefficients()) << endl;
+    cout << endl;
+}
+
+void playgroundGraspCupFromSide() {
+    AngleAxisd startRot(deg2Rad(120.), Vector3d(1, 1, -1).normalized());
+    auto qX = qxRotation(1.32);
+    auto qY = qyRotation(0.03);  // prev: -0.0375
+    auto qZ = qzRotation(0.3);  // prev: -0.0025
+    Quaterniond q1(startRot * qX * qY * qZ);
+    Vector3d t1(0.03, 0.0475, 0.20);
+    cout << "ApproachPose: " << printVectorToString(Posed(q1, t1).coefficients()) << endl;
+
+    Quaterniond &q2 = q1;
+    Vector3d t2(0.05, 0.0265, 0.060);  // prev: y = 0.0275, z = 0.052 // 0.062 works as well
+    cout << "GraspPose: " << printVectorToString(Posed(q2, t2).coefficients()) << endl;
+
+    Quaterniond &q3 = q1;
+    Vector3d t3 = t2 - Vector3d{0, 0, 0.001};
+    cout << "ReleasePoseRelativeToObjectGoal: " << printVectorToString(Posed(q3, t3).coefficients()) << endl;
+}
+
+void play() {
+    auto q = Posed::createFromCoefficients(
+            vector<double>{-0.43199914013303337,0.005861429276844252,-0.009443289551921301,-0.9018075871533447,-0.008872428920675416,0.05361516740646428,0.33881962340539384,0.0010507467228607378});
+    cout << q.getTranslation().transpose() << endl;
+    cout << q.getRotation() << endl;
+
+    q = Posed::createFromCoefficients(
+            vector<double>{0.52044, -0.493292, 0.468434, 0.516116, -0.00216926, -0.0154996, -0.0159906, 0.00188652});
+    cout << q.getTranslation().transpose() << endl;
+
+    Quaterniond r(-0.742227, 0.669617, 0.0221371, -0.0148873);
+    Posed pose(r, q.getTranslation() - Vector3d(0, 0, -0.002));
+    nlohmann::json j = pose;
+    cout << j.dump(4) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -239,7 +326,12 @@ int main() {
     // testTransformationMatrixToDualQuaternion();
     // testRotationEquivalence();
     // testTranslationDelta();
-    testInterpolation();
+    // testInterpolation();
+    // testNormalizationInterpolation();
+    // testSameTranslationNegatedQuaternion();
+    // playgroundGraspCupFromTop();
+    // playgroundGraspCupFromSide();
+    play();
 
     return 0;
 }
