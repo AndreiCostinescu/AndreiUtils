@@ -160,6 +160,33 @@ namespace AndreiUtils {
             return Eigen::AngleAxis<T>(this->r).axis();
         }
 
+        // inspired by Marko's function
+        [[nodiscard]] DualQuaternion pow(CR<T> a) const {
+            Eigen::Matrix<T, 3, 1> const &vr = this->r.vec();
+            Eigen::Matrix<T, 3, 1> const &vd = this->d.vec();
+            // TODO: what should happen if vr == (0, 0, 0)??
+            T invr = T(1) / sqrt(vr.dot(vr));
+
+            // Screw parameters
+            T angle = T(2) * acos(this->r.w());
+            T pitch = T(-2) * this->d.w() * invr;
+            Eigen::Matrix<T, 3, 1> direction = vr * invr;
+            Eigen::Matrix<T, 3, 1> moment = (vd - direction * pitch * this->r.w() / T(2)) * invr;
+
+            // Exponential power
+            angle *= a;
+            pitch *= a;
+            // Convert back to dual-quaternion
+            T sinAngle = sin(angle / T(2));
+            T cosAngle = cos(angle / T(2));
+            Eigen::Matrix<T, 3, 1> newDirection = sinAngle * direction;
+            Eigen::Quaternion<T> real(cosAngle, newDirection(0), newDirection(1), newDirection(2));
+            newDirection = sinAngle * moment + pitch / T(2) * cosAngle * direction;
+            Eigen::Quaternion<T> dual(-pitch * sinAngle / T(2), newDirection(0), newDirection(1), newDirection(2));
+
+            return {real, dual};
+        }
+
         // inspired by Riddhiman's function and https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_dual_quaternion_operations.html#dual_quaternion_sclerp
         [[nodiscard]] DualQuaternion powScrew(CR<T> a) const {
             // https://dfki-ric.github.io/pytransform3d/_modules/pytransform3d/transformations/_conversions.html#screw_parameters_from_dual_quaternion
