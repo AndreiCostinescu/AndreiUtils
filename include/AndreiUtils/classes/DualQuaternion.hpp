@@ -469,6 +469,10 @@ namespace AndreiUtils {
 
         [[nodiscard]] DualQuaternion sclerp(CR<T> tau, CR<DualQuaternion> q) {
             DualQuaternion thisNormed = this->normalized(), qNormed = q.normalized();
+            // Shortest interpolating path (in orientation space)
+            if (thisNormed.r.coeffs().dot(qNormed.r.coeffs()) < 0) {
+                qNormed = -qNormed;
+            }
             DualQuaternion qAsSeenFromThis = thisNormed.dualQuaternionInverse() * qNormed;
             return (tau == 0) ? thisNormed : thisNormed * qAsSeenFromThis.powScrew(tau);
         }
