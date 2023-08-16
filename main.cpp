@@ -39,22 +39,6 @@ void fileTesting() {
     cout << getCurrentDirectory(true) << endl;
 }
 
-void realsenseDistortionString() {
-    /*
-    cout << rs2_distortion_to_string(RS2_DISTORTION_NONE) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_MODIFIED_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_INVERSE_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_FTHETA) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_KANNALA_BRANDT4) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_COUNT) << endl;
-    //*/
-}
-
-void realsenseToCameraIntrinsicParameters() {
-    ;
-}
-
 void testPointerReference() {
     int b = 5;
     auto t = Test(b);
@@ -695,7 +679,6 @@ int main() {
     cout << "Hello World!" << endl;
 
     // fileTesting();
-    // realsenseDistortionString();
     // testPointerReference();
     // testLambdaCaptureScope();
     // testStringAllocation();
