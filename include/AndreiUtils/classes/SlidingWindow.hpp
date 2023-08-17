@@ -2,8 +2,7 @@
 // Created by Andrei on 03.12.20.
 //
 
-#ifndef ANDREIUTILS_SLIDINGWINDOW_HPP
-#define ANDREIUTILS_SLIDINGWINDOW_HPP
+#pragma once
 
 #include <AndreiUtils/enums/InvalidValuesHandlingMode.h>
 #include <AndreiUtils/traits/get_vector_type_for_convolution.hpp>
@@ -154,19 +153,19 @@ namespace AndreiUtils {
 
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
-        bool empty() const {
+        [[nodiscard]] bool empty() const {
             return this->dataSize == 0;
         }
 
-        bool full() const {
+        [[nodiscard]] bool full() const {
             return this->dataSize == this->size;
         }
 
-        unsigned getSize() const {
+        [[nodiscard]] unsigned getSize() const {
             return this->size;
         }
 
-        unsigned getDataSize() const {
+        [[nodiscard]] unsigned getDataSize() const {
             return this->dataSize;
         }
 
@@ -280,7 +279,7 @@ namespace AndreiUtils {
             return this->data;
         }
 
-        const std::vector<T> &getData() const {
+        std::vector<T> const &getData() const {
             return this->data;
         }
 
@@ -292,38 +291,39 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
-        bool isWindowStable(double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
-                            bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                                          bool verbose = false) const {
             return isSequenceStable(this->getData(), stabilityThreshold, criterion, verbose);
         }
 
-        bool isWindowStable(std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
-                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(
+                std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getData(), op, stabilityThreshold, criterion, verbose);
         }
 
+        [[nodiscard]] std::vector<T> getDataInCorrectOrder() const {
+            std::vector<T> a(this->dataSize);
+            for (unsigned int i = this->dataSize; i >= 1; i--) {
+                a[this->dataSize - i] = this->data[(this->index + this->size - i) % this->size];
+            }
+            return a;
+        }
+
     protected:
-        size_t latestIndex() const {
+        [[nodiscard]] size_t latestIndex() const {
             if (this->dataSize == 0) {
                 throw std::runtime_error("There is no latest element because there is no element in the SlidingWindow");
             }
             return (this->index + this->size - 1) % this->size;
         }
 
-        size_t earliestIndex() const {
+        [[nodiscard]] size_t earliestIndex() const {
             if (this->dataSize == 0) {
                 throw std::runtime_error(
                         "There is no earliest element because there is no element in the SlidingWindow");
             }
             return (this->index + this->size - this->dataSize) % this->size;
-        }
-
-        std::vector<T> getDataInCorrectOrder() const {
-            std::vector<T> a(this->dataSize);
-            for (unsigned int i = this->dataSize; i >= 1; i--) {
-                a[this->dataSize - i] = this->data[(this->index + this->size - i) % this->size];
-            }
-            return a;
         }
 
         std::vector<T> data;
@@ -401,7 +401,7 @@ namespace AndreiUtils {
             this->validData[this->latestIndex()] = valid ? 1 : 0;
         }
 
-        bool getLatestValid() const {
+        [[nodiscard]] bool getLatestValid() const {
             return (this->validData[this->latestIndex()] != 0);
         }
 
@@ -409,7 +409,7 @@ namespace AndreiUtils {
             this->validData[this->earliestIndex()] = valid ? 1 : 0;
         }
 
-        bool getEarliestValid() const {
+        [[nodiscard]] bool getEarliestValid() const {
             return (this->validData[this->earliestIndex()] != 0);
         }
 
@@ -417,22 +417,19 @@ namespace AndreiUtils {
             return this->validData;
         }
 
-        bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
-                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(
+                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold,
                                     criterion, verbose);
         }
 
-        bool isWindowStable(std::function<double(const T &, const T &)> const &op,
-                            InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
-                            StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(
+                std::function<double(const T &, const T &)> const &op,
+                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold,
                                     criterion, verbose);
-        }
-
-    protected:
-        bool checkAllValid() {
-            return std::all_of(this->validData.begin(), this->validData.end(), [](uint8_t const &x) { return x != 0; });
         }
 
         std::vector<T> getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
@@ -454,8 +451,11 @@ namespace AndreiUtils {
             return a;
         }
 
+    protected:
+        bool checkAllValid() {
+            return std::all_of(this->validData.begin(), this->validData.end(), [](uint8_t const &x) { return x != 0; });
+        }
+
         std::vector<uint8_t> validData;
     };
 }
-
-#endif //ANDREIUTILS_SLIDINGWINDOW_HPP
