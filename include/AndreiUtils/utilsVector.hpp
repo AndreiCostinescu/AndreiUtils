@@ -188,6 +188,32 @@ namespace AndreiUtils {
     }
 
     template<class T>
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container,
+                                     std::function<bool(T const &, int const &)> const &predicateWithIndex) {
+        for (auto i = container.begin(), index = 0; i != container.end(); ++i, ++index) {
+            if (predicateWithIndex(*i, index)) {
+                container.erase(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container,
+                                     std::function<bool(T const &, int const &)> const &predicateWithIndex,
+                                     T &removedData) {
+        for (auto i = container.begin(), index = 0; i != container.end(); ++i, ++index) {
+            if (predicateWithIndex(*i, index)) {
+                removedData = std::move(*i);
+                container.erase(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<class T>
     void vectorRemoveAllValueMatches(std::vector<T> &container, T const &value) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
@@ -201,6 +227,17 @@ namespace AndreiUtils {
     void vectorRemoveAllValueMatches(std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (predicate(*i)) {
+                container.erase(i);
+                i--;
+            }
+        }
+    }
+
+    template<class T>
+    void vectorRemoveAllValueMatches(std::vector<T> &container,
+                                     std::function<bool(T const &, int const &)> const &predicateWithIndex) {
+        for (auto i = container.begin(), index = 0; i != container.end(); ++i, ++index) {
+            if (predicateWithIndex(*i, index)) {
                 container.erase(i);
                 i--;
             }
