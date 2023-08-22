@@ -16,6 +16,20 @@ namespace AndreiUtils {
 
         Trajectory(std::vector<Posed> &&poses, std::vector<double> &&times);
 
+        Trajectory(std::vector<Posed> *poses, std::vector<double> *times);
+
+        Trajectory(Trajectory const &other);
+
+        Trajectory(Trajectory &&other) noexcept;
+
+        virtual ~Trajectory();
+
+        Trajectory &operator=(Trajectory const &other);
+
+        Trajectory &operator=(Trajectory &&other) noexcept;
+
+        [[nodiscard]] virtual std::shared_ptr<Trajectory> clone() const;
+
         // just reserves data in the arrays; does NOT change the trajectory size (e.g. with empty elements)!
         void reserveNewSize(size_t newSize);
 
@@ -33,8 +47,16 @@ namespace AndreiUtils {
 
         [[nodiscard]] size_t const &getSize() const;
 
-        std::vector<Posed> poses;
-        std::vector<double> times;
+    protected:
+        void updatePointers(Trajectory const &other);
+
+        void updatePointers(Trajectory &&other);
+
+        std::shared_ptr<std::vector<Posed>> posesData;
+        std::shared_ptr<std::vector<double>> timesData;
+
+        std::vector<Posed> *poses;
+        std::vector<double> *times;
         size_t size;  // actual size of the trajectory; may be less than poses.size()
     };
 }
