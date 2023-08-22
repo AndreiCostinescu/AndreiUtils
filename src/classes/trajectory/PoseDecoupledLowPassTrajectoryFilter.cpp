@@ -22,9 +22,10 @@ PoseDecoupledLowPassTrajectoryFilter::PoseDecoupledLowPassTrajectoryFilter(doubl
         pFilter(), qFilter(make_shared<QuaternionLowPassFilter<double>>(qRange, qCenter)), filterPosition(false),
         filterOrientation(true) {}
 
-void PoseDecoupledLowPassTrajectoryFilter::filterInPlace(Trajectory &trajectory) {
+void PoseDecoupledLowPassTrajectoryFilter::filterInPlace(Trajectory *trajectory) {
     int index = 0;
-    for (auto const &q: trajectory.poses) {
+    auto &poses = trajectory->getPoses();
+    for (auto const &q: poses) {
         auto pos = q.getTranslation();
         auto ori = q.getRotation();
         if (this->filterPosition) {
@@ -44,6 +45,6 @@ void PoseDecoupledLowPassTrajectoryFilter::filterInPlace(Trajectory &trajectory)
                 ori = this->qFilter->getFilterValue();
             }
         }
-        trajectory.poses[index++] = Posed(ori, pos);
+        poses[index++] = Posed(ori, pos);
     }
 }

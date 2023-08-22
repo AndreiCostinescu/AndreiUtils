@@ -17,7 +17,7 @@ namespace AndreiUtils {
 
         PoseDecoupledLowPassTrajectoryFilter(double qRange, double qCenter);
 
-        void filterInPlace(Trajectory &trajectory) override;
+        void filterInPlace(Trajectory *trajectory) override;
 
     protected:
         bool filterPosition, filterOrientation;
