@@ -13,15 +13,15 @@ namespace AndreiUtils {
 
         virtual ~TrajectoryFilter();
 
-        virtual Trajectory filter(Trajectory const &trajectory);
+        [[nodiscard]] virtual Trajectory filter(Trajectory const &trajectory);
 
         virtual void filterInPlace(Trajectory &trajectory);
 
-        virtual std::shared_ptr<Trajectory> filter(Trajectory const *trajectory);
+        [[nodiscard]] virtual std::shared_ptr<Trajectory> filter(Trajectory const *trajectory);
 
         virtual void filterInPlace(Trajectory *trajectory) = 0;
 
-        virtual std::shared_ptr<Trajectory> filter(std::shared_ptr<Trajectory> const &trajectory);
+        [[nodiscard]] virtual std::shared_ptr<Trajectory> filter(std::shared_ptr<Trajectory> const &trajectory);
 
         virtual void filterInPlace(std::shared_ptr<Trajectory> &trajectory);
 
