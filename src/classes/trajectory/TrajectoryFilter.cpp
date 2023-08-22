@@ -1,5 +1,5 @@
 //
-// Created by andrei on 05.08.23.
+// Created by Andrei on 05.08.23.
 //
 
 #include <AndreiUtils/classes/trajectory/TrajectoryFilter.h>
