@@ -18,8 +18,14 @@ void IndexIntervalSeries::addIndex(int newIndex) {
         this->series.back().second + 1 + this->maxNumberOfConsecutiveMissingFramesForSameInterval >= newIndex) {
         this->series.back().second = newIndex;
     } else {
-        this->series.emplace_back(pair<int, int>(newIndex, newIndex));
+        this->series.emplace_back(newIndex, newIndex);
     }
+}
+
+void IndexIntervalSeries::removeTooShortIntervals(int minIntervalSize) {
+    vectorRemoveAllValueMatches<pair<int, int>>(this->series, [&](pair<int, int> const &intervalData) -> bool {
+        return intervalData.second - intervalData.first + 1 < minIntervalSize;
+    });
 }
 
 string IndexIntervalSeries::toString(int getOnlyLatest) const {

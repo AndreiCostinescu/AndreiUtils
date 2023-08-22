@@ -6,6 +6,7 @@
 
 #include <AndreiUtils/classes/IndexIntervalSeries.h>
 #include <AndreiUtils/utilsMap.hpp>
+#include <AndreiUtils/utilsVector.hpp>
 
 namespace AndreiUtils {
     template<typename DataType>
@@ -56,6 +57,24 @@ namespace AndreiUtils {
                 }
             }
             sequenceData->template emplace_back(std::move(data));
+        }
+
+        void removeTooShortIntervals(int minIntervalSize) override {
+            int shiftIndex = 0;
+            vectorRemoveAllValueMatches<std::pair<int, int>>(
+                    this->series, [&, this](std::pair<int, int> const &intervalData, int const &intervalIndex) -> bool {
+                        bool removeCondition = intervalData.second - intervalData.first + 1 < minIntervalSize;
+                        if (removeCondition) {
+                            ++shiftIndex;
+                        } else if (shiftIndex > 0) {
+                            mapSet(this->seriesData, intervalIndex - shiftIndex,
+                                   std::move(mapGet(this->seriesData, intervalIndex)));
+                        }
+                        if (shiftIndex > 0) {
+                            mapDelete(this->seriesData, intervalIndex);
+                        }
+                        return removeCondition;
+                    });
         }
 
         [[nodiscard]] std::map<int, std::vector<DataType>> &getSeriesData() {

@@ -17,6 +17,8 @@ namespace AndreiUtils {
 
         virtual void addIndex(int newIndex);
 
+        virtual void removeTooShortIntervals(int minIntervalSize);
+
         [[nodiscard]] std::string toString(int getOnlyLatest = -1) const;
 
         [[nodiscard]] size_t getSize() const;
