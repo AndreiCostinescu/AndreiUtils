@@ -37,14 +37,12 @@ Trajectory::Trajectory(vector<Posed> &&poses, vector<double> &&times) :
 Trajectory::Trajectory(std::vector<Posed> *poses, std::vector<double> *times) :
         posesData(), timesData(), poses(poses), times(times), size(poses->size()) {}
 
-Trajectory::Trajectory(Trajectory const &other) :
-        posesData(other.posesData), timesData(other.timesData), size(other.size), poses(), times() {
+Trajectory::Trajectory(Trajectory const &other) : posesData(), timesData(), size(other.size), poses(), times() {
     this->updatePointers(other);
 }
 
 Trajectory::Trajectory(Trajectory &&other) noexcept:
-        posesData(std::move(other.posesData)), timesData(std::move(other.timesData)), size(std::move(other.size)),
-        poses(), times() {
+        posesData(), timesData(), size(std::move(other.size)), poses(), times() {
     this->updatePointers(std::move(other));
 }
 
@@ -53,8 +51,6 @@ Trajectory::~Trajectory() = default;
 Trajectory &Trajectory::operator=(Trajectory const &other) {
     if (this != &other) {
         this->size = other.size;
-        this->posesData = other.posesData;
-        this->timesData = other.timesData;
         this->updatePointers(other);
     }
     return *this;
@@ -63,8 +59,6 @@ Trajectory &Trajectory::operator=(Trajectory const &other) {
 Trajectory &Trajectory::operator=(Trajectory &&other) noexcept {
     if (this != &other) {
         this->size = other.size;
-        this->posesData = std::move(other.posesData);
-        this->timesData = std::move(other.timesData);
         this->updatePointers(std::move(other));
     }
     return *this;
@@ -75,8 +69,8 @@ std::shared_ptr<Trajectory> Trajectory::clone() const {
 }
 
 void Trajectory::reserveNewSize(size_t newSize) {
-    this->poses->resize(newSize);
-    this->times->resize(newSize);
+    this->poses->reserve(newSize);
+    this->times->reserve(newSize);
 }
 
 void Trajectory::addNewData(vector<Posed> const &newPoses, vector<double> const &newTimes) {
@@ -95,6 +89,18 @@ void Trajectory::addNewData(vector<Posed> &&newPoses, vector<double> &&newTimes)
     this->size += newPoses.size();
     vectorMoveAppendInPlace(*this->poses, std::move(newPoses));
     vectorMoveAppendInPlace(*this->times, std::move(newTimes));
+}
+
+void Trajectory::addNewDatum(Posed const &newPose, double const &newTime) {
+    ++this->size;
+    this->poses->emplace_back(newPose);
+    this->times->emplace_back(newTime);
+}
+
+void Trajectory::addNewDatum(Posed &&newPose, double &&newTime) {
+    ++this->size;
+    this->poses->emplace_back(std::move(newPose));
+    this->times->emplace_back(std::move(newTime));
 }
 
 std::vector<Posed> const &Trajectory::getPoses() const {
@@ -118,27 +124,15 @@ size_t const &Trajectory::getSize() const {
 }
 
 void Trajectory::updatePointers(Trajectory const &other) {
-    if (this->posesData == nullptr) {
-        this->poses = other.poses;
-    } else {
-        this->poses = this->posesData.get();
-    }
-    if (this->timesData == nullptr) {
-        this->times = other.times;
-    } else {
-        this->times = this->timesData.get();
-    }
+    this->posesData = make_shared<vector<Posed>>(*other.poses);
+    this->poses = this->posesData.get();
+    this->timesData = make_shared<vector<double>>(*other.times);
+    this->times = this->timesData.get();
 }
 
 void Trajectory::updatePointers(Trajectory &&other) {
-    if (this->posesData == nullptr) {
-        this->poses = std::move(other.poses);
-    } else {
-        this->poses = this->posesData.get();
-    }
-    if (this->timesData == nullptr) {
-        this->times = std::move(other.times);
-    } else {
-        this->times = this->timesData.get();
-    }
+    this->posesData = std::move(other.posesData);
+    this->poses = std::move(other.poses);
+    this->timesData = std::move(other.timesData);
+    this->times = std::move(other.times);
 }

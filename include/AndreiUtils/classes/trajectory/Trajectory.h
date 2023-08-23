@@ -37,6 +37,10 @@ namespace AndreiUtils {
 
         void addNewData(std::vector<Posed> &&newPoses, std::vector<double> &&newTimes);
 
+        void addNewDatum(Posed const &newPose, double const &newTime);
+
+        void addNewDatum(Posed &&newPose, double &&newTime);
+
         [[nodiscard]] std::vector<Posed> const &getPoses() const;
 
         [[nodiscard]] std::vector<Posed> &getPoses();
