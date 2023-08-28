@@ -41,6 +41,8 @@ namespace AndreiUtils {
 
     Eigen::Vector3d getAngularVelocity(Eigen::Quaterniond const &deltaQ, double deltaT);
 
+    Eigen::Quaterniond quaternionFromAngularVelocity(Eigen::Vector3d const &w, double deltaT);
+
     bool inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold);
 
     bool inContact(Eigen::Vector3d const &p1, float const (&p2)[3], double threshold);

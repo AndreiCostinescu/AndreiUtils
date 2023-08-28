@@ -5,6 +5,7 @@
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
+#include <AndreiUtils/utilsQuaternions.hpp>
 
 using namespace Eigen;
 
@@ -215,6 +216,13 @@ Vector3d AndreiUtils::getAngularVelocity(Quaterniond const &deltaQ, double delta
     AngleAxisd deltaQAA(deltaQ);
     return AndreiUtils::equal<double>(deltaQAA.angle(), 0, 1e-9) ? Vector3d::Zero() : Vector3d(
             (deltaQAA.axis() * deltaQAA.angle()) / deltaT);
+}
+
+Quaterniond AndreiUtils::quaternionFromAngularVelocity(Vector3d const &w, double deltaT) {
+    if (w.norm() == 0) {
+        return qIdentity<double>();
+    }
+    return Quaterniond(AngleAxisd(w.norm() * deltaT, w.normalized()));
 }
 
 bool AndreiUtils::inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold) {
