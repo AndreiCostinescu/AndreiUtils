@@ -19,6 +19,8 @@ namespace AndreiUtils {
 
     std::string operator *(std::string const &s, long long i);
 
+    std::string repeat(char const *s, long long i);
+
     std::vector<std::string> splitString(std::string const &message, std::string const &splitter);
 
     std::string joinStrings(std::vector<std::string> const &strings, std::string const &joiner);

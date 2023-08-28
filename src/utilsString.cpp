@@ -42,6 +42,10 @@ std::string AndreiUtils::operator*(string const &s, long long i) {
     return res;
 }
 
+std::string AndreiUtils::repeat(char const *s, long long i) {
+    return string(s) * i;
+}
+
 vector<string> AndreiUtils::splitString(string const &message, string const &splitter) {
     // cout << "Message length: " << message.size() << endl;
     vector<string> res;
