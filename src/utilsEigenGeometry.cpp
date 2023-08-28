@@ -46,11 +46,11 @@ Matrix4d AndreiUtils::quaternionConjugateDerivative() {
     return J;
 }
 
-Vector3d AndreiUtils::quaternionLogarithm(const Quaterniond &q) {
+Vector3d AndreiUtils::quaternionLogarithm(Quaterniond const &q) {
     return q.vec() * q.w();
 }
 
-Matrix<double, 3, 4> AndreiUtils::quaternionLogarithmDerivative(const Quaterniond &q) {
+Matrix<double, 3, 4> AndreiUtils::quaternionLogarithmDerivative(Quaterniond const &q) {
     Matrix<double, 3, 4> J;
     J.setZero();
     J(0, 0) = q.x();
@@ -64,7 +64,7 @@ Matrix<double, 3, 4> AndreiUtils::quaternionLogarithmDerivative(const Quaternion
     return J;
 }
 
-Matrix4d AndreiUtils::quaternionProductDerivativeWRTFirst(const Quaterniond &q1, const Quaterniond &q2) {
+Matrix4d AndreiUtils::quaternionProductDerivativeWRTFirst(Quaterniond const &q1, Quaterniond const &q2) {
     Matrix4d J;
     J(0, 0) = q2.w();
     J(0, 1) = -q2.x();
@@ -88,7 +88,7 @@ Matrix4d AndreiUtils::quaternionProductDerivativeWRTFirst(const Quaterniond &q1,
     return J;
 }
 
-Matrix4d AndreiUtils::quaternionProductDerivativeWRTSecond(const Quaterniond &q1, const Quaterniond &q2) {
+Matrix4d AndreiUtils::quaternionProductDerivativeWRTSecond(Quaterniond const &q1, Quaterniond const &q2) {
     Matrix4d J;
     J(0, 0) = q1.w();
     J(0, 1) = -q1.x();
@@ -112,7 +112,7 @@ Matrix4d AndreiUtils::quaternionProductDerivativeWRTSecond(const Quaterniond &q1
     return J;
 }
 
-Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderXYZ(const Vector3d &euler) {
+Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderXYZ(Vector3d const &euler) {
     double cx = cos(euler(0) / 2);
     double sx = sin(euler(0) / 2);
     double cy = cos(euler(1) / 2);
@@ -128,7 +128,7 @@ Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderXYZ(const Vector3
     return q;
 }
 
-Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderXYZ(const Vector3d &euler) {
+Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderXYZ(Vector3d const &euler) {
     double cx = cos(euler(0) / 2);
     double sx = sin(euler(0) / 2);
     double cy = cos(euler(1) / 2);
@@ -156,7 +156,7 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
     return J / 2;
 }
 
-Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderZYX(const Vector3d &euler, bool componentOrderXYZ) {
+Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderZYX(Vector3d const &euler, bool componentOrderXYZ) {
     int xIndex = 2 - 2 * componentOrderXYZ;
     int yIndex = 1;
     int zIndex = 2 * componentOrderXYZ;
@@ -176,7 +176,7 @@ Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderZYX(const Vector3
 }
 
 Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
-        const Vector3d &euler, bool componentOrderXYZ) {
+        Vector3d const &euler, bool componentOrderXYZ) {
     int xIndex = 2 - 2 * componentOrderXYZ;
     int yIndex = 1;
     int zIndex = 2 * componentOrderXYZ;
@@ -207,20 +207,27 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
     return J / 2;
 }
 
-bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold) {
+Vector3d AndreiUtils::getAngularVelocityFromTwoQuaternions(
+        Quaterniond const &q1, Quaterniond const &q2, double deltaT) {
+    auto deltaQ = AngleAxisd(q1.inverse() * q2);
+    return AndreiUtils::equal<double>(deltaQ.angle(), 0, 1e-9) ? Vector3d::Zero() : Vector3d(
+            (deltaQ.axis() * deltaQ.angle()) / deltaT);
+}
+
+bool AndreiUtils::inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold) {
     return (p1 - p2).norm() <= threshold;
 }
 
-bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold) {
+bool AndreiUtils::inContact(Eigen::Vector3d const &p1, float const (&p2)[3], double threshold) {
     return (pow(p1.x() - p2[0], 2) + pow(p1.y() - p2[1], 2) + pow(p1.z() - p2[2], 2)) <= pow(threshold, 2);
 }
 
-bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold, double &distance) {
+bool AndreiUtils::inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold, double &distance) {
     distance = (p1 - p2).norm();
     return distance <= threshold;
 }
 
-bool AndreiUtils::inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold, double &distance) {
+bool AndreiUtils::inContact(Eigen::Vector3d const &p1, float const (&p2)[3], double threshold, double &distance) {
     distance = pow(p1.x() - p2[0], 2) + pow(p1.y() - p2[1], 2) + pow(p1.z() - p2[2], 2);
     bool check = (distance <= pow(threshold, 2));
     distance = sqrt(distance);

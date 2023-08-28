@@ -2,8 +2,7 @@
 // Created by Andrei Costinescu on 17.09.21.
 //
 
-#ifndef ANDREIUTILS_UTILSEIGENGEOMETRY_H
-#define ANDREIUTILS_UTILSEIGENGEOMETRY_H
+#pragma once
 
 #include <Eigen/Dense>
 
@@ -20,31 +19,32 @@ namespace AndreiUtils {
 
     Eigen::Matrix4d quaternionConjugateDerivative();
 
-    Eigen::Vector3d quaternionLogarithm(const Eigen::Quaterniond &q);
+    Eigen::Vector3d quaternionLogarithm(Eigen::Quaterniond const &q);
 
-    Eigen::Matrix<double, 3, 4> quaternionLogarithmDerivative(const Eigen::Quaterniond &q);
+    Eigen::Matrix<double, 3, 4> quaternionLogarithmDerivative(Eigen::Quaterniond const &q);
 
-    Eigen::Matrix4d quaternionProductDerivativeWRTFirst(const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2);
+    Eigen::Matrix4d quaternionProductDerivativeWRTFirst(Eigen::Quaterniond const &q1, Eigen::Quaterniond const &q2);
 
-    Eigen::Matrix4d quaternionProductDerivativeWRTSecond(const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2);
+    Eigen::Matrix4d quaternionProductDerivativeWRTSecond(Eigen::Quaterniond const &q1, Eigen::Quaterniond const &q2);
 
-    Eigen::Quaterniond quaternionFromEulerAnglesRotationOrderXYZ(const Eigen::Vector3d &euler);
+    Eigen::Quaterniond quaternionFromEulerAnglesRotationOrderXYZ(Eigen::Vector3d const &euler);
 
-    Eigen::Quaterniond quaternionFromEulerAnglesRotationOrderZYX(const Eigen::Vector3d &euler, bool componentOrderXYZ);
+    Eigen::Quaterniond quaternionFromEulerAnglesRotationOrderZYX(Eigen::Vector3d const &euler, bool componentOrderXYZ);
 
     Eigen::Matrix<double, 4, 3> quaternionDerivativeWithRespectToEulerAnglesRotationOrderXYZ(
-            const Eigen::Vector3d &euler);
+            Eigen::Vector3d const &euler);
 
     Eigen::Matrix<double, 4, 3> quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
-            const Eigen::Vector3d &euler, bool componentOrderXYZ);
+            Eigen::Vector3d const &euler, bool componentOrderXYZ);
 
-    bool inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold);
+    Eigen::Vector3d getAngularVelocityFromTwoQuaternions(
+            Eigen::Quaterniond const &q1, Eigen::Quaterniond const &q2, double deltaT);
 
-    bool inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold);
+    bool inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold);
 
-    bool inContact(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double threshold, double &distance);
+    bool inContact(Eigen::Vector3d const &p1, float const (&p2)[3], double threshold);
 
-    bool inContact(const Eigen::Vector3d &p1, const float (&p2)[3], double threshold, double &distance);
+    bool inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold, double &distance);
+
+    bool inContact(Eigen::Vector3d const &p1, float const (&p2)[3], double threshold, double &distance);
 }
-
-#endif //ANDREIUTILS_UTILSEIGENGEOMETRY_H

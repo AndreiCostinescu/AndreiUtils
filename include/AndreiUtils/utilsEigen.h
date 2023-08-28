@@ -2,8 +2,7 @@
 // Created by Andrei on 27.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSEIGEN_H
-#define ANDREIUTILS_UTILSEIGEN_H
+#pragma once
 
 #include <Eigen/Dense>
 #include <string>
@@ -16,5 +15,3 @@ namespace AndreiUtils {
 
     bool isOrthonormal(Eigen::Matrix3d const &m);
 }
-
-#endif //ANDREIUTILS_UTILSEIGEN_H
