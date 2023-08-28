@@ -207,11 +207,14 @@ Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRo
     return J / 2;
 }
 
-Vector3d AndreiUtils::getAngularVelocityFromTwoQuaternions(
-        Quaterniond const &q1, Quaterniond const &q2, double deltaT) {
-    auto deltaQ = AngleAxisd(q1.inverse() * q2);
-    return AndreiUtils::equal<double>(deltaQ.angle(), 0, 1e-9) ? Vector3d::Zero() : Vector3d(
-            (deltaQ.axis() * deltaQ.angle()) / deltaT);
+Vector3d AndreiUtils::getAngularVelocity(Quaterniond const &q1, Quaterniond const &q2, double deltaT) {
+    return getAngularVelocity(q1.inverse() * q2, deltaT);
+}
+
+Vector3d AndreiUtils::getAngularVelocity(Quaterniond const &deltaQ, double deltaT) {
+    AngleAxisd deltaQAA(deltaQ);
+    return AndreiUtils::equal<double>(deltaQAA.angle(), 0, 1e-9) ? Vector3d::Zero() : Vector3d(
+            (deltaQAA.axis() * deltaQAA.angle()) / deltaT);
 }
 
 bool AndreiUtils::inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold) {

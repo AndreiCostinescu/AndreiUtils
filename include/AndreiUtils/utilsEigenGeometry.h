@@ -37,8 +37,9 @@ namespace AndreiUtils {
     Eigen::Matrix<double, 4, 3> quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
             Eigen::Vector3d const &euler, bool componentOrderXYZ);
 
-    Eigen::Vector3d getAngularVelocityFromTwoQuaternions(
-            Eigen::Quaterniond const &q1, Eigen::Quaterniond const &q2, double deltaT);
+    Eigen::Vector3d getAngularVelocity(Eigen::Quaterniond const &q1, Eigen::Quaterniond const &q2, double deltaT);
+
+    Eigen::Vector3d getAngularVelocity(Eigen::Quaterniond const &deltaQ, double deltaT);
 
     bool inContact(Eigen::Vector3d const &p1, Eigen::Vector3d const &p2, double threshold);
 
