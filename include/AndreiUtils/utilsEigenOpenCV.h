@@ -194,17 +194,17 @@ namespace AndreiUtils {
 
     Eigen::Array2d cvPointToEigenArray(cv::Point2d const &point);
 
-    cv::Point2f eigenArrayToCVPoint(Eigen::Array2f const &vector);
+    cv::Point2f eigenArrayToCVPoint(Eigen::Array2f const &array);
 
-    cv::Point2d eigenArrayToCVPoint(Eigen::Array2d const &vector);
+    cv::Point2d eigenArrayToCVPoint(Eigen::Array2d const &array);
 
     Eigen::Array3f cvPointToEigenArray(cv::Point3f const &point);
 
     Eigen::Array3d cvPointToEigenArray(cv::Point3d const &point);
 
-    cv::Point3f eigenArrayToCVPoint(Eigen::Array3f const &vector);
+    cv::Point3f eigenArrayToCVPoint(Eigen::Array3f const &array);
 
-    cv::Point3d eigenArrayToCVPoint(Eigen::Array3d const &vector);
+    cv::Point3d eigenArrayToCVPoint(Eigen::Array3d const &array);
 
     Eigen::Vector2f cvPointToEigenVector(cv::Point2f const &point);
 
