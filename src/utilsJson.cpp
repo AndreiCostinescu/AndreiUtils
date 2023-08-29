@@ -10,7 +10,7 @@
 using namespace nlohmann;
 using namespace std;
 
-json AndreiUtils::readJsonFile(const string &path) {
+json AndreiUtils::readJsonFile(string const &path) {
     ifstream fin(path);
     if (!fin.is_open()) {
         throw runtime_error("Can not open file " + path);
@@ -20,7 +20,7 @@ json AndreiUtils::readJsonFile(const string &path) {
     return content;
 }
 
-void AndreiUtils::writeJsonFile(const string &path, const json &content) {
+void AndreiUtils::writeJsonFile(string const &path, const json &content) {
     createNestedDirectory(path, true);
     ofstream fout(path);
     if (!fout.is_open()) {

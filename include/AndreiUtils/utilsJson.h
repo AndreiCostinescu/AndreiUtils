@@ -10,9 +10,9 @@
 #include <complex>
 
 namespace AndreiUtils {
-    nlohmann::json readJsonFile(const std::string &path);
+    nlohmann::json readJsonFile(std::string const &path);
 
-    void writeJsonFile(const std::string &path, const nlohmann::json &content);
+    void writeJsonFile(std::string const &path, const nlohmann::json &content);
 }
 
 namespace nlohmann {

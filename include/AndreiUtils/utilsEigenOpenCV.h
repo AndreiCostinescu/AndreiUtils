@@ -209,8 +209,10 @@ namespace AndreiUtils {
 
     void write(cv::FileStorage &fs, const std::string &name, const Eigen::Array3f &x);
 
-    void read(const cv::FileNode &node, Eigen::Array3f &x,
-              const Eigen::Array3f &default_value = Eigen::Array3f::Zero());
+    void write(cv::FileStorage &fs, std::string const &name, Eigen::Array3f const &x);
+
+    void read(cv::FileNode const &node, Eigen::Array3f &x,
+              Eigen::Array3f const &default_value = Eigen::Array3f::Zero());
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
             const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
@@ -264,7 +266,7 @@ namespace cv {
             #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
-    void write(cv::FileStorage &fs, const std::string &name,
+    void write(cv::FileStorage &fs, std::string const &name,
                const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x) {
         AndreiUtils::EigenMatrixOpenCVSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols>(x).writeParameters(fs);
     }
@@ -287,7 +289,7 @@ namespace cv {
             #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
-    void read(const cv::FileNode &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,
+    void read(cv::FileNode const &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,
               const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &default_value = Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>()) {
         if (node.empty()) {
             x = default_value;

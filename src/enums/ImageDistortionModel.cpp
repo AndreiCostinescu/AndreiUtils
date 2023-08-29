@@ -53,7 +53,7 @@ std::string AndreiUtils::convertImageDistortionModelToString(const ImageDistorti
     }
 }
 
-AndreiUtils::ImageDistortionModel AndreiUtils::convertStringToImageDistortionModel(const std::string &distortion) {
+AndreiUtils::ImageDistortionModel AndreiUtils::convertStringToImageDistortionModel(std::string const &distortion) {
     if (distortion == "None") {
         return ImageDistortionModel::DISTORTION_NONE;
     } else if (distortion == "Modified Brown Conrady") {

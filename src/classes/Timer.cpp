@@ -22,7 +22,7 @@ void Timer::reset() {
     this->start();
 }
 
-double Timer::measure(const string &timeUnit) const {
+double Timer::measure(string const &timeUnit) const {
     return this->measure(convertStringToTimeUnit(timeUnit));
 }
 

@@ -25,7 +25,7 @@ std::string AndreiUtils::convertInvalidValuesHandlingModeToString(const InvalidV
     }
 }
 
-InvalidValuesHandlingMode AndreiUtils::convertStringToInvalidValuesHandlingMode(const string &mode) {
+InvalidValuesHandlingMode AndreiUtils::convertStringToInvalidValuesHandlingMode(string const &mode) {
     if (mode == "ignoreInvalid") {
         return AndreiUtils::InvalidValuesHandlingMode::IGNORE_INVALID;
     } else if (mode == "skipInvalid") {

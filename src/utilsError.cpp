@@ -13,6 +13,6 @@ void AndreiUtils::error(const char *s) {
     exit(EXIT_FAILURE);
 }
 
-void AndreiUtils::error(const string &s) {
+void AndreiUtils::error(string const &s) {
     error(s.c_str());
 }

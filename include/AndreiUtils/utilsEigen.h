@@ -9,9 +9,9 @@
 #include <vector>
 
 namespace AndreiUtils {
-    Eigen::MatrixXd readEigenData(const std::string &file);
+    Eigen::MatrixXd readEigenData(std::string const &file);
 
-    void writeEigenData(const std::string &file, const Eigen::MatrixXd &m);
+    void writeEigenData(std::string const &file, const Eigen::MatrixXd &m);
 
     bool isOrthonormal(Eigen::Matrix3d const &m);
 }

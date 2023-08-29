@@ -22,7 +22,7 @@ std::string AndreiUtils::convertEigenSVDSolverToString(const EigenSVDSolver &sol
     }
 }
 
-EigenSVDSolver AndreiUtils::convertStringToEigenSVDSolver(const string &solver) {
+EigenSVDSolver AndreiUtils::convertStringToEigenSVDSolver(string const &solver) {
     if (solver == "jacobi") {
         return AndreiUtils::EigenSVDSolver::JACOBI;
     } else if (solver == "bdc") {

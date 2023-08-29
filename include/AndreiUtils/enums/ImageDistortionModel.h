@@ -21,7 +21,7 @@ namespace AndreiUtils {
 
     std::string convertImageDistortionModelToString(const ImageDistortionModel &distortion);
 
-    ImageDistortionModel convertStringToImageDistortionModel(const std::string &distortion);
+    ImageDistortionModel convertStringToImageDistortionModel(std::string const &distortion);
 }
 
 #endif //ANDREIUTILS_ENUMS_IMAGEDISTORTIONMODEL_H

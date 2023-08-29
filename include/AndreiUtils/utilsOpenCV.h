@@ -38,7 +38,7 @@ namespace AndreiUtils {
 
     void convertDepthToMetersDouble64(cv::Mat *depthMat);
 
-    void displayTextOnOpenCVMat(cv::Mat &image, const std::string &text, cv::Point topLeftCorner, float fontSize = 0.6,
+    void displayTextOnOpenCVMat(cv::Mat &image, std::string const &text, cv::Point topLeftCorner, float fontSize = 0.6,
                                 const cv::Scalar &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
                                 int lineType = cv::LINE_AA);
 
@@ -65,7 +65,7 @@ namespace AndreiUtils {
 
 namespace cv {
     template<typename T>
-    void write(cv::FileStorage &fs, const std::string &name, const std::complex<T> &x) {
+    void write(cv::FileStorage &fs, std::string const &name, const std::complex<T> &x) {
         fs << "{";
         fs << "r" << x.real();
         fs << "i" << x.imag();
@@ -73,7 +73,7 @@ namespace cv {
     }
 
     template<typename T>
-    void read(const cv::FileNode &node, std::complex<T> &x, const std::complex<T> &default_value = std::complex<T>()) {
+    void read(cv::FileNode const &node, std::complex<T> &x, const std::complex<T> &default_value = std::complex<T>()) {
         if (node.empty()) {
             x = default_value;
         } else {
@@ -83,7 +83,7 @@ namespace cv {
     }
 
     template<typename T>
-    void write(cv::FileStorage &fs, const std::string &name, const std::vector<std::complex<T>> &x) {
+    void write(cv::FileStorage &fs, std::string const &name, const std::vector<std::complex<T>> &x) {
         fs << "{";
         fs << "size" << (int) x.size();
         for (int i = 0; i < x.size(); i++) {
@@ -93,7 +93,7 @@ namespace cv {
     }
 
     template<typename T>
-    void read(const cv::FileNode &node, std::vector<std::complex<T>> &x,
+    void read(cv::FileNode const &node, std::vector<std::complex<T>> &x,
               const std::vector<std::complex<T>> &default_value = std::vector<std::complex<T>>()) {
         if (node.empty()) {
             x = default_value;

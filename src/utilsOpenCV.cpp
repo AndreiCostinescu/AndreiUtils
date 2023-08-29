@@ -167,7 +167,7 @@ void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
     depthMat->convertTo(*depthMat, CV_64F, 0.001);
 }
 
-void AndreiUtils::displayTextOnOpenCVMat(Mat &image, const string &text, Point topLeftCorner, float fontSize,
+void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point topLeftCorner, float fontSize,
                                          const Scalar &textColor, int fontFace, int lineType) {
     int rowTextSize = (int) (fontSize * 20) + 5;
     int thickness = (int) (2 * fontSize);

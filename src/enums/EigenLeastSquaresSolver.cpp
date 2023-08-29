@@ -28,7 +28,7 @@ std::string AndreiUtils::convertEigenLeastSquaresSolverToString(const EigenLeast
     }
 }
 
-EigenLeastSquaresSolver AndreiUtils::convertStringToEigenLeastSquaresSolver(const string &solver) {
+EigenLeastSquaresSolver AndreiUtils::convertStringToEigenLeastSquaresSolver(string const &solver) {
     if (solver == "normal_equations") {
         return AndreiUtils::EigenLeastSquaresSolver::NORMAL_EQUATIONS;
     } else if (solver == "qr_decomposition") {

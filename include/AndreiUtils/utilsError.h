@@ -10,7 +10,7 @@
 namespace AndreiUtils {
     void error(const char *s);
 
-    void error(const std::string &s);
+    void error(std::string const &s);
 }
 
 #endif //ANDREIUTILS_UTILSERROR_H

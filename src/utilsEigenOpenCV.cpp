@@ -34,7 +34,7 @@ cv::Point3f AndreiUtils::eigenVectorToCVPoint(const Vector3f &vector) {
 
 void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
     fs << "{";
-    int size = x.size();
+    int size = (int) x.size();
     fs << "size" << size;
     for (int i = 0; i < size; i++) {
         fs << "elem_" + std::to_string(i) << x[i];
@@ -42,7 +42,7 @@ void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
     fs << "}";
 }
 
-void AndreiUtils::readEigenArray(const cv::FileNode &node, ArrayXf &x) {
+void AndreiUtils::readEigenArray(cv::FileNode const &node, ArrayXf &x) {
     int size = (int) node["size"];
     x = ArrayXf::Zero(size);
     for (int i = 0; i < size; i++) {
@@ -50,12 +50,12 @@ void AndreiUtils::readEigenArray(const cv::FileNode &node, ArrayXf &x) {
     }
 }
 
-void AndreiUtils::write(cv::FileStorage &fs, const string &name, const ArrayXf &x) {
+void AndreiUtils::write(cv::FileStorage &fs, string const &name, ArrayXf const &x) {
     // internal::WriteStructContext ws(fs, name, FileNode::SEQ + FileNode::FLOW);
     writeEigenArray(fs, x);
 }
 
-void AndreiUtils::read(const cv::FileNode &node, ArrayXf &x, const ArrayXf &default_value) {
+void AndreiUtils::read(cv::FileNode const &node, ArrayXf &x, ArrayXf const &default_value) {
     if (node.empty()) {
         x = default_value;
     } else {
@@ -63,11 +63,11 @@ void AndreiUtils::read(const cv::FileNode &node, ArrayXf &x, const ArrayXf &defa
     }
 }
 
-void AndreiUtils::write(cv::FileStorage &fs, const string &name, const Array<float, 3, 1> &x) {
-    write(fs, name, (const ArrayXf &) x);
+void AndreiUtils::write(cv::FileStorage &fs, string const &name, Array<float, 3, 1> const &x) {
+    write(fs, name, (ArrayXf const &) x);
 }
 
-void AndreiUtils::read(const cv::FileNode &node, Array<float, 3, 1> &x, const Array<float, 3, 1> &default_value) {
+void AndreiUtils::read(cv::FileNode const &node, Array<float, 3, 1> &x, Array<float, 3, 1> const &default_value) {
     read(node, (ArrayXf &) x, default_value);
 }
 
