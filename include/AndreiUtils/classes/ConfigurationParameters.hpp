@@ -2,8 +2,7 @@
 // Created by Andrei on 10.11.22.
 //
 
-#ifndef ANDREIUTILS_CONFIGURATIONPARAMETERS_HPP
-#define ANDREIUTILS_CONFIGURATIONPARAMETERS_HPP
+#pragma once
 
 #include <AndreiUtils/json.hpp>
 #include <string>
@@ -29,12 +28,12 @@ namespace AndreiUtils {
 
         bool operator!=(ConfigurationParameters const &other) const;
 
-        bool isInitialized() const;
+        [[nodiscard]] bool isInitialized() const;
 
-        bool has(std::string const &parameterName) const;
+        [[nodiscard]] bool has(std::string const &parameterName) const;
 
         template<typename T>
-        T get(std::string const &parameterName) const {
+        [[nodiscard]] T get(std::string const &parameterName) const {
             if (!this->initialized) {
                 throw std::runtime_error("ConfigurationParameters not initialized!");
             }
@@ -42,7 +41,7 @@ namespace AndreiUtils {
         }
 
         template<typename T>
-        T get(std::string const &parameterName, T const &defaultValue) const {
+        [[nodiscard]] T get(std::string const &parameterName, T const &defaultValue) const {
             if (!this->initialized) {
                 throw std::runtime_error("ConfigurationParameters not initialized!");
             }
@@ -52,13 +51,29 @@ namespace AndreiUtils {
             return defaultValue;
         }
 
-        ConfigurationParameters getSubConfig(std::string const &subParametersFor) const;
+        template<typename T>
+        void set(std::string const &parameterName, T const &data) {
+            if (!this->initialized) {
+                throw std::runtime_error("ConfigurationParameters not initialized!");
+            }
+            this->config[parameterName] = data;
+        }
 
-        nlohmann::json const &getJson(std::string const &parameterName) const;
+        template<typename T>
+        void set(std::string const &parameterName, T &&data) {
+            if (!this->initialized) {
+                throw std::runtime_error("ConfigurationParameters not initialized!");
+            }
+            this->config[parameterName] = std::forward<T>(data);
+        }
 
-        nlohmann::json &getJson();
+        [[nodiscard]] ConfigurationParameters getSubConfig(std::string const &subParametersFor) const;
 
-        nlohmann::json const &getJson() const;
+        [[nodiscard]] nlohmann::json const &getJson(std::string const &parameterName) const;
+
+        [[nodiscard]] nlohmann::json &getJson();
+
+        [[nodiscard]] nlohmann::json const &getJson() const;
 
     protected:
         bool checkCorrectJsonParameters(nlohmann::json &_config) const;
@@ -68,5 +83,3 @@ namespace AndreiUtils {
         nlohmann::json config;
     };
 }
-
-#endif //ANDREIUTILS_CONFIGURATIONPARAMETERS_HPP
