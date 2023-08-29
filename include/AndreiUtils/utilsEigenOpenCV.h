@@ -33,7 +33,7 @@ namespace AndreiUtils {
             int MaxCols = Cols>
     class EigenMatrixOpenCVSerializer {
     public:
-        static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(const cv::FileNode &node) {
+        static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(cv::FileNode const &node) {
             EigenMatrixOpenCVSerializer serializer;
             serializer.readParameters(node);
             return serializer.getMatrix();
@@ -95,7 +95,7 @@ namespace AndreiUtils {
             fs << "}";
         }
 
-        void readParameters(const cv::FileNode &node) {
+        void readParameters(cv::FileNode const &node) {
             typedef std::vector<Scalar> V;
             typedef Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> Mat;
 
@@ -191,23 +191,29 @@ namespace AndreiUtils {
         int rows, cols, options, maxRows, maxCols, currentRows, currentCols;
     };
 
-    Eigen::Array3f cvPointToEigenArray(const cv::Point3f &point);
+    Eigen::Array3f cvPointToEigenArray(cv::Point3f const &point);
 
-    cv::Point3f eigenArrayToCVPoint(const Eigen::Array3f &vector);
+    cv::Point3f eigenArrayToCVPoint(Eigen::Array3f const &vector);
 
-    Eigen::Vector3f cvPointToEigenVector(const cv::Point3f &point);
+    Eigen::Vector3f cvPointToEigenVector(cv::Point3f const &point);
 
-    cv::Point3f eigenVectorToCVPoint(const Eigen::Vector3f &vector);
+    cv::Point3f eigenVectorToCVPoint(Eigen::Vector3f const &vector);
 
-    void writeEigenArray(cv::FileStorage &fs, const Eigen::ArrayXf &x);
+    Eigen::Vector3f cvVectorToEigenVector(cv::Vec3f const &v);
 
-    void readEigenArray(const cv::FileNode &node, Eigen::ArrayXf &x);
+    Eigen::Vector3d cvVectorToEigenVector(cv::Vec3d const &v);
 
-    void write(cv::FileStorage &fs, const std::string &name, const Eigen::ArrayXf &x);
+    cv::Vec3f eigenVectorToCVVector(Eigen::Vector3f const &v);
 
-    void read(const cv::FileNode &node, Eigen::ArrayXf &x, const Eigen::ArrayXf &default_value = Eigen::ArrayXf());
+    cv::Vec3d eigenVectorToCVVector(Eigen::Vector3d const &v);
 
-    void write(cv::FileStorage &fs, const std::string &name, const Eigen::Array3f &x);
+    void writeEigenArray(cv::FileStorage &fs, Eigen::ArrayXf const &x);
+
+    void readEigenArray(cv::FileNode const &node, Eigen::ArrayXf &x);
+
+    void write(cv::FileStorage &fs, std::string const &name, Eigen::ArrayXf const &x);
+
+    void read(cv::FileNode const &node, Eigen::ArrayXf &x, Eigen::ArrayXf const &default_value = Eigen::ArrayXf());
 
     void write(cv::FileStorage &fs, std::string const &name, Eigen::Array3f const &x);
 

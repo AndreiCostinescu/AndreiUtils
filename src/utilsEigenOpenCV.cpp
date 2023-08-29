@@ -8,31 +8,39 @@ using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
 
-Array3f AndreiUtils::cvPointToEigenArray(const cv::Point3f &point) {
-    Array3f x;
-    x.x() = point.x;
-    x.y() = point.y;
-    x.z() = point.z;
-    return x;
+Array3f AndreiUtils::cvPointToEigenArray(cv::Point3f const &point) {
+    return {point.x, point.y, point.z};
 }
 
 cv::Point3f AndreiUtils::eigenArrayToCVPoint(const Array3f &array) {
     return {array.x(), array.y(), array.z()};
 }
 
-Vector3f AndreiUtils::cvPointToEigenVector(const cv::Point3f &point) {
-    Vector3f x;
-    x.x() = point.x;
-    x.y() = point.y;
-    x.z() = point.z;
-    return x;
+Vector3f AndreiUtils::cvPointToEigenVector(cv::Point3f const &point) {
+    return {point.x, point.y, point.z};
 }
 
 cv::Point3f AndreiUtils::eigenVectorToCVPoint(const Vector3f &vector) {
     return {vector.x(), vector.y(), vector.z()};
 }
 
-void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
+Eigen::Vector3f cvVectorToEigenVector(cv::Vec3f const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+Eigen::Vector3d cvVectorToEigenVector(cv::Vec3d const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+cv::Vec3f eigenVectorToCVVector(Eigen::Vector3f const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+cv::Vec3d eigenVectorToCVVector(Eigen::Vector3d const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+void AndreiUtils::writeEigenArray(cv::FileStorage &fs, ArrayXf const &x) {
     fs << "{";
     int size = (int) x.size();
     fs << "size" << size;
