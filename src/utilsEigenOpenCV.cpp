@@ -12,7 +12,7 @@ Array3f AndreiUtils::cvPointToEigenArray(cv::Point3f const &point) {
     return {point.x, point.y, point.z};
 }
 
-cv::Point3f AndreiUtils::eigenArrayToCVPoint(const Array3f &array) {
+cv::Point3f AndreiUtils::eigenArrayToCVPoint(Array3f const &array) {
     return {array.x(), array.y(), array.z()};
 }
 
@@ -20,7 +20,7 @@ Vector3f AndreiUtils::cvPointToEigenVector(cv::Point3f const &point) {
     return {point.x, point.y, point.z};
 }
 
-cv::Point3f AndreiUtils::eigenVectorToCVPoint(const Vector3f &vector) {
+cv::Point3f AndreiUtils::eigenVectorToCVPoint(Vector3f const &vector) {
     return {vector.x(), vector.y(), vector.z()};
 }
 
@@ -80,7 +80,7 @@ void AndreiUtils::read(cv::FileNode const &node, Array<float, 3, 1> &x, Array<fl
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     cv::Mat tvec;
     cv::Matx33d r;
@@ -98,7 +98,7 @@ Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d, double fx, double fy, double ppx,
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     size_t n = eigenPoints3d.size();
     std::vector<cv::Point2f> points2d(n);
@@ -114,21 +114,21 @@ Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverMatPoseFrom2dAnd3dPoints(points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                            intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<Vector2f> &const eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverMatPoseFrom2dAnd3dPoints(eigenPoints2d, eigenPoints3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                            intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     cv::Mat tvec;
     cv::Matx33d r;
@@ -141,7 +141,7 @@ DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d, double fx, double fy, double ppx,
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     size_t n = eigenPoints3d.size();
     std::vector<cv::Point2f> points2d(n);
@@ -157,15 +157,15 @@ DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverPoseFrom2dAnd3dPoints(points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                         intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverPoseFrom2dAnd3dPoints(eigenPoints2d, eigenPoints3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                         intrinsics.ppy, intrinsics.distortionCoefficients);
 }

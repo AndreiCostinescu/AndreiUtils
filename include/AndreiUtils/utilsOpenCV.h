@@ -43,22 +43,22 @@ namespace AndreiUtils {
                                 int lineType = cv::LINE_AA);
 
     void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Mat &rVec, const std::vector<cv::Point2f> &points2d,
-            const std::vector<cv::Point3f> &points3d, double fx, double fy, double ppx, double ppy,
+            cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
+            std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx, double ppy,
             float distortionCoefficients[5]);
 
     void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Matx33d &rMat, const std::vector<cv::Point2f> &points2d,
-            const std::vector<cv::Point3f> &points3d, double fx, double fy, double ppx, double ppy,
+            cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
+            std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx, double ppy,
             float distortionCoefficients[5]);
 
     void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Mat &rVec, const std::vector<cv::Point2f> &points2d,
-            const std::vector<cv::Point3f> &points3d, const CameraIntrinsicParameters &intrinsics);
+            cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
+            std::vector<cv::Point3f> const &points3d, const CameraIntrinsicParameters &intrinsics);
 
     void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Matx33d &rMat, const std::vector<cv::Point2f> &points2d,
-            const std::vector<cv::Point3f> &points3d, const CameraIntrinsicParameters &intrinsics);
+            cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
+            std::vector<cv::Point3f> const &points3d, const CameraIntrinsicParameters &intrinsics);
 
     cv::Point2i castFromPointDouble(cv::Point2d const &p);
 }

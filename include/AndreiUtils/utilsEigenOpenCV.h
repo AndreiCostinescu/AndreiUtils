@@ -221,35 +221,35 @@ namespace AndreiUtils {
               Eigen::Array3f const &default_value = Eigen::Array3f::Zero());
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 }
 
