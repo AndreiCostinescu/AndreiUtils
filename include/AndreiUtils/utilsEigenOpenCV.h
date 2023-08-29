@@ -191,13 +191,45 @@ namespace AndreiUtils {
         int rows, cols, options, maxRows, maxCols, currentRows, currentCols;
     };
 
+    Eigen::Array2f cvPointToEigenArray(cv::Point2f const &point);
+
+    Eigen::Array2d cvPointToEigenArray(cv::Point2d const &point);
+
+    cv::Point2f eigenArrayToCVPoint(Eigen::Array2f const &vector);
+
+    cv::Point2d eigenArrayToCVPoint(Eigen::Array2d const &vector);
+
     Eigen::Array3f cvPointToEigenArray(cv::Point3f const &point);
+
+    Eigen::Array3d cvPointToEigenArray(cv::Point3d const &point);
 
     cv::Point3f eigenArrayToCVPoint(Eigen::Array3f const &vector);
 
+    cv::Point3d eigenArrayToCVPoint(Eigen::Array3d const &vector);
+
+    Eigen::Vector2f cvPointToEigenVector(cv::Point2f const &point);
+
+    Eigen::Vector2d cvPointToEigenVector(cv::Point2d const &point);
+
+    cv::Point2f eigenVectorToCVPoint(Eigen::Vector2f const &vector);
+
+    cv::Point2d eigenVectorToCVPoint(Eigen::Vector2d const &vector);
+
     Eigen::Vector3f cvPointToEigenVector(cv::Point3f const &point);
 
+    Eigen::Vector3d cvPointToEigenVector(cv::Point3d const &point);
+
     cv::Point3f eigenVectorToCVPoint(Eigen::Vector3f const &vector);
+
+    cv::Point3d eigenVectorToCVPoint(Eigen::Vector3d const &vector);
+
+    Eigen::Vector2f cvVectorToEigenVector(cv::Vec2f const &v);
+
+    Eigen::Vector2d cvVectorToEigenVector(cv::Vec2d const &v);
+
+    cv::Vec2f eigenVectorToCVVector(Eigen::Vector2f const &v);
+
+    cv::Vec2d eigenVectorToCVVector(Eigen::Vector2d const &v);
 
     Eigen::Vector3f cvVectorToEigenVector(cv::Vec3f const &v);
 
