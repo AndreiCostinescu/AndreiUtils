@@ -56,11 +56,10 @@ namespace AndreiUtils {
         }
 
         EigenMatrixOpenCVSerializer() : matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(),
-                                        options(),
-                                        maxRows(), maxCols() {}
+                                        options(), maxRows(), maxCols() {}
 
-        explicit EigenMatrixOpenCVSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m)
-                : EigenMatrixOpenCVSerializer() {
+        explicit EigenMatrixOpenCVSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) :
+                EigenMatrixOpenCVSerializer() {
             this->matrix = &m;
             this->type = EigenMatrixOpenCVSerializer::getStringFromType();
             this->rows = Rows;

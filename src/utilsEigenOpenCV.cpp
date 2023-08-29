@@ -72,35 +72,35 @@ cv::Point3d AndreiUtils::eigenVectorToCVPoint(Vector3d const &vector) {
     return {vector.x(), vector.y(), vector.z()};
 }
 
-Eigen::Vector2f cvVectorToEigenVector(cv::Vec2f const &v) {
+Eigen::Vector2f AndreiUtils::cvVectorToEigenVector(cv::Vec2f const &v) {
     return {v[0], v[1]};
 }
 
-Eigen::Vector2d cvVectorToEigenVector(cv::Vec2d const &v) {
+Eigen::Vector2d AndreiUtils::cvVectorToEigenVector(cv::Vec2d const &v) {
     return {v[0], v[1]};
 }
 
-cv::Vec2f eigenVectorToCVVector(Eigen::Vector2f const &v) {
+cv::Vec2f AndreiUtils::eigenVectorToCVVector(Eigen::Vector2f const &v) {
     return {v[0], v[1]};
 }
 
-cv::Vec2d eigenVectorToCVVector(Eigen::Vector2d const &v) {
+cv::Vec2d AndreiUtils::eigenVectorToCVVector(Eigen::Vector2d const &v) {
     return {v[0], v[1]};
 }
 
-Eigen::Vector3f cvVectorToEigenVector(cv::Vec3f const &v) {
+Eigen::Vector3f AndreiUtils::cvVectorToEigenVector(cv::Vec3f const &v) {
     return {v[0], v[1], v[2]};
 }
 
-Eigen::Vector3d cvVectorToEigenVector(cv::Vec3d const &v) {
+Eigen::Vector3d AndreiUtils::cvVectorToEigenVector(cv::Vec3d const &v) {
     return {v[0], v[1], v[2]};
 }
 
-cv::Vec3f eigenVectorToCVVector(Eigen::Vector3f const &v) {
+cv::Vec3f AndreiUtils::eigenVectorToCVVector(Eigen::Vector3f const &v) {
     return {v[0], v[1], v[2]};
 }
 
-cv::Vec3d eigenVectorToCVVector(Eigen::Vector3d const &v) {
+cv::Vec3d AndreiUtils::eigenVectorToCVVector(Eigen::Vector3d const &v) {
     return {v[0], v[1], v[2]};
 }
 
