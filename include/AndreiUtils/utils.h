@@ -2,27 +2,22 @@
 // Created by Andrei on 11.11.20.
 //
 
-#ifndef ANDREIUTILS_UTILS_H
-#define ANDREIUTILS_UTILS_H
+#pragma once
 
-#include <atomic>
-#include <ctime>
 #include <string>
 
 namespace AndreiUtils {
-    bool stringIsInteger(const std::string &s);
+    bool stringIsInteger(std::string const &s);
 
-    int stringToInteger(const std::string &s);
+    int stringToInteger(std::string const &s);
 
-    bool stringIsBool(const std::string &s);
+    bool stringIsBool(std::string const &s);
 
-    bool stringToBool(const std::string &s);
+    bool stringToBool(std::string const &s);
 
-    double stringToDouble(const std::string &s);
+    double stringToDouble(std::string const &s);
 
-    bool stringIsFloat(const std::string &s);
+    bool stringIsFloat(std::string const &s);
 
-    float stringToFloat(const std::string &s);
+    float stringToFloat(std::string const &s);
 }
-
-#endif //ANDREIUTILS_UTILS_H
