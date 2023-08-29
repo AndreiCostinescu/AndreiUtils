@@ -17,6 +17,14 @@ bool AndreiUtils::stringIsInteger(string const &s) {
     return (*p == 0);
 }
 
+bool AndreiUtils::stringIsInteger(string const &s, int &res) {
+    if (stringIsInteger(s)) {
+        res = std::stoi(s);
+        return true;
+    }
+    return false;
+}
+
 int AndreiUtils::stringToInteger(string const &s) {
     if (!stringIsInteger(s)) {
         throw runtime_error("Can not convert string \"" + s + "\" to integer...");
@@ -27,6 +35,14 @@ int AndreiUtils::stringToInteger(string const &s) {
 bool AndreiUtils::stringIsBool(string const &s) {
     return ((s == "t" || s == "T" || s == "true" || s == "True" || s == "1") ||
             (s == "f" || s == "F" || s == "false" || s == "False" || s == "0"));
+}
+
+bool AndreiUtils::stringIsBool(string const &s, bool &res) {
+    if (stringIsBool(s)) {
+        res = (s == "t" || s == "T" || s == "true" || s == "True" || s == "1" || s.empty());
+        return true;
+    }
+    return false;
 }
 
 bool AndreiUtils::stringToBool(string const &s) {
@@ -48,6 +64,13 @@ bool AndreiUtils::stringIsFloat(string const &s) {
     iss >> noskipws >> f; // noskipws considers leading whitespace invalid
     // Check the entire string was consumed and if either failbit or badbit is set
     return iss.eof() && !iss.fail();
+}
+
+bool AndreiUtils::stringIsFloat(string const &s, float &res) {
+    if (stringIsFloat(s)) {
+        res = stof(s);
+    }
+    return false;
 }
 
 float AndreiUtils::stringToFloat(string const &s) {
