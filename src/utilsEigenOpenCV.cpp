@@ -121,7 +121,7 @@ Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        vector<Vector2f> &const eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
         CameraIntrinsicParameters const &intrinsics) {
     return recoverMatPoseFrom2dAnd3dPoints(eigenPoints2d, eigenPoints3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                            intrinsics.ppy, intrinsics.distortionCoefficients);
