@@ -2,8 +2,7 @@
 // Created by Andrei on 09.02.22.
 //
 
-#ifndef ANDREIUTILS_DUALQUATERNION_HPP
-#define ANDREIUTILS_DUALQUATERNION_HPP
+#pragma once
 
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsQuaternions.hpp>
@@ -514,6 +513,29 @@ namespace AndreiUtils {
             return is;
         }
 
+        [[nodiscard]] std::string toString(bool rotationAsAngleAxis = false, bool rotationFirst = false) const {
+            std::stringstream ss;
+            if (!rotationFirst) {
+                ss << this->getTranslation().transpose() << " || ";
+            }
+            if (rotationAsAngleAxis) {
+                Eigen::AngleAxis<T> aa(this->r);
+                ss << aa.angle() << " || " << aa.axis().transpose();
+            } else {
+                ss << this->r;
+            }
+            if (rotationFirst) {
+                ss << " || " << this->getTranslation().transpose();
+            }
+            return ss.str();
+        }
+
+        [[nodiscard]] std::string translationToString() const {
+            std::stringstream ss;
+            ss << this->getTranslation().transpose();
+            return ss.str();
+        }
+
         static DualQuaternion<T> const zero;
         static DualQuaternion<T> const one;
         static DualQuaternion<T> const i;
@@ -562,5 +584,3 @@ namespace AndreiUtils {
 
     using Pose = Posed;
 }
-
-#endif //ANDREIUTILS_DUALQUATERNION_HPP
