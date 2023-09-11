@@ -10,7 +10,7 @@ using namespace std;
 
 AnyType::AnyType() : content(nullptr) {}
 
-AnyType::AnyType(AnyType const &other) : content(other.empty() ? other.content->clone() : nullptr) {}
+AnyType::AnyType(AnyType const &other) : content(!other.empty() ? other.content->clone() : nullptr) {}
 
 AnyType::AnyType(AnyType &&other) noexcept: content(other.content) {
     other.content = nullptr;

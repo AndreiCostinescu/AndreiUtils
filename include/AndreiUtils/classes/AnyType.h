@@ -2,8 +2,7 @@
 // Created by Andrei on 07.12.22.
 //
 
-#ifndef ANDREIUTILS_ANYTYPE_H
-#define ANDREIUTILS_ANYTYPE_H
+#pragma once
 
 #include <stdexcept>
 
@@ -207,5 +206,3 @@ namespace AndreiUtils {
         PlaceHolder *content;
     };
 }
-
-#endif //ANDREIUTILS_ANYTYPE_H
