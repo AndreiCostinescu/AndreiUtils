@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <random>
 #include <type_traits>
 
@@ -17,17 +18,26 @@ namespace AndreiUtils {
     template<typename T>
     class RandomNumberGenerator {
     public:
-        RandomNumberGenerator(T minValue, T maxValue) : rd(), engine(rd()), distribution(minValue, maxValue) {}
+        RandomNumberGenerator(T minValue, T maxValue) : rd(), seed(rd()), engine(), distribution(minValue, maxValue) {
+            this->engine = std::make_shared<std::default_random_engine>(this->seed);
+        }
+
+        RandomNumberGenerator(T minValue, T maxValue, std::random_device::result_type seed) :
+                rd(), seed(seed), engine(), distribution(minValue, maxValue) {
+            this->engine = std::make_shared<std::default_random_engine>(this->seed);
+        }
 
         virtual ~RandomNumberGenerator() = default;
 
         T sample() {
-            return this->distribution(this->engine);
+            return this->distribution(*this->engine);
         }
+
+        std::random_device::result_type seed;
 
     protected:
         std::random_device rd;
-        std::default_random_engine engine;
+        std::shared_ptr<std::default_random_engine> engine;
         // if floating point type: range is [minValue, maxValue); if integral type: range is [minValue, maxValue]
         typename uniform_distribution_type<T>::Type distribution;
     };

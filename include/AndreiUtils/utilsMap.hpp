@@ -2,9 +2,9 @@
 // Created by Andrei on 24.03.22.
 //
 
-#ifndef ANDREIUTILS_MAPUTILS_HPP
-#define ANDREIUTILS_MAPUTILS_HPP
+#pragma once
 
+#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -559,6 +559,48 @@ namespace AndreiUtils {
     void mapAppendInPlace(std::map<T1, T2, C, A> &container, std::map<T1, T2, C, A> const &valuesToBeAppended) {
         container.insert(valuesToBeAppended.begin(), valuesToBeAppended.end());
     }
-}
 
-#endif //ANDREIUTILS_MAPUTILS_HPP
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m) {
+        RandomNumberGenerator<int> sampler(0, m.size() - 1);
+        return sampleFromMap(m, sampler);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 &sampleFromMap(std::map<T1, T2, C, A> &m) {
+        RandomNumberGenerator<int> sampler(0, m.size() - 1);
+        return sampleFromMap(m, sampler);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m, RandomNumberGenerator<int> &sampler) {
+        if (m.empty()) {
+            throw std::runtime_error("Can not sample from an empty map!");
+        }
+        int sampledIndex = sampler.sample(), index = 0;
+        if (sampledIndex >= m.size()) {
+            throw std::runtime_error("Sampled index is greater than or equal to the map size!");
+        }
+        for (auto const &data: m) {
+            if (index++ == sampledIndex) {
+                return data.second;
+            }
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    T2 &sampleFromMap(std::map<T1, T2, C, A> &m, RandomNumberGenerator<int> &sampler) {
+        if (m.empty()) {
+            throw std::runtime_error("Can not sample from an empty map!");
+        }
+        int sampledIndex = sampler.sample(), index = 0;
+        if (sampledIndex >= m.size()) {
+            throw std::runtime_error("Sampled index is greater than or equal to the map size!");
+        }
+        for (auto &data: m) {
+            if (index++ == sampledIndex) {
+                return data.second;
+            }
+        }
+    }
+}

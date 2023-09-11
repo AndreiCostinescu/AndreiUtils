@@ -2,10 +2,10 @@
 // Created by Andrei on 24.03.22.
 //
 
-#ifndef ANDREIUTILS_UTILSVECTOR_HPP
-#define ANDREIUTILS_UTILSVECTOR_HPP
+#pragma once
 
 #include <algorithm>
+#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/enums/StabilityCriterionOperation.h>
 #include <AndreiUtils/utils.hpp>
 #include <cstring>
@@ -619,6 +619,40 @@ namespace AndreiUtils {
         std::vector<T> res(s.begin(), s.end());
         return res;
     }
-}
 
-#endif //ANDREIUTILS_UTILSVECTOR_HPP
+    template<typename T>
+    T const &sampleFromVector(std::vector<T> const &v) {
+        RandomNumberGenerator<int> sampler(0, v.size() - 1);
+        return sampleFromVector(v, sampler);
+    }
+
+    template<typename T>
+    T &sampleFromVector(std::vector<T> &v) {
+        RandomNumberGenerator<int> sampler(0, v.size() - 1);
+        return sampleFromVector(v, sampler);
+    }
+
+    template<typename T>
+    T const &sampleFromVector(std::vector<T> const &v, RandomNumberGenerator<int> &sampler) {
+        if (v.empty()) {
+            throw std::runtime_error("Can not sample an element from an empty vector!");
+        }
+        int sampledIndex = sampler.sample();
+        if (sampledIndex >= v.size()) {
+            throw std::runtime_error("Sampled index is greater than or equal to the vector size!");
+        }
+        return v[sampledIndex];
+    }
+
+    template<typename T>
+    T &sampleFromVector(std::vector<T> &v, RandomNumberGenerator<int> &sampler) {
+        if (v.empty()) {
+            throw std::runtime_error("Can not sample an element from an empty vector!");
+        }
+        int sampledIndex = sampler.sample();
+        if (sampledIndex >= v.size()) {
+            throw std::runtime_error("Sampled index is greater than or equal to the vector size!");
+        }
+        return v[sampledIndex];
+    }
+}
