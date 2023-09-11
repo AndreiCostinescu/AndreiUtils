@@ -2,8 +2,7 @@
 // Created by Andrei Costinescu on 05.08.22.
 //
 
-#ifndef ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
-#define ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
+#pragma once
 
 #include <random>
 #include <type_traits>
@@ -35,5 +34,3 @@ namespace AndreiUtils {
 
     extern RandomNumberGenerator<double> double01Sampler;
 }
-
-#endif //ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
