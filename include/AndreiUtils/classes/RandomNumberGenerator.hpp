@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <memory>
 #include <random>
 #include <type_traits>
 
@@ -18,27 +17,32 @@ namespace AndreiUtils {
     template<typename T>
     class RandomNumberGenerator {
     public:
-        RandomNumberGenerator(T minValue, T maxValue) : rd(), seed(), engine(), distribution(minValue, maxValue) {
-            this->seed = this->rd();
-            this->engine = std::make_shared<std::default_random_engine>(this->seed);
-        }
+        RandomNumberGenerator(T minValue, T maxValue) :
+                rd(), seed(rd()), engine(seed), distribution(minValue, maxValue) {}
 
         RandomNumberGenerator(T minValue, T maxValue, std::random_device::result_type seed) :
-                rd(), seed(seed), engine(), distribution(minValue, maxValue) {
-            this->engine = std::make_shared<std::default_random_engine>(this->seed);
-        }
+                seed(seed), rd(), engine(seed), distribution(minValue, maxValue) {}
 
         virtual ~RandomNumberGenerator() = default;
 
         T sample() {
-            return this->distribution(*this->engine);
+            return this->distribution(this->engine);
         }
 
-        std::random_device::result_type seed;
+        void setSeed(std::random_device::result_type newSeed) {
+            this->seed = newSeed;
+            this->engine.seed(this->seed);
+        }
+
+        [[nodiscard]] std::random_device::result_type const &getSeed(std::random_device::result_type newSeed) const {
+            return this->seed;
+        }
 
     protected:
+        // Class member initialization order https://en.cppreference.com/w/cpp/language/constructor#Initialization_order
         std::random_device rd;
-        std::shared_ptr<std::default_random_engine> engine;
+        std::random_device::result_type seed;
+        std::default_random_engine engine;
         // if floating point type: range is [minValue, maxValue); if integral type: range is [minValue, maxValue]
         typename uniform_distribution_type<T>::Type distribution;
     };
