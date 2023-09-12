@@ -18,7 +18,8 @@ namespace AndreiUtils {
     template<typename T>
     class RandomNumberGenerator {
     public:
-        RandomNumberGenerator(T minValue, T maxValue) : rd(), seed(rd()), engine(), distribution(minValue, maxValue) {
+        RandomNumberGenerator(T minValue, T maxValue) : rd(), seed(), engine(), distribution(minValue, maxValue) {
+            this->seed = this->rd();
             this->engine = std::make_shared<std::default_random_engine>(this->seed);
         }
 
