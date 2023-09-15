@@ -655,4 +655,39 @@ namespace AndreiUtils {
         }
         return v[sampledIndex];
     }
+
+    template<typename CastT, typename T>
+    std::vector<std::shared_ptr<CastT>> vectorCast(std::vector<std::shared_ptr<T>> const &v,
+                                                   bool withTypeCheck = true) {
+        std::vector<std::shared_ptr<CastT>> res;
+        if (v.empty()) {
+            return res;
+        }
+        for (auto const &vElem: v) {
+            auto vElemCast = std::dynamic_pointer_cast<CastT>(vElem);
+            if (withTypeCheck && vElem != nullptr && vElemCast == nullptr) {
+                throw std::runtime_error("Can not cast an element of the vector to the desired type!");
+            } else {
+                res.emplace_back(std::move(vElemCast));
+            }
+        }
+        return res;
+    }
+
+    template<typename CastT, typename T>
+    std::vector<CastT *> vectorCast(std::vector<T *> const &v, bool withTypeCheck = true) {
+        std::vector<CastT *> res;
+        if (v.empty()) {
+            return res;
+        }
+        for (auto const &vElem: v) {
+            auto vElemCast = dynamic_cast<CastT *>(vElem);
+            if (withTypeCheck && vElem != nullptr && vElemCast == nullptr) {
+                throw std::runtime_error("Can not cast an element of the vector to the desired type!");
+            } else {
+                res.emplace_back(std::move(vElemCast));
+            }
+        }
+        return res;
+    }
 }
