@@ -157,7 +157,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorRemoveFirstValueMatch(std::vector<T> &container, T const &value) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, T const &value) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (*i == value) {
                 container.erase(i);
@@ -168,7 +168,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorRemoveFirstValueMatch(
+    bool vectorRemoveFirstValueMatch(
             std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (predicate(*i)) {
@@ -180,7 +180,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorRemoveFirstValueMatch(
+    bool vectorRemoveFirstValueMatch(
             std::vector<T> &container, std::function<bool(T const &)> const &predicate, T &removedData) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (predicate(*i)) {
@@ -193,7 +193,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorRemoveFirstValueMatch(
+    bool vectorRemoveFirstValueMatch(
             std::vector<T> &container, std::function<bool(T const &, int const &)> const &predicateWithIndex) {
         int index = 0;
         for (auto i = container.begin(); i != container.end(); ++i, ++index) {
@@ -206,7 +206,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorRemoveFirstValueMatch(
+    bool vectorRemoveFirstValueMatch(
             std::vector<T> &container, std::function<bool(T const &, int const &)> const &predicateWithIndex,
             T &removedData) {
         int index = 0;
