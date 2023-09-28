@@ -16,13 +16,13 @@
 
 namespace AndreiUtils {
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
-    bool mapContains(std::map<T1, T2, C, A> const &container, T1 const &key) {
+    [[nodiscard]] bool mapContains(std::map<T1, T2, C, A> const &container, T1 const &key) {
         auto const &data = container.find(key);
         return data != container.end();
     }
 
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    bool mapContains(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
+    [[nodiscard]] bool mapContains(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
         auto const &data = container.find(const_cast<T1 *>(key));
         return data != container.end();
     }
@@ -184,7 +184,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 &mapGet(std::map<T1, T2, C, A> &container, T1 const &key) {
+    [[nodiscard]] T2 &mapGet(std::map<T1, T2, C, A> &container, T1 const &key) {
         auto data = container.find(key);
         if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
@@ -193,7 +193,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    T2 &mapGet(std::map<T1 *, T2, C, A> &container, T1 const *key) {
+    [[nodiscard]] T2 &mapGet(std::map<T1 *, T2, C, A> &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
@@ -202,7 +202,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
+    [[nodiscard]] T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
         auto const &data = container.find(key);
         if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
@@ -211,7 +211,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    T2 const &mapGet(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
+    [[nodiscard]] T2 const &mapGet(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
             throw std::runtime_error("Element not found in map!");
@@ -230,8 +230,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    typename std::map<T1, T2, C, A>::iterator
-    mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+    typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1, T2, C, A> &container, T1 const &key,
+                                                     T2 const &value) {
         auto x = container.insert({key, value});
         if (!x.second) {
             throw std::runtime_error("Key already is in container!");
@@ -249,8 +249,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    typename std::map<T1, T2, C, A>::iterator
-    mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+    typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key,
+                                                     T2 const &value) {
         auto x = container.insert({const_cast<T1 *>(key), value});
         if (!x.second) {
             throw std::runtime_error("Key already is in container!");
@@ -268,8 +268,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>, typename... Args>
-    typename std::map<T1, T2, C, A>::iterator
-    mapEmplace(std::map<T1, T2, C, A> &container, T1 const &key, Args &&... args) {
+    typename std::map<T1, T2, C, A>::iterator mapEmplace(std::map<T1, T2, C, A> &container, T1 const &key,
+                                                         Args &&... args) {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(key),
                                    std::forward_as_tuple(args...));
         if (!x.second) {
@@ -279,8 +279,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>, typename... Args>
-    typename std::map<T1, T2, C, A>::iterator
-    mapEmplace(std::map<T1, T2, C, A> &container, T1 const *key, Args &&... args) {
+    typename std::map<T1, T2, C, A>::iterator mapEmplace(std::map<T1, T2, C, A> &container, T1 const *key,
+                                                         Args &&... args) {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(const_cast<T1 *>(key)),
                                    std::forward_as_tuple(args...));
         if (!x.second) {
@@ -375,8 +375,9 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::string printMapToString(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
-                                 std::string const &itemSeparator = "\n") {
+    [[nodiscard]] std::string printMapToString(
+            std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
+            std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
@@ -390,11 +391,10 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::string printMapToString(std::map<T1, T2, C, A> const &container,
-                                 std::function<std::string(T1 const &)> const &keyStringConversion,
-                                 std::function<std::string(T2 const &)> const &valueStringConversion,
-                                 std::string const &keyValueSeparator = " -> ",
-                                 std::string const &itemSeparator = "\n") {
+    [[nodiscard]] std::string printMapToString(
+            std::map<T1, T2, C, A> const &container, std::function<std::string(T1 const &)> const &keyStringConversion,
+            std::function<std::string(T2 const &)> const &valueStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
@@ -409,10 +409,9 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::string printMapToStringConvertKey(std::map<T1, T2, C, A> const &container,
-                                           std::function<std::string(T1 const &)> const &keyStringConversion,
-                                           std::string const &keyValueSeparator = " -> ",
-                                           std::string const &itemSeparator = "\n") {
+    [[nodiscard]] std::string printMapToStringConvertKey(
+            std::map<T1, T2, C, A> const &container, std::function<std::string(T1 const &)> const &keyStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
@@ -426,10 +425,10 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::string printMapToStringConvertValue(std::map<T1, T2, C, A> const &container,
-                                             std::function<std::string(T2 const &)> const &valueStringConversion,
-                                             std::string const &keyValueSeparator = " -> ",
-                                             std::string const &itemSeparator = "\n") {
+    [[nodiscard]] std::string printMapToStringConvertValue(
+            std::map<T1, T2, C, A> const &container,
+            std::function<std::string(T2 const &)> const &valueStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
@@ -443,7 +442,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::vector<T1> getMapKeys(std::map<T1, T2, C, A> const &container) {
+    [[nodiscard]] std::vector<T1> getMapKeys(std::map<T1, T2, C, A> const &container) {
         std::vector<T1> keys(container.size());
         int i = 0;
         for (auto const &elem: container) {
@@ -453,7 +452,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::vector<T2> getMapValues(std::map<T1, T2, C, A> const &container) {
+    [[nodiscard]] std::vector<T2> getMapValues(std::map<T1, T2, C, A> const &container) {
         std::vector<T2> values(container.size());
         int i = 0;
         for (auto const &elem: container) {
@@ -463,7 +462,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2>
-    std::map<T1, T2> createMapFromKeysAndValues(std::vector<T1> const &keys, std::vector<T2> const &values) {
+    [[nodiscard]] std::map<T1, T2>
+    createMapFromKeysAndValues(std::vector<T1> const &keys, std::vector<T2> const &values) {
         assert(keys.size() == values.size());
         std::map<T1, T2> res;
         for (int i = 0; i < keys.size(); i++) {
@@ -513,7 +513,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::map<T1, T2, C, A> getFilteredMapBasedOnPredicate(
+    [[nodiscard]] std::map<T1, T2, C, A> getFilteredMapBasedOnPredicate(
             std::map<T1, T2, C, A> const &container, std::function<bool(T1 const &, T2 const &)> const &predicate) {
         std::map<T1, T2, C, A> result = container;
         filterMapBasedOnPredicate(result, predicate);
@@ -521,7 +521,7 @@ namespace AndreiUtils {
     }
 
     template<class T, typename A = std::allocator<std::pair<const int, T>>>
-    std::map<int, T, std::less<int>, A> mapFromVector(std::vector<T> const &v) {
+    [[nodiscard]] std::map<int, T, std::less<int>, A> mapFromVector(std::vector<T> const &v) {
         std::map<int, T, std::less<int>, A> m;
         for (size_t i = 0; i < v.size(); i++) {
             m[i] = v[i];
@@ -530,7 +530,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::map<T1, T2, C, A> mapFromVector(std::vector<T2> const &v, std::function<T1(T2 const &)> const &keyOp) {
+    [[nodiscard]] std::map<T1, T2, C, A> mapFromVector(
+            std::vector<T2> const &v, std::function<T1(T2 const &)> const &keyOp) {
         std::map<T1, T2, C, A> m;
         for (size_t i = 0; i < v.size(); i++) {
             m[keyOp(v[i])] = v[i];
@@ -539,7 +540,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::map<T1, T2, C, A> mapFromVector(std::vector<T2> const &v, std::function<T1(T2 const &, size_t)> const &keyOp) {
+    [[nodiscard]] std::map<T1, T2, C, A> mapFromVector(
+            std::vector<T2> const &v, std::function<T1(T2 const &, size_t)> const &keyOp) {
         std::map<T1, T2, C, A> m;
         for (size_t i = 0; i < v.size(); i++) {
             m[keyOp(v[i], i)] = v[i];
@@ -548,8 +550,8 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    std::map<T1, T2, C, A> mapAppend(std::map<T1, T2, C, A> const &container,
-                                     std::map<T1, T2, C, A> const &valuesToBeAppended) {
+    [[nodiscard]] std::map<T1, T2, C, A> mapAppend(std::map<T1, T2, C, A> const &container,
+                                                   std::map<T1, T2, C, A> const &valuesToBeAppended) {
         auto res = container;
         res.insert(valuesToBeAppended.begin(), valuesToBeAppended.end());
         return res;
@@ -561,19 +563,19 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m) {
+    [[nodiscard]] T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m) {
         RandomNumberGenerator<int> sampler(0, m.size() - 1);
         return sampleFromMap(m, sampler);
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 &sampleFromMap(std::map<T1, T2, C, A> &m) {
+    [[nodiscard]] T2 &sampleFromMap(std::map<T1, T2, C, A> &m) {
         RandomNumberGenerator<int> sampler(0, m.size() - 1);
         return sampleFromMap(m, sampler);
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m, RandomNumberGenerator<int> &sampler) {
+    [[nodiscard]] T2 const &sampleFromMap(std::map<T1, T2, C, A> const &m, RandomNumberGenerator<int> &sampler) {
         if (m.empty()) {
             throw std::runtime_error("Can not sample from an empty map!");
         }
@@ -589,7 +591,7 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    T2 &sampleFromMap(std::map<T1, T2, C, A> &m, RandomNumberGenerator<int> &sampler) {
+    [[nodiscard]] T2 &sampleFromMap(std::map<T1, T2, C, A> &m, RandomNumberGenerator<int> &sampler) {
         if (m.empty()) {
             throw std::runtime_error("Can not sample from an empty map!");
         }
