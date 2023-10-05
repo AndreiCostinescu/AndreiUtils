@@ -170,6 +170,8 @@ SET(UTILS_ENUMS src/enums/StandardTypes.cpp src/enums/ImageDistortionModel.cpp s
 
 SET(UTILS_ERROR src/utilsError.cpp)
 
+SET(UTILS_EXCEPTIONS src/exceptions/DebugRequestedException.cpp src/exceptions/QuitRequestedException.cpp)
+
 SET(UTILS_GEOMETRY src/utilsGeometry.cpp)
 
 SET(UTILS_IMAGES src/utilsImages.cpp)
@@ -209,6 +211,7 @@ SET(UTILS_CLASSES
         src/classes/RandomNumberGenerator.cpp
         src/classes/Timer.cpp
         src/classes/UnionFind.cpp
+        src/classes/UserInteraction.cpp
         ${UTILS_CLASSES_CAMERA}
         ${UTILS_CLASSES_GRAPH}
         )
@@ -279,6 +282,7 @@ set(GENERAL_UTILS
         ${UTILS_GENERAL}
         ${UTILS_ENUMS}
         ${UTILS_ERROR}
+        ${UTILS_EXCEPTIONS}
         ${UTILS_GEOMETRY}
         ${UTILS_IMAGES}
 
