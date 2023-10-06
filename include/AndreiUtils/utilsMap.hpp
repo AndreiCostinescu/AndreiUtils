@@ -549,6 +549,15 @@ namespace AndreiUtils {
         return m;
     }
 
+    template<class T, typename C = std::less<T>, typename A = std::allocator<std::pair<const T, bool>>>
+    [[nodiscard]] std::map<T, bool, C, A> setMapKeysFromVectorElements(std::vector<T> const &v) {
+        std::map<T, bool, C, A> m;
+        for (size_t i = 0; i < v.size(); i++) {
+            m[v[i]] = true;
+        }
+        return m;
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     [[nodiscard]] std::map<T1, T2, C, A> mapAppend(std::map<T1, T2, C, A> const &container,
                                                    std::map<T1, T2, C, A> const &valuesToBeAppended) {
