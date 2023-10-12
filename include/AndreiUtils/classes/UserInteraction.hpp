@@ -5,6 +5,8 @@
 #pragma once
 
 #include <functional>
+#include <fstream>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -25,7 +27,7 @@ namespace AndreiUtils {
         static std::string getStringSupervision(std::string const &prompt, bool allowEmpty,
                                                 std::function<std::string()> const &f = {});
 
-        UserInteraction();
+        explicit UserInteraction(std::string const &interactionScenario = "");
 
         UserInteraction(UserInteraction const &other);
 
@@ -54,6 +56,21 @@ namespace AndreiUtils {
         [[nodiscard]] std::string getStringResponse(bool allowEmpty, std::function<std::string()> const &f = {}) const;
 
     protected:
+        static bool getBooleanSupervisionWithScenario(
+                std::string const &prompt, std::function<UserResponse()> const &f = {},
+                std::string const &scenarioResponse = "");
+
+        static int getIndexSupervisionWithScenario(
+                std::string const &prompt, int minIndex, int maxIndex, std::function<int()> const &f = {},
+                std::string const &scenarioResponse = "");
+
+        static std::string getStringSupervisionWithScenario(
+                std::string const &prompt, bool allowEmpty, std::function<std::string()> const &f = {},
+                std::string const &scenarioResponse = "");
+
+        [[nodiscard]] bool useScenario() const;
+
         std::stringstream ss;
+        std::shared_ptr<std::ifstream> scenario;
     };
 }
