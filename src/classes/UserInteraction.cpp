@@ -25,9 +25,7 @@ std::string UserInteraction::getStringSupervision(string const &prompt, bool all
 }
 
 UserInteraction::UserInteraction(std::string const &scenario) {
-    if (!scenario.empty()) {
-        this->scenario = make_shared<ifstream>(scenario);
-    }
+    this->setScenario(scenario);
 }
 
 UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()), scenario(other.scenario) {}
@@ -66,6 +64,12 @@ UserInteraction &UserInteraction::clear() {
 
 UserInteraction &UserInteraction::operator()() {
     return this->clear();
+}
+
+void UserInteraction::setScenario(string const &scenarioFile) {
+    if (!scenarioFile.empty()) {
+        this->scenario = make_shared<ifstream>(scenarioFile);
+    }
 }
 
 bool UserInteraction::getBooleanResponse(function<UserResponse()> const &f) const {

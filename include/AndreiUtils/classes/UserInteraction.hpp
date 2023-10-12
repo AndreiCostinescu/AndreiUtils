@@ -49,6 +49,8 @@ namespace AndreiUtils {
             return *this;
         }
 
+        void setScenario(std::string const &scenarioFile);
+
         [[nodiscard]] bool getBooleanResponse(std::function<UserResponse()> const &f = {}) const;
 
         [[nodiscard]] int getIndexResponse(int minIndex, int maxIndex, std::function<int()> const &f = {}) const;
