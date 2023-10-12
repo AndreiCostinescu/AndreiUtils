@@ -30,9 +30,10 @@ UserInteraction::UserInteraction(std::string const &scenario) {
     }
 }
 
-UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()) {}
+UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()), scenario(other.scenario) {}
 
-UserInteraction::UserInteraction(UserInteraction &&other) noexcept: ss(std::move(other.ss)) {}
+UserInteraction::UserInteraction(UserInteraction &&other) noexcept:
+        ss(std::move(other.ss)), scenario(std::move(other.scenario)) {}
 
 UserInteraction::~UserInteraction() {
     this->clear();
@@ -44,6 +45,7 @@ UserInteraction::~UserInteraction() {
 UserInteraction &UserInteraction::operator=(UserInteraction const &other) {
     if (this != &other) {
         this->ss.str(other.ss.str());
+        this->scenario = other.scenario;
     }
     return *this;
 }
@@ -51,6 +53,7 @@ UserInteraction &UserInteraction::operator=(UserInteraction const &other) {
 UserInteraction &UserInteraction::operator=(UserInteraction &&other) noexcept {
     if (this != &other) {
         this->ss = std::move(other.ss);
+        this->scenario = std::move(other.scenario);
     }
     return *this;
 }
