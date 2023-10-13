@@ -7,6 +7,7 @@
 #include <AndreiUtils/exceptions/QuitRequestedException.h>
 #include <AndreiUtils/utils.h>
 #include <AndreiUtils/utilsString.h>
+#include <cassert>
 #include <iostream>
 
 using namespace AndreiUtils;
@@ -69,6 +70,7 @@ UserInteraction &UserInteraction::operator()() {
 void UserInteraction::setScenario(string const &scenarioFile) {
     if (!scenarioFile.empty()) {
         this->scenario = make_shared<ifstream>(scenarioFile);
+        assert(this->scenario->is_open());
     }
 }
 
@@ -77,7 +79,6 @@ bool UserInteraction::getBooleanResponse(function<UserResponse()> const &f) cons
         string scenarioResponse;
         if (!getline(*this->scenario, scenarioResponse)) {
             scenarioResponse.clear();
-        } else {
             this->scenario->close();
         }
         return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), f, scenarioResponse);
@@ -90,7 +91,6 @@ int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()
         string scenarioResponse;
         if (!getline(*this->scenario, scenarioResponse)) {
             scenarioResponse.clear();
-        } else {
             this->scenario->close();
         }
         return UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f,
@@ -104,7 +104,6 @@ std::string UserInteraction::getStringResponse(bool allowEmpty, function<string(
         string scenarioResponse;
         if (!getline(*this->scenario, scenarioResponse)) {
             scenarioResponse.clear();
-        } else {
             this->scenario->close();
         }
         return UserInteraction::getStringSupervisionWithScenario(this->ss.str(), allowEmpty, f, scenarioResponse);
