@@ -111,6 +111,24 @@ void testEigenDataAsArray() {
     cout << printVectorToString(vectorFromArray(bb.transpose().data(), 6)) << endl;
 }
 
+void testResizeAndReserve() {
+    vector<int> v(10);
+    for (int i = 0; i < 10; ++i) {
+        v[i] = i + 1;
+    }
+    cout << "v.size = " << v.size() << endl;
+    v.reserve(20);
+    cout << "v.size = " << v.size() << endl;
+    for (auto const &i: v) {
+        cout << i << endl;
+    }
+    v.emplace_back(11);
+    cout << "v.size = " << v.size() << endl;
+    for (auto const &i: v) {
+        cout << i << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -119,7 +137,8 @@ int main() {
     // testVectorEquals();
     // testSpliceVector();
     // testRemoveDuplicates();
-    testEigenDataAsArray();
+    // testEigenDataAsArray();
+    testResizeAndReserve();
 
     return 0;
 }

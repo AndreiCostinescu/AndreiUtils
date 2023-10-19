@@ -303,7 +303,8 @@ void playgroundGraspCupFromSide() {
 
 void play() {
     auto q = Posed::createFromCoefficients(
-            vector<double>{-0.43199914013303337,0.005861429276844252,-0.009443289551921301,-0.9018075871533447,-0.008872428920675416,0.05361516740646428,0.33881962340539384,0.0010507467228607378});
+            vector<double>{-0.43199914013303337, 0.005861429276844252, -0.009443289551921301, -0.9018075871533447,
+                           -0.008872428920675416, 0.05361516740646428, 0.33881962340539384, 0.0010507467228607378});
     cout << q.getTranslation().transpose() << endl;
     cout << q.getRotation() << endl;
     cout << q.toString() << endl;
@@ -319,6 +320,24 @@ void play() {
     Posed pose(r, q.getTranslation() - Vector3d(0, 0, -0.002));
     nlohmann::json j = pose;
     cout << j.dump(4) << endl;
+
+    Posed test(Quaterniond{0.999473, 0.00787435, -0.0166037, -0.0270579}, Vector3d{-0.223853, -0.135052, -0.027123});
+    cout << test << endl;
+    cout << test.toString(false, true) << endl;
+}
+
+void testSerialization() {
+    cout << setprecision(17);
+    string poseDump = "[0.9994731121272746,0.007874354028401642,-0.016603684480707176,-0.027057915770959524,-0.000606757222358723,-0.11026175043235034,-0.07062328795051839,-0.011163860530449116]";
+    cout << poseDump << endl;
+    nlohmann::json jsonPose = nlohmann::json::parse(poseDump), rewriteJsonPose;
+    cout << jsonPose.dump(4) << endl;
+    Posed pose = jsonPose.get<Posed>();
+    cout << "[" << pose.getRotation().w() << "," << pose.getRotation().x() << "," << pose.getRotation().y() << ","
+         << pose.getRotation().z() << "," << pose.getDual().w() << "," << pose.getDual().x() << ","
+         << pose.getDual().y() << "," << pose.getDual().z() << "]" << endl;
+    rewriteJsonPose = pose;
+    cout << rewriteJsonPose.dump(4) << endl;
 }
 
 int main() {
@@ -335,7 +354,8 @@ int main() {
     // testSameTranslationNegatedQuaternion();
     // playgroundGraspCupFromTop();
     // playgroundGraspCupFromSide();
-    play();
+    // play();
+    testSerialization();
 
     return 0;
 }

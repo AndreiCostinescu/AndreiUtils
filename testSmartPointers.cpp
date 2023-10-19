@@ -105,6 +105,14 @@ void testVoidSharedPtr() {
     x.reset();
 }
 
+void testCopyPointer() {
+    shared_ptr<int> x = make_shared<int>(5);
+    auto y = x;
+    *y = 42;
+
+    cout << *x << " vs. " << *y << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -113,7 +121,8 @@ int main() {
     // testWeakPtr();
     // testSharedPtrWithConst();
     // testSharedPtrWithArray();
-    testVoidSharedPtr();
+    // testVoidSharedPtr();
+    testCopyPointer();
 
     return 0;
 }
