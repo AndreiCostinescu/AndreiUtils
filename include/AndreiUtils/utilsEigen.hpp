@@ -2,8 +2,7 @@
 // Created by Andrei on 06.09.21.
 //
 
-#ifndef ANDREIUTILS_UTILSEIGEN_HPP
-#define ANDREIUTILS_UTILSEIGEN_HPP
+#pragma once
 
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenLeastSquares.h>
@@ -150,7 +149,8 @@ namespace AndreiUtils {
             leastSquaresMatrixA.template leftCols<2>() = surfaceMatrix.template middleCols<2>(surfaceVectorPairIndex);
             coefficients = AndreiUtils::leastSquares(leastSquaresMatrixA, otherShiftedPoints.transpose());
             if (verbose) {
-                std::cout << "Coefficient matrix =" << std::endl << coefficients << std::endl;
+                std::cout << "Coefficient matrix at surfaceVectorPairIndex " << surfaceVectorPairIndex << " ="
+                          << std::endl << coefficients << std::endl;
             }
             for (int otherPointIndex = 0; otherPointIndex < otherPointCount; ++otherPointIndex) {
                 if (inRange<double>(coefficients(0, otherPointIndex), 0, 1) &&
@@ -176,5 +176,3 @@ namespace AndreiUtils {
         return false;
     }
 }
-
-#endif //ANDREIUTILS_UTILSEIGEN_HPP
