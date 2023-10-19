@@ -340,6 +340,18 @@ void testSerialization() {
     cout << rewriteJsonPose.dump(4) << endl;
 }
 
+void isInverseEqualToConjugate() {
+    auto q = Posed::createFromCoefficients(
+            vector<double>{-0.43199914013303337,0.005861429276844252,-0.009443289551921301,-0.9018075871533447,-0.008872428920675416,0.05361516740646428,0.33881962340539384,0.0010507467228607378});
+    cout << q << endl;
+    cout << "Inverse/Conjugate test: " << q.inverse() << " vs. " << q.conjugate() << endl;
+
+    q = Posed::createFromCoefficients(
+            vector<double>{0.52044, -0.493292, 0.468434, 0.516116, -0.00216926, -0.0154996, -0.0159906, 0.00188652});
+    cout << q << endl;
+    cout << "Inverse/Conjugate test: " << q.inverse() << " vs. " << q.conjugate() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -356,6 +368,7 @@ int main() {
     // playgroundGraspCupFromSide();
     // play();
     testSerialization();
+    // isInverseEqualToConjugate();
 
     return 0;
 }
