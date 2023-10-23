@@ -21,6 +21,11 @@ int UserInteraction::getIndexSupervision(string const &prompt, int minIndex, int
     return UserInteraction::getIndexSupervisionWithScenario(prompt, minIndex, maxIndex, f);
 }
 
+vector<int> UserInteraction::getMultipleIndexSupervision(
+        string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) {
+    return UserInteraction::getMultipleIndexSupervisionWithScenario(prompt, minIndex, maxIndex, allowEmptyResponse, f);
+}
+
 std::string UserInteraction::getStringSupervision(string const &prompt, bool allowEmpty, function<string()> const &f) {
     return UserInteraction::getStringSupervisionWithScenario(prompt, allowEmpty, f);
 }
@@ -97,6 +102,21 @@ int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()
                                                                 scenarioResponse);
     }
     return UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f);
+}
+
+vector<int> UserInteraction::getMultipleIndexResponse(
+        int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) const {
+    if (this->useScenario()) {
+        string scenarioResponse;
+        if (!getline(*this->scenario, scenarioResponse)) {
+            scenarioResponse.clear();
+            this->scenario->close();
+        }
+        return UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
+                                                                        allowEmptyResponse, f, scenarioResponse);
+    }
+    return UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
+                                                                    allowEmptyResponse, f);
 }
 
 std::string UserInteraction::getStringResponse(bool allowEmpty, function<string()> const &f) const {
@@ -181,6 +201,68 @@ int UserInteraction::getIndexSupervisionWithScenario(
         } else {
             cout << "Input error: " << res << " is not in index interval [" << minIndex << ", " << maxIndex << "]"
                  << endl;
+        }
+    }
+    return res;
+}
+
+vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(
+        string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f,
+        string const &scenarioResponse) {
+    if (!(minIndex < 0 && maxIndex < 0) && maxIndex < minIndex) {
+        throw std::runtime_error(
+                "In function UserInteraction::getMultipleIndexSupervision the maxIndex (" + to_string(maxIndex) +
+                ") is lower than the minIndex (" + to_string(minIndex) + ")!");
+    }
+    vector<int> res;
+    while (true) {
+        res.clear();  // reset content from previous loop iterations
+        cout << prompt << "\nIf multiple answers, separate multiple indices by a comma ',' character: ";
+        if (f) {
+            res = f();
+        } else {
+            string response;
+            if (scenarioResponse.empty()) {
+                getline(cin, response);
+            } else {
+                response = scenarioResponse;
+                cout << scenarioResponse << endl;
+            }
+            if (response == "q" || response == "quit" || response == "exit") {
+                throw QuitRequestedException();
+            } else if (response == "d" || response == "debug") {
+                throw DebugRequestedException();
+            }
+            auto splitRes = splitString(response, ",");
+            bool conversionError = false;
+            for (auto const &splitResValue: splitRes) {
+                int value;
+                if (!stringIsInteger(trim(splitResValue), value)) {
+                    cout << "\"" << trim(splitResValue) << "\" is not an index (i.e. integer) value!" << endl;
+                    conversionError = true;
+                    break;
+                }
+                res.emplace_back(std::move(value)); // NOLINT(performance-move-const-arg)
+            }
+            if (conversionError) {
+                continue;
+            }
+        }
+        if (!allowEmptyResponse && res.empty()) {
+            cout << "Can not accept empty response!" << endl;
+            continue;
+        }
+        bool checkOk = true;
+        for (auto const &resValue: res) {
+            if ((minIndex < 0 && maxIndex < 0) || (minIndex <= resValue && resValue <= maxIndex)) {
+                checkOk = false;
+                cout << "Input error: " << resValue << " is not in index interval [" << minIndex << ", " << maxIndex
+                     << "]" << endl;
+                break;
+            }
+        }
+        if (checkOk) {
+            break;
         }
     }
     return res;

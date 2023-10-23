@@ -21,11 +21,15 @@ namespace AndreiUtils {
 
         static bool getBooleanSupervision(std::string const &prompt, std::function<UserResponse()> const &f = {});
 
-        static int getIndexSupervision(std::string const &prompt, int minIndex, int maxIndex,
-                                       std::function<int()> const &f = {});
+        static int getIndexSupervision(
+                std::string const &prompt, int minIndex, int maxIndex, std::function<int()> const &f = {});
 
-        static std::string getStringSupervision(std::string const &prompt, bool allowEmpty,
-                                                std::function<std::string()> const &f = {});
+        static std::vector<int> getMultipleIndexSupervision(
+                std::string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse,
+                std::function<std::vector<int>()> const &f = {});
+
+        static std::string getStringSupervision(
+                std::string const &prompt, bool allowEmpty, std::function<std::string()> const &f = {});
 
         explicit UserInteraction(std::string const &interactionScenario = "");
 
@@ -55,6 +59,9 @@ namespace AndreiUtils {
 
         [[nodiscard]] int getIndexResponse(int minIndex, int maxIndex, std::function<int()> const &f = {}) const;
 
+        [[nodiscard]] std::vector<int> getMultipleIndexResponse(int minIndex, int maxIndex, bool allowEmptyResponse,
+                                                                std::function<std::vector<int>()> const &f = {}) const;
+
         [[nodiscard]] std::string getStringResponse(bool allowEmpty, std::function<std::string()> const &f = {}) const;
 
     protected:
@@ -65,6 +72,10 @@ namespace AndreiUtils {
         static int getIndexSupervisionWithScenario(
                 std::string const &prompt, int minIndex, int maxIndex, std::function<int()> const &f = {},
                 std::string const &scenarioResponse = "");
+
+        static std::vector<int> getMultipleIndexSupervisionWithScenario(
+                std::string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse,
+                std::function<std::vector<int>()> const &f = {}, std::string const &scenarioResponse = "");
 
         static std::string getStringSupervisionWithScenario(
                 std::string const &prompt, bool allowEmpty, std::function<std::string()> const &f = {},
