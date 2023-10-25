@@ -28,23 +28,15 @@ namespace AndreiUtils {
 
         bool operator!=(ConfigurationParameters const &other) const;
 
-        [[nodiscard]] bool isInitialized() const;
-
         [[nodiscard]] bool has(std::string const &parameterName) const;
 
         template<typename T>
         [[nodiscard]] T get(std::string const &parameterName) const {
-            if (!this->initialized) {
-                throw std::runtime_error("ConfigurationParameters not initialized!");
-            }
             return this->config.at(parameterName).get<T>();
         }
 
         template<typename T>
         [[nodiscard]] T get(std::string const &parameterName, T const &defaultValue) const {
-            if (!this->initialized) {
-                throw std::runtime_error("ConfigurationParameters not initialized!");
-            }
             if (this->has(parameterName)) {
                 return this->config.at(parameterName).get<T>();
             }
@@ -53,17 +45,11 @@ namespace AndreiUtils {
 
         template<typename T>
         void set(std::string const &parameterName, T const &data) {
-            if (!this->initialized) {
-                throw std::runtime_error("ConfigurationParameters not initialized!");
-            }
             this->config[parameterName] = data;
         }
 
         template<typename T>
         void set(std::string const &parameterName, T &&data) {
-            if (!this->initialized) {
-                throw std::runtime_error("ConfigurationParameters not initialized!");
-            }
             this->config[parameterName] = std::forward<T>(data);
         }
 
@@ -78,7 +64,6 @@ namespace AndreiUtils {
     protected:
         bool checkCorrectJsonParameters(nlohmann::json &_config) const;
 
-        bool initialized;
         std::string parametersFor;
         nlohmann::json config;
     };

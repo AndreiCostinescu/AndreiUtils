@@ -16,7 +16,7 @@ ConfigurationParameters::ConfigurationParameters(string const &fileName, std::st
         ConfigurationParameters(readJsonFile(fileName), std::move(parametersFor)) {}
 
 ConfigurationParameters::ConfigurationParameters(json config, std::string parametersFor) :
-        initialized(true), parametersFor(std::move(parametersFor)) {
+        parametersFor(std::move(parametersFor)) {
     if (!this->checkCorrectJsonParameters(config)) {
         string s = config.dump(4);
         throw std::runtime_error(
@@ -25,19 +25,16 @@ ConfigurationParameters::ConfigurationParameters(json config, std::string parame
     this->config = std::move(config);
 }
 
-ConfigurationParameters::ConfigurationParameters() noexcept: initialized(false) {}
+ConfigurationParameters::ConfigurationParameters() noexcept = default;
 
 ConfigurationParameters::ConfigurationParameters(ConfigurationParameters const &other) = default;
 
 ConfigurationParameters::ConfigurationParameters(ConfigurationParameters &&other) noexcept:
-        config(std::move(other.config)), initialized(other.initialized), parametersFor(std::move(other.parametersFor)) {
-    other.initialized = false;
-}
+        config(std::move(other.config)), parametersFor(std::move(other.parametersFor)) {}
 
 ConfigurationParameters &ConfigurationParameters::operator=(ConfigurationParameters const &other) {
     if (this != &other) {
         this->config = other.config;
-        this->initialized = other.initialized;
         this->parametersFor = other.parametersFor;
     }
     return *this;
@@ -46,17 +43,12 @@ ConfigurationParameters &ConfigurationParameters::operator=(ConfigurationParamet
 ConfigurationParameters &ConfigurationParameters::operator=(ConfigurationParameters &&other) noexcept {
     if (this != &other) {
         this->config = std::move(other.config);
-        this->initialized = other.initialized;
-        other.initialized = false;
         this->parametersFor = std::move(other.parametersFor);
     }
     return *this;
 }
 
 bool ConfigurationParameters::operator==(ConfigurationParameters const &other) const {
-    if (this->initialized != other.initialized) {
-        return false;
-    }
     if (this->parametersFor != other.parametersFor) {
         return false;
     }
@@ -65,10 +57,6 @@ bool ConfigurationParameters::operator==(ConfigurationParameters const &other) c
 
 bool ConfigurationParameters::operator!=(ConfigurationParameters const &other) const {
     return !(*this == other);
-}
-
-bool ConfigurationParameters::isInitialized() const {
-    return this->initialized;
 }
 
 bool ConfigurationParameters::has(string const &parameterName) const {
@@ -86,7 +74,7 @@ ConfigurationParameters ConfigurationParameters::getSubConfig(string const &subP
     return subConfig;
 }
 
-bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {
+bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {  // NOLINT(misc-no-recursion)
     try {
         if (!this->parametersFor.empty()) {
             if (_config.contains("parametersFor") && _config.at("parametersFor").get<string>() == this->parametersFor) {
@@ -107,9 +95,6 @@ bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {
 }
 
 json const &ConfigurationParameters::getJson(string const &parameterName) const {
-    if (!this->initialized) {
-        throw std::runtime_error("ConfigurationParameters not initialized!");
-    }
     return this->config.at(parameterName);
 }
 
