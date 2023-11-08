@@ -2,8 +2,7 @@
 // Created by Andrei on 27.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSJSONEIGEN_HPP
-#define ANDREIUTILS_UTILSJSONEIGEN_HPP
+#pragma once
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/SuperCube.hpp>
@@ -92,6 +91,52 @@ namespace nlohmann {
             if (!(j.template contains("type") && j.template contains("rows") && j.template contains("cols") &&
                   j.template contains("curRows") && j.template contains("curCols") && j.template contains("options") &&
                   j.template contains("maxRows") && j.template contains("maxCols") && j.template contains("data"))) {
+                if (j.is_array()) {
+                    std::vector<Scalar> vectorData = j.get<std::vector<Scalar>>();
+                    size_t nrVectorElements = vectorData.size();
+                    if (Rows != -1 && Cols != -1) {
+                        if (Rows * Cols != nrVectorElements) {
+                            throw std::runtime_error(
+                                    "Unable to deserialize json array data into an Eigen Matrix (" +
+                                    std::to_string(Rows) + " x " + std::to_string(Cols) + "): " + j.dump());
+                        }
+                        std::cout << "Deserializing " << nrVectorElements << " into " << Rows * Cols << " elements" << std::endl;
+                        for (Eigen::Index iIndex = 0; iIndex < Rows; ++iIndex) {
+                            for (Eigen::Index jIndex = 0; jIndex < Cols; ++jIndex) {
+                                data(iIndex, jIndex) = vectorData[iIndex * Cols + jIndex];
+                            }
+                        }
+                    } else if (Rows == -1 && Cols == -1) {
+                        data = T::Zero((Eigen::Index) nrVectorElements, 1);
+                        for (Eigen::Index iIndex = 0; iIndex < nrVectorElements; ++iIndex) {
+                            data(iIndex) = vectorData[iIndex];
+                        }
+                    } else if (Rows == -1) {
+                        int nrRows = nrVectorElements / Cols;
+                        if (Cols * nrRows != nrVectorElements) {
+                            throw std::runtime_error(
+                                    "Unable to deserialize json array data into a variable-row Eigen Matrix (" +
+                                    std::to_string(Rows) + " x " + std::to_string(Cols) + "): " + j.dump());
+                        }
+                        data = T::Zero(nrRows, Cols);
+                        for (Eigen::Index iIndex = 0; iIndex < nrVectorElements; ++iIndex) {
+                            data(iIndex) = vectorData[iIndex];
+                        }
+                    } else {
+                        assert(Cols == -1);
+                        int nrCols = nrVectorElements / Rows;
+                        if (Rows * nrCols != nrVectorElements) {
+                            throw std::runtime_error(
+                                    "Unable to deserialize json array data into a variable-columns Eigen Matrix (" +
+                                    std::to_string(Rows) + " x " + std::to_string(Cols) + "): " + j.dump());
+                        }
+                        data = T::Zero(Rows, nrCols);
+                        for (Eigen::Index iIndex = 0; iIndex < nrVectorElements; ++iIndex) {
+                            data(iIndex) = vectorData[iIndex];
+                        }
+                    }
+                    return;
+                }
                 throw std::runtime_error("Poorly formatted json data for EigenMatrixJsonSerializer: " + j.dump());
             }
 
@@ -331,5 +376,3 @@ namespace nlohmann {
         }
     };
 }
-
-#endif //ANDREIUTILS_UTILSJSONEIGEN_HPP
