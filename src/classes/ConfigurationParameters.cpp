@@ -59,6 +59,10 @@ bool ConfigurationParameters::operator!=(ConfigurationParameters const &other) c
     return !(*this == other);
 }
 
+bool ConfigurationParameters::empty() const {
+    return this->config.empty();
+}
+
 bool ConfigurationParameters::has(string const &parameterName) const {
     return this->config.contains(parameterName);
 }

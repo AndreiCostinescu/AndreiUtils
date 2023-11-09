@@ -28,6 +28,8 @@ namespace AndreiUtils {
 
         bool operator!=(ConfigurationParameters const &other) const;
 
+        [[nodiscard]] bool empty() const;
+
         [[nodiscard]] bool has(std::string const &parameterName) const;
 
         template<typename T>
