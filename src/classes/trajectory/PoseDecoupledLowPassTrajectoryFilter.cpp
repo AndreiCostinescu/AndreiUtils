@@ -22,7 +22,7 @@ PoseDecoupledLowPassTrajectoryFilter::PoseDecoupledLowPassTrajectoryFilter(doubl
         pFilter(), qFilter(make_shared<QuaternionLowPassFilter<double>>(qRange, qCenter)), filterPosition(false),
         filterOrientation(true) {}
 
-void PoseDecoupledLowPassTrajectoryFilter::filterInPlace(Trajectory *trajectory) {
+void PoseDecoupledLowPassTrajectoryFilter::filterInPlace(CartesianTrajectory *trajectory) {
     int index = 0;
     auto &poses = trajectory->getPoses();
     for (auto const &q: poses) {

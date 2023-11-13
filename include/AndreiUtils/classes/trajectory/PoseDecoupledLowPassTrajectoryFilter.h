@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <AndreiUtils/classes/trajectory/TrajectoryFilter.h>
+#include <AndreiUtils/classes/trajectory/CartesianTrajectoryFilter.h>
 #include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 
 namespace AndreiUtils {
-    class PoseDecoupledLowPassTrajectoryFilter : public TrajectoryFilter {
+    class PoseDecoupledLowPassTrajectoryFilter : public CartesianTrajectoryFilter {
     public:
         PoseDecoupledLowPassTrajectoryFilter(int pWindowSize, double qRange, double qCenter);
 
@@ -17,9 +17,9 @@ namespace AndreiUtils {
 
         PoseDecoupledLowPassTrajectoryFilter(double qRange, double qCenter);
 
-        using TrajectoryFilter::filterInPlace;
+        using CartesianTrajectoryFilter::filterInPlace;
 
-        void filterInPlace(Trajectory *trajectory) override;
+        void filterInPlace(CartesianTrajectory *trajectory) override;
 
     protected:
         bool filterPosition, filterOrientation;

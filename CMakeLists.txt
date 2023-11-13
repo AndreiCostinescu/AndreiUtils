@@ -232,7 +232,8 @@ if (USE_EIGEN)
     SET(UTILS_EIGEN
             src/utilsEigen.cpp src/utilsEigenGeometry.cpp src/utilsEigenLeastSquares.cpp src/utilsEigenSVD.cpp
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
-            src/classes/trajectory/Trajectory.cpp src/classes/trajectory/TrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
+            src/classes/trajectory/TrajectoryBase.cpp src/classes/trajectory/CartesianTrajectory.cpp
+            src/classes/trajectory/CartesianTrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
             src/classes/Symmetry.cpp
             src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
 endif ()
@@ -434,6 +435,13 @@ if (${USE_OPENMP})
 endif ()
 
 if (${USE_EIGEN})
+    set(EXECUTABLE TestAndreiUtilsEigen)
+    add_executable(${EXECUTABLE} testEigenFunctions.cpp)
+    target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+    if (${USE_OPENMP})
+        target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+    endif ()
+
     set(EXECUTABLE TestAndreiUtilsVector)
     add_executable(${EXECUTABLE} testVectorFunctions.cpp)
     target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
