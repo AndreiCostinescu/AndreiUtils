@@ -53,12 +53,12 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline int intRound(const T a) {
+    inline int intRound(T const &a) {
         return lround(a);
     }
 
     template<typename T>
-    inline bool less(const T a, const T b, double tol = 1e-9) {
+    inline bool less(T const &a, T const &b, double tol = 1e-9) {
         if (std::is_integral<T>::value) {
             return a < b;
         } else {
@@ -67,7 +67,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool lessEqual(const T a, const T b, double tol = 1e-9) {
+    inline bool lessEqual(T const &a, T const &b, double tol = 1e-9) {
         if (std::is_integral<T>::value) {
             return a <= b;
         } else {
@@ -76,7 +76,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool greater(const T a, const T b, double tol = 1e-9) {
+    inline bool greater(T const &a, T const &b, double tol = 1e-9) {
         if (std::is_integral<T>::value) {
             return a > b;
         } else {
@@ -85,7 +85,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool greaterEqual(const T a, const T b, double tol = 1e-9) {
+    inline bool greaterEqual(T const &a, T const &b, double tol = 1e-9) {
         if (std::is_integral<T>::value) {
             return a >= b;
         } else {
@@ -94,12 +94,12 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T fastAbs(const T x) {
+    inline T fastAbs(T const &x) {
         return (less<T>(x, 0) ? -x : x);
     }
 
     template<typename T>
-    inline bool equal(const T a, const T b, double tol = 1e-9) {
+    inline bool equal(T const &a, T const &b, double tol = 1e-9) {
         if (std::is_integral<T>::value) {
             return a == b;
         } else {
@@ -108,12 +108,12 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline T fastMin(const T a, const T b) {
+    inline T fastMin(T const &a, T const &b) {
         return (less<T>(a, b) ? a : b);
     }
 
     template<typename T>
-    inline T fastMax(const T a, const T b) {
+    inline T fastMax(T const &a, T const &b) {
         return (greater<T>(a, b) ? a : b);
     }
 
