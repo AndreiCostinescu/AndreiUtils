@@ -2,8 +2,7 @@
 // Created by Andrei on 27.10.22.
 //
 
-#ifndef ANDREIUTILS_UTILSJSON_HPP
-#define ANDREIUTILS_UTILSJSON_HPP
+#pragma once
 
 #include <AndreiUtils/classes/camera/ImageCaptureParametersWithIntrinsics.h>
 #include <AndreiUtils/classes/camera/ImageParameters.h>
@@ -78,6 +77,27 @@ namespace nlohmann {
             data.intrinsics = j.at("intrinsics").get<AndreiUtils::CameraIntrinsicParameters>();
         }
     };
-}
 
-#endif //ANDREIUTILS_UTILSJSON_HPP
+    template<typename T>
+    bool canConvertJsonTo(nlohmann::json const &j, T *res) {
+        try {
+            auto _res = j.get<T>();
+            if (res != nullptr) {
+                *res = _res;
+            }
+            return true;
+        } catch (nlohmann::json::exception const &e) {
+            return false;
+        }
+    }
+
+    template<typename T>
+    bool canConvertJsonTo(nlohmann::json const &j) {
+        return canConvertJsonTo<T>(j, nullptr);
+    }
+
+    template<typename T>
+    bool canConvertJsonTo(nlohmann::json const &j, T &res) {
+        return canConvertJsonTo<T>(j, &res);
+    }
+}
