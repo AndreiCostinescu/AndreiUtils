@@ -130,24 +130,6 @@ void testTypeCreator() {
     c.reset();
 }
 
-void testIntegralAndUnsignedTypes() {
-    cout << is_integral<bool>::value << endl;
-    cout << is_unsigned<bool>::value << endl;
-    cout << endl;
-    cout << is_integral<long long>::value << endl;
-    cout << is_integral<int64_t>::value << endl;
-    cout << endl;
-    cout << is_integral<unsigned long long>::value << endl;
-    cout << is_integral<uint64_t>::value << endl;
-    cout << endl;
-    cout << is_unsigned<long long>::value << endl;
-    cout << is_unsigned<int64_t>::value << endl;
-    cout << endl;
-    cout << is_unsigned<unsigned long long>::value << endl;
-    cout << is_unsigned<uint64_t>::value << endl;
-    cout << endl;
-}
-
 void testUnionFind() {
     UnionFind x;
     assert(x.numberOfDistinctComponents() == 0);
@@ -522,34 +504,6 @@ void testStringFindFunctions() {
     cout << a.rfind(b, 0) << endl;
 }
 
-void testInstanceOf() {
-    B_ b;
-    int _tmp = 1;
-    Test e(_tmp);
-    A_ *a = &b;
-    A_ c;
-
-    cout << "A is polymorphic? " << is_polymorphic<A_>::value << endl;
-    cout << "B is polymorphic? " << is_polymorphic<B_>::value << endl;
-    cout << "Test is polymorphic? " << is_polymorphic<Test>::value << endl;
-    cout << "A* is polymorphic? " << is_polymorphic<A_ *>::value << endl;
-    cout << "B* is polymorphic? " << is_polymorphic<B_ *>::value << endl;
-    cout << "Test* is polymorphic? " << is_polymorphic<Test *>::value << endl;
-
-    cout << "a instance of A?: " << instanceOf<A_>(a) << endl;
-    cout << "b instance of A?: " << instanceOf<A_>(b) << endl;
-    cout << "c instance of A?: " << instanceOf<A_>(c) << endl;
-    cout << "e instance of A?: " << instanceOf<A_>(e) << endl;
-    cout << "a instance of B?: " << instanceOf<B_>(a) << endl;
-    cout << "b instance of B?: " << instanceOf<B_>(b) << endl;
-    cout << "c instance of B?: " << instanceOf<B_>(c) << endl;
-    cout << "e instance of B?: " << instanceOf<B_>(e) << endl;
-    cout << "a instance of Test?: " << instanceOf<Test>(a) << endl;
-    cout << "b instance of Test?: " << instanceOf<Test>(b) << endl;
-    cout << "c instance of Test?: " << instanceOf<Test>(c) << endl;
-    cout << "e instance of Test?: " << instanceOf<Test>(e) << endl;
-}
-
 void testTypes() {
     int a = 24;
     int *aPtr = &a;
@@ -631,46 +585,6 @@ void testAnyType() {
     cout << x.get<string>() << endl;
 }
 
-template<typename T>
-struct type_name {
-    static string name() { return ""; }
-};
-
-template<>
-struct type_name<A_> {
-    static string name() { return "A"; }
-};
-
-template<>
-struct type_name<B_> {
-    static string name() { return "B"; }
-};
-
-template<>
-struct type_name<C_> {
-    static string name() { return "C"; }
-};
-
-template<>
-struct type_name<D_> {
-    static string name() { return "D"; }
-};
-
-template<typename T>
-struct tmp {
-    static string tmpF(T &t) {
-        return type_name<T>::name();
-    }
-};
-
-void testTypeTraitsWithPointers() {
-    A_ *a;
-    B_ b;
-    a = &b;
-    // cout << tmp::tmpF(b) << endl;
-    // cout << tmp::tmpF(a) << endl;
-}
-
 void testSurfaceTriangle() {
     checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
 }
@@ -684,7 +598,6 @@ int main() {
     // testStringAllocation();
     // testFloatSlidingWindow();
     // testTypeCreator();
-    // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
     // testDynamicCast();
@@ -693,7 +606,6 @@ int main() {
     // testRandom();
     // testInterpolation();
     // testStringFindFunctions();
-    // testInstanceOf();
     // testTypes();
     // testEigenMatrixAddSub();
     // testAnyType();
