@@ -14,6 +14,7 @@ namespace AndreiUtils {
                 typename std::conditional<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, void>::type>::type;
     };
 
+    // Can not create move or copy constructors because of the rd (random_device) member variable, which prohibits them
     template<typename T>
     class RandomNumberGenerator {
     public:

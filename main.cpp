@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/classes/AnyType.h>
+#include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
@@ -15,10 +16,6 @@
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
-#include <AndreiUtils/traits/median_computer_eigen.hpp>
-#include <AndreiUtils/utilsEigen.hpp>
-#include <AndreiUtils/utilsEigenGeometry.h>
-#include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
 #include <iostream>
@@ -85,13 +82,6 @@ void testFloatSlidingWindow() {
         }
         cout << endl;
         cout << "At i = " << i << ": median = " << sw.getMedian() << ", average = " << sw.getAverage() << endl;
-    }
-
-    SlidingWindow<Eigen::Vector3d> swEigen(11);
-    for (int i = 0; i < 20; i++) {
-        swEigen.addData(Vector3d((double) i, (double) (i * i), (double) (i * i * i)));
-        cout << "At i = " << i << ": median = " << swEigen.getMedian() << ", average = " << swEigen.getAverage()
-             << endl;
     }
 }
 
@@ -556,20 +546,6 @@ void testTypes() {
     VCPCU<int> x34 = std::move(aCVPtr);
 }
 
-void testEigenMatrixAddSub() {
-    Eigen::Matrix3d x;
-    x.setZero();
-    cout << addComponentWise<double>(x, -1) << endl;
-    Eigen::Vector4f y;
-    y.setZero();
-    cout << addComponentWise<float>(y, 4) << endl;
-
-    for (int i = 0; i < 10; i++) {
-        cout << sampleOrientation() << endl;
-        cout << sampleDirection().transpose() << endl;
-    }
-}
-
 void testAnyType() {
     AnyType x;
     x = 24;
@@ -585,8 +561,38 @@ void testAnyType() {
     cout << x.get<string>() << endl;
 }
 
-void testSurfaceTriangle() {
-    checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
+template<typename T>
+void testIntervalsPrivate() {
+    Interval<T> i(0, 1);
+    Interval<T> i2(std::move(Interval<T>::createFullRange()));
+    Interval<T> i3(-std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+    cout << i.createSampler().sample() << " || " << i2.createSampler().sample() << endl;
+    cout << std::numeric_limits<T>::min() << " vs. " << std::numeric_limits<T>::max() << " vs. "
+         << -std::numeric_limits<T>::max() << endl;
+    cout << (std::numeric_limits<T>::max() + 1) << " vs. " << (-std::numeric_limits<T>::max() - 1) << " vs. "
+         << (std::numeric_limits<T>::min() - 1) << endl;
+    cout << std::numeric_limits<T>::max() - (-std::numeric_limits<T>::max()) << endl;
+    cout << i.size() << " | " << i2.size() << " | " << i3.size() << endl;
+    RandomNumberGenerator<T> sampler = i.createSampler();
+    RandomNumberGenerator<T> sampler2 = i2.createSampler();
+    RandomNumberGenerator<T> sampler3 = i3.createSampler();
+    RandomNumberGenerator<T> sampler4(-std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+    RandomNumberGenerator<T> sampler5(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+    for (int iter = 0; iter < 10; ++iter) {
+        cout << sampler.sample() << " || " << sampler2.sample() << " || " << sampler3.sample() << " || "
+             << sampler4.sample() << " || " << sampler5.sample() << endl;
+    }
+}
+
+void testIntervals() {
+    testIntervalsPrivate<double>();
+    cout << endl << endl;
+    testIntervalsPrivate<float>();
+    cout << endl << endl;
+    testIntervalsPrivate<long long>();
+    cout << endl << endl;
+    testIntervalsPrivate<int>();
+    cout << endl << endl;
 }
 
 int main() {
@@ -607,9 +613,8 @@ int main() {
     // testInterpolation();
     // testStringFindFunctions();
     // testTypes();
-    // testEigenMatrixAddSub();
     // testAnyType();
-    testSurfaceTriangle();
+    testIntervals();
 
     return 0;
 }
