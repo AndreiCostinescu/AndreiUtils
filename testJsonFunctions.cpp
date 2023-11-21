@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/ConfigurationParameters.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/utilsJson.hpp>
 #include <iostream>
 
 using namespace AndreiUtils;
@@ -49,13 +50,47 @@ void testConfigurationParameters() {
     cout << tmp4.dump(4) << endl;
 }
 
+void testIntervalSerialization() {
+    auto i0 = IntervalD::createEmpty();
+    Interval<double> i1(20.5, 30.5);
+    Interval<int> i2(20, 30);
+    Interval<int> i3 = IntervalI::createFullRange();
+    auto i4 = IntervalD::createOnlyLowerBound(-4.5);
+    auto i5 = IntervalF::createOnlyUpperBound(5.4);
+    auto i6 = IntervalD::createOnlyUpperBound(5.4);
+    nlohmann::json j;
+    j["i0"] = i0;
+    j["i1"] = i1;
+    j["i2"] = i2;
+    j["i3"] = i3;
+    j["i4"] = i4;
+    j["i5"] = i5;
+    j["i6"] = i6;
+    cout << j.dump(4) << endl;
+    auto dI0 = j.at("i0").get<IntervalD>();
+    auto dI1 = j.at("i1").get<IntervalD>();
+    auto dI2 = j.at("i2").get<IntervalI>();
+    auto dI3 = j.at("i3").get<IntervalI>();
+    auto dI4 = j.at("i4").get<IntervalD>();
+    auto dI5 = j.at("i5").get<IntervalF>();
+    auto dI6 = j.at("i6").get<IntervalD>();
+    cout << dI0.toString() << endl;
+    cout << dI1.toString() << endl;
+    cout << dI2.toString() << endl;
+    cout << dI3.toString() << endl;
+    cout << dI4.toString() << endl;
+    cout << dI5.toString() << endl;
+    cout << dI6.toString() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // eigenJsonTesting();
     // testJsonNull();
     // testJsonArraySerialization();
-    testConfigurationParameters();
+    // testConfigurationParameters();
+    testIntervalSerialization();
 
     return 0;
 }

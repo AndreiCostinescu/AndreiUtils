@@ -21,36 +21,36 @@ namespace AndreiUtils {
         }
 
         [[nodiscard]] static Interval<T> createOnlyUpperBound(T maxValue) {
-            return Interval<T>(std::numeric_limits<T>::min(), std::move(maxValue));
+            return Interval<T>(std::numeric_limits<T>::min(), std::move(maxValue), true, false);
         }
 
         [[nodiscard]] static Interval<T> createOnlyLowerBound(T minValue) {
-            return Interval<T>(std::move(minValue), std::numeric_limits<T>::max());
+            return Interval<T>(std::move(minValue), std::numeric_limits<T>::max(), false, true);
         }
 
         [[nodiscard]] static Interval<T> createFullRange() {
             if (std::is_integral_v<T>) {
                 // divide by 2 to be able to sample from the interval without constant values
                 T minVal = std::numeric_limits<T>::min() / 2, maxVal = std::numeric_limits<T>::max() / 2;
-                return {minVal, maxVal};
+                return {minVal, maxVal, true, true};
             } else if (std::is_floating_point_v<T>) {
                 // divide by 2 to be able to sample from the interval without getting inf values
                 T maxVal = std::numeric_limits<T>::max() / 2;
-                return {-maxVal, maxVal};
+                return {-maxVal, maxVal, true, true};
             }
-            return {std::numeric_limits<T>::min(), std::numeric_limits<T>::max()};
+            return {std::numeric_limits<T>::min(), std::numeric_limits<T>::max(), true, true};
         }
 
-        Interval() : empty(true), minValue(), maxValue() {}
+        Interval() : empty(true), minValue(), maxValue(), infLower(false), infUpper(false) {}
 
-        Interval(T minValue, T maxValue) :
-                empty(AndreiUtils::greater<T>(this->minValue, this->maxValue)), minValue(std::move(minValue)),
-                maxValue(std::move(maxValue)) {}
+        Interval(T minValue, T maxValue) : Interval(std::move(minValue), std::move(maxValue), false, false) {}
 
-        Interval(Interval const &other) : empty(other.empty), minValue(other.minValue), maxValue(other.maxValue) {}
+        Interval(Interval const &other) : empty(other.empty), minValue(other.minValue), maxValue(other.maxValue),
+                                          infLower(other.infLower), infUpper(other.infUpper) {}
 
         Interval(Interval &&other) noexcept: empty(other.empty), minValue(std::move(other.minValue)),
-                                             maxValue(std::move(other.maxValue)) {}
+                                             maxValue(std::move(other.maxValue)), infLower(other.infLower),
+                                             infUpper(other.infUpper) {}
 
         virtual ~Interval() = default;
 
@@ -59,6 +59,8 @@ namespace AndreiUtils {
                 this->empty = other.empty;
                 this->minValue = other.minValue;
                 this->maxValue = other.maxValue;
+                this->infLower = other.infLower;
+                this->infUpper = other.infUpper;
             }
             return *this;
         }
@@ -68,14 +70,27 @@ namespace AndreiUtils {
                 this->empty = other.empty;
                 this->minValue = std::move(other.minValue);
                 this->maxValue = std::move(other.maxValue);
+                this->infLower = other.infLower;
+                this->infUpper = other.infUpper;
             }
             return *this;
         }
 
         bool operator==(Interval &&other) noexcept {
             // intervals are the same if they're both empty or if the bounds are the same
-            return !(this->empty ^ other.empty) && (this->empty || AndreiUtils::equal(this->minValue, other.minValue) &&
-                                                                   AndreiUtils::equal(this->maxValue, other.maxValue));
+            if (this->empty != other.empty || this->infLower != other.infLower || this->infUpper != other.infUpper) {
+                return false;
+            }
+            if (this->empty || this->infUpper && this->infLower) {
+                return true;
+            }
+            if (this->infUpper) {
+                return AndreiUtils::equal(this->minValue, other.minValue);
+            } else if (this->infLower) {
+                return AndreiUtils::equal(this->maxValue, other.maxValue);
+            }
+            return AndreiUtils::equal(this->minValue, other.minValue) &&
+                   AndreiUtils::equal(this->maxValue, other.maxValue);
         }
 
         bool operator!=(Interval &&other) noexcept {
@@ -119,16 +134,32 @@ namespace AndreiUtils {
             return this->empty;
         }
 
-        [[nodiscard]] T const &getMin() const {
+        [[nodiscard]] bool hasInfLowerBound() const {
+            return this->infLower;
+        }
+
+        [[nodiscard]] bool hasInfUpperBound() const {
+            return this->infUpper;
+        }
+
+        // no T const & as return type because of the inf-return
+        [[nodiscard]] T getMin() const {
             if (this->empty) {
                 throw std::runtime_error("There is no lower bound of an empty interval!");
+            }
+            if (this->infLower) {
+                return -std::numeric_limits<T>::infinity();
             }
             return this->minValue;
         }
 
-        [[nodiscard]] T const &getMax() const {
+        // no T const & as return type because of the inf-return
+        [[nodiscard]] T getMax() const {
             if (this->empty) {
                 throw std::runtime_error("There is no lower bound of an empty interval!");
+            }
+            if (this->infUpper) {
+                return std::numeric_limits<T>::infinity();
             }
             return this->maxValue;
         }
@@ -137,15 +168,28 @@ namespace AndreiUtils {
             if (this->empty) {
                 throw std::runtime_error("There is no size of an empty interval!");
             }
+            if (this->infUpper || this->infLower) {
+                return std::numeric_limits<T>::infinity();
+            }
             return this->maxValue - this->minValue;
         }
 
+        [[nodiscard]] std::string toString() const {
+            return (this->isEmpty() ? "[]" : "[" + std::to_string(this->getMin()) + ", " +
+                                             std::to_string(this->getMax()) + "]");
+        }
+
     protected:
-        double const minValue, maxValue;
-        bool const empty;  // empty is initialized after min- and maxValue; thus the constructor will assign the correct value to the empty field
+        Interval(T minValue, T maxValue, bool infLower, bool infUpper) :
+                empty(AndreiUtils::greater<T>(this->minValue, this->maxValue)), minValue(std::move(minValue)),
+                maxValue(std::move(maxValue)), infLower(infLower), infUpper(infUpper) {}
+
+        double minValue, maxValue;
+        bool empty;  // empty is initialized after min- and maxValue; thus the constructor will assign the correct value to the empty field
+        bool infLower, infUpper;
     };
 
+    using IntervalF = Interval<float>;
     using IntervalD = Interval<double>;
-    using IntervalF =  Interval<float>;
     using IntervalI = Interval<int>;
 }

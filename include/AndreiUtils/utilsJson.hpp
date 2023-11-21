@@ -6,6 +6,7 @@
 
 #include <AndreiUtils/classes/camera/ImageCaptureParametersWithIntrinsics.h>
 #include <AndreiUtils/classes/camera/ImageParameters.h>
+#include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/json.hpp>
 
 namespace nlohmann {
@@ -75,6 +76,60 @@ namespace nlohmann {
         static void from_json(nlohmann::json const &j, T &data) {
             data.ImageCaptureParameters::setFromOther(j.get<AndreiUtils::ImageCaptureParameters>());
             data.intrinsics = j.at("intrinsics").get<AndreiUtils::CameraIntrinsicParameters>();
+        }
+    };
+
+    template<typename T>
+    struct adl_serializer<AndreiUtils::Interval<T>> {
+        using Type = AndreiUtils::Interval<T>;
+
+        static void to_json(nlohmann::json &j, Type const &data) {
+            std::vector<nlohmann::json> interval;
+            if (!data.isEmpty()) {
+                if (data.hasInfLowerBound()) {
+                    interval.emplace_back("-inf");
+                } else {
+                    interval.emplace_back(data.getMin());
+                }
+                if (data.hasInfUpperBound()) {
+                    interval.emplace_back("inf");
+                } else {
+                    interval.emplace_back(data.getMax());
+                }
+            }
+            j = interval;
+        }
+
+        static void from_json(nlohmann::json const &j, Type &data) {
+            auto interval = j.get<std::vector<nlohmann::json>>();
+            if (interval.empty()) {
+                data = Type::createEmpty();
+                return;
+            }
+            assert(interval.size() == 2);
+            bool infLower = false, infUpper = false;
+            T minValue, maxValue;
+            if (interval[0].is_string()) {
+                assert(interval[0].get<std::string>() == "-inf");
+                infLower = true;
+            } else {
+                minValue = interval[0].get<T>();
+            }
+            if (interval[1].is_string()) {
+                assert(interval[1].get<std::string>() == "inf");
+                infUpper = true;
+            } else {
+                maxValue = interval[1].get<T>();
+            }
+            if (infLower && infUpper) {
+                data = Type::createFullRange();
+            } else if (infLower) {
+                data = Type::createOnlyUpperBound(std::move(maxValue));
+            } else if (infUpper) {
+                data = Type::createOnlyLowerBound(std::move(minValue));
+            } else {
+                data = Type(std::move(minValue), std::move(maxValue));
+            }
         }
     };
 
