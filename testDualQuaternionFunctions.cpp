@@ -4,9 +4,11 @@
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
+#include <AndreiUtils/classes/ParametrizablePose.hpp>
 #include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/classes/PoseDecoupledInterpolator.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
+#include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>
@@ -342,7 +344,8 @@ void testSerialization() {
 
 void isInverseEqualToConjugate() {
     auto q = Posed::createFromCoefficients(
-            vector<double>{-0.43199914013303337,0.005861429276844252,-0.009443289551921301,-0.9018075871533447,-0.008872428920675416,0.05361516740646428,0.33881962340539384,0.0010507467228607378});
+            vector<double>{-0.43199914013303337, 0.005861429276844252, -0.009443289551921301, -0.9018075871533447,
+                           -0.008872428920675416, 0.05361516740646428, 0.33881962340539384, 0.0010507467228607378});
     cout << q << endl;
     cout << "Inverse/Conjugate test: " << q.inverse() << " vs. " << q.conjugate() << endl;
 
@@ -350,6 +353,56 @@ void isInverseEqualToConjugate() {
             vector<double>{0.52044, -0.493292, 0.468434, 0.516116, -0.00216926, -0.0154996, -0.0159906, 0.00188652});
     cout << q << endl;
     cout << "Inverse/Conjugate test: " << q.inverse() << " vs. " << q.conjugate() << endl;
+}
+
+void testParametrizablePose() {
+    ParametrizablePosed poseSpace;
+    IntervalD p1Range(-1, 1);
+    poseSpace.addComposition(make_shared<NoPoseVariation<double>>(Posed::one));
+    poseSpace.addComposition(make_shared<VariableAngleInAxisAngle<double>>(xAxis3d<double>()),
+                             {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableDegreeAngleInAxisAngle<double>>(zAxis3d<double>()),
+                             {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableAxisInAxisAngle<double>>(M_PI_4),
+                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableAxisInDegreeAxisAngle<double>>(60),
+                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableXAxisTranslation<double>>(Eigen::Vector3d::Ones() * 3),
+                             {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableYAxisTranslation<double>>(Eigen::Vector3d::Ones() * 2),
+                             {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableZAxisTranslation<double>>(Eigen::Vector3d::Ones() * -1),
+                             {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableXYAxisTranslation<double>>(Eigen::Vector3d::Ones() * -4),
+                             {"p1", "p1"}, {p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableYZAxisTranslation<double>>(Eigen::Vector3d::Ones() * -12),
+                             {"p1", "p1"}, {p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableXZAxisTranslation<double>>(Eigen::Vector3d::Ones() * 42),
+                             {"p1", "p1"}, {p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableTranslation<double>>(),
+                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
+    cout << poseSpace.sample().toString() << endl;
+    printMapConvertValue<std::string, std::shared_ptr<ParametrizablePosed::ParametrizablePoseParameter>>(
+            poseSpace.getParameters(),
+            [](std::shared_ptr<ParametrizablePosed::ParametrizablePoseParameter> const &param) -> string {
+                return printVectorToString<std::pair<int, int>>(
+                        param->functionAndParameterIndex, [](std::pair<int, int> const &p) -> string {
+                            return "[" + to_string(p.first) + ", " + to_string(p.second) + "]";
+                        });
+            });
+    nlohmann::json j = poseSpace;
+    cout << j.dump(4) << endl;
+    auto poseSpaceDeserialized = j.get<ParametrizablePosed>();
+    printMapConvertValue<std::string, std::shared_ptr<ParametrizablePosed::ParametrizablePoseParameter>>(
+            poseSpaceDeserialized.getParameters(),
+            [](std::shared_ptr<ParametrizablePosed::ParametrizablePoseParameter> const &param) -> string {
+                return printVectorToString<std::pair<int, int>>(
+                        param->functionAndParameterIndex, [](std::pair<int, int> const &p) -> string {
+                            return "[" + to_string(p.first) + ", " + to_string(p.second) + "]";
+                        });
+            });
+    nlohmann::json j2 = poseSpaceDeserialized;
+    cout << j2.dump(4) << endl;
 }
 
 int main() {
@@ -367,8 +420,9 @@ int main() {
     // playgroundGraspCupFromTop();
     // playgroundGraspCupFromSide();
     // play();
-    testSerialization();
+    // testSerialization();
     // isInverseEqualToConjugate();
+    testParametrizablePose();
 
     return 0;
 }
