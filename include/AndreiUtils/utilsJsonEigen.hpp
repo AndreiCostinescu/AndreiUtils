@@ -225,43 +225,52 @@ namespace nlohmann {
             if (j.size() == 8 && j[0].is_number()) {
                 q.fromCoefficients(j.get<std::vector<T>>());
                 return;
-            }
-            q = AndreiUtils::Posed::one;
-            for (auto const &jIntern: j.get<std::vector<nlohmann::json>>()) {
-                if (!jIntern.is_array()) {
-                    throw std::runtime_error("Can't convert non-internal-arrays to poses");
-                }
-                if (jIntern.size() != 3 && jIntern.size() != 4) {
-                    throw std::runtime_error("Unknown format for pose-composition data!");
-                }
-                if (jIntern.size() == 4) {
-                    // Assume quaternion components
-                    q = q.addRotationRight(Eigen::Quaterniond{jIntern[0].get<double>(), jIntern[1].get<double>(),
-                                                              jIntern[2].get<double>(), jIntern[3].get<double>()});
-                } else if (jIntern[0].is_number()) {
-                    q = q.addTranslation(
-                            {jIntern[0].get<double>(), jIntern[1].get<double>(), jIntern[2].get<double>()});
-                } else if (!jIntern[0].is_string()) {
-                    throw std::runtime_error("Can't convert non-string-starting arrays to orientations");
-                } else {
+            } else if (j.size() == 4 && j[0].is_number()) {
+                // Assume quaternion components
+                q = AndreiUtils::DualQuaternion<T>(
+                        Eigen::Quaternion<T>{j[0].get<T>(), j[1].get<T>(), j[2].get<T>(), j[3].get<T>()},
+                        Eigen::Matrix<T, 3, 1>::Zero());
+                return;
+            } else if (j.size() == 3 || (j.size() == 4 && j[0].is_string())) {
+                if (j[0].is_number()) {
+                    q = AndreiUtils::DualQuaternion<T>(AndreiUtils::qIdentity<T>(), Eigen::Matrix<T, 3, 1>(
+                            j[0].get<T>(), j[1].get<T>(), j[2].get<T>()));
+                    return;
+                } else if (j[0].is_string()) {
                     double angle;
-                    if (jIntern[0].get<std::string>() == "d") {
-                        angle = AndreiUtils::deg2Rad(jIntern[1].get<double>());
-                    } else if (jIntern[0].get<std::string>() == "r") {
-                        angle = jIntern[1].get<double>();
+                    if (j[0].get<std::string>() == "d") {
+                        angle = AndreiUtils::deg2Rad(j[1].get<T>());
+                    } else if (j[0].get<std::string>() == "r") {
+                        angle = j[1].get<T>();
                     } else {
                         throw std::runtime_error("Unknown angle-axis angle format specification!");
                     }
-                    Eigen::Vector3d axis;
-                    if (!jIntern[2].is_array() || jIntern[2].size() != 3) {
+                    Eigen::Matrix<T, 3, 1> axis;
+                    if (!j[2].is_array() || j[2].size() != 3) {
                         throw std::runtime_error("Can't convert angle-axis axis if it's not a 3-dim vector data!");
                     }
-                    axis.x() = jIntern[2][0].get<double>();
-                    axis.y() = jIntern[2][1].get<double>();
-                    axis.z() = jIntern[2][2].get<double>();
+                    axis.x() = j[2][0].get<T>();
+                    axis.y() = j[2][1].get<T>();
+                    axis.z() = j[2][2].get<T>();
                     axis.normalize();
-                    q = q.addRotationRight(Eigen::Quaterniond(Eigen::AngleAxisd(angle, axis)));
+                    Eigen::Matrix<T, 3, 1> translation;
+                    if (j.size() == 4) {
+                        if (!j[3].is_array() || j[3].size() != 3) {
+                            throw std::runtime_error(
+                                    "Can't convert angle-axis-translation if not a 3-dim vector data!");
+                        }
+                        translation = Eigen::Matrix<T, 3, 1>(j[3][0].get<T>(), j[3][1].get<T>(), j[3][2].get<T>());
+                    } else {
+                        translation.setZero();
+                    }
+                    q = AndreiUtils::DualQuaternion<T>(Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, axis)),
+                                                       translation);
+                    return;
                 }
+            }
+            q = AndreiUtils::Posed::one;
+            for (auto const &jIntern: j.get<std::vector<nlohmann::json>>()) {
+                q *= jIntern.get<AndreiUtils::DualQuaternion<T>>();
             }
         }
     };
