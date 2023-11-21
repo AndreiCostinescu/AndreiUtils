@@ -143,6 +143,8 @@ namespace nlohmann {
             return true;
         } catch (nlohmann::json::exception const &e) {
             return false;
+        } catch (std::exception const &e) {
+            return false;
         }
     }
 
