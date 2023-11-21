@@ -43,7 +43,7 @@ namespace AndreiUtils {
 
         Interval() : empty(true), minValue(), maxValue(), infLower(false), infUpper(false) {}
 
-        Interval(T minValue, T maxValue) : Interval(std::move(minValue), std::move(maxValue), false, false) {}
+        explicit Interval(T minValue, T maxValue) : Interval(std::move(minValue), std::move(maxValue), false, false) {}
 
         Interval(Interval const &other) : empty(other.empty), minValue(other.minValue), maxValue(other.maxValue),
                                           infLower(other.infLower), infUpper(other.infUpper) {}
@@ -76,7 +76,7 @@ namespace AndreiUtils {
             return *this;
         }
 
-        bool operator==(Interval &&other) noexcept {
+        bool operator==(Interval const &other) noexcept {
             // intervals are the same if they're both empty or if the bounds are the same
             if (this->empty != other.empty || this->infLower != other.infLower || this->infUpper != other.infUpper) {
                 return false;
@@ -93,7 +93,7 @@ namespace AndreiUtils {
                    AndreiUtils::equal(this->maxValue, other.maxValue);
         }
 
-        bool operator!=(Interval &&other) noexcept {
+        bool operator!=(Interval const &other) noexcept {
             return !this->operator==(other);
         }
 
