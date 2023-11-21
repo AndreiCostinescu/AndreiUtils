@@ -29,11 +29,11 @@ namespace AndreiUtils {
         }
 
         [[nodiscard]] static Interval<T> createFullRange() {
-            if (std::is_integral_v<T>) {
+            if (std::is_integral<T>::value) {
                 // divide by 2 to be able to sample from the interval without constant values
                 T minVal = std::numeric_limits<T>::min() / 2, maxVal = std::numeric_limits<T>::max() / 2;
                 return {minVal, maxVal, true, true};
-            } else if (std::is_floating_point_v<T>) {
+            } else if (std::is_floating_point<T>::value) {
                 // divide by 2 to be able to sample from the interval without getting inf values
                 T maxVal = std::numeric_limits<T>::max() / 2;
                 return {-maxVal, maxVal, true, true};
