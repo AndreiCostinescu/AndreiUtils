@@ -22,6 +22,8 @@ namespace AndreiUtils {
         static const bool value = true;
     };
 
-    template<typename _Tp>
-    inline constexpr bool is_numeric_v = is_numeric<_Tp>::value;
+    #if __cplusplus > 201402L
+    template<typename T>
+    inline constexpr bool is_numeric_v = is_numeric<T>::value;
+    #endif
 }
