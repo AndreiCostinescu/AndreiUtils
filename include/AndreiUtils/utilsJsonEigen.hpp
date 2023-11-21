@@ -4,17 +4,15 @@
 
 #pragma once
 
-#include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/ParametrizablePose.hpp>
 #include <AndreiUtils/classes/SuperCube.hpp>
 #include <AndreiUtils/classes/Symmetry.h>
 #include <AndreiUtils/classes/motion/MotionDeviceCaptureParameters.h>
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
-#include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
 #include <complex>
-#include <Eigen/Dense>
 #include <string>
 #include <vector>
 
