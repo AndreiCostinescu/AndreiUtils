@@ -2,13 +2,90 @@
 // Created by Andrei on 21-Jan-22.
 //
 
-#ifndef ANDREIUTILS_TYPECREATOR_HPP
-#define ANDREIUTILS_TYPECREATOR_HPP
+#pragma once
 
 #include <AndreiUtils/utilsMap.hpp>
 #include <memory>
 
 namespace AndreiUtils {
+    template<class TypeID, class Type, class... CreatorArgumentsTypes>
+    class VariableConfigurableUniqueTypeCreatorWithID {
+    public:
+        VariableConfigurableUniqueTypeCreatorWithID() = default;
+
+        virtual ~VariableConfigurableUniqueTypeCreatorWithID() {
+            this->typeCreators.clear();
+        };
+
+        virtual void registerTypeCreator(
+                TypeID const &typeId, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)> typeCreator,
+                bool errorOnReplace) {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
+            }
+            this->registerTypeCreator(typeId, std::move(typeCreator));
+        }
+
+        virtual void registerTypeCreator(TypeID const &typeId,
+                                         std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)> typeCreator) {
+            this->typeCreators[typeId] = std::move(typeCreator);
+        }
+
+        virtual void mergeTypeCreators(
+                VariableConfigurableUniqueTypeCreatorWithID<TypeID, Type, CreatorArgumentsTypes...> const &other,
+                bool withOverwrite) {
+            for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
+                if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
+                    this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
+                }
+            }
+        }
+
+        virtual std::unique_ptr<Type> createType(TypeID const &typeId, CreatorArgumentsTypes... config) const {
+            return mapGet(this->typeCreators, typeId)(config...);
+        }
+
+        virtual std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)>> const &
+        getRegisteredTypes() const {
+            return this->typeCreators;
+        }
+
+        virtual std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)>> &getRegisteredTypes() {
+            return this->typeCreators;
+        }
+
+        [[nodiscard]] bool isTypeRegistered(TypeID const &type) const {
+            return AndreiUtils::mapContains(this->typeCreators, type);
+        }
+
+    protected:
+        std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)>> typeCreators;
+    };
+
+    template<class Type, class... CreatorArgumentsTypes>
+    class VariableConfigurableUniqueTypeCreator
+            : public VariableConfigurableUniqueTypeCreatorWithID<std::string, Type, CreatorArgumentsTypes...> {
+        using Parent = VariableConfigurableUniqueTypeCreatorWithID<std::string, Type, CreatorArgumentsTypes...>;
+    public:
+        VariableConfigurableUniqueTypeCreator() = default;
+
+        virtual ~VariableConfigurableUniqueTypeCreator() = default;
+
+        void registerTypeCreator(
+                std::string const &typeId, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)> typeCreator,
+                bool errorOnReplace) override {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
+            }
+            this->registerTypeCreator(typeId, std::move(typeCreator));
+        }
+
+        void registerTypeCreator(std::string const &typeId,
+                                 std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)> typeCreator) override {
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
+        }
+    };
+
     template<class TypeID, class Type, class CreatorArgumentsType>
     class ConfigurableUniqueTypeCreatorWithID {
     public:
@@ -66,6 +143,7 @@ namespace AndreiUtils {
     template<class Type, class CreatorArgumentsType>
     class ConfigurableUniqueTypeCreator
             : public ConfigurableUniqueTypeCreatorWithID<std::string, Type, CreatorArgumentsType> {
+        using Parent = ConfigurableUniqueTypeCreatorWithID<std::string, Type, CreatorArgumentsType>;
     public:
         ConfigurableUniqueTypeCreator() = default;
 
@@ -83,8 +161,7 @@ namespace AndreiUtils {
 
         void registerTypeCreator(std::string const &typeId,
                                  std::function<std::unique_ptr<Type>(CreatorArgumentsType)> typeCreator) override {
-            ConfigurableUniqueTypeCreatorWithID<std::string, Type, CreatorArgumentsType>::registerTypeCreator(
-                    typeId, std::move(typeCreator));
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
         }
     };
 
@@ -137,6 +214,7 @@ namespace AndreiUtils {
     template<class Type>
     class ConfigurableUniqueTypeCreator<Type, void>
             : public ConfigurableUniqueTypeCreatorWithID<std::string, Type, void> {
+        using Parent = ConfigurableUniqueTypeCreatorWithID<std::string, Type, void>;
     public:
         ConfigurableUniqueTypeCreator() = default;
 
@@ -153,11 +231,88 @@ namespace AndreiUtils {
 
         void registerTypeCreator(std::string const &typeId,
                                  std::function<std::unique_ptr<Type>()> typeCreator) override {
-            ConfigurableUniqueTypeCreatorWithID<std::string, Type, void>::registerTypeCreator(typeId,
-                                                                                              std::move(typeCreator));
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
         }
     };
 
+
+    template<class TypeID, class Type, class... CreatorArgumentsTypes>
+    class VariableConfigurableSharedTypeCreatorWithID {
+    public:
+        VariableConfigurableSharedTypeCreatorWithID() = default;
+
+        virtual ~VariableConfigurableSharedTypeCreatorWithID() {
+            this->typeCreators.clear();
+        };
+
+        virtual void registerTypeCreator(
+                TypeID const &typeId, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)> typeCreator,
+                bool errorOnReplace) {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Given typeID is already a registered type! Not replacing!");
+            }
+            this->registerTypeCreator(typeId, std::move(typeCreator));
+        }
+
+        virtual void registerTypeCreator(TypeID const &typeId,
+                                         std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)> typeCreator) {
+            this->typeCreators[typeId] = std::move(typeCreator);
+        }
+
+        virtual void mergeTypeCreators(
+                VariableConfigurableSharedTypeCreatorWithID<TypeID, Type, CreatorArgumentsTypes...> const &other,
+                bool withOverwrite) {
+            for (const auto &otherTypeCreator: other.getRegisteredTypes()) {
+                if (withOverwrite || !mapContains(this->typeCreators, otherTypeCreator.first)) {
+                    this->typeCreators[otherTypeCreator.first] = otherTypeCreator.second;
+                }
+            }
+        }
+
+        virtual std::shared_ptr<Type> createType(TypeID const &typeId, CreatorArgumentsTypes... config) const {
+            return mapGet(this->typeCreators, typeId)(config...);
+        }
+
+        virtual std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)>> const &
+        getRegisteredTypes() const {
+            return this->typeCreators;
+        }
+
+        virtual std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)>> &getRegisteredTypes() {
+            return this->typeCreators;
+        }
+
+        [[nodiscard]] bool isTypeRegistered(TypeID const &type) const {
+            return AndreiUtils::mapContains(this->typeCreators, type);
+        }
+
+    protected:
+        std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)>> typeCreators;
+    };
+
+    template<class Type, class... CreatorArgumentsTypes>
+    class VariableConfigurableSharedTypeCreator
+            : public VariableConfigurableSharedTypeCreatorWithID<std::string, Type, CreatorArgumentsTypes...> {
+        using Parent = VariableConfigurableSharedTypeCreatorWithID<std::string, Type, CreatorArgumentsTypes...>;
+    public:
+        VariableConfigurableSharedTypeCreator() = default;
+
+        virtual ~VariableConfigurableSharedTypeCreator() = default;
+
+        void registerTypeCreator(
+                std::string const &typeId, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)> typeCreator,
+                bool errorOnReplace) override {
+            if (mapContains(this->typeCreators, typeId) && errorOnReplace) {
+                throw std::runtime_error("Type " + typeId + " is already a registered type! Not replacing!");
+            }
+            this->registerTypeCreator(typeId, std::move(typeCreator));
+        }
+
+        void registerTypeCreator(std::string const &typeId,
+                                 std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)> typeCreator) override {
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
+        }
+    };
 
     template<class TypeID, class Type, class CreatorArgumentsType>
     class ConfigurableSharedTypeCreatorWithID {
@@ -216,6 +371,7 @@ namespace AndreiUtils {
     template<class Type, class CreatorArgumentsType>
     class ConfigurableSharedTypeCreator
             : public ConfigurableSharedTypeCreatorWithID<std::string, Type, CreatorArgumentsType> {
+        using Parent = ConfigurableSharedTypeCreatorWithID<std::string, Type, CreatorArgumentsType>;
     public:
         ConfigurableSharedTypeCreator() = default;
 
@@ -233,8 +389,7 @@ namespace AndreiUtils {
 
         void registerTypeCreator(std::string const &typeId,
                                  std::function<std::shared_ptr<Type>(CreatorArgumentsType)> typeCreator) override {
-            ConfigurableSharedTypeCreatorWithID<std::string, Type, CreatorArgumentsType>::registerTypeCreator(
-                    typeId, std::move(typeCreator));
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
         }
     };
 
@@ -287,6 +442,7 @@ namespace AndreiUtils {
     template<class Type>
     class ConfigurableSharedTypeCreator<Type, void>
             : public ConfigurableSharedTypeCreatorWithID<std::string, Type, void> {
+        using Parent = ConfigurableSharedTypeCreatorWithID<std::string, Type, void>;
     public:
         ConfigurableSharedTypeCreator() = default;
 
@@ -303,8 +459,7 @@ namespace AndreiUtils {
 
         void registerTypeCreator(std::string const &typeId,
                                  std::function<std::shared_ptr<Type>()> typeCreator) override {
-            ConfigurableSharedTypeCreatorWithID<std::string, Type, void>::registerTypeCreator(typeId,
-                                                                                              std::move(typeCreator));
+            Parent::registerTypeCreator(typeId, std::move(typeCreator));
         }
     };
 
@@ -321,5 +476,3 @@ namespace AndreiUtils {
     template<class Type>
     using UniqueTypeCreator = ConfigurableUniqueTypeCreator<Type, void>;
 }
-
-#endif //ANDREIUTILS_TYPECREATOR_HPP
