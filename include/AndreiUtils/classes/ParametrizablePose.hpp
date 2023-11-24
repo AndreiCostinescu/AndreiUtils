@@ -729,7 +729,7 @@ namespace AndreiUtils {
         // with this method one can set values for every pose-composition-function parameter individually
         // (without the constraint that same parameters need to have the same value!)
         [[nodiscard]] AndreiUtils::DualQuaternion<T> getSetEveryFunctionParameter(
-                std::map<int, std::vector<T>> const &parameters) {
+                std::map<int, std::vector<T>> const &parameters) const {
             AndreiUtils::DualQuaternion<T> res = AndreiUtils::DualQuaternion<T>::one;
             for (int i = 0; i < this->poseComposition.size(); ++i) {
                 std::vector<T> *poseCompositionParameters;
@@ -743,7 +743,7 @@ namespace AndreiUtils {
         }
 
         // with this method one can set values for every parameter (same parameters will have the same value)
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::map<std::string, T> const &parameterValues) {
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::map<std::string, T> const &parameterValues) const {
             AndreiUtils::DualQuaternion<T> res = AndreiUtils::DualQuaternion<T>::one;
             for (int functionIndex = 0; functionIndex < this->poseComposition.size(); ++functionIndex) {
                 std::vector<T> poseCompositionParameters;
@@ -760,7 +760,7 @@ namespace AndreiUtils {
             return res;
         }
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> get() {
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> get() const {
             return this->get({});
         }
 
