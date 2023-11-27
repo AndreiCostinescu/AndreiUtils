@@ -24,7 +24,7 @@ namespace AndreiUtils {
     }
 
     template<>
-    void serialize<std::string>(std::ofstream &out, std::string const &data) {
+    inline void serialize<std::string>(std::ofstream &out, std::string const &data) {
         serialize(out, data.c_str(), data.size());
         char nullEnding = 0;
         out.write((char *) &nullEnding, sizeof(char));
@@ -42,7 +42,7 @@ namespace AndreiUtils {
     }
 
     template<>
-    void deserialize<std::string>(std::ifstream &in, std::string &data) {
+    inline void deserialize<std::string>(std::ifstream &in, std::string &data) {
         std::string localData;
         char datum;
         while (true) {
