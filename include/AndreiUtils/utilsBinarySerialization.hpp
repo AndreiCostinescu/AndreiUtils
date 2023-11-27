@@ -2,8 +2,7 @@
 // Created by Andrei on 16.10.22.
 //
 
-#ifndef ANDREIUTILS_UTILSBINARYSERIALIZATION_HPP
-#define ANDREIUTILS_UTILSBINARYSERIALIZATION_HPP
+#pragma once
 
 #include <AndreiUtils/utilsFiles.h>
 #include <fstream>
@@ -17,7 +16,11 @@ namespace AndreiUtils {
 
     template<typename T>
     void serialize(std::ofstream &out, T const *data, size_t nrElements) {
-        out.write((char *) &data, sizeof(T) * nrElements);
+        for (size_t i = 0; i < nrElements; ++i) {
+            // this (with the right specialization) can be used to solve the networkToHost int/long byte problem
+            serialize(out, data[i]);
+        }
+        // out.write((char *) &data, sizeof(T) * nrElements);
     }
 
     template<typename T>
@@ -40,11 +43,13 @@ namespace AndreiUtils {
 
     template<typename T>
     void deserialize(std::ifstream &in, T *data, size_t nrElements) {
-        for (size_t i = 0; i < nrElements; i++) {
+        for (size_t i = 0; i < nrElements; ++i) {
+            // this (with the right specialization) can be used to solve the networkToHost int/long byte problem
             deserialize(in, data[i]);
         }
     }
 
+    // upon success, make sure you delete the returned data allocated with new[]
     template<typename T>
     T *deserialize(std::ifstream &in, size_t nrElements) {
         T *data = new T[nrElements];
@@ -57,5 +62,3 @@ namespace AndreiUtils {
         return data;
     }
 }
-
-#endif //ANDREIUTILS_UTILSBINARYSERIALIZATION_HPP

@@ -540,4 +540,11 @@ if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
 endif ()
 
+set(EXECUTABLE TestBinarySerialization)
+add_executable(${EXECUTABLE} testSerialization.cpp)
+target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+if (${USE_OPENMP})
+    target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+endif ()
+
 include(cmake/installConfig.cmake)
