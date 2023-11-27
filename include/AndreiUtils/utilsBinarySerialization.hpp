@@ -23,6 +23,13 @@ namespace AndreiUtils {
         // out.write((char *) &data, sizeof(T) * nrElements);
     }
 
+    template<>
+    void serialize<std::string>(std::ofstream &out, std::string const &data) {
+        serialize(out, data.c_str(), data.size());
+        char nullEnding = 0;
+        out.write((char *) &nullEnding, sizeof(char));
+    }
+
     template<typename T>
     void deserialize(std::ifstream &in, T &data) {
         if (reachedTheEndOfTheFile(in)) {
@@ -32,6 +39,20 @@ namespace AndreiUtils {
         if (in.fail()) {
             throw std::runtime_error("Deserializing binary data failed!");
         }
+    }
+
+    template<>
+    void deserialize<std::string>(std::ifstream &in, std::string &data) {
+        std::string localData;
+        char datum;
+        while (true) {
+            deserialize(in, datum);
+            if (datum == 0) {
+                break;
+            }
+            localData += datum;
+        }
+        data = localData;
     }
 
     template<typename T>

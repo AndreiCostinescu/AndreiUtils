@@ -24,10 +24,23 @@ void testSerializeInt() {
     cout << "Vector inside which deserialization occurs after: " << printVectorToString(deserialize, 5) << endl;
 }
 
+void testSerializeString() {
+    string s = "Hello World!";
+    ofstream fout("tmp.bin", std::ios::binary);
+    serialize(fout, s);
+    fout.close();
+
+    ifstream fin("tmp.bin", std::ios::binary);
+    string sDeserialized;
+    AndreiUtils::deserialize(fin, sDeserialized);
+    cout << "Deserialized string: " << sDeserialized << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    testSerializeInt();
+    // testSerializeInt();
+    testSerializeString();
 
     return 0;
 }
