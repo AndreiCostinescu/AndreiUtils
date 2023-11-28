@@ -188,6 +188,9 @@ SET(UTILS_TIME src/utilsTime.cpp)
 # depends on UTILS_STRINGS (utilsStrings.h)
 SET(UTILS_FILES src/utilsFiles.cpp)
 
+# depends on UTILS_FILES (utilsStrings.h)
+set(UTILS_SERIALIZATION src/utilsBinarySerialization.cpp)
+
 SET(UTILS_CAMERA src/utilsCamera.cpp)
 
 set(UTILS_CLASSES_CAMERA
@@ -293,6 +296,7 @@ set(GENERAL_UTILS
         ${UTILS_TIME}
 
         ${UTILS_FILES}
+        ${UTILS_SERIALIZATION}
 
         ${UTILS_CAMERA}
 
