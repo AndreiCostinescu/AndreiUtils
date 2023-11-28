@@ -99,8 +99,6 @@ namespace nlohmann {
                                     "Unable to deserialize json array data into an Eigen Matrix (" +
                                     std::to_string(Rows) + " x " + std::to_string(Cols) + "): " + j.dump());
                         }
-                        std::cout << "Deserializing " << nrVectorElements << " into " << Rows * Cols << " elements"
-                                  << std::endl;
                         for (Eigen::Index iIndex = 0; iIndex < Rows; ++iIndex) {
                             for (Eigen::Index jIndex = 0; jIndex < Cols; ++jIndex) {
                                 data(iIndex, jIndex) = vectorData[iIndex * Cols + jIndex];
