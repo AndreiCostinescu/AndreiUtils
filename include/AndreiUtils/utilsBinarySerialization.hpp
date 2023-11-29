@@ -5,10 +5,58 @@
 #pragma once
 
 #include <AndreiUtils/utilsFiles.h>
+#include <AndreiUtils/utilsMap.hpp>
 #include <fstream>
 #include <stdexcept>
 
 namespace AndreiUtils {
+    // DEFINITIONS
+
+    template<typename T>
+    void serialize(std::ofstream &out, T const &data);
+
+    template<typename T>
+    void serialize(std::ofstream &out, T const *data, size_t nrElements);
+
+    template<typename T>
+    void deserialize(std::ifstream &in, T &data);
+
+    template<typename T>
+    T deserialize(std::ifstream &in);
+
+    template<typename T>
+    void deserialize(std::ifstream &in, T *data, size_t nrElements);
+
+    // upon success, make sure you delete the returned data allocated with new[]
+    template<typename T>
+    T *deserialize(std::ifstream &in, size_t nrElements);
+
+    // DEFINITION SPECIALIZATIONS
+
+    void serialize(std::ofstream &out, std::string const &data);
+
+    template<typename T>
+    void serialize(std::ofstream &out, std::vector<T> const &data);
+
+    template<typename T1, typename T2>
+    void serialize(std::ofstream &out, std::pair<T1, T2> const &data);
+
+    template<typename T1, typename T2, typename C, typename A>
+    void serialize(std::ofstream &out, std::map<T1, T2, C, A> const &data);
+
+    void deserialize(std::ifstream &in, std::string &data);
+
+    template<typename T>
+    void deserialize(std::ifstream &in, std::vector<T> &data);
+
+    template<typename T1, typename T2>
+    void deserialize(std::ifstream &in, std::pair<T1, T2> &data);
+
+    template<typename T1, typename T2, typename C, typename A>
+    void deserialize(std::ifstream &in, std::map<T1, T2, C, A> &data);
+
+    // IMPLEMENTATIONS
+
     template<typename T>
     void serialize(std::ofstream &out, T const &data) {
         out.write((char *) &data, sizeof(T));
@@ -23,13 +71,6 @@ namespace AndreiUtils {
         // out.write((char *) &data, sizeof(T) * nrElements);
     }
 
-    template<>
-    inline void serialize<std::string>(std::ofstream &out, std::string const &data) {
-        serialize(out, data.c_str(), data.size());
-        char nullEnding = 0;
-        out.write((char *) &nullEnding, sizeof(char));
-    }
-
     template<typename T>
     void deserialize(std::ifstream &in, T &data) {
         if (reachedTheEndOfTheFile(in)) {
@@ -39,20 +80,6 @@ namespace AndreiUtils {
         if (in.fail()) {
             throw std::runtime_error("Deserializing binary data failed!");
         }
-    }
-
-    template<>
-    inline void deserialize<std::string>(std::ifstream &in, std::string &data) {
-        std::string localData;
-        char datum;
-        while (true) {
-            deserialize(in, datum);
-            if (datum == 0) {
-                break;
-            }
-            localData += datum;
-        }
-        data = localData;
     }
 
     template<typename T>
@@ -81,5 +108,56 @@ namespace AndreiUtils {
             throw e;
         }
         return data;
+    }
+
+    // IMPLEMENTATION SPECIALIZATIONS
+
+    template<typename T>
+    void serialize(std::ofstream &out, std::vector<T> const &data) {
+        serialize(out, (int) data.size());
+        serialize(out, data.data(), data.size());
+    }
+
+    template<typename T1, typename T2>
+    void serialize(std::ofstream &out, std::pair<T1, T2> const &data) {
+        serialize(out, data.first);
+        serialize(out, data.second);
+    }
+
+    template<typename T1, typename T2, typename C, typename A>
+    void serialize(std::ofstream &out, std::map<T1, T2, C, A> const &data) {
+        serialize(out, (int) data.size());
+        for (auto const &datum: data) {
+            serialize(out, datum.first);
+            serialize(out, datum.second);
+        }
+    }
+
+    template<typename T>
+    void deserialize(std::ifstream &in, std::vector<T> &data) {
+        data.clear();
+        int nrElements = deserialize<int>(in);
+        for (int i = 0; i < nrElements; ++i) {
+            data.emplace_back(deserialize<T>(in));
+        }
+    }
+
+    template<typename T1, typename T2>
+    void deserialize(std::ifstream &in, std::pair<T1, T2> &data) {
+        deserialize(in, data.first);
+        deserialize(in, data.second);
+    }
+
+    template<typename T1, typename T2, typename C, typename A>
+    void deserialize(std::ifstream &in, std::map<T1, T2, C, A> &data) {
+        data.clear();
+        int nrElements = deserialize<int>(in);
+        for (int i = 0; i < nrElements; ++i) {
+            T1 key;
+            T2 value;
+            deserialize(in, key);
+            deserialize(in, value);
+            mapEmplace(data, key, value);
+        }
     }
 }
