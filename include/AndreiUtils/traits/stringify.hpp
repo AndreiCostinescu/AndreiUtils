@@ -39,6 +39,15 @@ namespace AndreiUtils {
     };
 
     template<>
+    struct stringify<std::string> {
+        using T = std::string;
+
+        static std::string to_string(T const &datum) {
+            return datum;
+        }
+    };
+
+    template<>
     struct stringify<bool> {
         using T = bool;
 
