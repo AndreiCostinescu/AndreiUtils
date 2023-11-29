@@ -12,23 +12,7 @@
 
 namespace AndreiUtils {
     template<typename T>
-    struct stringify {};
-
-    template<typename Type>
-    struct stringify<Type *> {
-        using T = Type *;
-
-        static std::string to_string(T const &datum) {
-            std::stringstream ss;
-            ss << datum;
-            return ss.str();
-        }
-    };
-
-    template<typename Type>
-    struct stringify<Type const *> {
-        using T = Type const *;
-
+    struct stringify {
         static std::string to_string(T const &datum) {
             std::stringstream ss;
             ss << datum;
@@ -55,128 +39,11 @@ namespace AndreiUtils {
     };
 
     template<>
-    struct stringify<std::string> {
-        using T = std::string;
-
-        static std::string to_string(T const &datum) {
-            return datum;
-        }
-    };
-
-    template<>
     struct stringify<bool> {
         using T = bool;
 
         static std::string to_string(T const &datum) {
             return datum ? "true" : "false";
-        }
-    };
-
-    template<>
-    struct stringify<char> {
-        using T = char;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<unsigned char> {
-        using T = unsigned char;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<short> {
-        using T = short;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<unsigned short> {
-        using T = unsigned short;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<int> {
-        using T = int;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<unsigned int> {
-        using T = unsigned int;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<long> {
-        using T = long;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<unsigned long> {
-        using T = unsigned long;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<long long> {
-        using T = long long;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<unsigned long long> {
-        using T = unsigned long long;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<float> {
-        using T = float;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
-        }
-    };
-
-    template<>
-    struct stringify<double> {
-        using T = double;
-
-        static std::string to_string(T const &datum) {
-            return std::to_string(datum);
         }
     };
 

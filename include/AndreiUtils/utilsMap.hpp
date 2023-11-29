@@ -5,6 +5,7 @@
 #pragma once
 
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
+#include <AndreiUtils/traits/stringify.hpp>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -187,9 +188,7 @@ namespace AndreiUtils {
     [[nodiscard]] T2 &mapGet(std::map<T1, T2, C, A> &container, T1 const &key) {
         auto data = container.find(key);
         if (data == container.end()) {
-            std::stringstream ss;
-            ss << key;
-            throw std::runtime_error("Element " + ss.str() + " not found in map!");
+            throw std::runtime_error("Element " + AndreiUtils::toString(key) + " not found in map!");
         }
         return data->second;
     }
@@ -198,9 +197,7 @@ namespace AndreiUtils {
     [[nodiscard]] T2 &mapGet(std::map<T1 *, T2, C, A> &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
-            std::stringstream ss;
-            ss << key;
-            throw std::runtime_error("Element " + ss.str() + " not found in map!");
+            throw std::runtime_error("Element " + AndreiUtils::toString(key) + " not found in map!");
         }
         return data->second;
     }
@@ -209,9 +206,7 @@ namespace AndreiUtils {
     [[nodiscard]] T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
         auto const &data = container.find(key);
         if (data == container.end()) {
-            std::stringstream ss;
-            ss << key;
-            throw std::runtime_error("Element " + ss.str() + " not found in map!");
+            throw std::runtime_error("Element " + AndreiUtils::toString(key) + " not found in map!");
         }
         return data->second;
     }
@@ -220,9 +215,7 @@ namespace AndreiUtils {
     [[nodiscard]] T2 const &mapGet(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
-            std::stringstream ss;
-            ss << key;
-            throw std::runtime_error("Element " + ss.str() + " not found in map!");
+            throw std::runtime_error("Element " + AndreiUtils::toString(key) + " not found in map!");
         }
         return data->second;
     }
