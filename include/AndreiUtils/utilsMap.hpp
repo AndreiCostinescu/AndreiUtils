@@ -187,7 +187,9 @@ namespace AndreiUtils {
     [[nodiscard]] T2 &mapGet(std::map<T1, T2, C, A> &container, T1 const &key) {
         auto data = container.find(key);
         if (data == container.end()) {
-            throw std::runtime_error("Element not found in map!");
+            std::stringstream ss;
+            ss << key;
+            throw std::runtime_error("Element " + ss.str() + " not found in map!");
         }
         return data->second;
     }
@@ -196,7 +198,9 @@ namespace AndreiUtils {
     [[nodiscard]] T2 &mapGet(std::map<T1 *, T2, C, A> &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
-            throw std::runtime_error("Element not found in map!");
+            std::stringstream ss;
+            ss << key;
+            throw std::runtime_error("Element " + ss.str() + " not found in map!");
         }
         return data->second;
     }
@@ -205,7 +209,9 @@ namespace AndreiUtils {
     [[nodiscard]] T2 const &mapGet(std::map<T1, T2, C, A> const &container, T1 const &key) {
         auto const &data = container.find(key);
         if (data == container.end()) {
-            throw std::runtime_error("Element not found in map!");
+            std::stringstream ss;
+            ss << key;
+            throw std::runtime_error("Element " + ss.str() + " not found in map!");
         }
         return data->second;
     }
@@ -214,7 +220,9 @@ namespace AndreiUtils {
     [[nodiscard]] T2 const &mapGet(std::map<T1 *, T2, C, A> const &container, T1 const *key) {
         auto data = container.find(const_cast<T1 *>(key));
         if (data == container.end()) {
-            throw std::runtime_error("Element not found in map!");
+            std::stringstream ss;
+            ss << key;
+            throw std::runtime_error("Element " + ss.str() + " not found in map!");
         }
         return data->second;
     }
