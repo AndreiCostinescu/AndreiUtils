@@ -255,3 +255,18 @@ string AndreiUtils::padRightUntil(string const &s, string const &pad, int string
     }
     return s + (pad * nrRepeats);
 }
+
+string AndreiUtils::removeLeft(string const &s, long count) {
+    if (s.size() <= count) {
+        return "";
+    }
+    return {s.begin() + count, s.end()};
+}
+
+string AndreiUtils::removeRight(string const &s, long count) {
+    if (s.size() <= count) {
+        return "";
+    }
+    return {s.begin(), s.end() - count};
+}
+

@@ -2,8 +2,7 @@
 // Created by Andrei on 26.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSSTRING_H
-#define ANDREIUTILS_UTILSSTRING_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -62,6 +61,8 @@ namespace AndreiUtils {
 
     std::string padRightUntil(std::string const &s, std::string const &pad, int stringSizeLimit = -1,
                               long padTimes = -1);
-}
 
-#endif //ANDREIUTILS_UTILSSTRING_H
+    std::string removeLeft(std::string const &s, long count);
+
+    std::string removeRight(std::string const &s, long count);
+}
