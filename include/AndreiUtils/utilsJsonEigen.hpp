@@ -440,7 +440,7 @@ namespace nlohmann {
         static void from_json(nlohmann::json const &j, AndreiUtils::ParametrizablePose<T> &q) {
             q.clear();  // <- clear previous data in the parametrizable pose
             AndreiUtils::DualQuaternion<T> resPose;
-            if (canConvertJsonTo<AndreiUtils::DualQuaternion<T>>(j, resPose)) {
+            if (AndreiUtils::canConvertJsonTo<AndreiUtils::DualQuaternion<T>>(j, resPose)) {
                 q.addComposition(std::make_shared<AndreiUtils::NoPoseVariation<T>>(resPose));
                 return;
             }
@@ -451,7 +451,7 @@ namespace nlohmann {
                     throw std::runtime_error("Can not deserialize a pose-function from a non-array datum!");
                 }
                 AndreiUtils::DualQuaternion<T> poseRes;
-                if (canConvertJsonTo<AndreiUtils::DualQuaternion<T>>(poseFunction, poseRes)) {
+                if (AndreiUtils::canConvertJsonTo<AndreiUtils::DualQuaternion<T>>(poseFunction, poseRes)) {
                     q.addComposition(std::make_shared<AndreiUtils::NoPoseVariation<T>>(poseRes));
                 } else if (poseFunction.size() == 3) {
                     Eigen::Matrix<T, 3, 1> axis;

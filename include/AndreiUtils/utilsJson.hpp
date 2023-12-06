@@ -132,7 +132,9 @@ namespace nlohmann {
             }
         }
     };
+}
 
+namespace AndreiUtils {
     template<typename T>
     bool canConvertJsonTo(nlohmann::json const &j, T *res) {
         try {
