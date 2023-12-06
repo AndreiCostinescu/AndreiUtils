@@ -3,6 +3,8 @@
 //
 
 #include <AndreiUtils/traits/stringify.hpp>
+#include <AndreiUtils/utilsString.h>
+#include <cassert>
 #include <iostream>
 
 using namespace std;
@@ -37,10 +39,23 @@ void testStringifyTypes() {
     cout << AndreiUtils::toString(v) << endl;
 }
 
+void testStringRemove() {
+    string s = "Hello World!";
+    string rem = "lo World!";
+    string rem2 = "Hello World";
+    assert(AndreiUtils::removeLeft(s, 0) == s);
+    assert(AndreiUtils::removeRight(s, 0) == s);
+    assert(AndreiUtils::removeLeft(s, 3) == rem);
+    assert(AndreiUtils::removeRight(s, 1) == rem2);
+    assert(AndreiUtils::removeLeft(s, 12).empty());
+    assert(AndreiUtils::removeRight(s, 12).empty());
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    testStringifyTypes();
+    // testStringifyTypes();
+    testStringRemove();
 
     return 0;
 }

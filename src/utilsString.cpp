@@ -257,6 +257,9 @@ string AndreiUtils::padRightUntil(string const &s, string const &pad, int string
 }
 
 string AndreiUtils::removeLeft(string const &s, long count) {
+    if (count <= 0) {
+        return s;
+    }
     if (s.size() <= count) {
         return "";
     }
@@ -264,6 +267,9 @@ string AndreiUtils::removeLeft(string const &s, long count) {
 }
 
 string AndreiUtils::removeRight(string const &s, long count) {
+    if (count <= 0) {
+        return s;
+    }
     if (s.size() <= count) {
         return "";
     }
