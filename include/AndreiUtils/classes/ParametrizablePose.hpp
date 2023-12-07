@@ -727,7 +727,7 @@ namespace AndreiUtils {
         }
 
         // with this method one can set values for every pose-composition-function parameter individually
-        // (without the constraint that same parameters need to have the same value!)
+        // (without the constraint that parameters with the same name need to have the same value!)
         [[nodiscard]] AndreiUtils::DualQuaternion<T> getSetEveryFunctionParameter(
                 std::map<int, std::vector<T>> const &parameters) const {
             AndreiUtils::DualQuaternion<T> res = AndreiUtils::DualQuaternion<T>::one;
@@ -766,6 +766,10 @@ namespace AndreiUtils {
 
         [[nodiscard]] std::map<std::string, std::shared_ptr<ParametrizablePoseParameter>> const &getParameters() const {
             return this->parameterNameAssignment;
+        }
+
+        [[nodiscard]] size_t parameterCount() const {
+            return this->parameterNameAssignment.size();
         }
 
     protected:
