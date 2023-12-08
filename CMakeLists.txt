@@ -237,7 +237,7 @@ if (USE_EIGEN)
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
             src/classes/trajectory/TrajectoryBase.cpp src/classes/trajectory/CartesianTrajectory.cpp
             src/classes/trajectory/CartesianTrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
-            src/classes/Symmetry.cpp
+            src/classes/Symmetry.cpp src/classes/ParametrizablePoseParameters.cpp
             src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
 endif ()
 

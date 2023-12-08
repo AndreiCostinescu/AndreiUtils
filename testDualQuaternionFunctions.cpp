@@ -5,6 +5,7 @@
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/classes/ParametrizablePose.hpp>
+#include <AndreiUtils/classes/ParametrizablePoseParameters.hpp>
 #include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/classes/PoseDecoupledInterpolator.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
