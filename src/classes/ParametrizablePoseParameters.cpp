@@ -6,7 +6,7 @@
 
 using namespace AndreiUtils;
 
-std::string ParameterOperation::getCacheEntryString(OperationType const &operationType) {
+std::string OperationType::convertOperationTypeToString(OperationType::OperationTypeEnum const &operationType) {
     switch (operationType) {
         case VALUE:
             return "v";
@@ -30,155 +30,139 @@ std::string ParameterOperation::getCacheEntryString(OperationType const &operati
             return "qNorm";
         case ORIENTATION_ANGLE:
             return "qAngle";
-        case ORIENTATION_AXIS_X_X:
-            return "q_x_x";
-        case ORIENTATION_AXIS_X_Y:
-            return "q_x_y";
-        case ORIENTATION_AXIS_X_Z:
-            return "q_x_z";
-        case ORIENTATION_AXIS_Y_X:
-            return "q_y_x";
-        case ORIENTATION_AXIS_Y_Y:
-            return "q_y_y";
-        case ORIENTATION_AXIS_Y_Z:
-            return "q_y_z";
-        case ORIENTATION_AXIS_Z_X:
-            return "q_z_x";
-        case ORIENTATION_AXIS_Z_Y:
-            return "q_z_y";
-        case ORIENTATION_AXIS_Z_Z:
-            return "q_z_z";
-        case DELTA_ORIENTATION_AXIS_X_X:
-            return "delta_q_x_x";
-        case DELTA_ORIENTATION_AXIS_X_Y:
-            return "delta_q_x_y";
-        case DELTA_ORIENTATION_AXIS_X_Z:
-            return "delta_q_x_z";
-        case DELTA_ORIENTATION_AXIS_Y_X:
-            return "delta_q_y_x";
-        case DELTA_ORIENTATION_AXIS_Y_Y:
-            return "delta_q_y_y";
-        case DELTA_ORIENTATION_AXIS_Y_Z:
-            return "delta_q_y_z";
-        case DELTA_ORIENTATION_AXIS_Z_X:
-            return "delta_q_z_x";
-        case DELTA_ORIENTATION_AXIS_Z_Y:
-            return "delta_q_z_y";
-        case DELTA_ORIENTATION_AXIS_Z_Z:
-            return "delta_q_z_z";
+        case ORIENTATION_AXIS_X:
+            return "qAxisX";
+        case ORIENTATION_AXIS_Y:
+            return "qAxisY";
+        case ORIENTATION_AXIS_Z:
+            return "qAxisZ";
+        case DELTA_TRANSLATION:
+            return "deltaT";
+        case DELTA_ORIENTATION:
+            return "deltaQ";
+        case DELTA_POSE:
+            return "deltaP";
         default: {
             throw std::runtime_error("Unknown operation type to cache: " + std::to_string(operationType));
         }
     }
 }
 
-ParameterOperation::OperationType ParameterOperation::operationReduction(
-        ParameterOperation::OperationType const &operationType) {
-    switch (operationType) {
-        case ORIENTATION_AXIS_X_X:
-        case ORIENTATION_AXIS_Y_X:
-        case ORIENTATION_AXIS_Z_X:
-            return TRANSLATION_X;
-        case ORIENTATION_AXIS_X_Y:
-        case ORIENTATION_AXIS_Y_Y:
-        case ORIENTATION_AXIS_Z_Y:
-            return TRANSLATION_Y;
-        case ORIENTATION_AXIS_X_Z:
-        case ORIENTATION_AXIS_Y_Z:
-        case ORIENTATION_AXIS_Z_Z:
-            return TRANSLATION_Z;
-        case DELTA_ORIENTATION_AXIS_X_X:
-            return ORIENTATION_AXIS_X_X;
-        case DELTA_ORIENTATION_AXIS_X_Y:
-            return ORIENTATION_AXIS_X_Y;
-        case DELTA_ORIENTATION_AXIS_X_Z:
-            return ORIENTATION_AXIS_X_Z;
-        case DELTA_ORIENTATION_AXIS_Y_X:
-            return ORIENTATION_AXIS_Y_X;
-        case DELTA_ORIENTATION_AXIS_Y_Y:
-            return ORIENTATION_AXIS_Y_Y;
-        case DELTA_ORIENTATION_AXIS_Y_Z:
-            return ORIENTATION_AXIS_Y_Z;
-        case DELTA_ORIENTATION_AXIS_Z_X:
-            return ORIENTATION_AXIS_Z_X;
-        case DELTA_ORIENTATION_AXIS_Z_Y:
-            return ORIENTATION_AXIS_Z_Y;
-        case DELTA_ORIENTATION_AXIS_Z_Z:
-            return ORIENTATION_AXIS_Z_Z;
-        default: {
-            throw std::runtime_error(
-                    "Operation " + ParameterOperation::getCacheEntryString(operationType) + " is not reducible!");
-        }
-    }
-}
-
-ParameterOperation::ParameterOperation(nlohmann::json const &operationConfig) {
-    assert(operationConfig.contains("op") &&
-           (operationConfig.contains("parameter") || operationConfig.contains("parameters")));
-    if (operationConfig.contains("parameter")) {
-        this->parameterIndices.emplace_back(operationConfig.at("parameter").get<int>());
-    } else {
-        assert(operationConfig.contains("parameters"));
-        this->parameterIndices = operationConfig.at("parameters").get<std::vector<int>>();
-    }
-    std::string stringOp = operationConfig.at("op").get<std::string>();
+OperationType::OperationTypeEnum OperationType::convertStringToOperationType(std::string const &stringOp) {
+    OperationType::OperationTypeEnum operation;
     if (stringOp == "tx") {
-        this->operation = TRANSLATION_X;
+        operation = TRANSLATION_X;
     } else if (stringOp == "ty") {
-        this->operation = TRANSLATION_Y;
+        operation = TRANSLATION_Y;
     } else if (stringOp == "tz") {
-        this->operation = TRANSLATION_Z;
+        operation = TRANSLATION_Z;
     } else if (stringOp == "tNorm") {
-        this->operation = TRANSLATION_NORM;
+        operation = TRANSLATION_NORM;
     } else if (stringOp == "qw") {
-        this->operation = ORIENTATION_W;
+        operation = ORIENTATION_W;
     } else if (stringOp == "qx") {
-        this->operation = ORIENTATION_X;
+        operation = ORIENTATION_X;
     } else if (stringOp == "qy") {
-        this->operation = ORIENTATION_Y;
+        operation = ORIENTATION_Y;
     } else if (stringOp == "qz") {
-        this->operation = ORIENTATION_Z;
+        operation = ORIENTATION_Z;
     } else if (stringOp == "qNorm") {
-        this->operation = ORIENTATION_NORM;
+        operation = ORIENTATION_NORM;
     } else if (stringOp == "qAngle") {
-        this->operation = ORIENTATION_ANGLE;
-    } else if (stringOp == "q_x_x") {
-        this->operation = ORIENTATION_AXIS_X_X;
-    } else if (stringOp == "q_x_y") {
-        this->operation = ORIENTATION_AXIS_X_Y;
-    } else if (stringOp == "q_x_z") {
-        this->operation = ORIENTATION_AXIS_X_Z;
-    } else if (stringOp == "q_y_x") {
-        this->operation = ORIENTATION_AXIS_Y_X;
-    } else if (stringOp == "q_y_y") {
-        this->operation = ORIENTATION_AXIS_Y_Y;
-    } else if (stringOp == "q_y_z") {
-        this->operation = ORIENTATION_AXIS_Y_Z;
-    } else if (stringOp == "q_z_x") {
-        this->operation = ORIENTATION_AXIS_Z_X;
-    } else if (stringOp == "q_z_y") {
-        this->operation = ORIENTATION_AXIS_Z_Y;
-    } else if (stringOp == "q_z_z") {
-        this->operation = ORIENTATION_AXIS_Z_Z;
-    } else if (stringOp == "delta_q_x_x") {
-        this->operation = DELTA_ORIENTATION_AXIS_X_X;
-    } else if (stringOp == "delta_q_x_y") {
-        this->operation = DELTA_ORIENTATION_AXIS_X_Y;
-    } else if (stringOp == "delta_q_x_z") {
-        this->operation = DELTA_ORIENTATION_AXIS_X_Z;
-    } else if (stringOp == "delta_q_y_x") {
-        this->operation = DELTA_ORIENTATION_AXIS_Y_X;
-    } else if (stringOp == "delta_q_y_y") {
-        this->operation = DELTA_ORIENTATION_AXIS_Y_Y;
-    } else if (stringOp == "delta_q_y_z") {
-        this->operation = DELTA_ORIENTATION_AXIS_Y_Z;
-    } else if (stringOp == "delta_q_z_x") {
-        this->operation = DELTA_ORIENTATION_AXIS_Z_X;
-    } else if (stringOp == "delta_q_z_y") {
-        this->operation = DELTA_ORIENTATION_AXIS_Z_Y;
-    } else if (stringOp == "delta_q_z_z") {
-        this->operation = DELTA_ORIENTATION_AXIS_Z_Z;
+        operation = ORIENTATION_ANGLE;
+    } else if (stringOp == "qAxisX") {
+        operation = ORIENTATION_AXIS_X;
+    } else if (stringOp == "qAxisY") {
+        operation = ORIENTATION_AXIS_Y;
+    } else if (stringOp == "qAxisZ") {
+        operation = ORIENTATION_AXIS_Z;
+    } else if (stringOp == "deltaT") {
+        operation = DELTA_TRANSLATION;
+    } else if (stringOp == "deltaQ") {
+        operation = DELTA_ORIENTATION;
+    } else if (stringOp == "deltaP") {
+        operation = DELTA_POSE;
     } else {
         throw std::runtime_error("Unknown pose operation to apply on parameter: " + stringOp);
     }
+    return operation;
+}
+
+PoseParameterType::PoseParameterTypeEnum OperationType::operationTypePropagation(
+        OperationType::OperationTypeEnum const &operation,
+        std::vector<PoseParameterType::PoseParameterTypeEnum> const &inputTypes) {
+    switch (operation) {
+        case VALUE: {
+            if (inputTypes.size() != 1 || inputTypes[0] != PoseParameterType::VALUE) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::VALUE;
+        }
+        case TRANSLATION_X:
+        case TRANSLATION_Y:
+        case TRANSLATION_Z:
+        case TRANSLATION_NORM: {
+            if (inputTypes.size() != 1 ||
+                (inputTypes[0] != PoseParameterType::TRANSLATION && inputTypes[0] != PoseParameterType::POSE &&
+                 inputTypes[0] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::VALUE;
+        }
+        case ORIENTATION_W:
+        case ORIENTATION_X:
+        case ORIENTATION_Y:
+        case ORIENTATION_Z:
+        case ORIENTATION_NORM:
+        case ORIENTATION_ANGLE: {
+            if (inputTypes.size() != 1 ||
+                (inputTypes[0] != PoseParameterType::ORIENTATION && inputTypes[0] != PoseParameterType::POSE &&
+                 inputTypes[0] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::VALUE;
+        }
+        case ORIENTATION_AXIS_X:
+        case ORIENTATION_AXIS_Y:
+        case ORIENTATION_AXIS_Z: {
+            if (inputTypes.size() != 1 ||
+                (inputTypes[0] != PoseParameterType::ORIENTATION && inputTypes[0] != PoseParameterType::POSE &&
+                 inputTypes[0] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::TRANSLATION;
+        }
+        case DELTA_TRANSLATION: {
+            if (inputTypes.size() != 2 ||
+                (inputTypes[0] != PoseParameterType::TRANSLATION && inputTypes[0] != PoseParameterType::POSE &&
+                 inputTypes[0] != PoseParameterType::EXTERNAL_POSE) ||
+                (inputTypes[1] != PoseParameterType::TRANSLATION && inputTypes[1] != PoseParameterType::POSE &&
+                 inputTypes[1] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::TRANSLATION;
+        }
+        case DELTA_ORIENTATION: {
+            if (inputTypes.size() != 2 ||
+                (inputTypes[0] != PoseParameterType::ORIENTATION && inputTypes[0] != PoseParameterType::POSE &&
+                 inputTypes[0] != PoseParameterType::EXTERNAL_POSE) ||
+                (inputTypes[1] != PoseParameterType::ORIENTATION && inputTypes[1] != PoseParameterType::POSE &&
+                 inputTypes[1] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::ORIENTATION;
+        }
+        case DELTA_POSE: {
+            if (inputTypes.size() != 2 ||
+                (inputTypes[0] != PoseParameterType::POSE && inputTypes[0] != PoseParameterType::EXTERNAL_POSE) ||
+                (inputTypes[1] != PoseParameterType::POSE && inputTypes[1] != PoseParameterType::EXTERNAL_POSE)) {
+                return PoseParameterType::EMPTY;
+            }
+            return PoseParameterType::POSE;
+        }
+        default: {
+            throw std::runtime_error("Can not apply operation: " + std::to_string(operation));
+        }
+    }
+    return PoseParameterType::EMPTY;
 }
