@@ -74,26 +74,29 @@ namespace AndreiUtils {
     template<typename T>
     class PoseParameter {
     public:
-        PoseParameter() : val(), parameterType(PoseParameterType::EMPTY), externalPose(nullptr) {}
+        PoseParameter() : parameterType(PoseParameterType::EMPTY) {}
 
-        explicit PoseParameter(T val) : val(std::move(val)), parameterType(PoseParameterType::VALUE),
-                                        externalPose(nullptr) {}
+        explicit PoseParameter(T val) :
+                val(std::make_shared<T>(std::move(val))), parameterType(PoseParameterType::VALUE) {}
 
         explicit PoseParameter(Eigen::Matrix<T, 3, 1> t) :
-                val(), t(std::move(t)), parameterType(PoseParameterType::TRANSLATION), externalPose(nullptr) {}
+                t(std::make_shared<Eigen::Matrix<T, 3, 1>>(std::move(t))),
+                parameterType(PoseParameterType::TRANSLATION) {}
 
         explicit PoseParameter(Eigen::Quaternion<T> q) :
-                val(), q(std::move(q)), parameterType(PoseParameterType::ORIENTATION), externalPose(nullptr) {}
+                q(std::make_shared<Eigen::Quaternion<T>>(std::move(q))),
+                parameterType(PoseParameterType::ORIENTATION) {}
 
         explicit PoseParameter(AndreiUtils::DualQuaternion<T> p) :
-                val(), parameterType(PoseParameterType::POSE), p(std::move(p)), externalPose(nullptr) {}
+                p(std::make_shared<AndreiUtils::DualQuaternion<T>>(std::move(p))),
+                parameterType(PoseParameterType::POSE) {}
 
         explicit PoseParameter(std::shared_ptr<ExternalPoseInterface<T>> ref) :
-                val(), externalPose(std::move(ref)), parameterType(PoseParameterType::EXTERNAL_POSE) {}
+                externalPose(std::move(ref)), parameterType(PoseParameterType::EXTERNAL_POSE) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> getPoseFromPoseData() const {
             if (this->parameterType == PoseParameterType::POSE) {
-                return this->p;
+                return *this->p;
             } else if (this->parameterType == PoseParameterType::EXTERNAL_POSE) {
                 return this->externalPose->getPose();
             }
@@ -127,16 +130,16 @@ namespace AndreiUtils {
             std::string cacheEntry = parameterName + " -> v";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
                 assert(cachedParameter->parameterType == PoseParameterType::VALUE);
-                return cachedParameter->val;
+                return *cachedParameter->val;
             }
             if (this->parameterType != PoseParameterType::VALUE) {
                 throw std::runtime_error(
                         "Can not return value from a " + std::to_string(this->parameterType) + " parameter type!");
             }
             if (cache != nullptr) {
-                mapEmplace(*cache, cacheEntry, this->val);
+                mapEmplace(*cache, cacheEntry, *this->val);
             }
-            return this->val;
+            return *this->val;
         }
 
         [[nodiscard]] PoseParameter<T> getValueParameter(
@@ -170,7 +173,7 @@ namespace AndreiUtils {
             std::string cacheEntry = parameterName + " -> t";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
                 assert(cachedParameter->parameterType == PoseParameterType::TRANSLATION);
-                return cachedParameter->t;
+                return *cachedParameter->t;
             }
             if (this->parameterType != PoseParameterType::TRANSLATION &&
                 this->parameterType != PoseParameterType::POSE &&
@@ -181,9 +184,9 @@ namespace AndreiUtils {
 
             if (this->parameterType == PoseParameterType::TRANSLATION) {
                 if (cache != nullptr) {
-                    mapEmplace(*cache, cacheEntry, this->t);
+                    mapEmplace(*cache, cacheEntry, *this->t);
                 }
-                return this->t;
+                return *this->t;
             }
 
             auto pose = this->getPose(cache, parameterName);
@@ -225,7 +228,7 @@ namespace AndreiUtils {
             std::string cacheEntry = parameterName + " -> q";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
                 assert(cachedParameter->parameterType == PoseParameterType::ORIENTATION);
-                return cachedParameter->q;
+                return *cachedParameter->q;
             }
             if (this->parameterType != PoseParameterType::ORIENTATION &&
                 this->parameterType != PoseParameterType::POSE &&
@@ -236,9 +239,9 @@ namespace AndreiUtils {
 
             if (this->parameterType == PoseParameterType::ORIENTATION) {
                 if (cache != nullptr) {
-                    mapEmplace(*cache, cacheEntry, this->q);
+                    mapEmplace(*cache, cacheEntry, *this->q);
                 }
-                return this->q;
+                return *this->q;
             }
 
             auto pose = this->getPose(cache, parameterName);
@@ -280,7 +283,7 @@ namespace AndreiUtils {
             std::string cacheEntry = parameterName + " -> p";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
                 assert(cachedParameter->parameterType == PoseParameterType::POSE);
-                return cachedParameter->p;
+                return *cachedParameter->p;
             }
             if (this->parameterType != PoseParameterType::POSE &&
                 this->parameterType != PoseParameterType::EXTERNAL_POSE) {
@@ -300,11 +303,20 @@ namespace AndreiUtils {
             return PoseParameter<T>(this->getPose(cache, parameterName));
         }
 
+        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum getParameterType() const {
+            return this->parameterType;
+        }
+
+        [[nodiscard]] bool isValue() const {
+            return this->parameterType == PoseParameterType::VALUE;
+        }
+
+    protected:
         PoseParameterType::PoseParameterTypeEnum parameterType;
-        T val;
-        Eigen::Matrix<T, 3, 1> t;
-        Eigen::Quaternion<T> q;
-        AndreiUtils::DualQuaternion<T> p;
+        std::shared_ptr<T> val;
+        std::shared_ptr<Eigen::Matrix<T, 3, 1>> t;
+        std::shared_ptr<Eigen::Quaternion<T>> q;
+        std::shared_ptr<AndreiUtils::DualQuaternion<T>> p;
         std::shared_ptr<ExternalPoseInterface<T>> externalPose;
     };
 
@@ -316,7 +328,7 @@ namespace AndreiUtils {
                 OperationType const &operation, std::vector<PoseParameter<T>> const &inputs) {
             std::vector<PoseParameterType::PoseParameterTypeEnum> inputTypes(inputs.size());
             for (size_t i = 0; i < inputs.size(); ++i) {
-                inputTypes[i] = inputs[i].parameterType;
+                inputTypes[i] = inputs[i].getParameterType();
             }
             return AndreiUtils::OperationType::operationTypePropagation(operation, inputTypes);
         }
@@ -347,14 +359,18 @@ namespace AndreiUtils {
                         parameterCachePrepend += ", ";
                     }
                     if (parameterIndex >= 0) {
+                        if (parameterIndex >= inputs.size()) {
+                            throw std::runtime_error("Operation sequence is poorly formed; requested parameter " +
+                                                     std::to_string(parameterIndex) + " but the parameters size is " +
+                                                     std::to_string(inputs.size()));
+                        }
                         operationInputs.emplace_back(inputs[parameterIndex]);
                         operationInputNames.emplace_back(std::to_string(parameterIndex));
                     } else {
                         if (-parameterIndex > results.size()) {
-                            throw std::runtime_error(
-                                    "Operation sequence is poorly formed; requested result of " +
-                                    std::to_string(parameterIndex) + " but the size of the result is " +
-                                    std::to_string(results.size()));
+                            throw std::runtime_error("Operation sequence is poorly formed; requested result of " +
+                                                     std::to_string(parameterIndex) + " but the result size is " +
+                                                     std::to_string(results.size()));
                         }
                         operationInputs.emplace_back(*(results.end() + parameterIndex));  // parameterIndex <= -1
                         operationInputNames.emplace_back(*(resultNames.end() + parameterIndex));
@@ -477,7 +493,31 @@ namespace AndreiUtils {
             }
         }
 
-        std::vector<std::pair<OperationType, std::vector<int>>> operations;
+        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum propagateOperationType(
+                std::vector<PoseParameter<T>> inputParameters) const {
+            std::vector<PoseParameterType::PoseParameterTypeEnum> results;
+            for (auto const &opData: this->operations) {
+                std::vector<PoseParameterType::PoseParameterTypeEnum> inputTypes;
+                for (auto const &parameterIndex: opData.second) {
+                    if (parameterIndex >= 0) {
+                        if (parameterIndex >= inputParameters.size()) {
+                            throw std::runtime_error("Operation sequence is poorly formed; requested parameter " +
+                                                     std::to_string(parameterIndex) + " but the parameters size is " +
+                                                     std::to_string(inputParameters.size()));
+                        }
+                        inputTypes.emplace_back(inputParameters[parameterIndex].getParameterType());
+                    } else {
+                        if (-parameterIndex > results.size()) {
+                            throw std::runtime_error("Operation sequence is poorly formed; requested result of " +
+                                                     std::to_string(parameterIndex) + " but the result size is " +
+                                                     std::to_string(results.size()));
+                        }
+                        inputTypes.emplace_back(*(results.end() + parameterIndex));  // parameterIndex <= -1
+                    }
+                }
+                results.emplace_back(AndreiUtils::OperationType::operationTypePropagation(opData.first, inputTypes));
+            }
+        }
 
     protected:
         void processOneOperation(nlohmann::json const &operationConfig) {
@@ -530,6 +570,8 @@ namespace AndreiUtils {
                 return q.toRotationMatrix().col(2);
             }
         }
+
+        std::vector<std::pair<OperationType, std::vector<int>>> operations;
     };
 
     template<typename T>
@@ -598,28 +640,11 @@ namespace AndreiUtils {
 
             // do a trial run of passing the parameters through the operation sequence and ensure that a VALUE is result
             for (auto const &parameterOp: this->outputTransformation) {
-                std::vector<PoseParameterType> results;
-                for (auto const &opData: parameterOp.second.operations) {
-                    std::vector<PoseParameterType> inputTypes;
-                    for (auto const &parameterIndex: opData.second) {
-                        if (parameterIndex >= 0) {
-                            inputTypes.emplace_back(this->inputParameters[parameterIndex].parameterType);
-                        } else {
-                            if (-parameterIndex > results.size()) {
-                                throw std::runtime_error(
-                                        "Operation sequence for " + parameterOp.first +
-                                        " is poorly formed; requested result of " + std::to_string(parameterIndex) +
-                                        " but the size of the result is " + std::to_string(results.size()));
-                            }
-                            inputTypes.emplace_back(*(results.end() + parameterIndex));  // parameterIndex <= -1
-                        }
-                    }
-                    results.emplace_back(OperationType::operationTypePropagation(opData.first, inputTypes));
-                }
-                if (results.back() != PoseParameterType::VALUE) {
+                PoseParameterType resultType = parameterOp.second.propagateOperationType(this->inputParameters);
+                if (resultType != PoseParameterType::VALUE) {
                     throw std::runtime_error(
                             "Operation sequence for " + parameterOp.first + " is mis-formed; " +
-                            "end-result of the sequence is not a VALUE, but a " + std::to_string(results.back()));
+                            "end-result of the sequence is not a VALUE, but a " + std::to_string(resultType));
                 }
             }
         }
@@ -629,11 +654,11 @@ namespace AndreiUtils {
             std::map<std::string, T> parameterAssignment;
             for (auto const &paramData: this->outputTransformation) {
                 auto result = paramData.second.performOperations(this->inputParameters, cache);
-                if (result.parameterType != PoseParameterType::VALUE) {
+                if (!result.isValue()) {
                     throw std::runtime_error("Operation sequence did not result in a value, but in " +
-                                             std::to_string(result.parameterType));
+                                             std::to_string(result.getParameterType()));
                 }
-                T parameterValue = result.val;
+                T parameterValue = result.getValue();
                 /*
                 cout << "Param " << paramData.first << " from "
                      << ParameterOperation::getCacheEntryString(paramData.second.operation) << ": " << parameterValue << endl;
