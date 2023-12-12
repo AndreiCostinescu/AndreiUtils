@@ -37,6 +37,11 @@ void testMapFiltering() {
     cout << "Done!" << endl;
 }
 
+template<typename T>
+std::string pointerValueToString(T *p) {
+    return (p == nullptr ? "null" : std::to_string(*p));
+}
+
 void testMapRefAccessing() {
     map<int, int> x;
     x[0] = 0;
@@ -51,46 +56,39 @@ void testMapRefAccessing() {
     // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
 
     cout << mapGetIfContains(x, -1, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 0, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << printMapToString(x) << endl;
     cout << endl;
 
     value = 42;
 
     cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << "Update valuePtr..." << endl;
     *valuePtr = 42;
     cout << printMapToString(x) << endl;
@@ -98,8 +96,7 @@ void testMapRefAccessing() {
     int &valueRef = *valuePtr;
 
     cout << mapGetIfContains(x, 2, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
+    cout << value << ", " << pointerValueToString(valuePtr) << ", " << pointerValueToString(valueConstPtr) << endl;
     cout << "Update valueRef..." << endl;
     valueRef = 69;
     *valuePtr = -42;
@@ -109,9 +106,9 @@ void testMapRefAccessing() {
     // ------------------ NOW CHECK MAP_GET FUNCTIONS ------------------
 
     try {
-        mapGet(x, -1);
+        value = mapGet(x, -1);
     } catch (exception &e) {
-        if (strcmp(e.what(), "Element not found in map!") != 0) {
+        if (strcmp(e.what(), "Element -1 not found in map!") != 0) {
             throw e;
         }
     }
