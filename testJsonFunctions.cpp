@@ -4,11 +4,25 @@
 
 #include <AndreiUtils/classes/ConfigurationParameters.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
 #include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
+
+void testJsonNull() {
+    nlohmann::json j = nullptr;
+    cout << "JSON CONTENT: " << j.dump() << endl;
+}
+
+void testJsonArraySerialization() {
+    nlohmann::json j = readJsonFile("../testJsonOutput.json");
+    j["data"] = {110, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    j["name"] = "dummy data 2";
+    j["isDummy"] = false;
+    writeJsonFile("../testJsonOutput.json", j);
+}
 
 void testConfigurationParameters() {
     nlohmann::json j, k;
@@ -50,6 +64,15 @@ void testConfigurationParameters() {
     cout << tmp4.dump(4) << endl;
 }
 
+void testMixedDataContainer() {
+    nlohmann::json x;
+    x["24"] = 25;
+    MixedDataContainer c;
+    c.addData("json", &x);
+    auto tmp = *(c.getData<nlohmann::json>("json"));
+    cout << tmp.dump() << endl;
+}
+
 void testIntervalSerialization() {
     auto i0 = IntervalD::createEmpty();
     Interval<double> i1(20.5, 30.5);
@@ -86,10 +109,10 @@ void testIntervalSerialization() {
 int main() {
     cout << "Hello World!" << endl;
 
-    // eigenJsonTesting();
     // testJsonNull();
     // testJsonArraySerialization();
     // testConfigurationParameters();
+    // testMixedDataContainer();
     testIntervalSerialization();
 
     return 0;

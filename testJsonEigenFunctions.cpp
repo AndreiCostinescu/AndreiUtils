@@ -2,8 +2,6 @@
 // Created by Andrei on 25.11.22.
 //
 
-#include <AndreiUtils/classes/ConfigurationParameters.hpp>
-#include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <iostream>
 
@@ -26,28 +24,6 @@ void eigenJsonTesting() {
     cout << "Json from vector v " << endl << v << endl << j << endl;
     Vector3f v2 = j.get<Vector3f>();
     cout << "Reconstructed vector:" << endl << v2 << endl;
-}
-
-void testJsonNull() {
-    nlohmann::json j = nullptr;
-    cout << "JSON CONTENT: " << j.dump() << endl;
-}
-
-void testJsonArraySerialization() {
-    nlohmann::json j = readJsonFile("../testJsonOutput.json");
-    j["data"] = {110, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    j["name"] = "dummy data 2";
-    j["isDummy"] = false;
-    writeJsonFile("../testJsonOutput.json", j);
-}
-
-void testMixedDataContainer() {
-    nlohmann::json x;
-    x["24"] = 25;
-    MixedDataContainer c;
-    c.addData("json", &x);
-    auto tmp = *(c.getData<nlohmann::json>("json"));
-    cout << tmp.dump() << endl;
 }
 
 void testEigenFromVectorDeserialization() {
@@ -107,8 +83,6 @@ int main() {
     cout << "Hello World!" << endl;
 
     // eigenJsonTesting();
-    // testJsonNull();
-    // testJsonArraySerialization();
     testEigenFromVectorDeserialization();
 
     return 0;
