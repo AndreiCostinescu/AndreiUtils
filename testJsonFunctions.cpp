@@ -108,6 +108,36 @@ void testIntervalSerialization() {
     cout << dI6.toString() << endl;
 }
 
+void testGettingReferencesInJson() {
+    nlohmann::json j;
+    j["numbers"]["1"] = 42;
+    j["numbers"]["2"] = "Gangnam Style";
+    j["numbers"]["0"] = nullptr;
+    j["numbers"]["3"] = 3.9;
+    j["access"] = "denied";
+
+    cout << "Original data: " << j.dump(4) << endl;
+
+    // a reference is not possible...
+    auto const &data = j.at("numbers").get<std::map<std::string, nlohmann::json>>();
+    auto &refData = j.at("numbers");
+}
+
+void testParametersWithExternalConfigs() {
+    // vector<int> indices{1, 2, 3, 4, 5, 6, 7, 8};
+    // vector<int> indices{11};
+    vector<int> indices{14};
+    for (auto const &index: indices) {
+        string fileName = "../data/testExternalConfig" + std::to_string(index) + ".json";
+        ParametersWithExternalConfig p(fileName);
+        cout << "P" << index << " config: " << p.getJson().dump(4) << endl;
+        cout << p.toString("", true) << endl;
+        // p.updateParameters();
+        p.writeParameters(fileName, true);
+        cout << "\n\n";
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -115,7 +145,8 @@ int main() {
     // testJsonArraySerialization();
     // testConfigurationParameters();
     // testMixedDataContainer();
-    testIntervalSerialization();
+    // testIntervalSerialization();
+    testParametersWithExternalConfigs();
 
     return 0;
 }
