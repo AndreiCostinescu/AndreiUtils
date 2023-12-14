@@ -48,6 +48,8 @@ void testConfigurationParameters() {
     cout << tmp3.dump(4) << endl << endl;
 
     auto const &config2 = c.getSubConfig("SubConfig");
+    cout << "Subconfig: " << config2.getJson().dump(4) << endl;
+
     auto const &tmp5 = config.getJson("actions");
     cout << "TMP5: " << tmp5.dump(4) << endl << endl;
 
