@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsString.h>
+#include <cassert>
 #include <iostream>
 #include <sys/stat.h>
 
@@ -146,6 +147,31 @@ std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
         directory += res[i] + "/";
     }
     return directory;
+}
+
+std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
+    vector<string> res = splitString(replace(path, "\\", "/"), "/");
+    vector<string> simplifiedPath;
+    int simplifiedPathSize = 0;
+    for (auto const &resPart: res) {
+        assert(simplifiedPath.size() >= simplifiedPathSize);
+        if (resPart == ".." && (simplifiedPathSize > 0 && simplifiedPath[simplifiedPathSize - 1] != "." && simplifiedPath[simplifiedPathSize - 1] != "..")) {
+            --simplifiedPathSize;
+        } else {
+            while (simplifiedPath.size() <= simplifiedPathSize) {
+                simplifiedPath.emplace_back();
+            }
+            simplifiedPath[simplifiedPathSize++] = resPart;
+        }
+    }
+    string newPath;
+    for (int i = 0; i < simplifiedPathSize; i++) {
+        if (!newPath.empty()) {
+            newPath += "/";
+        }
+        newPath += simplifiedPath[i];
+    }
+    return newPath;
 }
 
 bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {

@@ -27,5 +27,7 @@ namespace AndreiUtils {
 
     std::string getRelativeDirectoryOfPath(std::string const &path);
 
+    std::string simplifyRelativePath(std::string const &path);
+
     bool reachedTheEndOfTheFile(std::ifstream &in);
 }
