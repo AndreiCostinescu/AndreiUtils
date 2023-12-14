@@ -1,6 +1,4 @@
 {
-    "time": 2,
-    "user": "Andrei",
     "configuration": {
         "config1": "1",
         "config2": "2",
@@ -10,5 +8,7 @@
     },
     "external": {
         "externalConfig": "../data/testExternalConfig1.json"
-    }
+    },
+    "time": 2,
+    "user": "Andrei"
 }
