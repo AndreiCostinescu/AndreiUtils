@@ -1,0 +1,7 @@
+{
+    "name": "data",
+    "version": "2.0.0",
+    "dependencies": {
+        "externalConfig": "../data/testExternalConfig3.json"
+    }
+}
