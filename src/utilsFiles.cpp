@@ -136,6 +136,15 @@ bool AndreiUtils::isFilePathAbsolute(string const &path) {
     #endif
 }
 
+std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
+    vector<string> res = splitString(replace(path, "\\", "/"), "/");
+    string directory = "./";
+    for (int i = 0; i < res.size() - 1; i++) {
+        directory += res[0] + "/";
+    }
+    return directory;
+}
+
 bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {
     return (in.peek() == EOF);
 }

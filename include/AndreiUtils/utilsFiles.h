@@ -2,8 +2,7 @@
 // Created by Andrei on 26.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSFILES_H
-#define ANDREIUTILS_UTILSFILES_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -26,7 +25,7 @@ namespace AndreiUtils {
 
     bool isFilePathAbsolute(std::string const &path);
 
+    std::string getRelativeDirectoryOfPath(std::string const &path);
+
     bool reachedTheEndOfTheFile(std::ifstream &in);
 }
-
-#endif //ANDREIUTILS_UTILSFILES_H
