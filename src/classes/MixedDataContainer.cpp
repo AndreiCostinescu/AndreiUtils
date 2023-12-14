@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/utilsMap.hpp>
+#include <cassert>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -35,11 +36,12 @@ bool MixedDataContainer::has(string const &id) const {
 }
 
 void *MixedDataContainer::getData(string const &id) const {
-    void *res = nullptr;
+    void *const *res = nullptr;
     if (!mapGetIfContains<std::string, void *>(this->data, id, res)) {
         throw std::runtime_error("Data " + id + " not registered in container!");
     }
-    return res;
+    assert(res != nullptr);
+    return *res;
 }
 
 bool MixedDataContainer::getDataIfContains(string const &id, void *&res) const {
