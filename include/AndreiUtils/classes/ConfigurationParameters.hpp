@@ -40,7 +40,7 @@ namespace AndreiUtils {
                 if (this->parameterReference == nullptr) {
                     throw std::runtime_error("Can not get json value from a nullptr reference!");
                 }
-                return *this->parameterReference->at(parameterName).get<T>();
+                return this->parameterReference->at(parameterName).get<T>();
             }
             return this->parameters.at(parameterName).get<T>();
         }
