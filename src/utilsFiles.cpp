@@ -140,7 +140,10 @@ std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
     vector<string> res = splitString(replace(path, "\\", "/"), "/");
     string directory = "./";
     for (int i = 0; i < res.size() - 1; i++) {
-        directory += res[0] + "/";
+        if (res[i] == "." || res[i].empty()) {
+            continue;
+        }
+        directory += res[i] + "/";
     }
     return directory;
 }
