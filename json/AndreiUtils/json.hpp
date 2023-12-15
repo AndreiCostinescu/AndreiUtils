@@ -19385,7 +19385,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                                 const bool ensure_ascii = false,
                                 const error_handler_t error_handler = error_handler_t::strict) const
     {
-        this->dumpWithExistingIndent(indent, indent_char, 0, ensure_ascii, error_handler);
+        return this->dumpWithExistingIndent(indent, indent_char, 0, ensure_ascii, error_handler);
     }
 
     [[nodiscard]] string_t dumpWithExistingIndent(const int indent = -1,
