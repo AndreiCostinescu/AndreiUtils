@@ -11,11 +11,12 @@
 namespace AndreiUtils {
     nlohmann::json readJsonFile(std::string const &path);
 
-    void writeJsonFileKeepOrder(std::string const &path, nlohmann::json const &content);
+    void writeJsonFileKeepOrder(std::string const &path, nlohmann::json const &content, bool keepNewLines = true);
 
     std::string collectStringJsonContent(nlohmann::json const &content, int currentIndentLevel = 0);
 
     void collectStringJsonContent(std::stringstream &stringContent, nlohmann::json const &content);
 
-    void writeJsonFile(std::string const &path, nlohmann::json const &content, bool keepOrder = false);
+    void writeJsonFile(std::string const &path, nlohmann::json const &content, bool keepOrder = false,
+                       bool keepNewLines = false);
 }
