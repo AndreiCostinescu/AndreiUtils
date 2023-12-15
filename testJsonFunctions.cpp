@@ -136,6 +136,15 @@ void testParametersWithExternalConfigs() {
         p.writeParameters(fileName, true);
         cout << "\n\n";
     }
+
+    string fileName = "../data/testExternalConfig14.json";
+    ParametersWithExternalConfig p(fileName);
+    cout << p.toString("", true) << endl;
+    p.at("external").at("external").at("external").at("external").at("dependencies").set<string>("name", "modified x2 data");
+    cout << p.toString("", true) << endl;
+    // p.updateParameters();
+    p.writeParameters(fileName, true);
+    cout << "\n\n";
 }
 
 int main() {
