@@ -6,9 +6,16 @@
 
 #include <AndreiUtils/json.hpp>
 #include <string>
+#include <sstream>
 
 namespace AndreiUtils {
     nlohmann::json readJsonFile(std::string const &path);
 
-    void writeJsonFile(std::string const &path, const nlohmann::json &content);
+    void writeJsonFileKeepOrder(std::string const &path, nlohmann::json const &content);
+
+    std::string collectStringJsonContent(nlohmann::json const &content, int currentIndentLevel = 0);
+
+    void collectStringJsonContent(std::stringstream &stringContent, nlohmann::json const &content);
+
+    void writeJsonFile(std::string const &path, nlohmann::json const &content, bool keepOrder = false);
 }

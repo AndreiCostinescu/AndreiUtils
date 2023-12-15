@@ -126,6 +126,7 @@ void testGettingReferencesInJson() {
 void testParametersWithExternalConfigs() {
     // vector<int> indices{1, 2, 3, 4, 5, 6, 7, 8};
     // vector<int> indices{11};
+    /*
     vector<int> indices{14};
     for (auto const &index: indices) {
         string fileName = "../data/testExternalConfig" + std::to_string(index) + ".json";
@@ -136,14 +137,21 @@ void testParametersWithExternalConfigs() {
         p.writeParameters(fileName, true);
         cout << "\n\n";
     }
+    //*/
 
+    /*
     string fileName = "../data/testExternalConfig14.json";
     ParametersWithExternalConfig p(fileName);
     cout << p.toString("", true) << endl;
-    p.at("external").at("external").at("external").at("external").at("dependencies").set<string>("name", "modified x2 data");
+    p.at("external").at("external").at("external").at("external").at("dependencies").set<string>("name", "modified x13 data");
     cout << p.toString("", true) << endl;
-    // p.updateParameters();
-    p.writeParameters(fileName, true);
+    p.writeParameters(fileName, true, true);
+    cout << "\n\n";
+    //*/
+
+    string fileName = "../data/testExternalConfig5.json";
+    ParametersWithExternalConfig p(fileName);
+    p.writeParameters(fileName, true, true);
     cout << "\n\n";
 }
 
