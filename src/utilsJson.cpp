@@ -215,6 +215,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         for (size_t index = 0; index < contentArray.size(); ++index) {
             if (index > 0) {
                 stringContent << ",";
+                ++characterIndex;  // skip comma ',' character between array values
             }
             if (!collectStringJsonContentKeepOrder(stringContent, contentArray[index], originalContentArray[index],
                                                    lineByLineContent, lineIndex, characterIndex, indentLevel + 1)) {
