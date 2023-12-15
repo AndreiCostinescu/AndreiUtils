@@ -206,6 +206,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                 return false;
             }
             assert(lineByLineContent[lineIndex][characterIndex] == ']');
+            ++characterIndex;
             stringContent << "[]";
             skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex);
             return true;
@@ -232,13 +233,24 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         map<string, nlohmann::json> contentMap = content.get<map<string, nlohmann::json>>();
         map<string, nlohmann::json> originalContentMap = originalContent.get<map<string, nlohmann::json>>();
 
+        ++characterIndex;
+        if (originalContentMap.empty()) {
+            if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex)) {
+                return false;
+            }
+            assert(lineByLineContent[lineIndex][characterIndex] == '}');
+            ++characterIndex;
+            stringContent << collectStringJsonContent(content, indentLevel);
+            skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex);
+            return true;
+        }
+
         // keep the entries that are common; and write the extra entries that are new!
         stringstream commonEntries;
         stringstream newEntries;
         bool firstNewEntry = true, firstCommonEntry = true;
 
         std::map<std::string, bool> definedKeys;
-        ++characterIndex;
         while (true) {
             nlohmann::json keyDatum;
             skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex, &keyDatum);
