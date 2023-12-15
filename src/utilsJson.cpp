@@ -315,7 +315,6 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
 
             nlohmann::json const *commonDatum;
             if (mapGetIfContains(contentMap, key, commonDatum)) {
-                cout << "Add common entry " << key << endl;
                 if (!firstCommonEntry) {
                     commonEntries << ",";
                     if (keepNewLines) {
@@ -342,8 +341,6 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                     return false;
                 }
                 firstCommonEntry = false;
-            } else {
-                cout << "Key " << key << " is not contained in the new data!" << endl;
             }
 
             if (lineByLineContent[lineIndex][characterIndex] == '}') {
@@ -358,7 +355,6 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         }
         for (auto const &mapData: contentMap) {
             if (!mapContains(definedKeys, mapData.first)) {
-                cout << "Add new entry " << mapData.first << endl;
                 if (!firstNewEntry) {
                     newEntries << "," << endl << AndreiUtils::tab * (indentLevel + 1);
                 }
