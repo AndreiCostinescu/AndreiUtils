@@ -77,11 +77,19 @@ namespace AndreiUtils {
 
         virtual bool deleteKey(std::string const &parameterName);
 
+        [[nodiscard]] Parameters operator[](std::string const &parameterName);
+
+        [[nodiscard]] Parameters at(std::string const &parameterName);
+
+        [[nodiscard]] nlohmann::json const &getCreateJson(std::string const &parameterName);
+
         [[nodiscard]] nlohmann::json const &getJson(std::string const &parameterName) const;
 
         [[nodiscard]] nlohmann::json const &getJson() const;
 
     protected:
+        [[nodiscard]] nlohmann::json &getCreateJsonReference(std::string const &parameterName);
+
         [[nodiscard]] nlohmann::json &getJsonReference(std::string const &parameterName);
 
         [[nodiscard]] nlohmann::json &getJsonReference();

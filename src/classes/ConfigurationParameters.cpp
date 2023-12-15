@@ -87,6 +87,24 @@ bool Parameters::deleteKey(std::string const &parameterName) {
     return this->parameters.erase(parameterName);
 }
 
+Parameters Parameters::operator[](std::string const &parameterName) {
+    return Parameters(&this->getCreateJsonReference(parameterName));
+}
+
+Parameters Parameters::at(string const &parameterName) {
+    return Parameters(&this->getJsonReference(parameterName));
+}
+
+nlohmann::json const &Parameters::getCreateJson(string const &parameterName) {
+    if (this->isReference) {
+        if (this->parameterReference == nullptr) {
+            throw std::runtime_error("Can not get-create json value from a nullptr reference!");
+        }
+        return (*this->parameterReference)[parameterName];
+    }
+    return this->parameters[parameterName];
+}
+
 nlohmann::json const &Parameters::getJson(string const &parameterName) const {
     if (this->isReference) {
         if (this->parameterReference == nullptr) {
@@ -105,6 +123,16 @@ nlohmann::json const &Parameters::getJson() const {
         return *this->parameterReference;
     }
     return this->parameters;
+}
+
+nlohmann::json &Parameters::getCreateJsonReference(std::string const &parameterName) {
+    if (this->isReference) {
+        if (this->parameterReference == nullptr) {
+            throw std::runtime_error("Can not get-create json value from a nullptr reference!");
+        }
+        return (*this->parameterReference)[parameterName];
+    }
+    return this->parameters[parameterName];
 }
 
 nlohmann::json &Parameters::getJsonReference(string const &parameterName) {
