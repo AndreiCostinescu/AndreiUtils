@@ -59,9 +59,9 @@ namespace AndreiUtils {
                 if (this->parameterReference == nullptr) {
                     throw std::runtime_error("Can not set json value in a nullptr reference!");
                 }
-                return (*this->parameterReference)[parameterName] = data;
+                (*this->parameterReference)[parameterName] = data;
             }
-            return this->parameters[parameterName] = data;
+            this->parameters[parameterName] = data;
         }
 
         template<typename T>
@@ -70,9 +70,9 @@ namespace AndreiUtils {
                 if (this->parameterReference == nullptr) {
                     throw std::runtime_error("Can not set json value in a nullptr reference!");
                 }
-                return (*this->parameterReference)[parameterName] = std::forward<T>(data);
+                (*this->parameterReference)[parameterName] = std::forward<T>(data);
             }
-            return this->parameters[parameterName] = std::forward<T>(data);
+            this->parameters[parameterName] = std::forward<T>(data);
         }
 
         virtual bool deleteKey(std::string const &parameterName);
