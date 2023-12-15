@@ -8,8 +8,22 @@
 #include <AndreiUtils/classes/camera/ImageParameters.h>
 #include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/json.hpp>
+#include <complex>
 
 namespace nlohmann {
+    template<class T>
+    struct adl_serializer<std::complex<T>> {
+        static void to_json(nlohmann::json &j, std::complex<T> const &v) {
+            j["r"] = v.real();
+            j["i"] = v.imag();
+        }
+
+        static void from_json(nlohmann::json const &j, std::complex<T> &v) {
+            v.real(j["r"].get<T>());
+            v.imag(j["i"].get<T>());
+        }
+    };
+
     template<>
     struct adl_serializer<AndreiUtils::ImageParameters> {
         using T = AndreiUtils::ImageParameters;
