@@ -294,11 +294,12 @@ bool ParametersWithExternalConfig::deleteKey(std::string const &parameterName) {
     }
 }
 
-void ParametersWithExternalConfig::writeParameters(std::string const &fileName, bool withWriteSubConfigs) const {
+void ParametersWithExternalConfig::writeParameters(std::string const &fileName, bool withWriteSubConfigs,
+                                                   bool keepOrder) const {
     nlohmann::json toWriteParameters;
-    this->updateParameters(toWriteParameters, withWriteSubConfigs);
+    this->updateParameters(toWriteParameters, withWriteSubConfigs, keepOrder);
     // cout << "Writing " << toWriteParameters.dump(4) << " to file " << fileName << endl;
-    writeJsonFile(fileName, toWriteParameters);
+    writeJsonFile(fileName, toWriteParameters, keepOrder);
 }
 
 std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion)
@@ -401,27 +402,27 @@ void ParametersWithExternalConfig::processOverwrittenParameter(std::string const
 }
 
 void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursion)
-        nlohmann::json &toWriteParameters, bool withWriteSubConfigs) const {
+        nlohmann::json &toWriteParameters, bool withWriteSubConfigs, bool keepOrder) const {
     nlohmann::json theseParameters;
-    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, withWriteSubConfigs);
+    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, withWriteSubConfigs, keepOrder);
     if (this->isExternalConfig) {
         toWriteParameters[ParametersWithExternalConfig::externalConfigKey] = this->originalExternalFileName;
         // cout << "Writing " << theseParameters.dump(4) << " to file " << this->externalFileName << endl;
-        writeJsonFile(this->externalFileName, theseParameters);
+        writeJsonFile(this->externalFileName, theseParameters, keepOrder);
     } else {
         toWriteParameters = std::move(theseParameters);
     }
 }
 
 void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFile(  // NOLINT(misc-no-recursion)
-        json &parametersToWrite, bool recurse) const {
+        json &parametersToWrite, bool recurse, bool keepOrder) const {
     json const &jsonData = this->getJson();
     if (jsonData.is_object()) {
         for (auto const &datum: jsonData.items()) {
             ParametersWithExternalConfig const *subConfig;
             if (AndreiUtils::mapGetIfContains(this->externalConfigs, datum.key(), subConfig)) {
                 json subConfigJson;
-                subConfig->updateParameters(subConfigJson, recurse);
+                subConfig->updateParameters(subConfigJson, recurse, keepOrder);
                 parametersToWrite[datum.key()] = subConfigJson;
             } else {
                 parametersToWrite[datum.key()] = datum.value();

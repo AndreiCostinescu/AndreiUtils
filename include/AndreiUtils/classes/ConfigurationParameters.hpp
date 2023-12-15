@@ -100,12 +100,6 @@ namespace AndreiUtils {
         [[nodiscard]] nlohmann::json &getJsonReference();
 
     protected:
-        [[nodiscard]] nlohmann::json &getCreateJsonReference(std::string const &parameterName);
-
-        [[nodiscard]] nlohmann::json &getJsonReference(std::string const &parameterName);
-
-        [[nodiscard]] nlohmann::json &getJsonReference();
-
         bool isReference;
         nlohmann::json parameters;
         nlohmann::json *parameterReference;
@@ -169,7 +163,7 @@ namespace AndreiUtils {
 
         bool deleteKey(std::string const &parameterName) override;
 
-        void writeParameters(std::string const &fileName, bool withWriteSubConfigs) const;
+        void writeParameters(std::string const &fileName, bool withWriteSubConfigs, bool keepOrder = false) const;
 
         [[nodiscard]] std::string toString(std::string const &indent = "", bool verbose = false) const;
 
@@ -182,9 +176,10 @@ namespace AndreiUtils {
 
         void processOverwrittenParameter(std::string const &parameterName);
 
-        void updateParameters(nlohmann::json &toWriteParameters, bool withWriteSubConfigs) const;
+        void updateParameters(nlohmann::json &toWriteParameters, bool withWriteSubConfigs, bool keepOrder) const;
 
-        void collectAndUpdateParametersToWriteForThisFile(nlohmann::json &parametersToWrite, bool recurse) const;
+        void collectAndUpdateParametersToWriteForThisFile(
+                nlohmann::json &parametersToWrite, bool recurse, bool keepOrder) const;
 
         std::map<std::string, ParametersWithExternalConfig> externalConfigs;
         bool isExternalConfig;
