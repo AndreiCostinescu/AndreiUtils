@@ -53,6 +53,10 @@ namespace AndreiUtils {
             return defaultValue;
         }
 
+        virtual void set(nlohmann::json const &data);
+
+        virtual void set(nlohmann::json &&data);
+
         template<typename T>
         void set(std::string const &parameterName, T const &data) {
             if (this->isReference) {
@@ -88,6 +92,12 @@ namespace AndreiUtils {
         [[nodiscard]] nlohmann::json const &getJson(std::string const &parameterName) const;
 
         [[nodiscard]] nlohmann::json const &getJson() const;
+
+        [[nodiscard]] nlohmann::json &getCreateJsonReference(std::string const &parameterName);
+
+        [[nodiscard]] nlohmann::json &getJsonReference(std::string const &parameterName);
+
+        [[nodiscard]] nlohmann::json &getJsonReference();
 
     protected:
         [[nodiscard]] nlohmann::json &getCreateJsonReference(std::string const &parameterName);

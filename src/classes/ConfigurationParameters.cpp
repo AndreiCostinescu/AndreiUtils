@@ -77,6 +77,28 @@ bool Parameters::has(string const &parameterName) const {
                              : this->parameters.contains(parameterName);
 }
 
+void Parameters::set(nlohmann::json const &data) {
+    if (this->isReference) {
+        if (this->parameterReference == nullptr) {
+            throw std::runtime_error("Can not set json value in a nullptr reference!");
+        }
+        *this->parameterReference = data;
+    } else {
+        this->parameters = data;
+    }
+}
+
+void Parameters::set(nlohmann::json &&data) {
+    if (this->isReference) {
+        if (this->parameterReference == nullptr) {
+            throw std::runtime_error("Can not set json value in a nullptr reference!");
+        }
+        *this->parameterReference = std::move(data);
+    } else {
+        this->parameters = std::move(data);
+    }
+}
+
 bool Parameters::deleteKey(std::string const &parameterName) {
     if (this->isReference) {
         if (this->parameterReference == nullptr) {
