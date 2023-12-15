@@ -49,9 +49,11 @@ bool AndreiUtils::fileExists(string const &name) {
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-bool AndreiUtils::createDirectory(string const &path) {
+bool AndreiUtils::createDirectory(string const &path, bool verbose) {
     if (path.empty()) {
-        cout << "Directory path is empty!" << endl;
+        if (verbose) {
+            cout << "Directory path is empty!" << endl;
+        }
         return false;
     }
     bool res;
@@ -61,7 +63,9 @@ bool AndreiUtils::createDirectory(string const &path) {
     res = (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1);
 #endif
     if (!res) {
-        cout << "Directory already exists? " << path << endl;
+        if (verbose) {
+            cout << "Directory already exists? " << path << endl;
+        }
         return false;
     }
     return true;

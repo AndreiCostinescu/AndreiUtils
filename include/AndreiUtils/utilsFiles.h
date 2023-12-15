@@ -14,7 +14,7 @@ namespace AndreiUtils {
 
     bool fileExists(std::string const &name);
 
-    bool createDirectory(std::string const &path);
+    bool createDirectory(std::string const &path, bool verbose = false);
 
     bool createNestedDirectory(std::string const &path, bool fromFilePath = false);
 
