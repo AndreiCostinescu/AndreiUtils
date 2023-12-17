@@ -185,7 +185,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
 bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         stringstream &stringContent, json const &content, json const &originalContent,
         vector<string> const &lineByLineContent, int &lineIndex, int &characterIndex, int const &indentLevel = 0,
-        bool keepNewLines = true, int *upperNewLinesCounter = nullptr) {
+        bool keepNewLines = true, int *upperNewLinesCounter = nullptr, bool verbose = false) {
     if (content.type() != originalContent.type()) {
         stringContent << collectStringJsonContent(content, indentLevel);
         return skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex,
@@ -193,13 +193,17 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
     }
 
     // first determine the type of the data at the content
-    int newLinesCounter = 0;
-    if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &newLinesCounter)) {
+    int preDataNewLinesCounter = 0;
+    if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &preDataNewLinesCounter)) {
         return false;
     }
-    if (keepNewLines && newLinesCounter > 0) {
-        stringContent << string("\n") * newLinesCounter;
-        newLinesCounter = 0;
+    if (keepNewLines && preDataNewLinesCounter > 0) {
+        if (verbose) {
+            cout << "Write new line (x" << preDataNewLinesCounter << ") at L: " << lineIndex << " C: " << characterIndex
+                 << endl;
+        }
+        stringContent << string("\n") * preDataNewLinesCounter << (AndreiUtils::tab * indentLevel);
+        preDataNewLinesCounter = 0;
     }
     char const &c = lineByLineContent[lineIndex][characterIndex];
     if (c == '[') {
@@ -216,15 +220,15 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
 
         ++characterIndex;  // move past '[' character
         if (contentArray.empty()) {
-            if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &newLinesCounter)) {
+            int betweenBracesNewLinesCounter = 0;
+            if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &betweenBracesNewLinesCounter)) {
                 return false;
             }
             assert(lineByLineContent[lineIndex][characterIndex] == ']');
             ++characterIndex;
             stringContent << "[";
-            if (keepNewLines && newLinesCounter > 0) {
-                stringContent << string("\n") * newLinesCounter << (AndreiUtils::tab * indentLevel);
-                newLinesCounter = 0;
+            if (keepNewLines && betweenBracesNewLinesCounter > 0) {
+                stringContent << string("\n") * betweenBracesNewLinesCounter << (AndreiUtils::tab * indentLevel);
             }
             stringContent << "]";
             skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, upperNewLinesCounter);
@@ -234,16 +238,18 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         bool keepArrayValueCondensed = (contentArray.begin()->type() != json::value_t::object &&
                                         contentArray.begin()->type() != json::value_t::array);
         stringContent << "[";
-        if (!keepArrayValueCondensed) {
+        if (!keepArrayValueCondensed && !keepNewLines) {
             stringContent << endl << AndreiUtils::tab * (indentLevel + 1);
         }
+        int valuePostDataNewLinesCounter = 0;
         for (size_t index = 0; index < contentArray.size(); ++index) {
             if (index > 0) {
                 stringContent << ",";
                 if (!keepArrayValueCondensed) {
-                    if (keepNewLines && newLinesCounter > 0) {
-                        stringContent << string("\n") * newLinesCounter << AndreiUtils::tab * (indentLevel + 1);
-                        newLinesCounter = 0;
+                    if (keepNewLines && valuePostDataNewLinesCounter > 0) {
+                        stringContent << string("\n") * valuePostDataNewLinesCounter
+                                      << AndreiUtils::tab * (indentLevel + 1);
+                        valuePostDataNewLinesCounter = 0;
                     }
                     stringContent << endl << AndreiUtils::tab * (indentLevel + 1);
                 } else {
@@ -253,16 +259,17 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             }
             if (!collectStringJsonContentKeepOrder(
                     stringContent, contentArray[index], originalContentArray[index], lineByLineContent, lineIndex,
-                    characterIndex, indentLevel + 1, keepNewLines, &newLinesCounter)) {
+                    characterIndex, indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter)) {
                 return false;
             }
         }
         assert(lineByLineContent[lineIndex][characterIndex] == ']');
         ++characterIndex;
-        if (!keepArrayValueCondensed) {
-            if (keepNewLines && newLinesCounter > 0) {
-                stringContent << string("\n") * newLinesCounter << AndreiUtils::tab * (indentLevel + 1);
-                newLinesCounter = 0;
+        if (!keepArrayValueCondensed || keepNewLines) {
+            if (keepNewLines) {
+                if (valuePostDataNewLinesCounter > 0) {
+                    stringContent << string("\n") * valuePostDataNewLinesCounter << AndreiUtils::tab * indentLevel;
+                }
             } else {
                 stringContent << "\n" << AndreiUtils::tab * indentLevel;
             }
@@ -277,16 +284,16 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
 
         ++characterIndex;
         if (originalContentMap.empty()) {
-            if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &newLinesCounter)) {
+            int betweenBracesNewLinesCounter = 0;
+            if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &betweenBracesNewLinesCounter)) {
                 return false;
             }
             assert(lineByLineContent[lineIndex][characterIndex] == '}');
             ++characterIndex;
             if (contentMap.empty()) {
                 stringContent << "{";
-                if (keepNewLines && newLinesCounter > 0) {
-                    stringContent << string("\n") * newLinesCounter << AndreiUtils::tab * indentLevel;
-                    newLinesCounter = 0;
+                if (keepNewLines && betweenBracesNewLinesCounter > 0) {
+                    stringContent << string("\n") * betweenBracesNewLinesCounter << AndreiUtils::tab * indentLevel;
                 }
                 stringContent << "}";
             } else {
@@ -302,11 +309,19 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         bool firstNewEntry = true, firstCommonEntry = true;
 
         std::map<std::string, bool> definedKeys;
+        int valuePostDataNewLinesCounter = 0;
         while (true) {
             nlohmann::json keyDatum;
-            int keyNewLinesCounter = 0;
-            skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex, &keyNewLinesCounter,
-                                                    &keyDatum);
+            int keyPreDataNewLinesCounter = 0, keyPostDataNewLinesCounter = 0;
+            skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &keyPreDataNewLinesCounter);
+            if (verbose) {
+                cout << "KeyPreData: " << keyPreDataNewLinesCounter << endl;
+            }
+            skipToNextEntryInThisLevelOfJsonContent(
+                    lineByLineContent, lineIndex, characterIndex, &keyPostDataNewLinesCounter, &keyDatum);
+            if (verbose) {
+                cout << "KeyPostData: " << keyPostDataNewLinesCounter << endl;
+            }
             assert(keyDatum.is_string());
             assert(lineByLineContent[lineIndex][characterIndex] == ':');
             ++characterIndex;  // skips the colon ':' character
@@ -316,29 +331,43 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             nlohmann::json const *commonDatum;
             if (mapGetIfContains(contentMap, key, commonDatum)) {
                 if (!firstCommonEntry) {
-                    commonEntries << ",";
                     if (keepNewLines) {
-                        if (newLinesCounter > 0) {
-                            commonEntries << string("\n") * newLinesCounter << AndreiUtils::tab * (indentLevel + 1);
-                            newLinesCounter = 0;
+                        if (valuePostDataNewLinesCounter > 0) {
+                            commonEntries << string("\n") * valuePostDataNewLinesCounter
+                                          << AndreiUtils::tab * (indentLevel + 1) << ",";
+                            valuePostDataNewLinesCounter = 0;
                         } else {
-                            commonEntries << " ";
+                            commonEntries << ", ";
                         }
                     } else {
-                        commonEntries << "\n" << AndreiUtils::tab * (indentLevel + 1);
+                        commonEntries << ",\n" << AndreiUtils::tab * (indentLevel + 1);
                     }
                 }
+                if (keepNewLines && keyPreDataNewLinesCounter > 0) {
+                    if (verbose) {
+                        cout << "Write key pre data (x" << keyPreDataNewLinesCounter << ")" << endl;
+                    }
+                    commonEntries << string("\n") * keyPreDataNewLinesCounter << AndreiUtils::tab * (indentLevel + 1);
+                }
                 commonEntries << "\"" << key << "\"";
-                if (keepNewLines && keyNewLinesCounter > 0) {
-                    stringContent << string("\n") * keyNewLinesCounter << AndreiUtils::tab * indentLevel;
-                    keyNewLinesCounter = 0;
+                if (keepNewLines && keyPostDataNewLinesCounter > 0) {
+                    if (verbose) {
+                        cout << "Write key post data (x" << keyPostDataNewLinesCounter << ")" << endl;
+                    }
+                    commonEntries << string("\n") * keyPostDataNewLinesCounter << AndreiUtils::tab * (indentLevel + 1);
                 }
                 commonEntries << ": ";
                 nlohmann::json const &originalCommonDatum = mapGet(originalContentMap, key);
                 if (!collectStringJsonContentKeepOrder(
                         commonEntries, *commonDatum, originalCommonDatum, lineByLineContent, lineIndex, characterIndex,
-                        indentLevel + 1, keepNewLines, &newLinesCounter)) {
+                        indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter)) {
                     return false;
+                }
+                if (verbose) {
+                    cout << " ---------------------- " << endl;
+                    cout << commonEntries.str() << endl;
+                    cout << " ---------------------- " << endl;
+                    cout << "Value Post Data: " << valuePostDataNewLinesCounter << endl;
                 }
                 firstCommonEntry = false;
             }
@@ -346,12 +375,15 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             if (lineByLineContent[lineIndex][characterIndex] == '}') {
                 break;
             }
-            ++characterIndex;
+            assert(lineByLineContent[lineIndex][characterIndex] == ',');
+            ++characterIndex; // skips the ',' character
         }
         ++characterIndex;
-        if (keepNewLines && newLinesCounter > 0) {
-            stringContent << string("\n") * newLinesCounter << AndreiUtils::tab * indentLevel;
-            newLinesCounter = 0;
+        if (keepNewLines && valuePostDataNewLinesCounter > 0) {
+            if (verbose) {
+                cout << "After key-value-for-loop: value post new lines = " << valuePostDataNewLinesCounter << endl;
+            }
+            commonEntries << string("\n") * valuePostDataNewLinesCounter << AndreiUtils::tab * indentLevel;
         }
         for (auto const &mapData: contentMap) {
             if (!mapContains(definedKeys, mapData.first)) {
@@ -368,9 +400,13 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         if (!commonString.empty() && !newString.empty()) {
             commonString += ",\n" + AndreiUtils::tab * (indentLevel + 1);
         }
-        stringContent << "{" << endl;
-        stringContent << AndreiUtils::tab * (indentLevel + 1) << commonString << newEntries.str() << endl;
-        stringContent << AndreiUtils::tab * indentLevel << "}";
+        if (keepNewLines) {
+            stringContent << "{" << commonString << newEntries.str() << "}";
+        } else {
+            stringContent << "{" << endl;
+            stringContent << AndreiUtils::tab * (indentLevel + 1) << commonString << newEntries.str() << endl;
+            stringContent << AndreiUtils::tab * indentLevel << "}";
+        }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, upperNewLinesCounter);
     } else {
         stringContent << collectStringJsonContent(content, indentLevel);
@@ -400,11 +436,17 @@ void AndreiUtils::writeJsonFileKeepOrder(  // NOLINT(misc-no-recursion)
     }
 
     stringstream stringContent;
-    int lineIndex = 0, characterIndex = 0;
+    int lineIndex = 0, characterIndex = 0, postDataNewLines = 0;
     if (!collectStringJsonContentKeepOrder(stringContent, content, originalJsonContent, lineByLineContent, lineIndex,
-                                           characterIndex, 0, keepNewLines)) {
+                                           characterIndex, 0, keepNewLines, &postDataNewLines)) {
         throw std::runtime_error("Parsing of the json data succeeded but the line-by-line parsing did not!");
     }
+    if (keepNewLines && postDataNewLines > 0) {
+        stringContent << string("\n") * postDataNewLines;
+    }
+
+    cout << "Output content:" << endl << stringContent.str() << endl;
+    return;
 
     ofstream fout(path);
     if (!fout.is_open()) {
