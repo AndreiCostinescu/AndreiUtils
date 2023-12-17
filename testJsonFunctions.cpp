@@ -155,6 +155,11 @@ void testParametersWithExternalConfigs() {
     cout << "\n\n";
 }
 
+void testWriteJsonWithKeepFormatAndNewLines() {
+    string filePath = "../data/testConfig1.json";
+    writeJsonFileKeepOrder(filePath, readJsonFile(filePath), true);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -163,7 +168,8 @@ int main() {
     // testConfigurationParameters();
     // testMixedDataContainer();
     // testIntervalSerialization();
-    testParametersWithExternalConfigs();
+    // testParametersWithExternalConfigs();
+    testWriteJsonWithKeepFormatAndNewLines();
 
     return 0;
 }
