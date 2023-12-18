@@ -347,7 +347,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                                           << AndreiUtils::tab * (indentLevel + 1) << ",";
                             valuePostDataNewLinesCounter = 0;
                         } else {
-                            commonEntries << ", ";
+                            commonEntries << ",";
                         }
                     } else {
                         commonEntries << ",\n" << AndreiUtils::tab * (indentLevel + 1);
@@ -380,6 +380,10 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                     cout << "Value Post Data: " << valuePostDataNewLinesCounter << endl;
                 }
                 firstCommonEntry = false;
+            } else {
+                if (!skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex)) {
+                    return false;
+                }
             }
 
             if (lineByLineContent[lineIndex][characterIndex] == '}') {
@@ -421,10 +425,10 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             commonString += ",\n" + AndreiUtils::tab * (indentLevel + 1);
         }
         if (keepNewLines) {
-            stringContent << "{" << commonString << newEntries.str() << "}";
+            stringContent << "{" << commonString << newString << "}";
         } else {
             stringContent << "{" << endl;
-            stringContent << AndreiUtils::tab * (indentLevel + 1) << commonString << newEntries.str() << endl;
+            stringContent << AndreiUtils::tab * (indentLevel + 1) << commonString << newString << endl;
             stringContent << AndreiUtils::tab * indentLevel << "}";
         }
         if (verbose) {
