@@ -259,8 +259,13 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             }
             if (!collectStringJsonContentKeepOrder(
                     stringContent, contentArray[index], originalContentArray[index], lineByLineContent, lineIndex,
-                    characterIndex, indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter)) {
+                    characterIndex, indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
                 return false;
+            }
+            if (verbose) {
+                cout << " ---------------------- " << endl;
+                cout << stringContent.str() << endl;
+                cout << " ---------------------- " << endl;
             }
         }
         assert(lineByLineContent[lineIndex][characterIndex] == ']');
@@ -275,6 +280,11 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             }
         }
         stringContent << "]";
+        if (verbose) {
+            cout << " ====================== " << endl;
+            cout << stringContent.str() << endl;
+            cout << " ====================== " << endl;
+        }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, upperNewLinesCounter);
     } else if (c == '{') {
         // object
@@ -360,7 +370,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                 nlohmann::json const &originalCommonDatum = mapGet(originalContentMap, key);
                 if (!collectStringJsonContentKeepOrder(
                         commonEntries, *commonDatum, originalCommonDatum, lineByLineContent, lineIndex, characterIndex,
-                        indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter)) {
+                        indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
                     return false;
                 }
                 if (verbose) {
@@ -397,6 +407,16 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         }
 
         string commonString = commonEntries.str(), newString = newEntries.str();
+        if (verbose) {
+            cout << "CommonString:" << endl;
+            cout << "<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+            cout << commonString << endl;
+            cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+            cout << "NewString:" << endl;
+            cout << "<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+            cout << newString << endl;
+            cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+        }
         if (!commonString.empty() && !newString.empty()) {
             commonString += ",\n" + AndreiUtils::tab * (indentLevel + 1);
         }
@@ -406,6 +426,11 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             stringContent << "{" << endl;
             stringContent << AndreiUtils::tab * (indentLevel + 1) << commonString << newEntries.str() << endl;
             stringContent << AndreiUtils::tab * indentLevel << "}";
+        }
+        if (verbose) {
+            cout << " ====================== " << endl;
+            cout << stringContent.str() << endl;
+            cout << " ====================== " << endl;
         }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, upperNewLinesCounter);
     } else {
