@@ -246,12 +246,15 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             if (index > 0) {
                 stringContent << ",";
                 if (!keepArrayValueCondensed) {
-                    if (keepNewLines && valuePostDataNewLinesCounter > 0) {
-                        stringContent << string("\n") * valuePostDataNewLinesCounter
-                                      << AndreiUtils::tab * (indentLevel + 1);
-                        valuePostDataNewLinesCounter = 0;
+                    if (keepNewLines) {
+                        if (valuePostDataNewLinesCounter > 0) {
+                            stringContent << string("\n") * valuePostDataNewLinesCounter
+                                          << AndreiUtils::tab * (indentLevel + 1);
+                            valuePostDataNewLinesCounter = 0;
+                        }
+                    } else {
+                        stringContent << endl << AndreiUtils::tab * (indentLevel + 1);
                     }
-                    stringContent << endl << AndreiUtils::tab * (indentLevel + 1);
                 } else {
                     stringContent << " ";
                 }
@@ -397,7 +400,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             if (verbose) {
                 cout << "After key-value-for-loop: value post new lines = " << valuePostDataNewLinesCounter << endl;
             }
-            commonEntries << string("\n") * valuePostDataNewLinesCounter << AndreiUtils::tab * indentLevel;
+            commonEntries << string("\n") * valuePostDataNewLinesCounter;
         }
         for (auto const &mapData: contentMap) {
             if (!mapContains(definedKeys, mapData.first)) {
@@ -422,9 +425,41 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
         }
         if (!commonString.empty() && !newString.empty()) {
-            commonString += ",\n" + AndreiUtils::tab * (indentLevel + 1);
+            if (verbose) {
+                cout << "?????????????????????" << endl;
+                cout << commonString << endl;
+                cout << "?????????????????????" << endl;
+            }
+            if (keepNewLines && (commonString.back() == '\n' || commonString.back() == ' ')) {
+                size_t index = commonString.size() - 1;
+                while (index > 0 && (commonString[index - 1] == '\n' || commonString[index - 1] == ' ')) {
+                    --index;
+                }
+                commonString[index] = ',';
+            } else {
+                commonString += ",";
+            }
+            commonString += "\n" + AndreiUtils::tab * (indentLevel + 1);
+            if (verbose) {
+                cout << "?????????????????????" << endl;
+                cout << commonString << endl;
+                cout << "?????????????????????" << endl;
+            }
+        } else if (!commonString.empty() && newString.empty()) {
+            if (keepNewLines) {
+                commonString += AndreiUtils::tab * indentLevel;
+            }
+        } else if (commonString.empty() && !newString.empty()) {
+            if (keepNewLines) {
+                newString = "\n" + (AndreiUtils::tab * (indentLevel + 1)) + newString;
+            }
+        } else {
+            throw std::runtime_error("No common entries and no new entries should have been processed!");
         }
         if (keepNewLines) {
+            if (!newString.empty()) {
+                newString += "\n" + (AndreiUtils::tab * indentLevel);
+            }
             stringContent << "{" << commonString << newString << "}";
         } else {
             stringContent << "{" << endl;
