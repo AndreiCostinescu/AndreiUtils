@@ -505,12 +505,10 @@ void AndreiUtils::writeJsonFileKeepOrder(  // NOLINT(misc-no-recursion)
                                            characterIndex, 0, keepNewLines, &postDataNewLines)) {
         throw std::runtime_error("Parsing of the json data succeeded but the line-by-line parsing did not!");
     }
-    if (keepNewLines && postDataNewLines > 0) {
-        stringContent << string("\n") * postDataNewLines;
+    if (keepNewLines && postDataNewLines > 1) {
+        // -1 because the write function adds its own end-line character
+        stringContent << string("\n") * (postDataNewLines - 1);
     }
-
-    cout << "Output content:" << endl << stringContent.str() << endl;
-    return;
 
     ofstream fout(path);
     if (!fout.is_open()) {

@@ -159,6 +159,19 @@ void testParametersWithExternalConfigs() {
 void testWriteJsonWithKeepFormatAndNewLines() {
     string filePath = "../data/testConfig1.json";
     writeJsonFileKeepOrder(filePath, readJsonFile(filePath), true);
+    cout << "\n\n\n===============================\n\n\n";
+    filePath = "../data/testConfig3.json";
+    nlohmann::json config = readJsonFile(filePath);
+    config["TestObject"]["direct_parents"] = {"string", "number", "map", "vector"};
+    auto &tmp = config["BowlGreyIkeaInstance"]["data"]["propertyValues"];
+    tmp["time"] = {"string", "number", "map", "vector"};
+    tmp["date"] = 0.01;
+    tmp["user"] = "Andrei";
+
+    auto &tmp2 = config["BowlGreyIkeaInstance"]["data"]["geometryData"]["shapeSymmetries"][0];
+    tmp2.clear();
+    tmp2["clearedBy"] = "Andrei";
+    writeJsonFileKeepOrder(filePath, config, true);
 }
 
 int main() {
