@@ -248,7 +248,7 @@ endif ()
 
 if (USE_JSON)
     # depends on json
-    SET(UTILS_JSON src/utilsJson.cpp src/classes/ConfigurationParameters.cpp ${UTILS_JSON})
+    SET(UTILS_JSON src/utilsJson.cpp src/classes/Parameters.cpp src/classes/ConfigurationParameters.cpp src/classes/ParametersWithExternalConfig.cpp ${UTILS_JSON})
 endif ()
 
 if (USE_OPENCV)

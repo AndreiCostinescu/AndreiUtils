@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/ConfigurationParameters.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/classes/ParametersWithExternalConfig.hpp>
 #include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
 #include <iostream>
