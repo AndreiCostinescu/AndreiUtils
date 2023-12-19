@@ -19,6 +19,10 @@ namespace AndreiUtils {
 
     bool stringToBool(std::string const &s);
 
+    bool stringIsDouble(std::string const &s);
+
+    bool stringIsDouble(std::string const &s, double &res);
+
     double stringToDouble(std::string const &s);
 
     bool stringIsFloat(std::string const &s);

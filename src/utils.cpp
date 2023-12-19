@@ -9,17 +9,18 @@
 using namespace std;
 
 bool AndreiUtils::stringIsInteger(string const &s) {
-    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
-
-    char *p;
-    strtol(s.c_str(), &p, 10);
-
-    return (*p == 0);
+    int tmp;
+    return stringIsInteger(s, tmp);
 }
 
 bool AndreiUtils::stringIsInteger(string const &s, int &res) {
-    if (stringIsInteger(s)) {
-        res = std::stoi(s);
+    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+
+    char *p;
+    long tmpRes = strtol(s.c_str(), &p, 10);
+
+    if (*p == 0) {
+        res = (int) tmpRes;
         return true;
     }
     return false;
@@ -52,6 +53,19 @@ bool AndreiUtils::stringToBool(string const &s) {
         return false;
     }
     throw runtime_error("Can not convert string \"" + s + "\" to boolean...");
+}
+
+bool AndreiUtils::stringIsDouble(string const &s) {
+    double tmp;
+    return stringIsDouble(s, tmp);
+}
+
+bool AndreiUtils::stringIsDouble(string const &s, double &res) {
+    try {
+        res = stod(s);
+        return true;
+    } catch (exception &e) {}
+    return false;
 }
 
 double AndreiUtils::stringToDouble(string const &s) {
