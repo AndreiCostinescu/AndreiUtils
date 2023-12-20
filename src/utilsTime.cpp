@@ -16,6 +16,22 @@ typedef ratio<3600 * 24> daysRatio;
 typedef ratio<3600> hoursRatio;
 typedef ratio<60> minutesRatio;
 
+AndreiUtils::HighResTimePoint AndreiUtils::nowHighResClock() {
+    return AndreiUtils::HighResClock::now();
+}
+
+AndreiUtils::SteadyTimePoint AndreiUtils::nowSteadyClock() {
+    return AndreiUtils::SteadyClock::now();
+}
+
+AndreiUtils::SystemTimePoint AndreiUtils::nowSystemClock() {
+    return AndreiUtils::SystemClock::now();
+}
+
+AndreiUtils::SystemTimePoint AndreiUtils::now() {
+    return nowSystemClock();
+}
+
 string AndreiUtils::convertChronoToString(SystemTimePoint const &time, string const &format) {
     time_t timeStruct;
     stringstream ss;
@@ -311,7 +327,7 @@ void AndreiUtils::updateTime(clock_t const &newTime, clock_t &prevTime, bool upd
 
 clock_t AndreiUtils::createDeltaTime(double fps, double deltaSec) {
     if (fps > 0) {
-        return (clock_t)(CLOCKS_PER_SEC * 1 / fps);
+        return (clock_t) (CLOCKS_PER_SEC * 1 / fps);
     }
-    return (clock_t)(CLOCKS_PER_SEC * deltaSec);
+    return (clock_t) (CLOCKS_PER_SEC * deltaSec);
 }

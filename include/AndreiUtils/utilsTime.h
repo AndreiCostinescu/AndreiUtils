@@ -11,6 +11,14 @@
 #include <string>
 
 namespace AndreiUtils {
+    AndreiUtils::HighResTimePoint nowHighResClock();
+
+    AndreiUtils::SteadyTimePoint nowSteadyClock();
+
+    AndreiUtils::SystemTimePoint nowSystemClock();
+
+    AndreiUtils::SystemTimePoint now();
+
     std::string convertChronoToString(SystemTimePoint const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S");
 
     SystemTimePoint convertStringToChrono(std::string const &time, std::string const &format = "%Y-%m-%d-%H-%M-%S");
