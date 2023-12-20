@@ -133,7 +133,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         ++characterIndex;
         while (true) {
             char const &chr = lineByLineContent[lineIndex][characterIndex];
-            if (!(chr == '.' || (chr >= '0' && chr <= '9'))) {
+            if (!(chr == '.' || (chr >= '0' && chr <= '9') || chr == 'e' || chr == '-' || chr == '+')) {
                 break;
             }
             if (skippedData != nullptr) {
