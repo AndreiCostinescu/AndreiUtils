@@ -175,4 +175,54 @@ namespace AndreiUtils {
         }
         return false;
     }
+
+    template<typename T>
+    void getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis, Eigen::Matrix<T, 3, 1> &xAxis,
+                                      Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis,
+                                      std::string const &whichAxis = "z") {
+        if (whichAxis != "x" && whichAxis != "y" && whichAxis != "z") {
+            throw std::runtime_error("Unknown axis type to process!");
+        }
+        Eigen::Matrix<T, 3, 1> tmp(1, 0, 0), tmpAxis, tmpAxis2;
+        if (AndreiUtils::greaterEqual(AndreiUtils::fastAbs(axis.dot(tmp)), 0.9)) {
+            // vectors are quasi-parallel
+            tmp.x() = 0;
+            tmp.y() = 1;
+        }
+        tmpAxis = axis.cross(tmp);
+        tmpAxis2 = axis.cross(tmpAxis);
+
+        if (whichAxis == "z") {
+            xAxis = tmpAxis;
+            yAxis = tmpAxis2;
+            zAxis = axis;
+        } else if (whichAxis == "y") {
+            zAxis = tmpAxis;
+            xAxis = tmpAxis2;
+            yAxis = axis;
+        } else {
+            assert(whichAxis == "x");
+            yAxis = tmpAxis;
+            zAxis = tmpAxis2;
+            xAxis = axis;
+        }
+    }
+
+    template<typename T>
+    Eigen::Matrix<T, 3, 3> getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis,
+                                                        std::string const &whichAxis = "z") {
+        Eigen::Matrix<T, 3, 1> x, y, z;
+        getAnyOrientationFromOneAxis(axis, x, y, z, whichAxis);
+        Eigen::Matrix<T, 3, 3> res;
+        res.col(0) = x;
+        res.col(1) = y;
+        res.col(2) = z;
+        return res;
+    }
+
+    template<typename T>
+    Eigen::Quaternion<T> getAnyOrientationQuaternionFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis,
+                                                                  std::string const &whichAxis = "z") {
+        return Eigen::Quaternion<T>(getAnyOrientationFromOneAxis(axis, whichAxis));
+    }
 }

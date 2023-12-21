@@ -49,13 +49,31 @@ void testSurfaceTriangle() {
     checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
 }
 
+void testAnyOrientationFromAxis() {
+    Vector3d axis(0, 0, 1);
+    cout << getAnyOrientationFromOneAxis(axis, "x") << endl;
+    cout << getAnyOrientationFromOneAxis(axis, "y") << endl;
+    cout << getAnyOrientationFromOneAxis(axis, "z") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "x") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "y") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "z") << endl;
+    axis << 1, 0, 0;
+    cout << getAnyOrientationFromOneAxis(axis, "x") << endl;
+    cout << getAnyOrientationFromOneAxis(axis, "y") << endl;
+    cout << getAnyOrientationFromOneAxis(axis, "z") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "x") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "y") << endl;
+    cout << getAnyOrientationQuaternionFromOneAxis(axis, "z") << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    testJointTrajectoryClass();
+    // testJointTrajectoryClass();
     // testEigenSlidingWindow();
     // testEigenMatrixAddSub();
     // testSurfaceTriangle();
+    testAnyOrientationFromAxis();
 
     return 0;
 }
