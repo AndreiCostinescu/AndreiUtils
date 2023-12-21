@@ -177,21 +177,27 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    void getPerpendicularAxesFromOne(Eigen::Matrix<T, 3, 1> const &axis, Eigen::Matrix<T, 3, 1> &xAxis,
+                                     Eigen::Matrix<T, 3, 1> &yAxis) {
+        Eigen::Matrix<T, 3, 1> tmp(1, 0, 0);
+        if (AndreiUtils::greaterEqual(AndreiUtils::fastAbs(axis.dot(tmp)), 0.9)) {
+            // vectors are quasi-parallel
+            tmp.x() = 0;
+            tmp.y() = 1;
+        }
+        xAxis = axis.cross(tmp);
+        yAxis = axis.cross(xAxis);
+    }
+
+    template<typename T>
     void getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis, Eigen::Matrix<T, 3, 1> &xAxis,
                                       Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis,
                                       std::string const &whichAxis = "z") {
         if (whichAxis != "x" && whichAxis != "y" && whichAxis != "z") {
             throw std::runtime_error("Unknown axis type to process!");
         }
-        Eigen::Matrix<T, 3, 1> tmp(1, 0, 0), tmpAxis, tmpAxis2;
-        if (AndreiUtils::greaterEqual(AndreiUtils::fastAbs(axis.dot(tmp)), 0.9)) {
-            // vectors are quasi-parallel
-            tmp.x() = 0;
-            tmp.y() = 1;
-        }
-        tmpAxis = axis.cross(tmp);
-        tmpAxis2 = axis.cross(tmpAxis);
-
+        Eigen::Matrix<T, 3, 1> tmpAxis, tmpAxis2;
+        getPerpendicularAxesFromOne(axis, tmpAxis, tmpAxis2);
         if (whichAxis == "z") {
             xAxis = tmpAxis;
             yAxis = tmpAxis2;
