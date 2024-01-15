@@ -190,12 +190,13 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    void getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis, Eigen::Matrix<T, 3, 1> &xAxis,
+    void getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> axis, Eigen::Matrix<T, 3, 1> &xAxis,
                                       Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis,
                                       std::string const &whichAxis = "z") {
         if (whichAxis != "x" && whichAxis != "y" && whichAxis != "z") {
             throw std::runtime_error("Unknown axis type to process!");
         }
+        axis.normalize();
         Eigen::Matrix<T, 3, 1> tmpAxis, tmpAxis2;
         getPerpendicularAxesFromOne(axis, tmpAxis, tmpAxis2);
         if (whichAxis == "z") {
@@ -228,7 +229,7 @@ namespace AndreiUtils {
 
     template<typename T>
     Eigen::Quaternion<T> getAnyOrientationQuaternionFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis,
-                                                                  std::string const &whichAxis = "z") {
+                                                                std::string const &whichAxis = "z") {
         return Eigen::Quaternion<T>(getAnyOrientationFromOneAxis(axis, whichAxis));
     }
 }
