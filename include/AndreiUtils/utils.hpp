@@ -123,8 +123,28 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    [[nodiscard]] inline T clampLow(T const &v, T const &minV) {
+        return fastMax(v, minV);
+    }
+
+    template<typename T>
+    [[nodiscard]] inline T clampHigh(T const &v, T const &maxV) {
+        return fastMin(v, maxV);
+    }
+
+    template<typename T>
     void clampInPlace(T &v, T const &minV, T const &maxV) {
         v = clamp(v, minV, maxV);
+    }
+
+    template<typename T>
+    void clampLowInPlace(T &v, T const &minV) {
+        v = clampLow(v, minV);
+    }
+
+    template<typename T>
+    void clampHighInPlace(T &v, T const &maxV) {
+        v = clampHigh(v, maxV);
     }
 
     template<typename T>
