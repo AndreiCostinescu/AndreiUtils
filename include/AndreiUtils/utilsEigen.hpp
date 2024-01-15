@@ -232,4 +232,69 @@ namespace AndreiUtils {
                                                                 std::string const &whichAxis = "z") {
         return Eigen::Quaternion<T>(getAnyOrientationFromOneAxis(axis, whichAxis));
     }
+
+    template<typename T>
+    void getOrientationFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> axis1, Eigen::Matrix<T, 3, 1> axis2, Eigen::Matrix<T, 3, 1> &xAxis,
+            Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis, std::string const &whichAxis1 = "z",
+            std::string const &whichAxis2 = "x") {
+        if (whichAxis1 != "x" && whichAxis1 != "y" && whichAxis1 != "z") {
+            throw std::runtime_error("Unknown axis1 type to process!");
+        }
+        if (whichAxis2 != "x" && whichAxis2 != "y" && whichAxis2 != "z") {
+            throw std::runtime_error("Unknown axis2 type to process!");
+        }
+        axis1.normalize();
+        axis2.normalize();
+        Eigen::Matrix<T, 3, 1> tmpAxis;
+        if (whichAxis1 == "z") {
+            zAxis = axis1;
+            if (whichAxis2 == "y") {
+                xAxis = axis2.cross(zAxis);
+                yAxis = zAxis.cross(xAxis);
+            } else {
+                yAxis = zAxis.cross(axis2);
+                xAxis = yAxis.cross(zAxis);
+            }
+        } else if (whichAxis1 == "y") {
+            yAxis = axis1;
+            if (whichAxis2 == "x") {
+                zAxis = axis2.cross(yAxis);
+                xAxis = yAxis.cross(zAxis);
+            } else {
+                xAxis = yAxis.cross(axis2);
+                zAxis = xAxis.cross(yAxis);
+            }
+        } else {
+            assert(whichAxis1 == "x");
+            xAxis = axis1;
+            if (whichAxis2 == "z") {
+                yAxis = axis2.cross(xAxis);
+                zAxis = xAxis.cross(yAxis);
+            } else {
+                zAxis = xAxis.cross(axis2);
+                yAxis = zAxis.cross(xAxis);
+            }
+        }
+    }
+
+    template<typename T>
+    Eigen::Matrix<T, 3, 3> getOrientationFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+        Eigen::Matrix<T, 3, 1> x, y, z;
+        getOrientationFromTwoAxes(axis1, axis2, x, y, z, whichAxis1, whichAxis2);
+        Eigen::Matrix<T, 3, 3> res;
+        res.col(0) = x;
+        res.col(1) = y;
+        res.col(2) = z;
+        return res;
+    }
+
+    template<typename T>
+    Eigen::Quaternion<T> getOrientationQuaternionFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+        return Eigen::Quaternion<T>(getOrientationFromTwoAxes(axis1, axis2, whichAxis1, whichAxis2));
+    }
 }
