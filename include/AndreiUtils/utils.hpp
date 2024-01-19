@@ -21,19 +21,19 @@ namespace AndreiUtils {
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::shared_ptr<InstanceType> const &val) {
-        return InstanceOf<TypeCheck, InstanceType,
+        return InstanceOf<TypeCheck, InstanceType *,
                 std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::unique_ptr<InstanceType> const &val) {
-        return InstanceOf<TypeCheck, InstanceType,
+        return InstanceOf<TypeCheck, InstanceType *,
                 std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::weak_ptr<InstanceType> const &val) {
-        return InstanceOf<TypeCheck, InstanceType,
+        return InstanceOf<TypeCheck, InstanceType *,
                 std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
