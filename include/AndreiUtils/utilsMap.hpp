@@ -235,7 +235,7 @@ namespace AndreiUtils {
                                                      T2 const &value) {
         auto x = container.insert({key, value});
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
@@ -244,7 +244,7 @@ namespace AndreiUtils {
     typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1, T2, C, A> &container, T1 const &key, T2 &&value) {
         auto x = container.insert(std::make_pair(key, std::forward<T2>(value)));
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
@@ -254,7 +254,7 @@ namespace AndreiUtils {
                                                      T2 const &value) {
         auto x = container.insert({const_cast<T1 *>(key), value});
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
@@ -263,7 +263,7 @@ namespace AndreiUtils {
     typename std::map<T1, T2, C, A>::iterator mapAdd(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 &&value) {
         auto x = container.insert(std::make_pair(const_cast<T1 *>(key), std::forward<T2>(value)));
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
@@ -274,7 +274,7 @@ namespace AndreiUtils {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(key),
                                    std::forward_as_tuple(args...));
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
@@ -285,7 +285,7 @@ namespace AndreiUtils {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(const_cast<T1 *>(key)),
                                    std::forward_as_tuple(args...));
         if (!x.second) {
-            throw std::runtime_error("Key already is in container!");
+            throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
         return x.first;
     }
