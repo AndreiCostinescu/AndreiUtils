@@ -2,6 +2,7 @@
 // Created by Andrei on 03.11.22.
 //
 
+#include <AndreiUtils/utils.hpp>
 #include <iostream>
 #include <memory>
 
@@ -11,7 +12,7 @@ class A {
 public:
     explicit A(string name = "") : name(std::move(name)) {}
 
-    ~A() {
+    virtual ~A() {
         cout << "In A's destructor for " << this->name << "!" << endl;
     }
 
@@ -113,6 +114,21 @@ void testCopyPointer() {
     cout << *x << " vs. " << *y << endl;
 }
 
+class B : public A {
+public:
+    B() : A("B") {}
+};
+
+void testInstanceOf() {
+    auto a = make_shared<A>("C");
+    auto b = make_shared<B>();
+    cout << boolalpha;
+    cout << AndreiUtils::pointerInstanceOf<A>(a) << endl;
+    cout << AndreiUtils::pointerInstanceOf<A>(b) << endl;
+    cout << AndreiUtils::pointerInstanceOf<B>(a) << endl;
+    cout << AndreiUtils::pointerInstanceOf<B>(b) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -122,7 +138,8 @@ int main() {
     // testSharedPtrWithConst();
     // testSharedPtrWithArray();
     // testVoidSharedPtr();
-    testCopyPointer();
+    // testCopyPointer();
+    testInstanceOf();
 
     return 0;
 }
