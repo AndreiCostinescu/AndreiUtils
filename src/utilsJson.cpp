@@ -58,17 +58,19 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         // array
         vector<nlohmann::json> data;
         ++characterIndex;
-        while (true) {
-            data.emplace_back();
-            if (!skipToNextEntryInThisLevelOfJsonContent(
-                    lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
-                    skippedData != nullptr ? &data.back() : nullptr)) {
-                return false;
+        if (lineByLineContent[lineIndex][characterIndex] != ']') {
+            while (true) {
+                data.emplace_back();
+                if (!skipToNextEntryInThisLevelOfJsonContent(
+                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
+                        skippedData != nullptr ? &data.back() : nullptr)) {
+                    return false;
+                }
+                if (lineByLineContent[lineIndex][characterIndex] == ']') {
+                    break;
+                }
+                ++characterIndex;
             }
-            if (lineByLineContent[lineIndex][characterIndex] == ']') {
-                break;
-            }
-            ++characterIndex;
         }
         ++characterIndex;
         if (skippedData != nullptr) {
@@ -80,26 +82,28 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         // object
         std::map<std::string, nlohmann::json> data;
         ++characterIndex;
-        while (true) {
-            std::string key;
-            nlohmann::json keyData;
-            if (!skipToNextEntryInThisLevelOfJsonContent(
-                    lineByLineContent, lineIndex, characterIndex, emptyLinesCounter, &keyData)) {
-                return false;
+        if (lineByLineContent[lineIndex][characterIndex] != '}') {
+            while (true) {
+                std::string key;
+                nlohmann::json keyData;
+                if (!skipToNextEntryInThisLevelOfJsonContent(
+                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter, &keyData)) {
+                    return false;
+                }
+                assert(keyData.is_string());
+                key = keyData.get<string>();
+                assert(lineByLineContent[lineIndex][characterIndex] == ':');
+                ++characterIndex;
+                if (!skipToNextEntryInThisLevelOfJsonContent(
+                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
+                        skippedData != nullptr ? &(mapEmplace(data, key)->second) : nullptr)) {
+                    return false;
+                }
+                if (lineByLineContent[lineIndex][characterIndex] == '}') {
+                    break;
+                }
+                ++characterIndex;
             }
-            assert(keyData.is_string());
-            key = keyData.get<string>();
-            assert(lineByLineContent[lineIndex][characterIndex] == ':');
-            ++characterIndex;
-            if (!skipToNextEntryInThisLevelOfJsonContent(
-                    lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
-                    skippedData != nullptr ? &(mapEmplace(data, key)->second) : nullptr)) {
-                return false;
-            }
-            if (lineByLineContent[lineIndex][characterIndex] == '}') {
-                break;
-            }
-            ++characterIndex;
         }
         ++characterIndex;
         if (skippedData != nullptr) {
