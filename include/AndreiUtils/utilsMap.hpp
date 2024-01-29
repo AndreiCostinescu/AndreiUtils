@@ -221,23 +221,23 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    void mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
-        container[key] = value;
+    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+        return container.insert_or_assign(key, value).first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    void mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
-        container[const_cast<T1 *>(key)] = value;
+    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+        return container.insert_or_assign(const_cast<T1 *>(key), value).first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    void mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 &&value) {
-        container[key] = std::forward<T2>(value);
+    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 &&value) {
+        return container.insert_or_assign(key, std::forward<T2>(value)).first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    void mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 &&value) {
-        container[const_cast<T1 *>(key)] = std::forward<T2>(value);
+    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 &&value) {
+        return container.insert_or_assign(const_cast<T1 *>(key), std::forward<T2>(value)).first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
