@@ -6,7 +6,6 @@
 #define ANDREIUTILS_UTILS_HPP
 
 #include <AndreiUtils/traits/InstanceOf.hpp>
-#include <cmath>
 #include <memory>
 #include <type_traits>
 #include <stdexcept>
@@ -201,8 +200,8 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    int signOf(T val) {
-        return (T(0) < val) - (val < T(0));
+    int signOf(T val, double tol = 1e-9) {
+        return (AndreiUtils::less(T(0), val, tol)) - (AndreiUtils::less(val, T(0), tol));
     }
 }
 

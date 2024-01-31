@@ -6,6 +6,7 @@
 #include <AndreiUtils/utils.hpp>
 #include <cassert>
 #include <cfloat>
+#include <cmath>
 
 using namespace AndreiUtils;
 using namespace std;
