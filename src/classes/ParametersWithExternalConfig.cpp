@@ -20,6 +20,7 @@ bool ParametersWithExternalConfig::isJsonExternalConfig(json const &j) {
 }
 
 std::string const ParametersWithExternalConfig::externalConfigKey("externalConfig");
+std::string const ParametersWithExternalConfig::externalDataKey("external");
 
 ParametersWithExternalConfig::ParametersWithExternalConfig() :
         Parameters(), isExternalConfig(false), configFileDirectory("./") {}
@@ -87,6 +88,12 @@ std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion
             if (AndreiUtils::mapGetIfContains(this->externalConfigs, jsonDatum.key(), p)) {
                 ss << "{" << endl << p->toString(indent + AndreiUtils::tab * 2, verbose) << indent + AndreiUtils::tab
                    << "}" << endl;
+            } else if (AndreiUtils::mapContains(this->shortcutToParametersAssociation, jsonDatum.key())) {
+                if (!AndreiUtils::mapContains(this->shortcutToExternalFileAssociation, jsonDatum.key())) {
+                    ss << "LAYERED EXTERNAL: " << jsonDatum.value().dump(4) << endl;
+                } else {
+                    ss << "EXTERNAL: " << jsonDatum.value().dump(4) << endl;
+                }
             } else {
                 ss << jsonDatum.value().dump(4) << endl;
             }
@@ -126,6 +133,10 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         auto tmp = ParametersWithExternalConfig(this->externalFileName);
         this->parameters = std::move(tmp.parameters);
         this->externalConfigs = std::move(tmp.externalConfigs);
+        this->shortcutToParametersAssociation = std::move(tmp.shortcutToParametersAssociation);
+        this->shortcutToExternalFileAssociation = std::move(tmp.shortcutToExternalFileAssociation);
+        this->externalFileToShortcutAssociation = std::move(tmp.externalFileToShortcutAssociation);
+        this->externalShortcuts = std::move(tmp.externalShortcuts);
         if (tmp.isExternalConfig) {
             this->externalFileName = std::move(tmp.externalFileName);
         }
@@ -146,13 +157,51 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         auto &jsonConfig = this->getJsonReference();
         if (jsonConfig.is_object()) {
             // create map of external configs
+            bool hasExternalConfigs = false;
             for (auto &jsonData: jsonConfig.items()) {
                 auto &jsonValue = jsonData.value();
                 ParametersWithExternalConfig subConfig(&jsonValue, this->configFileDirectory);
+                // if the subconfig is external or it has inside its data a nested external config somewhere
                 if (subConfig.isExternalConfig || !subConfig.externalConfigs.empty()) {
                     assert(subConfig.isReference);
                     AndreiUtils::mapEmplace(this->externalConfigs, jsonData.key(), std::move(subConfig));
+                } else if (jsonData.key() == ParametersWithExternalConfig::externalDataKey) {
+                    hasExternalConfigs = true;
                 }
+            }
+            if (hasExternalConfigs) {
+                auto externalFiles = jsonConfig.at(ParametersWithExternalConfig::externalDataKey).get<std::vector<std::string>>();
+                for (auto externalFile: externalFiles) {
+                    cout << "Found external file: " << externalFile << endl;
+                    string originalExternalFile = externalFile;
+                    if (!isFilePathAbsolute(externalFile)) {
+                        externalFile = simplifyRelativePath(this->configFileDirectory + externalFile);
+                    }
+
+                    auto tmp = ParametersWithExternalConfig(externalFile);
+                    // assert that keys in tmp are not in jsonConfig (i.e. not in this level!)
+                    for (auto const &constJsonData: jsonConfig.items()) {
+                        auto const &p = constJsonData.key();
+                        if (tmp.has(p)) {
+                            throw std::runtime_error(
+                                    "External config \"" + externalFile + "\" has the same parameter \"" + p +
+                                    "\" as this level! Bad configuration!");
+                        }
+                    }
+
+                    jsonConfig.update(tmp.getJson());
+                    mapEmplace(this->externalFileToShortcutAssociation, originalExternalFile);
+                    auto *parameterPtr = &(mapEmplace(this->externalShortcuts, originalExternalFile, std::move(tmp))->second);
+                    for (auto const &constJsonData: parameterPtr->getJson().items()) {
+                        std::string const &key = constJsonData.key();
+                        mapGet(this->externalFileToShortcutAssociation, originalExternalFile).emplace_back(key);
+                        mapEmplace(this->shortcutToParametersAssociation, constJsonData.key(), parameterPtr);
+                        if (!mapContains(parameterPtr->shortcutToParametersAssociation, key)) {
+                            mapEmplace(this->shortcutToExternalFileAssociation, key, originalExternalFile, externalFile);
+                        }
+                    }
+                }
+                jsonConfig.erase(ParametersWithExternalConfig::externalDataKey);
             }
         }
     }

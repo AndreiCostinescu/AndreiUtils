@@ -11,7 +11,7 @@ namespace AndreiUtils {
     public:
         [[nodiscard]] static bool isJsonExternalConfig(nlohmann::json const &j);
 
-        static std::string const externalConfigKey;
+        static std::string const externalConfigKey, externalDataKey;
 
         ParametersWithExternalConfig();
 
@@ -63,6 +63,10 @@ namespace AndreiUtils {
                 nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
 
         std::map<std::string, ParametersWithExternalConfig> externalConfigs;
+        std::map<std::string, ParametersWithExternalConfig> externalShortcuts;
+        std::map<std::string, std::vector<std::string>> externalFileToShortcutAssociation;
+        std::map<std::string, std::pair<std::string, std::string>> shortcutToExternalFileAssociation;
+        std::map<std::string, ParametersWithExternalConfig *> shortcutToParametersAssociation;
         bool isExternalConfig;
         std::string externalFileName, originalExternalFileName, configFileDirectory;
     };
