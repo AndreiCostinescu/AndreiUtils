@@ -25,6 +25,8 @@ namespace AndreiUtils {
 
         void set(nlohmann::json &&data) override;
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "HidingNonVirtualFunction"
         template<typename T>
         void set(std::string const &parameterName, T const &data) {
             this->Parameters::set<T>(parameterName, data);
@@ -36,6 +38,7 @@ namespace AndreiUtils {
             this->Parameters::set<T>(parameterName, std::forward<T>(data));
             this->processOverwrittenParameter(parameterName);
         }
+#pragma clang diagnostic pop
 
         bool deleteKey(std::string const &parameterName) override;
 
