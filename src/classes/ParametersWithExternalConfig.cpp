@@ -94,45 +94,7 @@ void ParametersWithExternalConfig::writeParameters(std::string const &fileName, 
 
 std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion)
         string const &indent, bool verbose) const {
-    stringstream ss;
-    ExternalParameterData const &external = this->getExternalData();
-    if (verbose) {
-        ss << indent << (this->isReference ? "REFERENCE" : "VALUE") << ": ";
-        if (this->isExternalConfig()) {
-            ss << "External file " << external.externalFileName << ": ";
-        }
-        ss << this->configFileDirectory << ": " << endl;
-    }
-    json const &jsonData = this->getJson();
-    if (jsonData.is_object()) {
-        map<ParametersWithExternalConfig const *, bool> processedExternalParameters;
-        for (auto const &jsonDatum: jsonData.items()) {
-            ParametersWithExternalConfig const *p;
-            if (AndreiUtils::mapGetIfContains(external.externalConfigs, jsonDatum.key(), p)) {
-                ss << indent + AndreiUtils::tab << jsonDatum.key() << ": ";
-                ss << "{" << endl << p->toString(indent + AndreiUtils::tab * 2, verbose) << indent + AndreiUtils::tab
-                   << "}" << endl;
-            } else if (AndreiUtils::mapGetIfContains(external.externalKeyToParametersAssociation, jsonDatum.key(), p)) {
-                if (!mapContains(processedExternalParameters, p)) {
-                    ss << indent + AndreiUtils::tab << "EXTERNAL: "
-                       << AndreiUtils::mapGet(external.externalFileAssociation, p).second << endl;
-                    ss << p->toString(indent + AndreiUtils::tab * 2, verbose) << endl;
-                    mapEmplace(processedExternalParameters, p, true);
-                }
-            } else {
-                ss << indent + AndreiUtils::tab << jsonDatum.key() << ": ";
-                ss << jsonDatum.value().dump(4) << endl;
-            }
-        }
-    } else {
-        if (!external.externalConfigs.empty()) {
-            ss << jsonData.dump(4) << endl;
-            cout << ss.str() << endl;
-            assert(external.externalConfigs.empty());
-        }
-        ss << indent + AndreiUtils::tab << jsonData.dump(4) << endl;
-    }
-    return ss.str();
+    return this->toStringPrivate({}, indent, verbose);
 }
 
 ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config, std::string configFileDirectory) :
@@ -171,7 +133,7 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         external.externalParameters = std::move(tmpExternal.externalParameters);
         external.externalKeyToParametersAssociation = std::move(tmpExternal.externalKeyToParametersAssociation);
         external.externalFileAssociation = std::move(tmpExternal.externalFileAssociation);
-        external.externalFileToExternalKeyAssociation = std::move(tmpExternal.externalFileToExternalKeyAssociation);
+        external.externalParameterKeyAssociation = std::move(tmpExternal.externalParameterKeyAssociation);
         if (tmp.isExternalConfig()) {
             external.externalFileName = std::move(tmpExternal.externalFileName);
         }
@@ -181,6 +143,7 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
             this->parameterReference = config;
             this->isReference = true;
         }
+        this->updateExternalParameters(&this->getJsonReference());
     } else {
         if (setReference) {
             this->parameterReference = config;
@@ -225,11 +188,12 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     }
 
                     // assert that keys in tmp are not in jsonConfig (i.e. not in this level!)
-                    for (auto const &constJsonData: jsonConfig.items()) {
-                        auto const &p = constJsonData.key();
-                        if (tmp.has(p)) {
+                    map<string, bool> externalKeys;
+                    for (auto const &p: tmp.getJson().items()) {
+                        mapEmplace(externalKeys, p.key(), true);
+                        if (jsonConfig.contains(p.key())) {
                             throw std::runtime_error(
-                                    "External config \"" + externalFile + "\" has the same parameter \"" + p +
+                                    "External config \"" + externalFile + "\" has the same parameter \"" + p.key() +
                                     "\" as this level! Bad configuration!");
                         }
                     }
@@ -241,12 +205,10 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     auto *parameterPtr = &(mapEmplace(external.externalParameters, originalExternalFile,
                                                       std::move(tmp))->second);
                     mapEmplace(external.externalFileAssociation, parameterPtr, originalExternalFile, externalFile);
-                    mapEmplace(external.externalFileToExternalKeyAssociation, originalExternalFile);
-                    for (auto const &constJsonData: parameterPtr->getJson().items()) {
-                        std::string const &key = constJsonData.key();
-                        mapGet(external.externalFileToExternalKeyAssociation, originalExternalFile).emplace_back(key);
-                        mapEmplace(external.externalKeyToParametersAssociation, key, parameterPtr);
+                    for (auto const &key: externalKeys) {
+                        mapEmplace(external.externalKeyToParametersAssociation, key.first, parameterPtr);
                     }
+                    mapEmplace(external.externalParameterKeyAssociation, parameterPtr, std::move(externalKeys));
                 }
                 jsonConfig.erase(ParametersWithExternalConfig::externalDataKey);
             }
@@ -259,6 +221,7 @@ void ParametersWithExternalConfig::processOverwrittenParameter(  // NOLINT(misc-
     ParametersWithExternalConfig *overwrittenConfig;
     ExternalParameterData &external = this->getExternalData();
     if (AndreiUtils::mapGetIfContains(external.externalConfigs, parameterName, overwrittenConfig)) {
+        // handle the case when the overwritten parameter contains "externalConfig" data!
         ParametersWithExternalConfig subConfig(&this->getJsonReference(parameterName), this->configFileDirectory);
         if (subConfig.isExternalConfig() || !subConfig.getExternalData().externalConfigs.empty()) {
             *overwrittenConfig = std::move(subConfig);
@@ -272,22 +235,81 @@ void ParametersWithExternalConfig::processOverwrittenParameter(  // NOLINT(misc-
     }
 }
 
+void ParametersWithExternalConfig::toStringMap(  // NOLINT(misc-no-recursion)
+        std::stringstream &ss, std::string const &key, nlohmann::json const &value, std::string const &indent,
+        std::map<ParametersWithExternalConfig const *, bool> &processedExternalParameters,
+        ExternalParameterData const &external, bool verbose) {
+    ParametersWithExternalConfig const *p;
+    if (AndreiUtils::mapGetIfContains(external.externalConfigs, key, p)) {
+        ss << indent + AndreiUtils::tab << key << ": ";
+        ss << "{" << endl << p->toStringPrivate({}, indent + AndreiUtils::tab * 2, verbose) << indent + AndreiUtils::tab
+           << "}" << endl;
+    } else if (AndreiUtils::mapGetIfContains(external.externalKeyToParametersAssociation, key, p)) {
+        if (!mapContains(processedExternalParameters, p)) {
+            ss << indent + AndreiUtils::tab << "EXTERNAL: "
+               << AndreiUtils::mapGet(external.externalFileAssociation, p).second << endl;
+            ss << p->toStringPrivate(AndreiUtils::mapGet(external.externalParameterKeyAssociation, p),
+                                     indent + AndreiUtils::tab * 2, verbose) << endl;
+            mapEmplace(processedExternalParameters, p, true);
+        }
+    } else {
+        ss << indent + AndreiUtils::tab << key << ": ";
+        ss << value.dumpWithExistingIndent(4, ' ', int(indent.size()) + 4) << endl;
+    }
+}
+
+std::string ParametersWithExternalConfig::toStringPrivate(  // NOLINT(misc-no-recursion)
+        map<std::string, bool> const &collectOnlyTheseKeys, string const &indent, bool verbose) const {
+    stringstream ss;
+    ExternalParameterData const &external = this->getExternalData();
+    if (verbose) {
+        ss << indent << (this->isReference ? "REFERENCE" : "VALUE") << ": ";
+        if (this->isExternalConfig()) {
+            ss << "External file " << external.externalFileName << ": ";
+        }
+        ss << this->configFileDirectory << ": " << endl;
+    }
+    json const &jsonData = this->getJson();
+    // cout << "Local Json Data: " << jsonData.dump(4) << endl;
+    if (jsonData.is_object()) {
+        map<ParametersWithExternalConfig const *, bool> processedExternalParameters;
+        if (collectOnlyTheseKeys.empty()) {
+            for (auto const &jsonDatum: jsonData.items()) {
+                this->toStringMap(ss, jsonDatum.key(), jsonDatum.value(), indent, processedExternalParameters, external,
+                                  verbose);
+            }
+        } else {
+            for (auto const &key: collectOnlyTheseKeys) {
+                this->toStringMap(ss, key.first, jsonData.at(key.first), indent, processedExternalParameters, external,
+                                  verbose);
+            }
+        }
+    } else {
+        if (!external.externalConfigs.empty()) {
+            ss << jsonData.dump(4) << endl;
+            cout << ss.str() << endl;
+            assert(external.externalConfigs.empty());
+        }
+        ss << indent + AndreiUtils::tab << jsonData.dumpWithExistingIndent(4, ' ', indent.size() / 4) << endl;
+    }
+    return ss.str();
+}
+
 void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursion)
-        nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const {
+        nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
+        std::map<std::string, bool> const &collectOnlyTheseParameters) const {
     nlohmann::json theseParameters;
-    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, recurseSubConfigs, keepOrder, keepNewLines);
+    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, recurseSubConfigs, keepOrder, keepNewLines,
+                                                       collectOnlyTheseParameters);
     ExternalParameterData const &external = this->getExternalData();
     if (!external.externalParameters.empty()) {
         for (auto const &externalParameters: external.externalParameters) {
             auto processedExternalFile = mapGet(external.externalFileAssociation, &externalParameters.second).second;
             nlohmann::json toWriteExternalParameters;
-            externalParameters.second.updateParameters(toWriteExternalParameters, recurseSubConfigs, keepOrder,
-                                                       keepNewLines);
+            externalParameters.second.updateParameters(
+                    toWriteExternalParameters, recurseSubConfigs, keepOrder, keepNewLines,
+                    mapGet(external.externalParameterKeyAssociation, &externalParameters.second));
             writeJsonFile(processedExternalFile, toWriteExternalParameters, keepOrder, keepNewLines);
-            /*
-            externalParameters.second.writeParameters(processedExternalFile, recurseSubConfigs, keepOrder,
-                                                      keepNewLines);
-            //*/
         }
         theseParameters[ParametersWithExternalConfig::externalDataKey] = getMapKeys(external.externalParameters);
     }
@@ -300,19 +322,36 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
     }
 }
 
+void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFileObjectData(  // NOLINT(misc-no-recursion)
+        std::string const &datumKey, nlohmann::json const &datumValue, ExternalParameterData const &external,
+        json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) {
+    ParametersWithExternalConfig const *subConfig;
+    if (AndreiUtils::mapGetIfContains(external.externalConfigs, datumKey, subConfig)) {
+        json subConfigJson;
+        subConfig->updateParameters(subConfigJson, recurseSubConfigs, keepOrder, keepNewLines);
+        parametersToWrite[datumKey] = subConfigJson;
+    } else if (!AndreiUtils::mapContains(external.externalKeyToParametersAssociation, datumKey)) {
+        parametersToWrite[datumKey] = datumValue;
+    }
+}
+
 void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFile(  // NOLINT(misc-no-recursion)
-        json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const {
+        json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
+        std::map<std::string, bool> const &collectOnlyTheseKeys) const {
     json const &jsonData = this->getJson();
     if (jsonData.is_object()) {
         ExternalParameterData const &external = this->getExternalData();
-        for (auto const &datum: jsonData.items()) {
-            ParametersWithExternalConfig const *subConfig;
-            if (AndreiUtils::mapGetIfContains(external.externalConfigs, datum.key(), subConfig)) {
-                json subConfigJson;
-                subConfig->updateParameters(subConfigJson, recurseSubConfigs, keepOrder, keepNewLines);
-                parametersToWrite[datum.key()] = subConfigJson;
-            } else if (!AndreiUtils::mapContains(external.externalKeyToParametersAssociation, datum.key())) {
-                parametersToWrite[datum.key()] = datum.value();
+        if (collectOnlyTheseKeys.empty()) {
+            for (auto const &datum: jsonData.get<std::map<std::string, nlohmann::json>>()) {
+                this->collectAndUpdateParametersToWriteForThisFileObjectData(
+                        datum.first, datum.second, external, parametersToWrite, recurseSubConfigs, keepOrder,
+                        keepNewLines);
+            }
+        } else {
+            for (auto const &key: collectOnlyTheseKeys) {
+                this->collectAndUpdateParametersToWriteForThisFileObjectData(
+                        key.first, jsonData.at(key.first), external, parametersToWrite, recurseSubConfigs, keepOrder,
+                        keepNewLines);
             }
         }
     } else {
@@ -320,26 +359,17 @@ void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFile(
     }
 }
 
-void ParametersWithExternalConfig::updateExternalParameters(nlohmann::json *parameterParent) {
+void ParametersWithExternalConfig::updateExternalParameters(  // NOLINT(misc-no-recursion)
+        nlohmann::json *parameterParent) {
     for (auto &externalParameter: this->getExternalData().externalParameters) {
         externalParameter.second.updateExternalParameters(parameterParent);
     }
     for (auto &externalConfig: this->getExternalData().externalConfigs) {
         externalConfig.second.updateExternalParameters(&parameterParent->at(externalConfig.first));
     }
-    if (this->isExternalConfig()) {
-        //*
-        assert(this->isReference);
-        this->parameterReference = parameterParent;
-        return;
-        /*/
-        // Not always guaranteed that the externalConfig is a reference! (although it should be...) Make reference here!
-        if (!this->isReference) {
-            this->isReference = true;
-        }
-        this->parameterReference = parameterParent;
-        //*/
-    }
+    assert(!this->isExternalConfig() || this->isReference);
+    this->isReference = true;
+    this->parameterReference = parameterParent;
 }
 
 bool ParametersWithExternalConfig::isExternalConfig() const {

@@ -27,6 +27,7 @@ namespace AndreiUtils {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "HidingNonVirtualFunction"
+
         template<typename T>
         void set(std::string const &parameterName, T const &data) {
             this->Parameters::set<T>(parameterName, data);
@@ -38,18 +39,21 @@ namespace AndreiUtils {
             this->Parameters::set<T>(parameterName, std::forward<T>(data));
             this->processOverwrittenParameter(parameterName);
         }
+
 #pragma clang diagnostic pop
 
         bool deleteKey(std::string const &parameterName) override;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "HidingNonVirtualFunction"
+
         [[nodiscard]] ParametersWithExternalConfig operator[](std::string const &parameterName);
 
         [[nodiscard]] ParametersWithExternalConfig at(std::string const &parameterName);
+
 #pragma clang diagnostic pop
 
-        void writeParameters(std::string const &fileName, bool withWriteSubConfigs, bool keepOrder = false, 
+        void writeParameters(std::string const &fileName, bool withWriteSubConfigs, bool keepOrder = false,
                              bool keepNewLines = true) const;
 
         [[nodiscard]] std::string toString(std::string const &indent = "", bool verbose = false) const;
@@ -61,8 +65,8 @@ namespace AndreiUtils {
 
             std::map<std::string, ParametersWithExternalConfig> externalConfigs;
             std::map<std::string, ParametersWithExternalConfig> externalParameters;
-            std::map<std::string, std::vector<std::string>> externalFileToExternalKeyAssociation;
             std::map<ParametersWithExternalConfig *, std::pair<std::string, std::string>> externalFileAssociation;
+            std::map<ParametersWithExternalConfig *, std::map<std::string, bool>> externalParameterKeyAssociation;
             std::map<std::string, ParametersWithExternalConfig *> externalKeyToParametersAssociation;
             bool isExternalConfig;
             std::string externalFileName, originalExternalFileName;
@@ -80,11 +84,26 @@ namespace AndreiUtils {
 
         void processOverwrittenParameter(std::string const &parameterName);
 
+        static void toStringMap(
+                std::stringstream &ss, std::string const &key, nlohmann::json const &value, std::string const &indent,
+                std::map<ParametersWithExternalConfig const *, bool> &processedExternalParameters,
+                ExternalParameterData const &external, bool verbose);
+
+        [[nodiscard]] std::string toStringPrivate(
+                std::map<std::string, bool> const &collectOnlyTheseKeys = {}, std::string const &indent = "",
+                bool verbose = false) const;
+
         void updateParameters(
-                nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
+                nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
+                std::map<std::string, bool> const &collectOnlyTheseParameters = {}) const;
+
+        static void collectAndUpdateParametersToWriteForThisFileObjectData(
+                std::string const &datumKey, nlohmann::json const &datumValue, ExternalParameterData const &external,
+                nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines);
 
         void collectAndUpdateParametersToWriteForThisFile(
-                nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
+                nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
+                std::map<std::string, bool> const &collectOnlyTheseKeys) const;
 
         void updateExternalParameters(nlohmann::json *parameterParent);
 
