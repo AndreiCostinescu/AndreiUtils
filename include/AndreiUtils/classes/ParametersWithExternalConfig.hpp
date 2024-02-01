@@ -42,15 +42,39 @@ namespace AndreiUtils {
 
         bool deleteKey(std::string const &parameterName) override;
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "HidingNonVirtualFunction"
+        [[nodiscard]] ParametersWithExternalConfig operator[](std::string const &parameterName);
+
+        [[nodiscard]] ParametersWithExternalConfig at(std::string const &parameterName);
+#pragma clang diagnostic pop
+
         void writeParameters(std::string const &fileName, bool withWriteSubConfigs, bool keepOrder = false, 
                              bool keepNewLines = true) const;
 
         [[nodiscard]] std::string toString(std::string const &indent = "", bool verbose = false) const;
 
     protected:
+        class ExternalParameterData {
+        public:
+            ExternalParameterData();
+
+            std::map<std::string, ParametersWithExternalConfig> externalConfigs;
+            std::map<std::string, ParametersWithExternalConfig> externalParameters;
+            std::map<std::string, std::vector<std::string>> externalFileToExternalKeyAssociation;
+            std::map<ParametersWithExternalConfig *, std::pair<std::string, std::string>> externalFileAssociation;
+            std::map<std::string, ParametersWithExternalConfig *> externalKeyToParametersAssociation;
+            bool isExternalConfig;
+            std::string externalFileName, originalExternalFileName;
+        };
+
         ParametersWithExternalConfig(nlohmann::json config, std::string configFileDirectory);
 
         ParametersWithExternalConfig(nlohmann::json *config, std::string configFileDirectory);
+
+        ParametersWithExternalConfig(nlohmann::json config, ExternalParameterData *externalData);
+
+        ParametersWithExternalConfig(nlohmann::json *config, ExternalParameterData *externalData);
 
         void initialize(nlohmann::json *config, bool setReference);
 
@@ -62,12 +86,14 @@ namespace AndreiUtils {
         void collectAndUpdateParametersToWriteForThisFile(
                 nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
 
-        std::map<std::string, ParametersWithExternalConfig> externalConfigs;
-        std::map<std::string, ParametersWithExternalConfig> externalParameters;
-        std::map<std::string, std::vector<std::string>> externalFileToExternalKeyAssociation;
-        std::map<ParametersWithExternalConfig *, std::pair<std::string, std::string>> externalFileAssociation;
-        std::map<std::string, ParametersWithExternalConfig *> externalKeyToParametersAssociation;
-        bool isExternalConfig;
-        std::string externalFileName, originalExternalFileName, configFileDirectory;
+        [[nodiscard]] bool isExternalConfig() const;
+
+        [[nodiscard]] ExternalParameterData const &getExternalData() const;
+
+        [[nodiscard]] ExternalParameterData &getExternalData();
+
+        std::string configFileDirectory;
+        ExternalParameterData externalData, *externalDataPtr;
+        bool isExternalDataReference;
     };
 }
