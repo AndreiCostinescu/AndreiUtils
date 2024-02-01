@@ -82,19 +82,22 @@ std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion
     }
     json const &jsonData = this->getJson();
     if (jsonData.is_object()) {
+        map<ParametersWithExternalConfig const *, bool> processedExternalParameters;
         for (auto const &jsonDatum: jsonData.items()) {
-            ss << indent + AndreiUtils::tab << jsonDatum.key() << ": ";
             ParametersWithExternalConfig const *p;
             if (AndreiUtils::mapGetIfContains(this->externalConfigs, jsonDatum.key(), p)) {
+                ss << indent + AndreiUtils::tab << jsonDatum.key() << ": ";
                 ss << "{" << endl << p->toString(indent + AndreiUtils::tab * 2, verbose) << indent + AndreiUtils::tab
                    << "}" << endl;
-            } else if (AndreiUtils::mapContains(this->shortcutToParametersAssociation, jsonDatum.key())) {
-                if (!AndreiUtils::mapContains(this->shortcutToExternalFileAssociation, jsonDatum.key())) {
-                    ss << "LAYERED EXTERNAL: " << jsonDatum.value().dump(4) << endl;
-                } else {
-                    ss << "EXTERNAL: " << jsonDatum.value().dump(4) << endl;
+            } else if (AndreiUtils::mapGetIfContains(this->externalKeyToParametersAssociation, jsonDatum.key(), p)) {
+                if (!mapContains(processedExternalParameters, p)) {
+                    ss << indent + AndreiUtils::tab << "EXTERNAL: "
+                       << AndreiUtils::mapGet(this->externalFileAssociation, p).second << endl;
+                    ss << p->toString(indent + AndreiUtils::tab * 2, verbose) << endl;
+                    mapEmplace(processedExternalParameters, p, true);
                 }
             } else {
+                ss << indent + AndreiUtils::tab << jsonDatum.key() << ": ";
                 ss << jsonDatum.value().dump(4) << endl;
             }
         }
@@ -133,10 +136,10 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         auto tmp = ParametersWithExternalConfig(this->externalFileName);
         this->parameters = std::move(tmp.parameters);
         this->externalConfigs = std::move(tmp.externalConfigs);
-        this->shortcutToParametersAssociation = std::move(tmp.shortcutToParametersAssociation);
-        this->shortcutToExternalFileAssociation = std::move(tmp.shortcutToExternalFileAssociation);
-        this->externalFileToShortcutAssociation = std::move(tmp.externalFileToShortcutAssociation);
-        this->externalShortcuts = std::move(tmp.externalShortcuts);
+        this->externalParameters = std::move(tmp.externalParameters);
+        this->externalKeyToParametersAssociation = std::move(tmp.externalKeyToParametersAssociation);
+        this->externalFileAssociation = std::move(tmp.externalFileAssociation);
+        this->externalFileToExternalKeyAssociation = std::move(tmp.externalFileToExternalKeyAssociation);
         if (tmp.isExternalConfig) {
             this->externalFileName = std::move(tmp.externalFileName);
         }
@@ -174,7 +177,8 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                 }
             }
             if (hasExternalConfigs) {
-                auto externalFiles = jsonConfig.at(ParametersWithExternalConfig::externalDataKey).get<std::vector<std::string>>();
+                auto externalFiles = jsonConfig.at(
+                        ParametersWithExternalConfig::externalDataKey).get<std::vector<std::string>>();
                 for (auto externalFile: externalFiles) {
                     cout << "Found external file: " << externalFile << endl;
                     string originalExternalFile = externalFile;
@@ -194,15 +198,14 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     }
 
                     jsonConfig.update(tmp.getJson());
-                    mapEmplace(this->externalFileToShortcutAssociation, originalExternalFile);
-                    auto *parameterPtr = &(mapEmplace(this->externalShortcuts, originalExternalFile, std::move(tmp))->second);
+                    mapEmplace(this->externalFileToExternalKeyAssociation, originalExternalFile);
+                    auto *parameterPtr = &(mapEmplace(this->externalParameters, originalExternalFile,
+                                                      std::move(tmp))->second);
+                    mapEmplace(this->externalFileAssociation, parameterPtr, originalExternalFile, externalFile);
                     for (auto const &constJsonData: parameterPtr->getJson().items()) {
                         std::string const &key = constJsonData.key();
-                        mapGet(this->externalFileToShortcutAssociation, originalExternalFile).emplace_back(key);
-                        mapEmplace(this->shortcutToParametersAssociation, constJsonData.key(), parameterPtr);
-                        if (!mapContains(parameterPtr->shortcutToParametersAssociation, key)) {
-                            mapEmplace(this->shortcutToExternalFileAssociation, key, originalExternalFile, externalFile);
-                        }
+                        mapGet(this->externalFileToExternalKeyAssociation, originalExternalFile).emplace_back(key);
+                        mapEmplace(this->externalKeyToParametersAssociation, key, parameterPtr);
                     }
                 }
                 jsonConfig.erase(ParametersWithExternalConfig::externalDataKey);

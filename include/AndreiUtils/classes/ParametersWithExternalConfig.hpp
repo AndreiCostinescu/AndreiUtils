@@ -63,10 +63,10 @@ namespace AndreiUtils {
                 nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
 
         std::map<std::string, ParametersWithExternalConfig> externalConfigs;
-        std::map<std::string, ParametersWithExternalConfig> externalShortcuts;
-        std::map<std::string, std::vector<std::string>> externalFileToShortcutAssociation;
-        std::map<std::string, std::pair<std::string, std::string>> shortcutToExternalFileAssociation;
-        std::map<std::string, ParametersWithExternalConfig *> shortcutToParametersAssociation;
+        std::map<std::string, ParametersWithExternalConfig> externalParameters;
+        std::map<std::string, std::vector<std::string>> externalFileToExternalKeyAssociation;
+        std::map<ParametersWithExternalConfig *, std::pair<std::string, std::string>> externalFileAssociation;
+        std::map<std::string, ParametersWithExternalConfig *> externalKeyToParametersAssociation;
         bool isExternalConfig;
         std::string externalFileName, originalExternalFileName, configFileDirectory;
     };
