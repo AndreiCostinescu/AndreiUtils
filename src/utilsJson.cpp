@@ -247,6 +247,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
         }
         int valuePostDataNewLinesCounter = 0;
         for (size_t index = 0; index < contentArray.size(); ++index) {
+            bool addSpace = false;
             if (index > 0) {
                 stringContent << ",";
                 if (!keepArrayValueCondensed) {
@@ -260,15 +261,20 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                         stringContent << endl << AndreiUtils::tab * (indentLevel + 1);
                     }
                 } else {
-                    stringContent << " ";
+                    addSpace = true;
                 }
                 ++characterIndex;  // skip comma ',' character between array values
             }
+            stringstream subArrayValueContent;
             if (!collectStringJsonContentKeepOrder(
-                    stringContent, contentArray[index], originalContentArray[index], lineByLineContent, lineIndex,
+                    subArrayValueContent, contentArray[index], originalContentArray[index], lineByLineContent, lineIndex,
                     characterIndex, indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
                 return false;
             }
+            if (addSpace && !startsWith(subArrayValueContent.str(), "\n")) {
+                stringContent << " ";
+            }
+            stringContent << subArrayValueContent.str();
             if (verbose) {
                 cout << " ---------------------- " << endl;
                 cout << stringContent.str() << endl;
