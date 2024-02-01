@@ -150,8 +150,19 @@ class MapEmplaceTestClass {
 public:
     double a, b;
     int c;
+    MapEmplaceTestClass() : a(), b(), c() {
+        cout << "Empty constructor..." << endl;
+    }
 
     MapEmplaceTestClass(double a, double b, int c) : a(a), b(b), c(c) {}
+
+    MapEmplaceTestClass(MapEmplaceTestClass const &other) : a(other.a), b(other.b), c(other.c) {
+        cout << "Copy constructor..." << endl;
+    }
+
+    MapEmplaceTestClass(MapEmplaceTestClass &&other) noexcept : a(other.a), b(other.b), c(other.c) {
+        cout << "Move constructor..." << endl;
+    }
 };
 
 void testMapEmplace() {
@@ -185,6 +196,52 @@ void testMapEmplace() {
     printMap(mymap);
 }
 
+void testMapEmplaceMoveCopy() {
+    using TMap = map<int, MapEmplaceTestClass>;
+    TMap t;
+
+    MapEmplaceTestClass s(10.0, -6.9, 3);
+    cout << "Point1" << endl;
+    t.insert(std::make_pair(1, std::forward<typename TMap::mapped_type>(s)));
+    cout << "Point2" << endl;
+
+    TMap m;
+    cout << "Point3" << endl;
+    mapAdd(m, 42, {1, 2, 3});
+    cout << "Point4" << endl;
+    cout << "Point5" << endl;
+    auto x = mapEmplace(m, 0, 24., 48., 10);
+    cout << "Point6" << endl;
+    cout << x->first << endl;
+    cout << x->second.a << ", " << x->second.b << ", " << x->second.c << endl;
+    x->second.a *= 2;
+    x->second.b /= 4;
+    x->second.c += 5;
+    auto printer = [](MapEmplaceTestClass const &_x) -> std::string {
+        return "{" + to_string(_x.a) + ", " + to_string(_x.b) + ", " + to_string(_x.c) + "}";
+    };
+    printMapConvertValue<int, MapEmplaceTestClass>(m, printer);
+
+    MapEmplaceTestClass s1(10.0, -6.9, 3);
+    cout << "Point7" << endl;
+    mapEmplace(t, -12, std::move(s1));
+    cout << "Point8" << endl;
+    cout << "Point9" << endl;
+    mapEmplace(t, -13, std::forward<MapEmplaceTestClass>(s1));
+    cout << "Point10" << endl;
+    printMapConvertValue<int, MapEmplaceTestClass>(t, printer);
+
+    cout << "Point11" << endl;
+    t.emplace(std::pair<int, MapEmplaceTestClass>{-14, std::move(s1)});
+    cout << "Point12" << endl;
+    printMapConvertValue<int, MapEmplaceTestClass>(t, printer);
+
+    cout << "Point13" << endl;
+    t.emplace(std::piecewise_construct, std::forward_as_tuple(1), std::forward_as_tuple(std::move(s1)));
+    cout << "Point14" << endl;
+    printMapConvertValue<int, MapEmplaceTestClass>(t, printer);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -192,7 +249,8 @@ int main() {
     // testMapFiltering();
     // testMapRefAccessing();
     // testMapCopy();
-    testMapEmplace();
+    // testMapEmplace();
+    testMapEmplaceMoveCopy();
 
     return 0;
 }

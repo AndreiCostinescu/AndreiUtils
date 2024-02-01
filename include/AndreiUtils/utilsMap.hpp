@@ -282,7 +282,7 @@ namespace AndreiUtils {
     typename std::map<T1, T2, C, A>::iterator mapEmplace(std::map<T1, T2, C, A> &container, T1 const &key,
                                                          Args &&... args) {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(key),
-                                   std::forward_as_tuple(args...));
+                                   std::forward_as_tuple(std::forward<Args>(args)...));
         if (!x.second) {
             throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
@@ -293,7 +293,7 @@ namespace AndreiUtils {
     typename std::map<T1, T2, C, A>::iterator mapEmplace(std::map<T1, T2, C, A> &container, T1 const *key,
                                                          Args &&... args) {
         auto x = container.emplace(std::piecewise_construct, std::forward_as_tuple(const_cast<T1 *>(key)),
-                                   std::forward_as_tuple(args...));
+                                   std::forward_as_tuple(std::forward<Args>(args)...));
         if (!x.second) {
             throw std::runtime_error("Key " + AndreiUtils::toString(key) + " already is in container!");
         }
