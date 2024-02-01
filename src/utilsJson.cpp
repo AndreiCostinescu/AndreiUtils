@@ -394,7 +394,9 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                 }
                 firstCommonEntry = false;
             } else {
-                if (!skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex)) {
+                // Use valuePostDataNewLinesCounter to add the lines that were skipped when an item is deleted!
+                if (!skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex,
+                                                             &valuePostDataNewLinesCounter)) {
                     return false;
                 }
             }
