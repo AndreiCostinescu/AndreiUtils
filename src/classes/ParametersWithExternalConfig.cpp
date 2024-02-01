@@ -50,12 +50,23 @@ void ParametersWithExternalConfig::set(nlohmann::json const &data) {
 void ParametersWithExternalConfig::set(nlohmann::json &&data) {
     this->Parameters::set(std::forward<nlohmann::json>(data));
     // TODO: process this->externalConfigs
+    // TODO: process this->externalParameters
 }
 
 bool ParametersWithExternalConfig::deleteKey(std::string const &parameterName) {
     if (this->Parameters::deleteKey(parameterName)) {
         // bool res = AndreiUtils::mapDelete(this->externalConfigs, parameterName); assert(res);
-        AndreiUtils::mapDelete(this->getExternalData().externalConfigs, parameterName);
+        ExternalParameterData *external = &this->getExternalData();
+        AndreiUtils::mapDelete(external->externalConfigs, parameterName);
+        // process external keys
+        if (AndreiUtils::mapContains(external->externalKeyToParametersAssociation, parameterName)) {
+            ParametersWithExternalConfig *p;
+            while (AndreiUtils::mapGetIfContains(external->externalKeyToParametersAssociation, parameterName, p)) {
+                AndreiUtils::mapDelete(external->externalKeyToParametersAssociation, parameterName);
+                AndreiUtils::mapDelete(mapGet(external->externalParameterKeyAssociation, p), parameterName);
+                external = &p->getExternalData();
+            }
+        }
         return true;
     } else {
         return false;
@@ -226,12 +237,6 @@ void ParametersWithExternalConfig::processOverwrittenParameter(  // NOLINT(misc-
         if (subConfig.isExternalConfig() || !subConfig.getExternalData().externalConfigs.empty()) {
             *overwrittenConfig = std::move(subConfig);
         }
-    }
-    if (AndreiUtils::mapGetIfContains(external.externalKeyToParametersAssociation, parameterName, overwrittenConfig)) {
-        // iterate recursively until the parameterName is no longer an external member!
-        while (AndreiUtils::mapGetIfContains(overwrittenConfig->getExternalData().externalKeyToParametersAssociation,
-                                             parameterName, overwrittenConfig)) {}
-        overwrittenConfig->set(parameterName, this->getJson(parameterName));
     }
 }
 

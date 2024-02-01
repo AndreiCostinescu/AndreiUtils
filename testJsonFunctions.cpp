@@ -134,7 +134,6 @@ void testParametersWithExternalConfigs() {
         ParametersWithExternalConfig p(fileName);
         cout << "P" << index << " config: " << p.getJson().dump(4) << endl;
         cout << p.toString("", true) << endl;
-        // p.updateParameters();
         p.writeParameters(fileName, true);
         cout << "\n\n";
     }
@@ -174,6 +173,55 @@ void testWriteJsonWithKeepFormatAndNewLines() {
     writeJsonFileKeepOrder(filePath, config, true);
 }
 
+void testParametersWithExternalConfigsAndExternalData() {
+    // vector<int> indices{1, 2, 3, 4, 5, 6, 7, 8};
+    // vector<int> indices{11};
+    vector<int> indices{1};
+    // vector<int> indices;
+    for (auto const &index: indices) {
+        string fileName = "../data/testExternalConfig" + std::to_string(index) + ".json";
+        ParametersWithExternalConfig p(fileName);
+        cout << "P" << index << " config:" << endl << p.getJson().dump(4) << endl;
+        cout << p.toString("", true) << endl;
+        /*
+        p.at("dependencies").at("dependencies").set("version", "4.0.0");
+        p.at("dependencies").at("dependencies").set("creation_date", "2024-02-01");
+        p.at("dependencies").at("dependencies").set("temporary_date", "2024-01-31");
+        p.at("dependencies").at("dependencies").set("expiration_date", "2025-02-01");
+        p.at("dependencies").at("dependencies").at("copyright-ext").set("copyrightAndrei-18",
+                                                                        "This is my copyright text!");
+        p.at("dependencies").at("dependencies").set("copyrightAndrei-20", "This is Andrei's copyright text!");
+        /*/
+        auto &j = p.getJsonReference();
+        j["dependencies"]["dependencies"]["version"] = "4.0.0";
+        j["dependencies"]["dependencies"]["creation_date"] = "2024-02-01";
+        j["dependencies"]["dependencies"]["temporary_date"] = "2024-01-31";
+        j["dependencies"]["dependencies"]["expiration_date"] = "2025-02-01";
+        j["dependencies"]["dependencies"]["copyright-ext"]["copyrightAndrei-18"] = "This is my copyright text!";
+        j["dependencies"]["dependencies"]["copyrightAndrei-20"] = "This is Andrei's copyright text!";
+        //*/
+        cout << p.getJson().dump(4) << endl;
+        cout << p.toString("", true) << endl;
+        p.writeParameters(fileName, true, true, true);
+        cout << "\n\n";
+    }
+    /*
+    int index = 21;
+    string fileName = "../data/testExternalConfig" + std::to_string(index) + ".json";
+    ParametersWithExternalConfig p(fileName);
+    cout << "P" << index << " config:" << endl << p.getJson().dump(4) << endl;
+    cout << p.toString("", true) << endl;
+    // p.at("copyright-ext").set("copyrightAndrei-18", "This is my copyright text!");
+    auto &j = p.getJsonReference();
+    j["expiration_date"] = "2025-02-01";
+    j["copyright-ext"]["copyrightAndrei-18"] = "This is my copyright notice!";
+    cout << p.getJson().dump(4) << endl;
+    cout << p.toString("", true) << endl;
+    p.writeParameters(fileName, true, true, true);
+    cout << "\n\n";
+    //*/
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -183,7 +231,8 @@ int main() {
     // testMixedDataContainer();
     // testIntervalSerialization();
     // testParametersWithExternalConfigs();
-    testWriteJsonWithKeepFormatAndNewLines();
+    // testWriteJsonWithKeepFormatAndNewLines();
+    testParametersWithExternalConfigsAndExternalData();
 
     return 0;
 }
