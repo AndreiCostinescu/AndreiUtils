@@ -86,6 +86,8 @@ namespace AndreiUtils {
         void collectAndUpdateParametersToWriteForThisFile(
                 nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines) const;
 
+        void updateExternalParameters(nlohmann::json *parameterParent);
+
         [[nodiscard]] bool isExternalConfig() const;
 
         [[nodiscard]] ExternalParameterData const &getExternalData() const;

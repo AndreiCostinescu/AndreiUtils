@@ -217,8 +217,13 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     if (!isFilePathAbsolute(externalFile)) {
                         externalFile = simplifyRelativePath(this->configFileDirectory + externalFile);
                     }
-
                     auto tmp = ParametersWithExternalConfig(externalFile);
+                    if (tmp.isExternalConfig()) {
+                        throw runtime_error("External configs are not allowed on the same layer as external data! " +
+                                            ("Write the external config file instead of \"" + originalExternalFile) +
+                                            "\" in the external data list!");
+                    }
+
                     // assert that keys in tmp are not in jsonConfig (i.e. not in this level!)
                     for (auto const &constJsonData: jsonConfig.items()) {
                         auto const &p = constJsonData.key();
@@ -228,11 +233,15 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                                     "\" as this level! Bad configuration!");
                         }
                     }
+                    // update the parameters of this config
                     jsonConfig.update(tmp.getJson());
-                    mapEmplace(external.externalFileToExternalKeyAssociation, originalExternalFile);
+                    // set references of sub-parameters!
+                    tmp.updateExternalParameters(&jsonConfig);
+
                     auto *parameterPtr = &(mapEmplace(external.externalParameters, originalExternalFile,
                                                       std::move(tmp))->second);
                     mapEmplace(external.externalFileAssociation, parameterPtr, originalExternalFile, externalFile);
+                    mapEmplace(external.externalFileToExternalKeyAssociation, originalExternalFile);
                     for (auto const &constJsonData: parameterPtr->getJson().items()) {
                         std::string const &key = constJsonData.key();
                         mapGet(external.externalFileToExternalKeyAssociation, originalExternalFile).emplace_back(key);
@@ -272,7 +281,8 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
         for (auto const &externalParameters: external.externalParameters) {
             auto processedExternalFile = mapGet(external.externalFileAssociation, &externalParameters.second).second;
             nlohmann::json toWriteExternalParameters;
-            externalParameters.second.updateParameters(toWriteExternalParameters, recurseSubConfigs, keepOrder, keepNewLines);
+            externalParameters.second.updateParameters(toWriteExternalParameters, recurseSubConfigs, keepOrder,
+                                                       keepNewLines);
             writeJsonFile(processedExternalFile, toWriteExternalParameters, keepOrder, keepNewLines);
             /*
             externalParameters.second.writeParameters(processedExternalFile, recurseSubConfigs, keepOrder,
@@ -283,7 +293,7 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
     }
     if (this->isExternalConfig()) {
         toWriteParameters[ParametersWithExternalConfig::externalConfigKey] = external.originalExternalFileName;
-        // cout << "Writing " << theseParameters.dump(4) << " to file " << this->externalFileName << endl;
+        // cout << "Writing parameters to file " << external.externalFileName << ": "<< theseParameters.dump(4) << endl;
         writeJsonFile(external.externalFileName, theseParameters, keepOrder, keepNewLines);
     } else {
         toWriteParameters = std::move(theseParameters);
@@ -307,6 +317,28 @@ void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFile(
         }
     } else {
         parametersToWrite = jsonData;
+    }
+}
+
+void ParametersWithExternalConfig::updateExternalParameters(nlohmann::json *parameterParent) {
+    for (auto &externalParameter: this->getExternalData().externalParameters) {
+        externalParameter.second.updateExternalParameters(parameterParent);
+    }
+    for (auto &externalConfig: this->getExternalData().externalConfigs) {
+        externalConfig.second.updateExternalParameters(&parameterParent->at(externalConfig.first));
+    }
+    if (this->isExternalConfig()) {
+        //*
+        assert(this->isReference);
+        this->parameterReference = parameterParent;
+        return;
+        /*/
+        // Not always guaranteed that the externalConfig is a reference! (although it should be...) Make reference here!
+        if (!this->isReference) {
+            this->isReference = true;
+        }
+        this->parameterReference = parameterParent;
+        //*/
     }
 }
 
