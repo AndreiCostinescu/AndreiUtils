@@ -157,9 +157,13 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
     vector<string> res = splitString(replace(path, "\\", "/"), "/");
     vector<string> simplifiedPath;
     int simplifiedPathSize = 0;
-    for (auto const &resPart: res) {
+    for (int resIndex = 0; resIndex < res.size(); ++resIndex) {
+        auto const &resPart = res[resIndex];
         assert(simplifiedPath.size() >= simplifiedPathSize);
-        if (resPart == ".." && (simplifiedPathSize > 0 && simplifiedPath[simplifiedPathSize - 1] != "." && simplifiedPath[simplifiedPathSize - 1] != "..")) {
+        if (resPart == ".") {
+            continue;
+        } else if (resPart == ".." && (simplifiedPathSize > 0 && simplifiedPath[simplifiedPathSize - 1] != "." &&
+                                       simplifiedPath[simplifiedPathSize - 1] != "..")) {
             --simplifiedPathSize;
         } else {
             while (simplifiedPath.size() <= simplifiedPathSize) {
