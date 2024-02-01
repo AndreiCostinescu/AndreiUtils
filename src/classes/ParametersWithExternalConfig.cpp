@@ -228,7 +228,6 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                                     "\" as this level! Bad configuration!");
                         }
                     }
-
                     jsonConfig.update(tmp.getJson());
                     mapEmplace(external.externalFileToExternalKeyAssociation, originalExternalFile);
                     auto *parameterPtr = &(mapEmplace(external.externalParameters, originalExternalFile,
@@ -270,6 +269,16 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
     this->collectAndUpdateParametersToWriteForThisFile(theseParameters, recurseSubConfigs, keepOrder, keepNewLines);
     ExternalParameterData const &external = this->getExternalData();
     if (!external.externalParameters.empty()) {
+        for (auto const &externalParameters: external.externalParameters) {
+            auto processedExternalFile = mapGet(external.externalFileAssociation, &externalParameters.second).second;
+            nlohmann::json toWriteExternalParameters;
+            externalParameters.second.updateParameters(toWriteExternalParameters, recurseSubConfigs, keepOrder, keepNewLines);
+            writeJsonFile(processedExternalFile, toWriteExternalParameters, keepOrder, keepNewLines);
+            /*
+            externalParameters.second.writeParameters(processedExternalFile, recurseSubConfigs, keepOrder,
+                                                      keepNewLines);
+            //*/
+        }
         theseParameters[ParametersWithExternalConfig::externalDataKey] = getMapKeys(external.externalParameters);
     }
     if (this->isExternalConfig()) {
