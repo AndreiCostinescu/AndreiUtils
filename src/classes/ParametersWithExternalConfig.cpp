@@ -167,6 +167,10 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     AndreiUtils::mapEmplace(this->externalConfigs, jsonData.key(), std::move(subConfig));
                 } else if (jsonData.key() == ParametersWithExternalConfig::externalDataKey) {
                     hasExternalConfigs = true;
+                    if (!jsonData.value().is_array()) {
+                        throw std::runtime_error("\"" + ParametersWithExternalConfig::externalDataKey +
+                                                 "\" key may be used wrong in data! Not expected non-array type!");
+                    }
                 }
             }
             if (hasExternalConfigs) {
