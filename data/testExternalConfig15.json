@@ -1,6 +1,6 @@
 {
     "user": "Andrei",
-    "external": {
+    "external-data": {
         "_externalConfig": "../data/testExternalConfig1.json"
     },
     "time": 2,
