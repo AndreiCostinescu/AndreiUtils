@@ -95,23 +95,6 @@ vector<float> CameraIntrinsicParameters::getDistortionCoefficientsAsVector() con
     return coefficients;
 }
 
-void CameraIntrinsicParameters::toJson(nlohmann::json &j) const {
-    j.clear();
-    j["fx"] = this->fx;
-    j["fy"] = this->fy;
-    j["ppx"] = this->ppx;
-    j["ppy"] = this->ppy;
-    j["distortionModel"] = convertImageDistortionModelToString(this->distortionModel);
-    j["distortionCoefficients"] = this->getDistortionCoefficientsAsVector();
-}
-
-void CameraIntrinsicParameters::fromJson(const nlohmann::json &j) {
-    this->setImageParameters(j.at("fx").get<double>(), j.at("fy").get<double>(), j.at("ppx").get<double>(),
-                             j.at("ppy").get<double>());
-    this->setDistortionParameters(convertStringToImageDistortionModel(j.at("distortionModel").get<string>()),
-                                  j.at("distortionCoefficients").get<vector<float>>());
-}
-
 void CameraIntrinsicParameters::copyDataFromOther(const CameraIntrinsicParameters &other) {
     this->fx = other.fx;
     this->fy = other.fy;

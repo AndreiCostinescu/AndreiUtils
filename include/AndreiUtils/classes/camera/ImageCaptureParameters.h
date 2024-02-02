@@ -12,28 +12,16 @@ namespace AndreiUtils {
     public:
         ImageCaptureParameters();
 
-        ImageCaptureParameters(double fps, const ImageParameters &size);
+        ImageCaptureParameters(double fps, ImageParameters const &size);
 
         virtual ~ImageCaptureParameters();
 
-        virtual void toJson(nlohmann::json &j) const;
+        void setFromOther(ImageCaptureParameters const &other);
 
-        virtual void fromJson(const nlohmann::json &j);
+        void setFromOther(ImageCaptureParameters &&other);
 
         double fps;
         ImageParameters size;
-    };
-}
-
-namespace nlohmann {
-    template<> struct adl_serializer<AndreiUtils::ImageCaptureParameters> {
-        static void to_json(nlohmann::json& j, const AndreiUtils::ImageCaptureParameters& p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json& j, AndreiUtils::ImageCaptureParameters& p) {
-            p.fromJson(j);
-        }
     };
 }
 

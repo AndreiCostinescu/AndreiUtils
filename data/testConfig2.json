@@ -1,0 +1,48 @@
+
+{
+    "ObjectInstance": {
+        "direct_parents": ["Object"
+        ],
+
+
+        "super_parents": ["Object"
+
+        ],
+
+        "super": [
+
+            "Object"
+
+        ]
+    },
+
+    "Object": {
+        "direct_parents": [[]
+        ],
+
+
+        "super_parents": [["Object"]
+
+        ],
+
+        "super": [
+
+            ["Object"]
+
+        ]
+    },
+
+    "BowlGreyIkeaInstance": {
+        "direct_parentsss"
+
+        : ["ObjectInstance", "Bowl"],
+
+        "direct_parentss"
+        : ["ObjectInstance", "Bowl"],
+
+        "direct_parents": ["ObjectInstance", "Bowl"],
+
+        "data": {
+        }
+    }
+}

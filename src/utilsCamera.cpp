@@ -4,14 +4,16 @@
 
 #include <AndreiUtils/utilsCamera.h>
 #include <AndreiUtils/utils.hpp>
+#include <cassert>
 #include <cfloat>
+#include <cmath>
 
 using namespace AndreiUtils;
 using namespace std;
 
 // from librealsense
-void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], const CameraIntrinsicParameters &intrinsics,
-                                          const float (&pixel)[2], const float &depth) {
+void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], CameraIntrinsicParameters const &intrinsics,
+                                          float const(&pixel)[2], float const &depth) {
     // Cannot de-project from a forward-distorted image
     assert(intrinsics.distortionModel != ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY);
 
@@ -73,8 +75,8 @@ void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], const CameraIntrins
 }
 
 // from librealsense
-void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], const CameraIntrinsicParameters &intrinsics,
-                                          const double (&pixel)[2], const double &depth) {
+void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], CameraIntrinsicParameters const &intrinsics,
+                                          double const(&pixel)[2], double const &depth) {
     // Cannot de-project from a forward-distorted image
     assert(intrinsics.distortionModel != ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY);
 
@@ -130,26 +132,26 @@ void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], const CameraIntrin
         y *= r / rd;
     }
 
-    point[0] = (float) depth * x;
-    point[1] = (float) depth * y;
+    point[0] = depth * x;
+    point[1] = depth * y;
     point[2] = depth;
 }
 
-void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], const CameraIntrinsicParameters &intrinsics,
-                                          const float &x, const float &y, const float &depth) {
+void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], CameraIntrinsicParameters const &intrinsics,
+                                          float const &x, float const &y, float const &depth) {
     float pixel[2] = {x, y};
     fromImagePixelTo3dPoint(point, intrinsics, pixel, depth);
 }
 
-void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], const CameraIntrinsicParameters &intrinsics,
-                                          const double &x, const double &y, const double &depth) {
+void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], CameraIntrinsicParameters const &intrinsics,
+                                          double const &x, double const &y, double const &depth) {
     double pixel[2] = {x, y};
     fromImagePixelTo3dPoint(point, intrinsics, pixel, depth);
 }
 
 // from librealsense
-void AndreiUtils::from3dPointToImagePixel(float (&pixel)[2], const CameraIntrinsicParameters &intrinsics,
-                                          const float (&point)[3]) {
+void AndreiUtils::from3dPointToImagePixel(float (&pixel)[2], CameraIntrinsicParameters const &intrinsics,
+                                          float const (&point)[3]) {
     float x = point[0] / point[2], y = point[1] / point[2];
 
     if ((intrinsics.distortionModel == ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY) ||
@@ -205,8 +207,8 @@ void AndreiUtils::from3dPointToImagePixel(float (&pixel)[2], const CameraIntrins
 }
 
 // from librealsense
-void AndreiUtils::from3dPointToImagePixel(double (&pixel)[2], const CameraIntrinsicParameters &intrinsics,
-                                          const double (&point)[3]) {
+void AndreiUtils::from3dPointToImagePixel(double (&pixel)[2], CameraIntrinsicParameters const &intrinsics,
+                                          double const (&point)[3]) {
     double x = point[0] / point[2], y = point[1] / point[2];
 
     if ((intrinsics.distortionModel == ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY) ||
@@ -262,8 +264,8 @@ void AndreiUtils::from3dPointToImagePixel(double (&pixel)[2], const CameraIntrin
 }
 
 void AndreiUtils::point3dFromPixel(
-        const std::function<float(int, int)> &getDepth, const ImageParameters &size,
-        const CameraIntrinsicParameters &intrinsics, float x, float y, float (&point)[3], int windowSize,
+        std::function<float(int, int)> const &getDepth, ImageParameters const &size,
+        CameraIntrinsicParameters const &intrinsics, float x, float y, float (&point)[3], int windowSize,
         bool forceWindowUsage, float farthestAllowedDepth) {
     int width = size.w, height = size.h;
     int int_x = int(x), int_y = int(y);
@@ -302,8 +304,8 @@ void AndreiUtils::point3dFromPixel(
 }
 
 void AndreiUtils::point3dFromPixel(
-        const std::function<double(int, int)> &getDepth, const ImageParameters &size,
-        const CameraIntrinsicParameters &intrinsics, double x, double y, double (&point)[3], int windowSize,
+        std::function<double(int, int)> const &getDepth, ImageParameters const &size,
+        CameraIntrinsicParameters const &intrinsics, double x, double y, double (&point)[3], int windowSize,
         bool forceWindowUsage, double farthestAllowedDepth) {
     int width = size.w, height = size.h;
     int int_x = int(x), int_y = int(y);

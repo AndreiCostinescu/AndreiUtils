@@ -1,0 +1,11 @@
+{
+    "creation_date": "2024-01-31",
+    "_external": [
+        "./testExternalConfig22.json"
+    ],
+    "external": [
+        "./testExternalConfig17.json",
+        "./testExternalConfig18.json",
+        "./testExternalConfig20.json"
+    ]
+}

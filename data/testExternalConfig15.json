@@ -1,0 +1,14 @@
+{
+    "user": "Andrei",
+    "external-data": {
+        "_externalConfig": "../data/testExternalConfig1.json"
+    },
+    "time": 2,
+    "configuration": {
+        "config2": "2",
+        "config3": {
+            "_externalConfig": "../data/testExternalConfig3.json"
+        },
+        "config1": "1"
+    }
+}

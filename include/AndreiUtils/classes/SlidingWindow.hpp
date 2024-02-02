@@ -2,13 +2,13 @@
 // Created by Andrei on 03.12.20.
 //
 
-#ifndef ANDREIUTILS_SLIDINGWINDOW_HPP
-#define ANDREIUTILS_SLIDINGWINDOW_HPP
+#pragma once
 
 #include <AndreiUtils/enums/InvalidValuesHandlingMode.h>
 #include <AndreiUtils/traits/get_vector_type_for_convolution.hpp>
 #include <AndreiUtils/traits/median_computer.hpp>
 #include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsVector.hpp>
 #include <cassert>
 #include <iostream>
 #include <utility>
@@ -30,8 +30,13 @@ namespace AndreiUtils {
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
                 // this->index = fastMin(this->index, this->containerDataSize + 1);
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
@@ -100,8 +105,13 @@ namespace AndreiUtils {
                                    unsigned index) :
                     container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
                     containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
-                this->containerStartIndex =
-                        (dataIndex + this->containerSize - this->containerDataSize + this->index) % this->containerSize;
+                if (this->containerSize == 0) {
+                    this->containerStartIndex = 0;
+                } else {
+                    this->containerStartIndex =
+                            (dataIndex + this->containerSize - this->containerDataSize + this->index) %
+                            this->containerSize;
+                }
             }
 
             reference operator*() const { return (*this->container)[this->containerStartIndex]; }
@@ -143,25 +153,25 @@ namespace AndreiUtils {
 
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
-        bool empty() const {
+        [[nodiscard]] bool empty() const {
             return this->dataSize == 0;
         }
 
-        bool full() const {
+        [[nodiscard]] bool full() const {
             return this->dataSize == this->size;
         }
 
-        unsigned getSize() const {
+        [[nodiscard]] unsigned getSize() const {
             return this->size;
         }
 
-        unsigned getDataSize() const {
+        [[nodiscard]] unsigned getDataSize() const {
             return this->dataSize;
         }
 
-        void addData(T newData) {
+        void addData(T &&newData) {
             assert(this->size > 0);
-            this->data[this->index] = newData;
+            this->data[this->index] = std::move(newData);
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -172,9 +182,9 @@ namespace AndreiUtils {
             // std::cout << this->index << "; " << this->dataSize << "; " << this->size << "; " << std::endl;
         }
 
-        void addMoveData(T &newData) {
+        void addCopyData(T const &newData) {
             assert(this->size > 0);
-            this->data[this->index] = std::move(newData);
+            this->data[this->index] = newData;
             this->index += 1;
             if (this->index == this->data.size()) {
                 this->index = 0;
@@ -190,7 +200,7 @@ namespace AndreiUtils {
             this->dataSize = 0;
         }
 
-        T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters) const {
+        T convolve(std::vector<typename get_vector_type_for_convolution<T>::type> const &parameters) const {
             if (parameters.size() != this->dataSize) {
                 throw std::runtime_error("Can not convolve with different parameter sizes!");
             }
@@ -221,7 +231,7 @@ namespace AndreiUtils {
             return this->data[this->latestIndex()];
         }
 
-        const T &getLatest() const {
+        T const &getLatest() const {
             return this->data[this->latestIndex()];
         }
 
@@ -229,15 +239,47 @@ namespace AndreiUtils {
             return this->data[this->earliestIndex()];
         }
 
-        const T &getEarliest() const {
+        T const &getEarliest() const {
             return this->data[this->earliestIndex()];
+        }
+
+        T &getValueAtIndexFromRight(size_t const &_index) {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromRight!");
+            }
+            size_t i = (this->index + this->size - 1 - _index) % this->size;
+            return this->data[i];
+        }
+
+        T const &getValueAtIndexFromRight(size_t const &_index) const {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromRight!");
+            }
+            size_t i = (this->index + this->size - 1 - _index) % this->size;
+            return this->data[i];
+        }
+
+        T &getValueAtIndexFromLeft(size_t const &_index) {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromLeft!");
+            }
+            size_t i = (this->index + this->size - this->dataSize + _index) % this->size;
+            return this->data[i];
+        }
+
+        T const &getValueAtIndexFromLeft(size_t const &_index) const {
+            if (_index >= this->dataSize) {
+                throw std::runtime_error("Index greater than data size in getValueIndexFromLeft!");
+            }
+            size_t i = (this->index + this->size - this->dataSize + _index) % this->size;
+            return this->data[i];
         }
 
         std::vector<T> &getData() {
             return this->data;
         }
 
-        const std::vector<T> &getData() const {
+        std::vector<T> const &getData() const {
             return this->data;
         }
 
@@ -249,28 +291,39 @@ namespace AndreiUtils {
 
         ConstIterator end() const { return ConstIterator(&this->data, this->dataSize, this->index, this->dataSize); }
 
+        [[nodiscard]] bool isWindowStable(double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                                          bool verbose = false) const {
+            return isSequenceStable(this->getData(), stabilityThreshold, criterion, verbose);
+        }
+
+        [[nodiscard]] bool isWindowStable(
+                std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+            return isSequenceStable(this->getData(), op, stabilityThreshold, criterion, verbose);
+        }
+
+        [[nodiscard]] std::vector<T> getDataInCorrectOrder() const {
+            std::vector<T> a(this->dataSize);
+            for (unsigned int i = this->dataSize; i >= 1; i--) {
+                a[this->dataSize - i] = this->data[(this->index + this->size - i) % this->size];
+            }
+            return a;
+        }
+
     protected:
-        size_t latestIndex() const {
+        [[nodiscard]] size_t latestIndex() const {
             if (this->dataSize == 0) {
                 throw std::runtime_error("There is no latest element because there is no element in the SlidingWindow");
             }
             return (this->index + this->size - 1) % this->size;
         }
 
-        size_t earliestIndex() const {
+        [[nodiscard]] size_t earliestIndex() const {
             if (this->dataSize == 0) {
                 throw std::runtime_error(
                         "There is no earliest element because there is no element in the SlidingWindow");
             }
             return (this->index + this->size - this->dataSize) % this->size;
-        }
-
-        std::vector<T> getDataInCorrectOrder() const {
-            std::vector<T> a(this->dataSize);
-            for (unsigned int i = this->dataSize; i >= 1; i--) {
-                a[this->dataSize - i] = this->data[(this->index + this->size - i) % this->size];
-            }
-            return a;
         }
 
         std::vector<T> data;
@@ -282,16 +335,16 @@ namespace AndreiUtils {
     public:
         explicit SlidingWindowWithInvalidValues(unsigned size = 0) : SlidingWindow<T>(size), validData(size) {}
 
-        void addData(T newData, bool valid = true) {
+        void addData(T &&newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addData(newData);
+            SlidingWindow<T>::addData(std::move(newData));
         }
 
-        void addMoveData(T &newData, bool valid = true) {
+        void addCopyData(T const &newData, bool valid = true) {
             assert(this->size > 0);
             this->validData[this->index] = valid ? 1 : 0;
-            SlidingWindow<T>::addMoveData(newData);
+            SlidingWindow<T>::addCopyData(newData);
         }
 
         T convolve(const std::vector<typename get_vector_type_for_convolution<T>::type> &parameters,
@@ -337,7 +390,7 @@ namespace AndreiUtils {
             return this->data;
         }
 
-        const std::vector<T> &getDataIfAllValid() const {
+        std::vector<T> const &getDataIfAllValid() const {
             if (!this->checkAllValid()) {
                 throw std::runtime_error("Data contains invalid values!");
             }
@@ -348,7 +401,7 @@ namespace AndreiUtils {
             this->validData[this->latestIndex()] = valid ? 1 : 0;
         }
 
-        bool getLatestValid() const {
+        [[nodiscard]] bool getLatestValid() const {
             return (this->validData[this->latestIndex()] != 0);
         }
 
@@ -356,7 +409,7 @@ namespace AndreiUtils {
             this->validData[this->earliestIndex()] = valid ? 1 : 0;
         }
 
-        bool getEarliestValid() const {
+        [[nodiscard]] bool getEarliestValid() const {
             return (this->validData[this->earliestIndex()] != 0);
         }
 
@@ -364,9 +417,19 @@ namespace AndreiUtils {
             return this->validData;
         }
 
-    protected:
-        bool checkAllValid() {
-            return std::all_of(this->validData.begin(), this->validData.end(), [](uint8_t const &x) { return x != 0; });
+        [[nodiscard]] bool isWindowStable(
+                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+            return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold,
+                                    criterion, verbose);
+        }
+
+        [[nodiscard]] bool isWindowStable(
+                std::function<double(const T &, const T &)> const &op,
+                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
+                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+            return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold,
+                                    criterion, verbose);
         }
 
         std::vector<T> getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
@@ -388,8 +451,11 @@ namespace AndreiUtils {
             return a;
         }
 
+    protected:
+        bool checkAllValid() {
+            return std::all_of(this->validData.begin(), this->validData.end(), [](uint8_t const &x) { return x != 0; });
+        }
+
         std::vector<uint8_t> validData;
     };
 }
-
-#endif //ANDREIUTILS_SLIDINGWINDOW_HPP

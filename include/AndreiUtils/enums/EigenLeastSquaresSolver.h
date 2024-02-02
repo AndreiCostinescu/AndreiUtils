@@ -17,7 +17,7 @@ namespace AndreiUtils {
 
     std::string convertEigenLeastSquaresSolverToString(const EigenLeastSquaresSolver &solver);
 
-    EigenLeastSquaresSolver convertStringToEigenLeastSquaresSolver(const std::string &solver);
+    EigenLeastSquaresSolver convertStringToEigenLeastSquaresSolver(std::string const &solver);
 }
 
 #endif //ANDREIUTILS_EIGENLEASTSQUARESSOLVER_H

@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "externalConfig": "testExternalConfig2.json"
+    },
+    "name": "data",
+    "version": "1.0.0"
+}

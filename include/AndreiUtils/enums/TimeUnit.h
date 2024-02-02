@@ -22,7 +22,7 @@ namespace AndreiUtils {
 
     std::string convertTimeUnitToString(const TimeUnit &timeUnit);
 
-    TimeUnit convertStringToTimeUnit(const std::string &timeUnit);
+    TimeUnit convertStringToTimeUnit(std::string const &timeUnit);
 }
 
 #endif //ANDREIUTILS_TIMEUNITS_H

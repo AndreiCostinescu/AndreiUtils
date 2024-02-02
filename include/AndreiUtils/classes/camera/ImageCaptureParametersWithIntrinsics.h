@@ -15,28 +15,15 @@ namespace AndreiUtils {
         ImageCaptureParametersWithIntrinsics();
 
         ImageCaptureParametersWithIntrinsics(
-                double fps, const ImageParameters &size, const CameraIntrinsicParameters &intrinsics);
+                double fps, ImageParameters const &size, CameraIntrinsicParameters const &intrinsics);
 
         ~ImageCaptureParametersWithIntrinsics() override;
 
-        void toJson(nlohmann::json &j) const override;
+        void setFromOther(ImageCaptureParametersWithIntrinsics const &other);
 
-        void fromJson(const nlohmann::json &j) override;
+        void setFromOther(ImageCaptureParametersWithIntrinsics &&other);
 
         CameraIntrinsicParameters intrinsics;
-    };
-}
-
-namespace nlohmann {
-    template<>
-    struct adl_serializer<AndreiUtils::ImageCaptureParametersWithIntrinsics> {
-        static void to_json(nlohmann::json &j, const AndreiUtils::ImageCaptureParametersWithIntrinsics &p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json &j, AndreiUtils::ImageCaptureParametersWithIntrinsics &p) {
-            p.fromJson(j);
-        }
     };
 }
 

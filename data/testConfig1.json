@@ -1,0 +1,27 @@
+
+{
+    "ObjectInstance": {
+        "direct_parents": {"Object": 1
+        },
+
+
+        "super_parents": {"Object": 2
+
+        },
+
+        "super": {
+
+            "Object": 0
+
+        }
+    }
+
+
+    ,
+
+    "data2Object": {
+
+
+
+    }
+}

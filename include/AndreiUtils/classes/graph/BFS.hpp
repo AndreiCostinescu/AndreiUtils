@@ -107,6 +107,7 @@ namespace AndreiUtils {
             if (withReset) {
                 this->traversalIndex = 0;
                 this->parents.clear();
+                this->visited.clear();
             }
 
             // Create a queue for BFS

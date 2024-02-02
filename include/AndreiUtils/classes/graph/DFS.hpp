@@ -14,7 +14,9 @@ namespace AndreiUtils {
     template<typename NodeId=int, typename EdgeId=std::string>
     class DFS {
         using NodeT = Node<NodeId>;
+        using NodeTPtr = std::shared_ptr<NodeT>;
         using EdgeT = Edge<EdgeId, NodeId>;
+        using EdgeTPtr = std::shared_ptr<EdgeT>;
         using GraphT = Graph<NodeId, EdgeId>;
     public:
         explicit DFS(GraphT const &_graph, bool recursive = true) : graph(_graph), traversedNodes(0), finishedNodes(0) {
@@ -135,7 +137,7 @@ namespace AndreiUtils {
         void dfsIterative() {
             this->traversal.resize(this->graph.getNrNodes());
             auto &allNeighbors = this->graph.getNeighbors();
-            std::map<NodeId, std::tuple<int, int, std::vector<NodeT *>>> neighborIndexAndSize;
+            std::map<NodeId, std::tuple<int, int, std::vector<NodeTPtr>>> neighborIndexAndSize;
             std::vector<NodeId> stack(this->traversal.size());
             std::size_t stackIndex;
             NodeId iterNode, iterNeighborNode;
@@ -157,12 +159,12 @@ namespace AndreiUtils {
                     while (true) {
                         bool found = false;
                         if (!mapContains(neighborIndexAndSize, iterNode)) {
-                            std::map<NodeT *, int> const *neighbors;
+                            std::map<NodeTPtr, int> const *neighbors;
                             if (mapGetIfContains(allNeighbors, iterNode, neighbors)) {
                                 neighborIndexAndSize[iterNode] =
                                         std::make_tuple(0, neighbors->size(), getMapKeys(*neighbors));
                             } else {
-                                neighborIndexAndSize[iterNode] = std::make_tuple(0, 0, std::vector<NodeT *>{});
+                                neighborIndexAndSize[iterNode] = std::make_tuple(0, 0, std::vector<NodeTPtr>{});
                             }
                         }
                         auto &neighborData = neighborIndexAndSize[iterNode];
@@ -196,7 +198,7 @@ namespace AndreiUtils {
             }
         }
 
-        bool edgeClassification(std::map<EdgeT *, bool> const &edges, NodeId const &neighborId,
+        bool edgeClassification(std::map<EdgeTPtr, bool> const &edges, NodeId const &neighborId,
                                 NodeId const &nodeId) {
             bool foundTreeEdge = false;
             int edgeIndex = 0;

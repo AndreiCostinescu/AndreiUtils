@@ -5,7 +5,6 @@
 #ifndef ANDREIUTILS_MOTIONDEVICEINTRINSICPARAMETERS_H
 #define ANDREIUTILS_MOTIONDEVICEINTRINSICPARAMETERS_H
 
-#include <AndreiUtils/json.hpp>
 #include <Eigen/Dense>
 
 namespace AndreiUtils {
@@ -18,28 +17,15 @@ namespace AndreiUtils {
 
         virtual ~MotionDeviceIntrinsicParameters();
 
-        void setMotionDeviceIntrinsicParameters(const Eigen::MatrixXd &_data, const Eigen::VectorXd &_biasVariances,
-                                                const Eigen::VectorXd &_noiseVariances);
+        void setMotionDeviceIntrinsicParameters(Eigen::MatrixXd const &_data, Eigen::VectorXd const &_biasVariances,
+                                                Eigen::VectorXd const &_noiseVariances);
 
-        void toJson(nlohmann::json &j) const;
+        void setFromOther(MotionDeviceIntrinsicParameters const &other);
 
-        void fromJson(const nlohmann::json &j);
+        void setFromOther(MotionDeviceIntrinsicParameters &&other);
 
         Eigen::MatrixXd data;
         Eigen::VectorXd biasVariances, noiseVariances;
-    };
-}
-
-namespace nlohmann {
-    template<>
-    struct adl_serializer<AndreiUtils::MotionDeviceIntrinsicParameters> {
-        static void to_json(nlohmann::json &j, const AndreiUtils::MotionDeviceIntrinsicParameters &p) {
-            p.toJson(j);
-        }
-
-        static void from_json(const nlohmann::json &j, AndreiUtils::MotionDeviceIntrinsicParameters &p) {
-            p.fromJson(j);
-        }
     };
 }
 

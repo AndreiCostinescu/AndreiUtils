@@ -3,9 +3,11 @@
 //
 
 #include <AndreiUtils/utilsGeometry.h>
-#include <iostream>
 
 using namespace std;
+
+long double const AndreiUtils::DEG2RAD_FACTOR = M_PI / 180.0;
+long double const AndreiUtils::RAD2DEG_FACTOR = 180.0 / M_PI;
 
 float AndreiUtils::deg2Rad(float x) {
     return (float) (x * AndreiUtils::DEG2RAD_FACTOR);

@@ -2,7 +2,7 @@
 // Created by Andrei on 17.06.22.
 //
 
-#include "AndreiUtils/utilsPThread.h"
+#include <AndreiUtils/utilsPThread.h>
 #include <cstring>
 #include <iostream>
 

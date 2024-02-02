@@ -5,6 +5,10 @@
 #include <AndreiUtils/utilsOpenCVRealsense.h>
 #include <AndreiUtils/utilsRealsense.h>
 
+#ifdef WITH_OPENMP
+#include <AndreiUtils/utilsOpenMP.hpp>
+#endif
+
 using namespace AndreiUtils;
 using namespace cv;
 using namespace rs2;
@@ -46,19 +50,18 @@ Mat AndreiUtils::convertFrameToMat(const frame &f) {
     uchar *dataPtr = nullptr;
     frameToBytes(f, &dataPtr, h, w, c, t, false);
     size_t nrBytes = w * h * c * getStandardTypeByteAmount(t);
+    #ifdef WITH_OPENMP
     uchar *matData = fastCreateCopy(dataPtr, nrBytes);
+    #else
+    auto *matData = new uchar[nrBytes];
+    memcpy(matData, dataPtr, nrBytes * sizeof(uchar));
+    #endif
 
     Mat m(Size(w, h), CV_MAKETYPE(convertStandardTypesToOpenCVType(t), c), matData, Mat::AUTO_STEP);
 
     if (f.get_profile().format() == RS2_FORMAT_RGB8) {
         cvtColor(m, m, COLOR_RGB2BGR);
         assert(m.data == matData);
-        /*
-        // Switch RGB to BGR format
-        fastForLoop<uint8_t>(matData, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
-            swapData(array[i], array[i + 2]);
-        }, 3);
-        //*/
     }
     return m;
 }

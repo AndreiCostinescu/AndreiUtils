@@ -10,14 +10,20 @@ using namespace std;
 
 PythonInterpreterGuard PythonInterface::guard;  // NOLINT(cert-err58-cpp)
 
-PythonInterface::PythonInterface() : module(), functions() {}
+PythonInterface::PythonInterface() noexcept : module(), functions() {}
 
-PythonInterface::PythonInterface(const string &moduleName, const vector<string> &toImportFunctionNames) :
+PythonInterface::PythonInterface(string const &moduleName, vector<string> const &toImportFunctionNames) :
         PythonInterface() {
     this->reInitialize(moduleName, toImportFunctionNames);
 }
 
-void PythonInterface::reInitialize(const string &moduleName, const vector<string> &toImportFunctionNames) {
+PythonInterface::~PythonInterface() {
+    this->cleanup();
+}
+
+void PythonInterface::reInitialize(string const &moduleName, vector<string> const &toImportFunctionNames) {
+    this->module.release();
+    this->functions.clear();
     try {
         this->module = pybind11::module::import(moduleName.c_str());
         for (auto &importNames: toImportFunctionNames) {
@@ -34,4 +40,13 @@ map<string, py::function> &PythonInterface::getFunctions() {
 
 map<string, py::function> const &PythonInterface::getFunctions() const {
     return this->functions;
+}
+
+void PythonInterface::cleanup() {
+    this->functions.clear();
+    this->module.release();
+}
+
+size_t PythonInterface::getFunctionSize() const {
+    return this->functions.size();
 }

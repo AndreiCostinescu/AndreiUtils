@@ -4,7 +4,10 @@
 
 #include <AndreiUtils/utilsOpenCV.h>
 #include <AndreiUtils/utilsString.h>
+
+#ifdef WITH_OPENMP
 #include <AndreiUtils/utilsOpenMP.hpp>
+#endif
 
 using namespace cv;
 using namespace std;
@@ -39,11 +42,19 @@ void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
 uchar *AndreiUtils::copyMatData(const Mat &mat) {
     auto *dataPtr = new uchar[matByteSize(mat)];
     if (mat.isContinuous()) {
+        #ifdef WITH_OPENMP
         fastMemCopy(dataPtr, mat.ptr(0), (mat.dataend - mat.datastart));
+        #else
+        memcpy(dataPtr, mat.ptr(0), (mat.dataend - mat.datastart) * sizeof(uchar));
+        #endif
     } else {
         int rowSize = CV_ELEM_SIZE(mat.type()) * mat.cols;
         for (int r = 0; r < mat.rows; ++r) {
+            #ifdef WITH_OPENMP
             fastMemCopy(dataPtr + r * rowSize, mat.ptr(r), rowSize);
+            #else
+            memcpy(dataPtr + r * rowSize, mat.ptr(r), rowSize * sizeof(uchar));
+            #endif
         }
     }
     return dataPtr;
@@ -156,7 +167,7 @@ void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
     depthMat->convertTo(*depthMat, CV_64F, 0.001);
 }
 
-void AndreiUtils::displayTextOnOpenCVMat(Mat &image, const string &text, Point topLeftCorner, float fontSize,
+void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point topLeftCorner, float fontSize,
                                          const Scalar &textColor, int fontFace, int lineType) {
     int rowTextSize = (int) (fontSize * 20) + 5;
     int thickness = (int) (2 * fontSize);
@@ -202,3 +213,7 @@ void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
     recoverPoseFrom2dAnd3dPoints(tVec, rMat, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                  intrinsics.ppy, intrinsics.distortionCoefficients);
 }
+
+Point2i AndreiUtils::castFromPointDouble(Point2d const &p) {
+    return {int(p.x), int(p.y)};
+};

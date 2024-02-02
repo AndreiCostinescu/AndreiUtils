@@ -8,33 +8,105 @@ using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
 
-Array3f AndreiUtils::cvPointToEigenArray(const cv::Point3f &point) {
-    Array3f x;
-    x.x() = point.x;
-    x.y() = point.y;
-    x.z() = point.z;
-    return x;
+Array2f AndreiUtils::cvPointToEigenArray(cv::Point2f const &point) {
+    return {point.x, point.y};
 }
 
-cv::Point3f AndreiUtils::eigenArrayToCVPoint(const Array3f &array) {
+Array2d AndreiUtils::cvPointToEigenArray(cv::Point2d const &point) {
+    return {point.x, point.y};
+}
+
+cv::Point2f AndreiUtils::eigenArrayToCVPoint(Array2f const &array) {
+    return {array.x(), array.y()};
+}
+
+cv::Point2d AndreiUtils::eigenArrayToCVPoint(Array2d const &array) {
+    return {array.x(), array.y()};
+}
+
+Array3f AndreiUtils::cvPointToEigenArray(cv::Point3f const &point) {
+    return {point.x, point.y, point.z};
+}
+
+Array3d AndreiUtils::cvPointToEigenArray(cv::Point3d const &point) {
+    return {point.x, point.y, point.z};
+}
+
+cv::Point3f AndreiUtils::eigenArrayToCVPoint(Array3f const &array) {
     return {array.x(), array.y(), array.z()};
 }
 
-Vector3f AndreiUtils::cvPointToEigenVector(const cv::Point3f &point) {
-    Vector3f x;
-    x.x() = point.x;
-    x.y() = point.y;
-    x.z() = point.z;
-    return x;
+cv::Point3d AndreiUtils::eigenArrayToCVPoint(Array3d const &array) {
+    return {array.x(), array.y(), array.z()};
 }
 
-cv::Point3f AndreiUtils::eigenVectorToCVPoint(const Vector3f &vector) {
+Vector2f AndreiUtils::cvPointToEigenVector(cv::Point2f const &point) {
+    return {point.x, point.y};
+}
+
+Vector2d AndreiUtils::cvPointToEigenVector(cv::Point2d const &point) {
+    return {point.x, point.y};
+}
+
+cv::Point2f AndreiUtils::eigenVectorToCVPoint(Vector2f const &vector) {
+    return {vector.x(), vector.y()};
+}
+
+cv::Point2d AndreiUtils::eigenVectorToCVPoint(Vector2d const &vector) {
+    return {vector.x(), vector.y()};
+}
+
+Vector3f AndreiUtils::cvPointToEigenVector(cv::Point3f const &point) {
+    return {point.x, point.y, point.z};
+}
+
+Vector3d AndreiUtils::cvPointToEigenVector(cv::Point3d const &point) {
+    return {point.x, point.y, point.z};
+}
+
+cv::Point3f AndreiUtils::eigenVectorToCVPoint(Vector3f const &vector) {
     return {vector.x(), vector.y(), vector.z()};
 }
 
-void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
+cv::Point3d AndreiUtils::eigenVectorToCVPoint(Vector3d const &vector) {
+    return {vector.x(), vector.y(), vector.z()};
+}
+
+Eigen::Vector2f AndreiUtils::cvVectorToEigenVector(cv::Vec2f const &v) {
+    return {v[0], v[1]};
+}
+
+Eigen::Vector2d AndreiUtils::cvVectorToEigenVector(cv::Vec2d const &v) {
+    return {v[0], v[1]};
+}
+
+cv::Vec2f AndreiUtils::eigenVectorToCVVector(Eigen::Vector2f const &v) {
+    return {v[0], v[1]};
+}
+
+cv::Vec2d AndreiUtils::eigenVectorToCVVector(Eigen::Vector2d const &v) {
+    return {v[0], v[1]};
+}
+
+Eigen::Vector3f AndreiUtils::cvVectorToEigenVector(cv::Vec3f const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+Eigen::Vector3d AndreiUtils::cvVectorToEigenVector(cv::Vec3d const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+cv::Vec3f AndreiUtils::eigenVectorToCVVector(Eigen::Vector3f const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+cv::Vec3d AndreiUtils::eigenVectorToCVVector(Eigen::Vector3d const &v) {
+    return {v[0], v[1], v[2]};
+}
+
+void AndreiUtils::writeEigenArray(cv::FileStorage &fs, ArrayXf const &x) {
     fs << "{";
-    int size = x.size();
+    int size = (int) x.size();
     fs << "size" << size;
     for (int i = 0; i < size; i++) {
         fs << "elem_" + std::to_string(i) << x[i];
@@ -42,7 +114,7 @@ void AndreiUtils::writeEigenArray(cv::FileStorage &fs, const ArrayXf &x) {
     fs << "}";
 }
 
-void AndreiUtils::readEigenArray(const cv::FileNode &node, ArrayXf &x) {
+void AndreiUtils::readEigenArray(cv::FileNode const &node, ArrayXf &x) {
     int size = (int) node["size"];
     x = ArrayXf::Zero(size);
     for (int i = 0; i < size; i++) {
@@ -50,12 +122,12 @@ void AndreiUtils::readEigenArray(const cv::FileNode &node, ArrayXf &x) {
     }
 }
 
-void AndreiUtils::write(cv::FileStorage &fs, const string &name, const ArrayXf &x) {
+void AndreiUtils::write(cv::FileStorage &fs, string const &name, ArrayXf const &x) {
     // internal::WriteStructContext ws(fs, name, FileNode::SEQ + FileNode::FLOW);
     writeEigenArray(fs, x);
 }
 
-void AndreiUtils::read(const cv::FileNode &node, ArrayXf &x, const ArrayXf &default_value) {
+void AndreiUtils::read(cv::FileNode const &node, ArrayXf &x, ArrayXf const &default_value) {
     if (node.empty()) {
         x = default_value;
     } else {
@@ -63,16 +135,16 @@ void AndreiUtils::read(const cv::FileNode &node, ArrayXf &x, const ArrayXf &defa
     }
 }
 
-void AndreiUtils::write(cv::FileStorage &fs, const string &name, const Array<float, 3, 1> &x) {
-    write(fs, name, (const ArrayXf &) x);
+void AndreiUtils::write(cv::FileStorage &fs, string const &name, Array<float, 3, 1> const &x) {
+    write(fs, name, (ArrayXf const &) x);
 }
 
-void AndreiUtils::read(const cv::FileNode &node, Array<float, 3, 1> &x, const Array<float, 3, 1> &default_value) {
+void AndreiUtils::read(cv::FileNode const &node, Array<float, 3, 1> &x, Array<float, 3, 1> const &default_value) {
     read(node, (ArrayXf &) x, default_value);
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     cv::Mat tvec;
     cv::Matx33d r;
@@ -90,7 +162,7 @@ Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d, double fx, double fy, double ppx,
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     size_t n = eigenPoints3d.size();
     std::vector<cv::Point2f> points2d(n);
@@ -106,21 +178,21 @@ Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverMatPoseFrom2dAnd3dPoints(points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                            intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverMatPoseFrom2dAnd3dPoints(eigenPoints2d, eigenPoints3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                            intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     cv::Mat tvec;
     cv::Matx33d r;
@@ -133,7 +205,7 @@ DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d, double fx, double fy, double ppx,
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d, double fx, double fy, double ppx,
         double ppy, float distortionCoefficients[5]) {
     size_t n = eigenPoints3d.size();
     std::vector<cv::Point2f> points2d(n);
@@ -149,15 +221,15 @@ DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<cv::Point2f> const &points2d, vector<cv::Point3f> const &points3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverPoseFrom2dAnd3dPoints(points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                         intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
 DualQuaternion<double> AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        const vector<Vector2f> &eigenPoints2d, const vector<Vector3f> &eigenPoints3d,
-        const CameraIntrinsicParameters &intrinsics) {
+        vector<Vector2f> const &eigenPoints2d, vector<Vector3f> const &eigenPoints3d,
+        CameraIntrinsicParameters const &intrinsics) {
     return recoverPoseFrom2dAnd3dPoints(eigenPoints2d, eigenPoints3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                         intrinsics.ppy, intrinsics.distortionCoefficients);
 }

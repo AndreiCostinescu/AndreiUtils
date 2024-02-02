@@ -33,7 +33,7 @@ namespace AndreiUtils {
             int MaxCols = Cols>
     class EigenMatrixOpenCVSerializer {
     public:
-        static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(const cv::FileNode &node) {
+        static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(cv::FileNode const &node) {
             EigenMatrixOpenCVSerializer serializer;
             serializer.readParameters(node);
             return serializer.getMatrix();
@@ -56,11 +56,10 @@ namespace AndreiUtils {
         }
 
         EigenMatrixOpenCVSerializer() : matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(),
-                                        options(),
-                                        maxRows(), maxCols() {}
+                                        options(), maxRows(), maxCols() {}
 
-        explicit EigenMatrixOpenCVSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m)
-                : EigenMatrixOpenCVSerializer() {
+        explicit EigenMatrixOpenCVSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) :
+                EigenMatrixOpenCVSerializer() {
             this->matrix = &m;
             this->type = EigenMatrixOpenCVSerializer::getStringFromType();
             this->rows = Rows;
@@ -95,7 +94,7 @@ namespace AndreiUtils {
             fs << "}";
         }
 
-        void readParameters(const cv::FileNode &node) {
+        void readParameters(cv::FileNode const &node) {
             typedef std::vector<Scalar> V;
             typedef Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> Mat;
 
@@ -151,7 +150,7 @@ namespace AndreiUtils {
             }
             if (setItems != 9) {
                 throw std::runtime_error(
-                        "Poorly formatted xml data for EigenMatrixJsonSerializer: " + std::string(node));
+                        "Poorly formatted xml data for EigenMatrixOpenCVSerializer: " + std::string(node));
             }
             if (Rows != -1) {
                 if (this->rows != -1 && Rows != this->rows) {
@@ -191,57 +190,97 @@ namespace AndreiUtils {
         int rows, cols, options, maxRows, maxCols, currentRows, currentCols;
     };
 
-    Eigen::Array3f cvPointToEigenArray(const cv::Point3f &point);
+    Eigen::Array2f cvPointToEigenArray(cv::Point2f const &point);
 
-    cv::Point3f eigenArrayToCVPoint(const Eigen::Array3f &vector);
+    Eigen::Array2d cvPointToEigenArray(cv::Point2d const &point);
 
-    Eigen::Vector3f cvPointToEigenVector(const cv::Point3f &point);
+    cv::Point2f eigenArrayToCVPoint(Eigen::Array2f const &array);
 
-    cv::Point3f eigenVectorToCVPoint(const Eigen::Vector3f &vector);
+    cv::Point2d eigenArrayToCVPoint(Eigen::Array2d const &array);
 
-    void writeEigenArray(cv::FileStorage &fs, const Eigen::ArrayXf &x);
+    Eigen::Array3f cvPointToEigenArray(cv::Point3f const &point);
 
-    void readEigenArray(const cv::FileNode &node, Eigen::ArrayXf &x);
+    Eigen::Array3d cvPointToEigenArray(cv::Point3d const &point);
 
-    void write(cv::FileStorage &fs, const std::string &name, const Eigen::ArrayXf &x);
+    cv::Point3f eigenArrayToCVPoint(Eigen::Array3f const &array);
 
-    void read(const cv::FileNode &node, Eigen::ArrayXf &x, const Eigen::ArrayXf &default_value = Eigen::ArrayXf());
+    cv::Point3d eigenArrayToCVPoint(Eigen::Array3d const &array);
 
-    void write(cv::FileStorage &fs, const std::string &name, const Eigen::Array3f &x);
+    Eigen::Vector2f cvPointToEigenVector(cv::Point2f const &point);
 
-    void read(const cv::FileNode &node, Eigen::Array3f &x,
-              const Eigen::Array3f &default_value = Eigen::Array3f::Zero());
+    Eigen::Vector2d cvPointToEigenVector(cv::Point2d const &point);
+
+    cv::Point2f eigenVectorToCVPoint(Eigen::Vector2f const &vector);
+
+    cv::Point2d eigenVectorToCVPoint(Eigen::Vector2d const &vector);
+
+    Eigen::Vector3f cvPointToEigenVector(cv::Point3f const &point);
+
+    Eigen::Vector3d cvPointToEigenVector(cv::Point3d const &point);
+
+    cv::Point3f eigenVectorToCVPoint(Eigen::Vector3f const &vector);
+
+    cv::Point3d eigenVectorToCVPoint(Eigen::Vector3d const &vector);
+
+    Eigen::Vector2f cvVectorToEigenVector(cv::Vec2f const &v);
+
+    Eigen::Vector2d cvVectorToEigenVector(cv::Vec2d const &v);
+
+    cv::Vec2f eigenVectorToCVVector(Eigen::Vector2f const &v);
+
+    cv::Vec2d eigenVectorToCVVector(Eigen::Vector2d const &v);
+
+    Eigen::Vector3f cvVectorToEigenVector(cv::Vec3f const &v);
+
+    Eigen::Vector3d cvVectorToEigenVector(cv::Vec3d const &v);
+
+    cv::Vec3f eigenVectorToCVVector(Eigen::Vector3f const &v);
+
+    cv::Vec3d eigenVectorToCVVector(Eigen::Vector3d const &v);
+
+    void writeEigenArray(cv::FileStorage &fs, Eigen::ArrayXf const &x);
+
+    void readEigenArray(cv::FileNode const &node, Eigen::ArrayXf &x);
+
+    void write(cv::FileStorage &fs, std::string const &name, Eigen::ArrayXf const &x);
+
+    void read(cv::FileNode const &node, Eigen::ArrayXf &x, Eigen::ArrayXf const &default_value = Eigen::ArrayXf());
+
+    void write(cv::FileStorage &fs, std::string const &name, Eigen::Array3f const &x);
+
+    void read(cv::FileNode const &node, Eigen::Array3f &x,
+              Eigen::Array3f const &default_value = Eigen::Array3f::Zero());
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<cv::Point2f> &eigenPoints2d, const std::vector<cv::Point3f> &eigenPoints3d,
+            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 
     DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            const std::vector<Eigen::Vector2f> &eigenPoints2d, const std::vector<Eigen::Vector3f> &eigenPoints3d,
+            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
             const CameraIntrinsicParameters &intrinsics);
 }
 
@@ -264,7 +303,7 @@ namespace cv {
             #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
-    void write(cv::FileStorage &fs, const std::string &name,
+    void write(cv::FileStorage &fs, std::string const &name,
                const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x) {
         AndreiUtils::EigenMatrixOpenCVSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols>(x).writeParameters(fs);
     }
@@ -287,7 +326,7 @@ namespace cv {
             #endif
             int MaxRows = Rows,
             int MaxCols = Cols>
-    void read(const cv::FileNode &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,
+    void read(cv::FileNode const &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,
               const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &default_value = Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>()) {
         if (node.empty()) {
             x = default_value;

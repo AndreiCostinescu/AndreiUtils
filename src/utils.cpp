@@ -8,28 +8,45 @@
 
 using namespace std;
 
-bool AndreiUtils::stringIsInteger(const string &s) {
+bool AndreiUtils::stringIsInteger(string const &s) {
+    int tmp;
+    return stringIsInteger(s, tmp);
+}
+
+bool AndreiUtils::stringIsInteger(string const &s, int &res) {
     if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
 
     char *p;
-    strtol(s.c_str(), &p, 10);
+    long tmpRes = strtol(s.c_str(), &p, 10);
 
-    return (*p == 0);
+    if (*p == 0) {
+        res = (int) tmpRes;
+        return true;
+    }
+    return false;
 }
 
-int AndreiUtils::stringToInteger(const string &s) {
+int AndreiUtils::stringToInteger(string const &s) {
     if (!stringIsInteger(s)) {
         throw runtime_error("Can not convert string \"" + s + "\" to integer...");
     }
     return stoi(s);
 }
 
-bool AndreiUtils::stringIsBool(const string &s) {
+bool AndreiUtils::stringIsBool(string const &s) {
     return ((s == "t" || s == "T" || s == "true" || s == "True" || s == "1") ||
             (s == "f" || s == "F" || s == "false" || s == "False" || s == "0"));
 }
 
-bool AndreiUtils::stringToBool(const string &s) {
+bool AndreiUtils::stringIsBool(string const &s, bool &res) {
+    if (stringIsBool(s)) {
+        res = (s == "t" || s == "T" || s == "true" || s == "True" || s == "1" || s.empty());
+        return true;
+    }
+    return false;
+}
+
+bool AndreiUtils::stringToBool(string const &s) {
     if (s == "t" || s == "T" || s == "true" || s == "True" || s == "1" || s.empty()) {
         return true;
     } else if (s == "f" || s == "F" || s == "false" || s == "False" || s == "0") {
@@ -38,11 +55,24 @@ bool AndreiUtils::stringToBool(const string &s) {
     throw runtime_error("Can not convert string \"" + s + "\" to boolean...");
 }
 
-double AndreiUtils::stringToDouble(const string &s) {
+bool AndreiUtils::stringIsDouble(string const &s) {
+    double tmp;
+    return stringIsDouble(s, tmp);
+}
+
+bool AndreiUtils::stringIsDouble(string const &s, double &res) {
+    try {
+        res = stod(s);
+        return true;
+    } catch (exception &e) {}
+    return false;
+}
+
+double AndreiUtils::stringToDouble(string const &s) {
     return stod(s);
 }
 
-bool AndreiUtils::stringIsFloat(const string &s) {
+bool AndreiUtils::stringIsFloat(string const &s) {
     std::istringstream iss(s);
     float f;
     iss >> noskipws >> f; // noskipws considers leading whitespace invalid
@@ -50,7 +80,14 @@ bool AndreiUtils::stringIsFloat(const string &s) {
     return iss.eof() && !iss.fail();
 }
 
-float AndreiUtils::stringToFloat(const string &s) {
+bool AndreiUtils::stringIsFloat(string const &s, float &res) {
+    if (stringIsFloat(s)) {
+        res = stof(s);
+    }
+    return false;
+}
+
+float AndreiUtils::stringToFloat(string const &s) {
     if (!stringIsFloat(s)) {
         throw runtime_error("Can not convert string \"" + s + "\" to float...");
     }

@@ -18,9 +18,9 @@ namespace AndreiUtils {
 
         void reset();
 
-        double measure(const std::string &timeUnit = "s") const;
+        [[nodiscard]] double measure(std::string const &timeUnit = "s") const;
 
-        double measure(TimeUnit timeUnit) const;
+        [[nodiscard]] double measure(TimeUnit timeUnit) const;
 
         template<class TimerTimeUnit>
         double measure() {

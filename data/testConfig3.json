@@ -1,0 +1,49 @@
+{
+    "ObjectInstance": {
+        "direct_parents": ["Object"]
+    },
+
+    "BowlGreyIkeaInstance": {
+        "direct_parents": ["ObjectInstance", "Bowl"],
+        "data": {
+            "geometryData": {
+                "geometryFile": "../../PerceptionData/data/bowl.json",
+                "visionOriginRelativeToGraspOrigin": [1, 0, 0, 0, 0, 0, 0, 0],
+                "grasps": [
+                    {
+                        "points": [
+                            [0.5, -0.5, 0.5, -0.5, 0.059, 0.0065, 0.0065, 0.059],
+                            [0.5, -0.5, 0.5, -0.5, 0.0575, 0.005, 0.005, 0.0575]
+                        ],
+                        "angleRange": [-75, 75]
+                    }
+                ],
+                "shapeSymmetries": [
+                    {
+                        "type": "rotation",
+                        "axis": [0, 0, 1],
+                        "axisDisplacementFromOrigin": [0, 0, 0],
+                        "range": [0, 360]
+                    }
+                ],
+                "graspSymmetryCorrelation": [[0, ["s_0"]]]
+            },
+            "propertyValues": {
+                "interactionVolume": 0.15,
+                "basicShape": "cylinder",
+                "fillDegree": 0.01,
+                "openSurfaces": ["BowlGreyIkeaInstanceTopSurface"],
+                "pourerSurfaces": ["BowlGreyIkeaInstanceTopSurface"],
+                "location": {
+                    "global": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    "pose": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    "rel": "World:"
+                }
+            },
+            "surfaces": ["BowlGreyIkeaInstanceBottomSurface", "BowlGreyIkeaInstanceTopSurface"]
+        }
+    }
+
+
+
+}

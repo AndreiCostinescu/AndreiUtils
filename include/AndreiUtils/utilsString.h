@@ -2,8 +2,7 @@
 // Created by Andrei on 26.08.21.
 //
 
-#ifndef ANDREIUTILS_UTILSSTRING_H
-#define ANDREIUTILS_UTILSSTRING_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -11,53 +10,59 @@
 namespace AndreiUtils {
     extern std::string tab;
 
-    void myError(const std::string &message = "");
+    void myError(std::string const &message = "");
 
-    void myWarning(const std::string &message = "");
+    void myWarning(std::string const &message = "");
 
-    void myAssert(bool cond, const std::string &message = "");
+    void myAssert(bool cond, std::string const &message = "");
 
-    std::string operator *(const std::string &s, long long i);
+    std::string operator *(std::string const &s, long long i);
 
-    std::vector<std::string> splitString(const std::string &message, const std::string &splitter);
+    std::string repeat(char const *s, long long i);
 
-    std::string firstParts(const std::string &message, const std::string &partSplitter, int partCount);
+    std::vector<std::string> splitString(std::string const &message, std::string const &splitter);
 
-    std::string lastParts(const std::string &message, const std::string &partSplitter, int partCount);
+    std::string joinStrings(std::vector<std::string> const &strings, std::string const &joiner);
+    
+    std::string firstParts(std::string const &message, std::string const &partSplitter, int partCount);
 
-    std::string withoutFirstParts(const std::string &message, const std::string &partSplitter, int partCount);
+    std::string lastParts(std::string const &message, std::string const &partSplitter, int partCount);
 
-    std::string withoutLastParts(const std::string &message, const std::string &partSplitter, int partCount);
+    std::string withoutFirstParts(std::string const &message, std::string const &partSplitter, int partCount);
 
-    std::string toLowerString(const std::string &s);
+    std::string withoutLastParts(std::string const &message, std::string const &partSplitter, int partCount);
 
-    std::string toUpperString(const std::string &s);
+    std::string toLowerString(std::string const &s);
 
-    bool contains(const std::string &who, const std::string &what);
+    std::string toUpperString(std::string const &s);
 
-    bool startsWith(const std::string &str, const std::string &startQuery);
+    bool contains(std::string const &who, std::string const &what);
 
-    bool endsWith(const std::string &str, const std::string &endQuery);
+    bool startsWith(std::string const &str, std::string const &startQuery, size_t strSkipFirstCharactersAmount = 0);
 
-    std::string trim(const std::string &str, const std::string &whitespace = " \t");
+    bool endsWith(std::string const &str, std::string const &endQuery, size_t strIgnoreLastCharactersAmount = 0);
 
-    std::string reduce(const std::string &str, const std::string &fill = " ", const std::string &whitespace = " \t");
+    std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
-    std::string removeComments(const std::string &s, const std::string &comment = "#");
+    std::string reduce(std::string const &str, std::string const &fill = " ", std::string const &whitespace = " \t");
 
-    std::string replace(const std::string &s, const std::string &oldString, const std::string &newString);
+    std::string removeComments(std::string const &s, std::string const &comment = "#");
 
-    std::string replaceFirst(const std::string &s, const std::string &oldString, const std::string &newString);
+    std::string replace(std::string const &s, std::string const &oldString, std::string const &newString);
 
-    size_t stringCount(const std::string &referenceString, const std::string &subString);
+    std::string replaceFirst(std::string const &s, std::string const &oldString, std::string const &newString);
+
+    size_t stringCount(std::string const &referenceString, std::string const &subString);
 
     std::pair<std::string, std::string> getKeyAndValue(std::string &line);
 
-    std::string padLeftUntil(const std::string &s, const std::string &pad, int stringSizeLimit = -1,
+    std::string padLeftUntil(std::string const &s, std::string const &pad, int stringSizeLimit = -1,
                              long padTimes = -1);
 
-    std::string padRightUntil(const std::string &s, const std::string &pad, int stringSizeLimit = -1,
+    std::string padRightUntil(std::string const &s, std::string const &pad, int stringSizeLimit = -1,
                               long padTimes = -1);
-}
 
-#endif //ANDREIUTILS_UTILSSTRING_H
+    std::string removeLeft(std::string const &s, long count);
+
+    std::string removeRight(std::string const &s, long count);
+}

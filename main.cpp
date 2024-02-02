@@ -2,33 +2,22 @@
 // Created by Andrei on 05.10.21.
 //
 
-#include <AndreiUtils/classes/CrossBilateralFilter.hpp>
-#include <AndreiUtils/classes/DualQuaternion.hpp>
+#include <AndreiUtils/classes/AnyType.h>
+#include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
-#include <AndreiUtils/classes/PythonInterface.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
+#include <AndreiUtils/classes/TypeHelper.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
-#include <AndreiUtils/json.hpp>
-#include <AndreiUtils/traits/Container2DEigen.hpp>
-#include <AndreiUtils/traits/get_vector_type_for_convolution_eigen.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
-#include <AndreiUtils/traits/median_computer_eigen.hpp>
-#include <AndreiUtils/utils.hpp>
-#include <AndreiUtils/utilsEigenOpenCV.h>
 #include <AndreiUtils/utilsFiles.h>
-#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsMap.hpp>
-#include <AndreiUtils/utilsOpenCV.h>
-#include <AndreiUtils/utilsOpenCV.hpp>
-#include <AndreiUtils/utilsOpenMP.h>
-#include <AndreiUtils/utilsTime.h>
 #include <iostream>
 // #include <librealsense2/rs.hpp>
 
@@ -38,54 +27,13 @@ using namespace std;
 
 class Test {
 public:
-    explicit Test(int &data) : a(&data) {}
+    explicit Test(R<int> data) : a(&data) {}
 
     int *a;
 };
 
-void eigenTesting() {
-    Matrix2i m = Matrix2i::Identity();
-    m(0, 1) = 2;
-    nlohmann::json j = m;
-    cout << "Json from matrix m " << endl << m << endl << j << endl;
-    Matrix2i m2 = j.get<MatrixXi>();
-    cout << "Reconstructed matrix:" << endl << m2 << endl;
-
-    Vector3f v(5, 3.6, 21);
-    j = v;
-    cout << "Json from vector v " << endl << v << endl << j << endl;
-    Vector3f v2 = j.get<Vector3f>();
-    cout << "Reconstructed vector:" << endl << v2 << endl;
-
-    cv::FileStorage wfs("tmp.xml", cv::FileStorage::WRITE);
-    m(1, 0) = 3;
-    wfs << "matrix" << m;
-    wfs.release();
-    cv::FileStorage rfs("tmp.xml", cv::FileStorage::READ);
-    MatrixXi m3;
-    rfs["matrix"] >> m3;
-    rfs.release();
-    cout << "Reconstructed matrix:" << endl << m3 << endl;
-}
-
 void fileTesting() {
     cout << getCurrentDirectory(true) << endl;
-}
-
-void realsenseDistortionString() {
-    /*
-    cout << rs2_distortion_to_string(RS2_DISTORTION_NONE) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_MODIFIED_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_INVERSE_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_FTHETA) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_BROWN_CONRADY) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_KANNALA_BRANDT4) << endl;
-    cout << rs2_distortion_to_string(RS2_DISTORTION_COUNT) << endl;
-    //*/
-}
-
-void realsenseToCameraIntrinsicParameters() {
-    ;
 }
 
 void testPointerReference() {
@@ -94,99 +42,6 @@ void testPointerReference() {
     cout << "b = " << b << "; t = " << *t.a << endl;
     b = 4;
     cout << "b = " << b << "; t = " << *t.a << endl;
-}
-
-void timeTesting() {
-    SystemTimePoint t;
-    cout << convertChronoToStringWithSubseconds(t) << endl;
-    cout << endl << endl << endl;
-
-    auto now = std::chrono::system_clock::now();
-    string time;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%us-%pns", ":");
-    cout << "Initial time = " << time << endl;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%ns", ":");
-    cout << "Initial time = " << time << endl;
-    time = AndreiUtils::convertChronoToStringWithSubseconds(now, "%Y-%m-%d-%H-%M-%S", "%ms-%pus-%pns", ":");
-    cout << "Initial time = " << time << endl;
-
-    auto x = AndreiUtils::convertStringToChronoWithSubseconds(time, "%Y-%m-%d-%H-%M-%S", "%ms-%pus-%pns", ":");
-
-    auto d = x.time_since_epoch();
-    // UTC: +1:00
-    using Days = std::chrono::duration<int, std::ratio_multiply<std::chrono::hours::period, std::ratio<24>>::type>;
-    Days days = std::chrono::duration_cast<Days>(d);
-    d -= days;
-    auto hours = std::chrono::duration_cast<std::chrono::hours>(d);
-    d -= hours;
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(d);
-    d -= minutes;
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
-    d -= seconds;
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(d);
-    d -= milliseconds;
-    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(d);
-    d -= microseconds;
-    auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(d);
-    cout << hours.count() << ":" << minutes.count() << ":" << seconds.count() << ":" << milliseconds.count() << ":"
-         << microseconds.count() << ":" << nanoseconds.count() << endl;
-
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ns", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%pns", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%us", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%pus", ":") << endl;
-    cout << AndreiUtils::convertChronoToStringWithSubseconds(x, "%Y-%m-%d-%H-%M-%S", "%ms", ":") << endl;
-}
-
-void timeAddingTesting() {
-    SystemTimePoint now = SystemClock::now();
-    auto d = now.time_since_epoch();
-    auto nanoseconds = chrono::duration_cast<chrono::nanoseconds>(d);
-    d -= nanoseconds;
-
-    SystemTimePoint t(d);
-
-    SystemTimePoint stD(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<86400, 1>>(1.5)));
-    SystemTimePoint stH(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<3600, 1>>(1.5)));
-    SystemTimePoint stM(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, ratio<60, 1>>(1.5)));
-    SystemTimePoint stS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(1.5)));
-    SystemTimePoint stMS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, milli>(1.5)));
-    SystemTimePoint stUS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, micro>(1.5)));
-    SystemTimePoint stNS(d + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double, nano>(1.5)));
-    cout << convertChronoToStringWithSubseconds(stD) << endl;
-    cout << convertChronoToStringWithSubseconds(stH) << endl;
-    cout << convertChronoToStringWithSubseconds(stM) << endl;
-    cout << convertChronoToStringWithSubseconds(stS) << endl;
-    cout << convertChronoToStringWithSubseconds(stMS) << endl;
-    cout << convertChronoToStringWithSubseconds(stUS) << endl;
-    cout << convertChronoToStringWithSubseconds(stNS) << endl;
-
-    cout << convertChronoToStringWithSubseconds(now) << endl;
-    cout << convertChronoToStringWithSubseconds(t) << endl;
-    cout << "d  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "d")) << endl;
-    cout << "h  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "h")) << endl;
-    cout << "min: " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "min")) << endl;
-    cout << "s  : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "s")) << endl;
-    cout << "ms : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ms")) << endl;
-    cout << "us : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "us")) << endl;
-    cout << "ns : " << convertChronoToStringWithSubseconds(addDeltaTime(t, 1.5, "ns")) << endl;
-}
-
-void testMapKeys() {
-    map<string, int> x{
-            {"72", 1},
-            {"60", 2},
-            {"48", 3},
-            {"36", 4},
-            {"24", 5},
-            {"12", 6},
-    };
-    printVector(getMapKeys(x));
-}
-
-void testJsonNull() {
-    nlohmann::json j = nullptr;
-    cout << "JSON CONTENT: " << j.dump() << endl;
 }
 
 function<void()> testLambdaCaptureScopeFunction() {
@@ -199,108 +54,6 @@ function<void()> testLambdaCaptureScopeFunction() {
 void testLambdaCaptureScope() {
     auto f = testLambdaCaptureScopeFunction();
     f();
-}
-
-void testDualQuaternions() {
-    cout << setprecision(16);
-    cout << DualQuaternion<double>::zero << endl;
-    cout << DualQuaternion<double>::one << endl;
-    cout << DualQuaternion<double>::i << endl;
-    cout << DualQuaternion<double>::j << endl;
-    cout << DualQuaternion<double>::k << endl;
-    cout << DualQuaternion<double>::e << endl;
-    cout << DualQuaternion<double>::ei << endl;
-    cout << DualQuaternion<double>::ej << endl;
-    cout << DualQuaternion<double>::ek << endl;
-
-    Vector3d t(1, 2, 3);
-    Vector3d p(4, 2, 3);
-    vector<double> angles;
-    // angles = {M_PI_2, 0, M_PI};
-    // angles = {0, 0, M_PI};
-    angles = {M_PI_2, 0, 0};
-    Quaterniond r = qFromEulerAngles<double>(angles, "zyx");
-    DualQuaternion<double> q(r, t), qCopy;
-
-    cout << "q = " << q << endl;
-    cout << "Log of q = " << q.log() << endl;
-    cout << "Exp of Log of q = " << q.log().exp() << endl;
-    cout << "Exp of Log of q == q?: " << q.log().exp().equal(q) << endl;
-
-    qCopy = q;
-    cout << "qCopy == q: " << (qCopy == q) << endl;
-    qCopy = qCopy.addTranslation({0, 0, 1});
-    cout << "qCopy != q: " << (qCopy != q) << endl;
-
-    cout << "qCopy = " << qCopy << endl;
-    cout << "Log of qCopy = " << qCopy.log() << endl;
-    cout << "Exp of Log of qCopy = " << qCopy.log().exp() << endl;
-    cout << "Exp of Log of qCopy == qCopy?: " << qCopy.log().exp().equal(qCopy) << endl;
-
-    auto qNorm = q.norm();
-    auto qCopyNorm = qCopy.norm();
-    cout << qNorm << endl;
-    cout << qCopyNorm << endl;
-    cout << qCopyNorm.coefficientsAsEigen() << endl;
-
-    cout << "q = " << q << endl;
-    cout << printVectorToString(angles) << endl;
-    cout << q.getTranslation().transpose() << endl;
-    cout << q.transform(p).transpose() << endl;
-    cout << q.getTransformationMatrix() << endl;
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << endl;
-    cout << endl;
-
-    cout << "Inverse:" << endl;
-    DualQuaternion<double> qInv = q.dualQuaternionInverse();
-    cout << "qInv = " << qInv << endl;
-
-    cout << "qInv = " << qInv << endl;
-    cout << "Log of qInv = " << qInv.log() << endl;
-    cout << "Exp of Log of qInv = " << qInv.log().exp() << endl;
-    cout << "Exp of Log of qInv == qInv?: " << qInv.log().exp().equal(qInv) << endl;
-    cout << endl;
-
-    cout << "q * qInv = " << q * qInv << endl;
-    cout << "qInv * q = " << qInv * q << endl;
-    cout << endl;
-
-    Eigen::Matrix<double, 8, 1> coeffs;
-    coeffs.topRows(4) = q.getRotation().coeffs().cast<double>();
-    coeffs.bottomRows(4) = q.getDual().coeffs().cast<double>();
-
-    cout << q.coefficientNorm() << endl;
-    cout << qInv.coefficientNorm() << endl;
-    q.normalize();
-    qInv.normalize();
-    cout << q.coefficientNorm() << endl;
-    cout << qInv.coefficientNorm() << endl;
-    cout << "q - qInv = " << q - qInv << endl;
-    cout << (qInv - q).coefficientNorm() << endl;
-    cout << (q - qInv).coefficientNorm() << endl;
-    cout << "q    = " << q << endl;
-    cout << "qInv = " << qInv << endl;
-    cout << average(vector<DualQuaternion<double>>({q, qInv})) << endl;
-
-    cout << endl << endl;
-
-    cout << q.getTranslation().transpose() << ", " << q << endl;
-    p = Vector3d(2, -31, 1);
-    auto q1 = q.addTranslation(p);
-    cout << q1.getTranslation().transpose() << ", " << q1 << endl;
-    cout << endl;
-
-    cout << eulerAnglesFromQ(q.getRotation(), "zyx").transpose() << ", " << q.getTranslation().transpose() << ", " << q
-         << endl;
-    // angles = {M_PI / 4, M_PI / 3, -M_PI / 6};
-    angles = {-M_PI_2, M_PI, 0};
-    r = qFromEulerAngles<double>(angles, "zyx");
-    auto q2 = q.addRotation(r);
-    cout << eulerAnglesFromQ(q2.getRotation(), "zyx").transpose() << ", " << q2.getTranslation().transpose() << ", "
-         << q2 << endl;
-    cout << endl;
-
-    cout << q.powScrew(0.5) << endl;
 }
 
 void testStringAllocation() {
@@ -330,152 +83,41 @@ void testFloatSlidingWindow() {
         cout << endl;
         cout << "At i = " << i << ": median = " << sw.getMedian() << ", average = " << sw.getAverage() << endl;
     }
-
-    SlidingWindow<Eigen::Vector3d> swEigen(11);
-    for (int i = 0; i < 20; i++) {
-        swEigen.addData(Vector3d((double) i, (double) (i * i), (double) (i * i * i)));
-        cout << "At i = " << i << ": median = " << swEigen.getMedian() << ", average = " << swEigen.getAverage()
-             << endl;
-    }
 }
 
-void testCrossBilateralFilter() {
-    cout << ModifiableContainer2D<int>::isContainer2D << endl;
-    cout << ModifiableContainer2D<double>::isContainer2D << endl;
-    cout << ModifiableContainer2D<cv::Mat>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::Matrix3d>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::MatrixXf>::isContainer2D << endl;
-    cout << ModifiableContainer2D<Eigen::Vector2d>::isContainer2D << endl;
-    Eigen::MatrixXd m = Eigen::MatrixXd::Identity(21, 21);
-    CrossBilateralFilter filter(5);
-    float x, y;
-    filter.filter(11, 11, m, x, y);
-    cout << "x = " << x << ", y = " << y << endl;
-}
-
-void testSortMultipleVectorsBasedOnOneCriterion() {
-    vector<double> x(10);
-    std::iota(x.begin(), x.end(), 10);
-    vector<int> y(10);
-    std::iota(y.begin(), y.end(), 4);
-    shuffle(y.begin(), y.end(), std::mt19937(std::random_device()()));
-    vector<string> z(10);
-    for (int i = 0; i < z.size(); i++) {
-        if (i == 0) {
-            z[i] = "1";
-        } else {
-            z[i] = z[i - 1] + "1";
-        }
-    }
-    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) {
-        return a < b;
-    });
-    printVector(x);
-    printVector(y);
-    printVector(z);
-    printVector(permutation);
-    sortMultipleVectorsBasedOnPermutation(permutation, x, y, z);
-    printVector(x);
-    printVector(y);
-    printVector(z);
-}
-
-void testAccessTimeInMapVsVector() {
-    int64_t N = 1e8 + 1;
-    vector<int64_t> v(N);
-    map<int64_t, bool> m;
-    Timer t;
-    double time;
-    t.start();
-    for (int64_t i = 0; i < N; i++) {
-        v[i] = i;
-        m[i] = true;
-    }
-    time = t.measure(TimeUnit::SECOND);
-    cout << "Initialization took " << time << endl;
-
-    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
-                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
-                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
-                               static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
-    bool res;
-    for (const auto &q: queries) {
-        t.start();
-        res = vectorContains(v, q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in vector took " << time << ": res = " << res << endl;
-
-        t.start();
-        auto iter = find(v.begin(), v.end(), q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in vector took " << time << ": res = " << (iter != v.end()) << endl;
-
-        t.start();
-        res = mapContains(m, q);
-        time = t.measure(TimeUnit::SECOND);
-        cout << "Checking if " << q << " is in map took " << time << ": res = " << res << endl;
-    }
-}
-
-class A {
+class A_ {
 public:
-    virtual ~A() = default;
+    virtual ~A_() = default;
 };
 
-class B : virtual public A {
+class B_ : virtual public A_ {
 public:
-    bool operator<(const B &other) const {
+    bool operator<(CR<B_> other) const {
         return true;
     }
 };
 
-class C : virtual public A {
+class C_ : virtual public A_ {
 };
 
-class D : public B, public C {
+class D_ : public B_, public C_ {
 };
 
 void testTypeCreator() {
-    TypeCreator<A> creator;
-    creator.registerTypeCreator("A", []() { return new A(); });
-    creator.registerTypeCreator("B", []() { return new B(); });
-    creator.registerTypeCreator("C", []() { return new C(); });
-    creator.registerTypeCreator("D", []() { return new D(); });
+    SharedTypeCreator<A_> creator;
+    creator.registerTypeCreator("A", []() { return make_shared<A_>(); });
+    creator.registerTypeCreator("B", []() { return make_shared<B_>(); });
+    creator.registerTypeCreator("C", []() { return make_shared<C_>(); });
+    creator.registerTypeCreator("D", []() { return make_shared<D_>(); });
     auto c = creator.createType("C");
-    auto a = dynamic_cast<A *>(c);
-    auto b = dynamic_cast<B *>(c);
-    auto d = dynamic_cast<D *>(c);
+    auto a = dynamic_pointer_cast<A_>(c);
+    auto b = dynamic_pointer_cast<B_>(c);
+    auto d = dynamic_pointer_cast<D_>(c);
     cout << a << endl;
     cout << b << endl;
     cout << c << endl;
     cout << d << endl;
-    delete c;
-}
-
-void testJsonArraySerialization() {
-    nlohmann::json j = readJsonFile("../testJsonOutput.json");
-    j["data"] = {110, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    j["name"] = "dummy data 2";
-    j["isDummy"] = false;
-    writeJsonFile("../testJsonOutput.json", j);
-}
-
-void testIntegralAndUnsignedTypes() {
-    cout << is_integral<bool>::value << endl;
-    cout << is_unsigned<bool>::value << endl;
-    cout << endl;
-    cout << is_integral<long long>::value << endl;
-    cout << is_integral<int64_t>::value << endl;
-    cout << endl;
-    cout << is_integral<unsigned long long>::value << endl;
-    cout << is_integral<uint64_t>::value << endl;
-    cout << endl;
-    cout << is_unsigned<long long>::value << endl;
-    cout << is_unsigned<int64_t>::value << endl;
-    cout << endl;
-    cout << is_unsigned<unsigned long long>::value << endl;
-    cout << is_unsigned<uint64_t>::value << endl;
-    cout << endl;
+    c.reset();
 }
 
 void testUnionFind() {
@@ -591,8 +233,8 @@ void testUnionFind() {
 
 namespace std {
     template<>
-    struct hash<B> {
-        size_t operator()(const B &b) const noexcept {
+    struct hash<B_> {
+        size_t operator()(CR<B_> b) const noexcept {
             return 0;
         }
     };
@@ -618,28 +260,28 @@ void testHashable() {
     cout << std::is_default_constructible<std::hash<int>>::value << endl;
     cout << std::is_default_constructible<std::hash<float>>::value << endl;
     cout << std::is_default_constructible<std::hash<double>>::value << endl;
-    cout << std::is_default_constructible<std::hash<B>>::value << endl;
-    cout << std::is_default_constructible<std::hash<C>>::value << endl;
+    cout << std::is_default_constructible<std::hash<B_>>::value << endl;
+    cout << std::is_default_constructible<std::hash<C_>>::value << endl;
 
     cout << is_hashable<int>::value << endl;
     cout << is_hashable<float>::value << endl;
     cout << is_hashable<double>::value << endl;
-    cout << is_hashable<B>::value << endl;
-    cout << is_hashable<C>::value << endl;
+    cout << is_hashable<B_>::value << endl;
+    cout << is_hashable<C_>::value << endl;
 
-    auto b = std::hash<B>();
-    // auto c = std::hash<C>();  // Compiler error!
+    auto b = std::hash<B_>();
+    // auto c = std::hash<C_>();  // Compiler error!
 
-    map<B, int> mB;
-    map<C, int> mC;
-    B bObj1, bObj2, bObj3;
-    C cObj1, cObj2, cObj3;
+    map<B_, int> mB;
+    map<C_, int> mC;
+    B_ bObj1, bObj2, bObj3;
+    C_ cObj1, cObj2, cObj3;
 
     // is_detected<std::less<int>::operator()>;
     // is_detected<std::less<int>::operator(), int>;
     // is_detected<std::less<C>::operator(), C, C>;
 
-    cout << is_hashable<map<B, int>::key_compare>::value << endl;
+    cout << is_hashable<map<B_, int>::key_compare>::value << endl;
 
     mB[bObj1] = 1;
     mB[bObj2] = 2;
@@ -649,29 +291,11 @@ void testHashable() {
     // mC[cObj3] = 3;  // Compiler error
 }
 
-void testMapFiltering() {
-    map<int, int> x;
-    for (int i = 0; i < 20; i++) {
-        x[i] = i - 5;
-    }
-    auto y = getFilteredMapBasedOnPredicate(x, (std::function<bool(int const &, int const &)>) [](const int &key,
-                                                                                                  const int &value) {
-        // return false;
-        // return true;
-        // return key % 3;
-        return value % 4 != 0;
-    });
-    cout << "Printing map:" << endl;
-    printMap(x);
-    printMap(y);
-    cout << "Done!" << endl;
-}
-
 void testDynamicCast() {
-    A objA;
-    B objB;
-    C objC;
-    D objD;
+    A_ objA;
+    B_ objB;
+    C_ objC;
+    D_ objD;
     auto *a = &objA;
     auto *b = &objB;
     auto *c = &objC;
@@ -683,44 +307,44 @@ void testDynamicCast() {
     cout << d << endl;
     cout << endl;
 
-    A *tmp;
-    tmp = dynamic_cast<A *>(a);
+    A_ *tmp;
+    tmp = dynamic_cast<A_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(b);
+    tmp = dynamic_cast<A_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(c);
+    tmp = dynamic_cast<A_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<A *>(d);
-    cout << tmp << endl;
-    cout << endl;
-
-    tmp = dynamic_cast<B *>(a);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(b);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(c);
-    cout << tmp << endl;
-    tmp = dynamic_cast<B *>(d);
+    tmp = dynamic_cast<A_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<C *>(a);
+    tmp = dynamic_cast<B_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(b);
+    tmp = dynamic_cast<B_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(c);
+    tmp = dynamic_cast<B_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<C *>(d);
+    tmp = dynamic_cast<B_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
-    tmp = dynamic_cast<D *>(a);
+    tmp = dynamic_cast<C_ *>(a);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(b);
+    tmp = dynamic_cast<C_ *>(b);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(c);
+    tmp = dynamic_cast<C_ *>(c);
     cout << tmp << endl;
-    tmp = dynamic_cast<D *>(d);
+    tmp = dynamic_cast<C_ *>(d);
+    cout << tmp << endl;
+    cout << endl;
+
+    tmp = dynamic_cast<D_ *>(a);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(b);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(c);
+    cout << tmp << endl;
+    tmp = dynamic_cast<D_ *>(d);
     cout << tmp << endl;
     cout << endl;
 
@@ -730,259 +354,14 @@ void testDynamicCast() {
     // delete d;
 }
 
-void testOpenCVMatrixAccessors() {
-    cv::Mat m1(10, 10, CV_64F);
-    m1.setTo(1);
-    auto getElement = getMatrixElementAccessor<double, int>(m1, 10);
-    cout << getElement(10, 10) << endl;
-    cout << getElement(4, 10) << endl;
-    cout << getElement(1, 1) << endl;
-    cout << getElement(5, 5) << endl;
-    cout << getElement(1, -1) << endl;
-    cout << getElement(1, -1) << endl;
-    cout << endl;
-
-    cv::Mat *m2 = &m1;
-    m1.setTo(4);
-    cout << "m2 = " << m2 << endl;
-    auto getElementPtr = getMatrixElementAccessor<double, int>(m2, 14);
-    cout << getElementPtr(10, 10) << endl;
-    cout << getElementPtr(4, 10) << endl;
-    cout << getElementPtr(1, 1) << endl;
-    cout << getElementPtr(5, 5) << endl;
-    cout << getElementPtr(1, -1) << endl;
-    cout << getElementPtr(1, -1) << endl;
-    cout << endl;
-
-    auto *m3 = new cv::Mat(10, 10, CV_64F);
-    m3->setTo(64);
-    cout << "m3 = " << m3 << endl;
-    auto getElementPtr2 = getMatrixElementAccessor<double, int>(m3, 19);
-    cout << getElementPtr2(10, 10) << endl;
-    cout << getElementPtr2(4, 10) << endl;
-    cout << getElementPtr2(1, 1) << endl;
-    cout << getElementPtr2(5, 5) << endl;
-    cout << getElementPtr2(1, -1) << endl;
-    cout << getElementPtr2(1, -1) << endl;
-    cout << endl;
-    delete m3;
-
-    const auto *m4 = new cv::Mat(10, 10, CV_64F);
-    cout << "m4 = " << m4 << endl;
-    auto getElementPtr3 = getMatrixElementAccessor<double, int>(m4, 69);
-    cout << getElementPtr3(10, 10) << endl;
-    cout << getElementPtr3(4, 10) << endl;
-    cout << getElementPtr3(1, 1) << endl;
-    cout << getElementPtr3(5, 5) << endl;
-    cout << getElementPtr3(1, -1) << endl;
-    cout << getElementPtr3(1, -1) << endl;
-    cout << endl;
-
-    auto const *const &m5 = m4;
-    cout << "m5 = " << m5 << endl;
-    auto getElementPtr4 = getMatrixElementAccessor<double, float>(m5, 2.4);
-    cout << getElementPtr4(10, 10) << endl;
-    cout << getElementPtr4(4, 10) << endl;
-    cout << getElementPtr4(1, 1) << endl;
-    cout << getElementPtr4(5, 5) << endl;
-    cout << getElementPtr4(1, -1) << endl;
-    cout << getElementPtr4(1, -1) << endl;
-    cout << endl;
-    delete m4;
-}
-
-void testOMPUtils() {
-    cout << "Default settings:" << endl;
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    cout << endl;
-
-    cout << "After setting #omp threads to 12:" << endl;
-    setNumberOfOMPThreads(12);
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), maxNumberOfOMPThreads());
-    #pragma omp parallel default(none)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-    #pragma omp parallel default(none) num_threads(3)
-    {
-        #pragma omp single
-        printf("num_threads = %d (out of %d)\n", getNumberOfActiveOMPThreads(), omp_get_max_threads());
-    }
-}
-
-void testPrintingImagesOpenCV() {
-    cv::Mat m = cv::Mat(300, 300, CV_8U);
-    m.setTo(100);
-    displayImage(m, "GrayScale");
-    for (int i = 0; i < 4; i++) {
-        for (int v = 0; v < 256; v++) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(2);
-        }
-        for (int v = 255; v >= 0; v--) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(2);
-        }
-    }
-    cout << "Finished visualization!" << endl;
-    cv::waitKey();
-    cout << "END PROGRAM!" << endl;
-}
-
-void testFastForLoop() {
-    vector<int> v(4 * maxNumberOfOMPThreads());
-    printVector(v);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-    setNumberOfOMPThreads(16);
-    fastForLoop<int>(v, [](int threadID, vector<int> &_v, size_t index, size_t) {
-        _v[index] = threadID;
-    });
-    printVector(v);
-}
-
-void testOpenCVMatrixCropReference() {
-    cv::Mat m = cv::Mat(300, 300, CV_8U);
-    m.setTo(100);
-
-    for (int i = 0; i < 4; i++) {
-        for (int v = 0; v < 256; v++) {
-            cv::Mat view = m(cv::Range(100, 200), cv::Range(100, 200));
-            view.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(10);
-        }
-        for (int v = 255; v >= 0; v--) {
-            m.setTo(v);
-            displayImage(m, "GrayScale");
-            cv::waitKey(10);
-        }
-    }
-}
-
-void testMapRefAccessing() {
-    map<int, int> x;
-    x[0] = 0;
-    x[1] = 1;
-    x[2] = 2;
-    x[3] = 3;
-    x[4] = 4;
-    int value = 42;
-    int *valuePtr = nullptr;
-    int const *valueConstPtr = nullptr;
-
-    // ------------------ CHECK MAP_GET_IF_CONTAINS FUNCTIONS ------------------
-
-    cout << mapGetIfContains(x, -1, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, -1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, -1, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 0, value) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    cout << mapGetIfContains(x, 2, valueConstPtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    value = 42;
-
-    cout << mapGetIfContains(x, 1, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << "Update valuePtr..." << endl;
-    *valuePtr = 42;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-    int &valueRef = *valuePtr;
-
-    cout << mapGetIfContains(x, 2, valuePtr) << endl;
-    cout << value << ", " << (valuePtr == nullptr ? "null" : to_string(*valuePtr)) << ", "
-         << (valueConstPtr == nullptr ? "null" : to_string(*valueConstPtr)) << endl;
-    cout << "Update valueRef..." << endl;
-    valueRef = 69;
-    *valuePtr = -42;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    // ------------------ NOW CHECK MAP_GET FUNCTIONS ------------------
-
-    try {
-        mapGet(x, -1);
-    } catch (exception &e) {
-        if (strcmp(e.what(), "Element not found in map!") != 0) {
-            throw e;
-        }
-    }
-
-    value = mapGet(x, 0);
-    cout << "value = " << value << endl;
-    value = 5;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    int &valueRef2 = mapGet(x, 4);
-    cout << "valueRef2 = " << valueRef2 << endl;
-    valueRef2 = 5;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-
-    int &valueRef3 = mapGet(x, 1);
-    valueRef3 = -14;
-    cout << "valueRef3 = " << valueRef3 << endl;
-    cout << "valueRef  = " << valueRef << endl;
-    cout << printMapToString(x) << endl;
-    cout << endl;
-}
-
 void testMixedDataContainer() {
-    nlohmann::json x;
-    x["24"] = 25;
+    vector<string> x(5, "Hello World!");
     MixedDataContainer c;
+    int data = 25;
+    c.addData("24", &data);
     c.addData("json", &x);
-    auto tmp = *(c.getData<nlohmann::json>("json"));
-    cout << tmp.dump() << endl;
+    auto tmp = *(c.getData<vector<string>>("json"));
+    cout << printVectorToString(tmp) << endl;
 }
 
 void testGraph() {
@@ -1018,7 +397,6 @@ void testGraph() {
     auto t2 = dfsIterTimer.measure(TimeUnit::SECOND);
     cout << "DFS RecTime: " << t1 << " sec vs. IterTime: " << t2 << " sec" << endl;
 
-    //*
     auto printDfsData = [](DFS<int, string> const &_dfs) {
         cout << "Roots: [" << printVectorToString(_dfs.getGraphRoots()) << "]" << endl;
         cout << "Tree edges: [" << printVectorToString(_dfs.getTreeEdges()) << "]" << endl;
@@ -1047,7 +425,6 @@ void testGraph() {
     for (auto const &rootData: res) {
         cout << "Distances starting from " << rootData.first << ": " << printMapToString(rootData.second) << endl;
     }
-    //*/
 
     int x = 35;
     cout << (x = 42) << endl;
@@ -1056,57 +433,14 @@ void testGraph() {
     g.removeNode(1);
 }
 
-void testMapCopy() {
-    map<int, int> x, y;
-    x[0] = 0;
-    x[1] = 1;
-    x[2] = 1;
-    y = x;
-    y[0] = 42;
-
-    printMap(x);
-    cout << endl << endl;
-    printMap(y);
-}
-
-void testVectorAppendFunctions() {
-    Eigen::Vector3d x(1, 2, 3);
-    vector<double> y{1, 2, 3, 4, 5, 6, 7};
-    printVector(x.data(), 3);
-    printVector(y);
-    vector<double> res, res2;
-    vectorAppendInPlace(res, y);
-    printVector(res);
-    vectorAppendInPlace(res, x.data(), 3);
-    printVector(res);
-    res2 = vectorAppend(y, x.data(), 3);
-    printVector(res2);
-    res2 = vectorAppend(res, x.data(), 3);
-    printVector(res2);
-    res2 = vectorAppend(res, y);
-    printVector(res2);
-    cout << "Done" << endl;
-}
-
-void testVectorEquals() {
-    Eigen::Vector3d x(1, 2, 3);
-    vector<double> y{1, 2, 3, 4, 5, 6, 7};
-    vector<double> res, res2;
-    vectorAppendInPlace(res, y);
-    cout << vectorEquals(y, res) << endl;
-    vectorAppendInPlace(res, x.data(), 3);
-    cout << vectorEquals(y, res) << endl;
-}
-
 void testRandom() {
     RandomNumberGenerator<int> randomInt(1, 10);
     for (int i = 0; i < 20; i++) {
         cout << randomInt.sample() << endl;
     }
     cout << endl << endl;
-    RandomNumberGenerator<double> randomDouble(0, 1);
     for (int i = 0; i < 20; i++) {
-        cout << randomDouble.sample() << endl;
+        cout << double01Sampler.sample() << endl;
     }
     cout << endl << endl;
 
@@ -1137,179 +471,150 @@ void testInterpolation() {
     printVector(sx.getResult());
 }
 
-void testSpliceVector() {
-    int n = 10;
-    vector<double> x(n);
-    for (int i = 0; i < n; i++) {
-        x[i] = i + 1;
-    }
-    printVector(spliceVector(x, 0, 9));
-    printVector(spliceVector(x, 1, 8));
+void testStringFindFunctions() {
+    string a = "abdabdad";
+    string b = "a";
+    string c = "abd";
+    string d = "d";
+    cout << a.rfind(b) << endl;
+    cout << a.rfind(b, 0) << endl;
+    cout << a.rfind(d) << endl;
+    cout << a.rfind(d, 0) << endl;
+    cout << a.rfind(d, 3) << endl;
+    cout << a.rfind(c) << endl;
+    cout << a.rfind(c, 0) << endl;
+    cout << a.rfind(c, 3) << endl;
+
+    a = "....";
+    b = "..";
+    cout << a.rfind(b, 4) << endl;
+    cout << a.rfind(b, 3) << endl;
+    cout << a.rfind(b, 2) << endl;
+    cout << a.rfind(b, 1) << endl;
+    cout << a.rfind(b, 0) << endl;
 }
 
-void testPythonInterface() {
-    PythonInterface p("hello_world", {"print_hello", "return_hello"});
-    p.callFunction("print_hello");
-    auto res = p.callFunction("return_hello");
-    cout << res.cast<string>() << endl;
-}
+void testTypes() {
+    int a = 24;
+    int *aPtr = &a;
+    int const *aCPtr = &a;
+    int volatile *aVPtr = &a;
+    int volatile const *aCVPtr = &a;
 
-template<typename T>
-class E {
-public:
-    explicit E(T *data = nullptr) : data(data), ownsData(false) {}
-
-    explicit E(T &&data) : data(new T(std::move(data))), ownsData(true) {}
-
-    explicit E(T &data) = delete;
-
-    E(E const &other) : data(other.data), ownsData(false) {}
-
-    E(E &&other) noexcept: data(other.data), ownsData(other.ownsData) {
-        other.ownsData = false;
-        other.reset();
+    if (std::is_same<CR<CP<V<int>>>, VCPCR<int>>::value) {
+        cout << "Types are the same!" << endl;
     }
 
-    E &operator=(E const &other) {
-        if (&other != this) {
-            this->discardData();
-            this->data = other.data;
-            this->ownsData = false;
+    C<int> x0 = a;
+    P<int> x1 = aPtr;
+    R<int> x2 = a;
+    U<int> x3 = std::move(a);
+    V<int> x4 = a;
+
+    CP<int> x5 = aPtr;
+    CR<int> x6 = a;
+    CU<int> x7 = std::move(a);
+    PC<int> x8 = aPtr;
+    PR<int> x9 = aPtr;
+    PU<int> x10 = std::move(aPtr);
+    VC<int> x11 = a;
+    VP<int> x12 = aPtr;
+    VR<int> x13 = a;
+    VU<int> x14 = std::move(a);
+
+    CPC<int> x15 = aPtr;
+    CPR<int> x16 = aCPtr;
+    CPU<int> x17 = std::move(aCPtr);
+    PCR<int> x18 = aPtr;
+    PCU<int> x19 = std::move(aPtr);
+    VCP<int> x20 = &a;
+    VCR<int> x21 = a;
+    VCU<int> x22 = std::move(a);
+    VPC<int> x23 = &a;
+    VPR<int> x24 = aVPtr;
+    VPU<int> x25 = std::move(aVPtr);
+
+    CPCR<int> x26 = aCPtr;
+    CPCU<int> x27 = std::move(aCPtr);
+    VCPC<int> x28 = &a;
+    VCPR<int> x29 = aCVPtr;
+    VCPU<int> x30 = std::move(aCVPtr);
+    VPCR<int> x31 = aVPtr;
+    VPCU<int> x32 = std::move(aVPtr);
+
+    VCPCR<int> x33 = aCVPtr;
+    VCPCU<int> x34 = std::move(aCVPtr);
+}
+
+void testAnyType() {
+    AnyType x;
+    x = 24;
+    cout << (x.get<int>() == 25) << " " << x.get<int>() << endl;
+    try {
+        cout << (x.get<string>() == "Hello World!") << endl;
+    } catch (runtime_error &e) {
+        if (e.what() != string("Wrong type to cast to!")) {
+            throw e;
         }
-        return *this;
     }
-
-    E &operator=(E &&other) noexcept {
-        if (&other != this) {
-            this->discardData();
-            this->data = other.data;
-            this->ownsData = other.ownsData;
-            other.ownsData = false;
-            other.reset();
-        }
-        return *this;
-    }
-
-    virtual ~E() {
-        this->reset();
-    }
-
-    void reset() {
-        this->discardData();
-        this->ownsData = false;
-        this->data = nullptr;
-    }
-
-    void discardData() {
-        if (this->ownsData) {
-            cout << "Call delete!" << endl;
-            delete this->data;
-            this->data = nullptr;
-            this->ownsData = false;
-        }
-    }
-
-    T *data;
-    bool ownsData;
-};
-
-template<typename T>
-void printRValueData(E<T> &&v) {
-    cout << "v.data = " << v.data << "; owns it = " << v.ownsData;
-    if (v.data != nullptr) {
-        cout << "; with value = " << *(v.data);
-    }
-    cout << endl;
+    x = string("Hello World!");
+    cout << x.get<string>() << endl;
 }
 
 template<typename T>
-void printRValueData(E<T> &v) = delete;
-
-template<typename T>
-void allowOnlyRValues(T &&v) {
-    printRValueData(std::forward<T>(v));
-    printRValueData(std::forward<T>(v));
+void testIntervalsPrivate() {
+    Interval<T> i(0, 1);
+    Interval<T> i2(std::move(Interval<T>::createFullRange()));
+    Interval<T> i3(-std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+    cout << i.createSampler().sample() << " || " << i2.createSampler().sample() << endl;
+    cout << std::numeric_limits<T>::min() << " vs. " << std::numeric_limits<T>::max() << " vs. "
+         << -std::numeric_limits<T>::max() << endl;
+    cout << (std::numeric_limits<T>::max() + 1) << " vs. " << (-std::numeric_limits<T>::max() - 1) << " vs. "
+         << (std::numeric_limits<T>::min() - 1) << endl;
+    cout << std::numeric_limits<T>::max() - (-std::numeric_limits<T>::max()) << endl;
+    cout << i.size() << " | " << i2.size() << " | " << i3.size() << endl;
+    RandomNumberGenerator<T> sampler = i.createSampler();
+    RandomNumberGenerator<T> sampler2 = i2.createSampler();
+    RandomNumberGenerator<T> sampler3 = i3.createSampler();
+    RandomNumberGenerator<T> sampler4(-std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+    RandomNumberGenerator<T> sampler5(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+    for (int iter = 0; iter < 10; ++iter) {
+        cout << sampler.sample() << " || " << sampler2.sample() << " || " << sampler3.sample() << " || "
+             << sampler4.sample() << " || " << sampler5.sample() << endl;
+    }
 }
 
-template<typename T>
-void allowOnlyRValues(T &v) = delete;
-
-void testMoveSemantics() {
-    E<int> a(42);
-    printRValueData(std::move(a));
-    cout << endl;
-    E<int> b = std::move(a);  // move assignment
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    cout << endl;
-    E<int> c(std::move(b));  // move constructor
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    cout << endl;
-    E<int> d = c;  // copy assignment
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    cout << endl;
-    E<int> e(c);  // copy constructor from c
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    printRValueData(std::move(e));
-    cout << endl;
-    E<int> f(d);  // copy constructor from d
-    printRValueData(std::move(a));
-    printRValueData(std::move(b));
-    printRValueData(std::move(c));
-    printRValueData(std::move(d));
-    printRValueData(std::move(e));
-    printRValueData(std::move(f));
-    cout << endl;
-    allowOnlyRValues(E<int>(69));
+void testIntervals() {
+    testIntervalsPrivate<double>();
+    cout << endl << endl;
+    testIntervalsPrivate<float>();
+    cout << endl << endl;
+    testIntervalsPrivate<long long>();
+    cout << endl << endl;
+    testIntervalsPrivate<int>();
+    cout << endl << endl;
 }
 
 int main() {
     cout << "Hello World!" << endl;
-    // eigenTesting();
+
     // fileTesting();
-    // realsenseDistortionString();
-    // timeTesting();
-    // timeAddingTesting();
     // testPointerReference();
-    // testMapKeys();
-    // testJsonNull();
     // testLambdaCaptureScope();
-    // testDualQuaternions();
     // testStringAllocation();
     // testFloatSlidingWindow();
-    // testCrossBilateralFilter();
-    // testSortMultipleVectorsBasedOnOneCriterion();
-    // testAccessTimeInMapVsVector();
     // testTypeCreator();
-    // testJsonArraySerialization();
-    // testIntegralAndUnsignedTypes();
     // testUnionFind();
     // testHashable();
-    // testMapFiltering();
     // testDynamicCast();
-    // testOpenCVMatrixAccessors();
-    // testOMPUtils();
-    // testPrintingImagesOpenCV();
-    // testFastForLoop();
-    // testOpenCVMatrixCropReference();
-    // testMapRefAccessing();
     // testMixedDataContainer();
     // testGraph();
-    // testMapCopy();
-    // testVectorAppendFunctions();
-    // testVectorEquals();
     // testRandom();
     // testInterpolation();
-    // testSpliceVector();
-    // testPythonInterface();
-    testMoveSemantics();
+    // testStringFindFunctions();
+    // testTypes();
+    // testAnyType();
+    testIntervals();
+
     return 0;
 }

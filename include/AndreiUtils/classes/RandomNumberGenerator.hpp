@@ -2,8 +2,7 @@
 // Created by Andrei Costinescu on 05.08.22.
 //
 
-#ifndef ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
-#define ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
+#pragma once
 
 #include <random>
 #include <type_traits>
@@ -15,10 +14,15 @@ namespace AndreiUtils {
                 typename std::conditional<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, void>::type>::type;
     };
 
+    // Can not create move or copy constructors because of the rd (random_device) member variable, which prohibits them
     template<typename T>
     class RandomNumberGenerator {
     public:
-        RandomNumberGenerator(T minValue, T maxValue) : rd(), engine(rd()), distribution(minValue, maxValue) {}
+        RandomNumberGenerator(T minValue, T maxValue) :
+                rd(), seed(rd()), engine(seed), distribution(minValue, maxValue) {}
+
+        RandomNumberGenerator(T minValue, T maxValue, std::random_device::result_type seed) :
+                seed(seed), rd(), engine(seed), distribution(minValue, maxValue) {}
 
         virtual ~RandomNumberGenerator() = default;
 
@@ -26,11 +30,23 @@ namespace AndreiUtils {
             return this->distribution(this->engine);
         }
 
+        void setSeed(std::random_device::result_type newSeed) {
+            this->seed = newSeed;
+            this->engine.seed(this->seed);
+        }
+
+        [[nodiscard]] std::random_device::result_type const &getSeed(std::random_device::result_type newSeed) const {
+            return this->seed;
+        }
+
     protected:
+        // Class member initialization order https://en.cppreference.com/w/cpp/language/constructor#Initialization_order
         std::random_device rd;
+        std::random_device::result_type seed;
         std::default_random_engine engine;
+        // if floating point type: range is [minValue, maxValue); if integral type: range is [minValue, maxValue]
         typename uniform_distribution_type<T>::Type distribution;
     };
-}
 
-#endif //ANDREIUTILS_RANDOMNUMBERGENERATOR_HPP
+    extern RandomNumberGenerator<double> double01Sampler;
+}

@@ -3,7 +3,6 @@
 //
 
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
-#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <utility>
 
 using namespace AndreiUtils;
@@ -19,21 +18,26 @@ MotionDeviceIntrinsicParameters::MotionDeviceIntrinsicParameters(
 MotionDeviceIntrinsicParameters::~MotionDeviceIntrinsicParameters() = default;
 
 void MotionDeviceIntrinsicParameters::setMotionDeviceIntrinsicParameters(
-        const MatrixXd &_data, const VectorXd &_biasVariances, const VectorXd &_noiseVariances) {
+        MatrixXd const &_data, VectorXd const &_biasVariances, VectorXd const &_noiseVariances) {
     this->data = _data;
     this->biasVariances = _biasVariances;
     this->noiseVariances = _noiseVariances;
 }
 
-void MotionDeviceIntrinsicParameters::toJson(nlohmann::json &j) const {
-    j.clear();
-    j["data"] = this->data;
-    j["biasVariances"] = this->biasVariances;
-    j["noiseVariances"] = this->noiseVariances;
+void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParameters const &other) {
+    if (this == &other) {
+        return;
+    }
+    this->data = other.data;
+    this->biasVariances = other.biasVariances;
+    this->noiseVariances = other.noiseVariances;
 }
 
-void MotionDeviceIntrinsicParameters::fromJson(const nlohmann::json &j) {
-    this->data = j.at("data").get<Eigen::MatrixXd>();
-    this->biasVariances = j.at("biasVariances").get<Eigen::VectorXd>();
-    this->noiseVariances = j.at("noiseVariances").get<Eigen::VectorXd>();
+void MotionDeviceIntrinsicParameters::setFromOther(MotionDeviceIntrinsicParameters &&other) {
+    if (this == &other) {
+        return;
+    }
+    this->data = std::move(other.data);
+    this->biasVariances = std::move(other.biasVariances);
+    this->noiseVariances = std::move(other.noiseVariances);
 }

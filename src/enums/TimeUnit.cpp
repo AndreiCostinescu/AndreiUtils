@@ -67,7 +67,7 @@ std::string AndreiUtils::convertTimeUnitToString(const TimeUnit &timeUnit) {
     }
 }
 
-TimeUnit AndreiUtils::convertStringToTimeUnit(const std::string &timeUnit) {
+TimeUnit AndreiUtils::convertStringToTimeUnit(std::string const &timeUnit) {
     if (timeUnit == "d") {
         return TimeUnit::DAY;
     } else if (timeUnit == "h") {

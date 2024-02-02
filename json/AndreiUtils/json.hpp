@@ -19380,21 +19380,30 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
            handlers added in version 3.4.0; serialization of binary values added
            in version 3.8.0.
     */
-    string_t dump(const int indent = -1,
-                  const char indent_char = ' ',
-                  const bool ensure_ascii = false,
-                  const error_handler_t error_handler = error_handler_t::strict) const
+    [[nodiscard]] string_t dump(const int indent = -1,
+                                const char indent_char = ' ',
+                                const bool ensure_ascii = false,
+                                const error_handler_t error_handler = error_handler_t::strict) const
+    {
+        return this->dumpWithExistingIndent(indent, indent_char, 0, ensure_ascii, error_handler);
+    }
+
+    [[nodiscard]] string_t dumpWithExistingIndent(const int indent = -1,
+                                                  const char indent_char = ' ',
+                                                  const int current_indent_level = 0,
+                                                  const bool ensure_ascii = false,
+                                                  const error_handler_t error_handler = error_handler_t::strict) const
     {
         string_t result;
         serializer s(detail::output_adapter<char, string_t>(result), indent_char, error_handler);
 
         if (indent >= 0)
         {
-            s.dump(*this, true, ensure_ascii, static_cast<unsigned int>(indent));
+            s.dump(*this, true, ensure_ascii, static_cast<unsigned int>(indent), current_indent_level);
         }
         else
         {
-            s.dump(*this, false, ensure_ascii, 0);
+            s.dump(*this, false, ensure_ascii, 0, current_indent_level);
         }
 
         return result;

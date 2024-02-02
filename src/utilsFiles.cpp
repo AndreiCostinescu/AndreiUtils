@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsString.h>
+#include <cassert>
 #include <iostream>
 #include <sys/stat.h>
 
@@ -49,9 +50,11 @@ bool AndreiUtils::fileExists(string const &name) {
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-bool AndreiUtils::createDirectory(string const &path) {
+bool AndreiUtils::createDirectory(string const &path, bool verbose) {
     if (path.empty()) {
-        cout << "Directory path is empty!" << endl;
+        if (verbose) {
+            cout << "Directory path is empty!" << endl;
+        }
         return false;
     }
     bool res;
@@ -61,18 +64,23 @@ bool AndreiUtils::createDirectory(string const &path) {
     res = (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != -1);
 #endif
     if (!res) {
-        cout << "Directory already exists? " << path << endl;
+        if (verbose) {
+            cout << "Directory already exists? " << path << endl;
+        }
         return false;
     }
     return true;
 }
 
-bool AndreiUtils::createNestedDirectory(string const &path) {
+bool AndreiUtils::createNestedDirectory(string const &path, bool fromFilePath) {
     string dirPath = replace(path, "\\", "/"), tmpPath;
-    size_t nrSubdirs = stringCount(dirPath, "/");
+    int nrSubdirs = int(stringCount(dirPath, "/")) - fromFilePath;
     bool res;
     for (int i = 0; i <= nrSubdirs; i++) {
         tmpPath = firstParts(dirPath, "/", i + 1);
+        if (tmpPath.empty()) {
+            continue;
+        }
         res = createDirectory(tmpPath);
     }
     return res;
@@ -124,4 +132,57 @@ vector<string> AndreiUtils::listDirectoryFiles(string const &directoryName, stri
 #endif
 
     return fileNames;
+}
+
+bool AndreiUtils::isFilePathAbsolute(string const &path) {
+    #if defined(_WIN32)
+    return startsWith(path, ":/", 1);
+    #else
+    return startsWith(path, "/");
+    #endif
+}
+
+std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
+    vector<string> res = splitString(replace(path, "\\", "/"), "/");
+    string directory = "./";
+    for (int i = 0; i < res.size() - 1; i++) {
+        if (res[i] == "." || res[i].empty()) {
+            continue;
+        }
+        directory += res[i] + "/";
+    }
+    return directory;
+}
+
+std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
+    vector<string> res = splitString(replace(path, "\\", "/"), "/");
+    vector<string> simplifiedPath;
+    int simplifiedPathSize = 0;
+    for (int resIndex = 0; resIndex < res.size(); ++resIndex) {
+        auto const &resPart = res[resIndex];
+        assert(simplifiedPath.size() >= simplifiedPathSize);
+        if (resPart == ".") {
+            continue;
+        } else if (resPart == ".." && (simplifiedPathSize > 0 && simplifiedPath[simplifiedPathSize - 1] != "." &&
+                                       simplifiedPath[simplifiedPathSize - 1] != "..")) {
+            --simplifiedPathSize;
+        } else {
+            while (simplifiedPath.size() <= simplifiedPathSize) {
+                simplifiedPath.emplace_back();
+            }
+            simplifiedPath[simplifiedPathSize++] = resPart;
+        }
+    }
+    string newPath;
+    for (int i = 0; i < simplifiedPathSize; i++) {
+        if (!newPath.empty()) {
+            newPath += "/";
+        }
+        newPath += simplifiedPath[i];
+    }
+    return newPath;
+}
+
+bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {
+    return (in.peek() == EOF);
 }

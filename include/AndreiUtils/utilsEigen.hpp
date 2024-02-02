@@ -2,32 +2,33 @@
 // Created by Andrei on 06.09.21.
 //
 
-#ifndef ANDREIUTILS_UTILSEIGEN_HPP
-#define ANDREIUTILS_UTILSEIGEN_HPP
+#pragma once
 
 #include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsEigenLeastSquares.h>
 #include <Eigen/Dense>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace AndreiUtils {
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    std::string eigenToString(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &eigenData) {
+    std::string eigenToString(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &eigenData) {
         std::stringstream ss;
         ss << eigenData;
         return ss.str();
     }
 
     template<typename S1, int R1, int C1, int O1, int MR1, int MC1, typename S2, int R2, int C2, int O2, int MR2, int MC2>
-    bool checkSameSize(const Eigen::Matrix<S1, R1, C1, O1, MR1, MC1> &a,
-                       const Eigen::Matrix<S2, R2, C2, O2, MR2, MC2> &b) {
+    bool checkSameSize(Eigen::Matrix<S1, R1, C1, O1, MR1, MC1> const &a,
+                       Eigen::Matrix<S2, R2, C2, O2, MR2, MC2> const &b) {
         return a.rows() == b.rows() && a.cols() == b.cols();
     }
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
     std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> getMatrixRowsAsVector(
-            const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
+            Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
         std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> res(m.rows());
         for (int i = 0; i < m.rows(); i++) {
             res[i] = m.row(i);
@@ -37,7 +38,7 @@ namespace AndreiUtils {
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
     std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> getMatrixColsAsVector(
-            const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) {
+            Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
         std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> res(m.cols());
         for (int i = 0; i < m.cols(); i++) {
             res[i] = m.col(i);
@@ -48,7 +49,7 @@ namespace AndreiUtils {
     // https://gist.github.com/javidcf/25066cf85e71105d57b6
     template<class MatT>
     Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> pseudoinverse(
-            const MatT &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) {
+            MatT const &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) {
         typedef typename MatT::Scalar Scalar;
         auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
         const auto &singularValues = svd.singularValues();
@@ -83,215 +84,20 @@ namespace AndreiUtils {
         return a;
     }
 
-    template<class T>
-    void qSetZero(Eigen::Quaternion<T> &q) {
-        q.w() = 0;
-        q.x() = 0;
-        q.y() = 0;
-        q.z() = 0;
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> addComponentWise(
+            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+        return m.array() + v;
     }
 
-    template<class T>
-    Eigen::Quaternion<T> qZero() {
-        Eigen::Quaternion<T> q;
-        qSetZero(q);
-        return q;
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qIdentity() {
-        return Eigen::Quaternion<T>::Identity();
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qxRotation(const T &angle) {
-        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitX()));
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qyRotation(const T &angle) {
-        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitY()));
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qzRotation(const T &angle) {
-        return Eigen::Quaternion<T>(Eigen::AngleAxis<T>(angle, Eigen::Matrix<T, 3, 1>::UnitZ()));
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qMulScalar(const Eigen::Quaternion<T> &q, const T &scalar) {
-        return Eigen::Quaternion<T>(q.coeffs() * scalar);
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qDivScalar(const Eigen::Quaternion<T> &q, const T &scalar) {
-        return Eigen::Quaternion<T>(q.coeffs() / scalar);
-    }
-
-    // q1 == q2
-    template<class T>
-    bool qEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2, T const &tol = T(1e-9)) {
-        return equal(q1.w(), q2.w(), tol) && equal(q1.x(), q2.x(), tol) && equal(q1.y(), q2.y(), tol) &&
-               equal(q1.z(), q2.z(), tol);
-    }
-
-    // q1 != q2
-    template<class T>
-    bool qNotEqual(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2, T const &tol = T(1e-9)) {
-        return !qEqual(q1, q2, tol);
-    }
-
-    // q1 + q2
-    template<class T>
-    Eigen::Quaternion<T> qAdd(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        return Eigen::Quaternion<T>(q1.coeffs() + q2.coeffs());
-    }
-
-    // q1 += q2
-    template<class T>
-    void qIncrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        q1.coeffs() += q2.coeffs();
-    }
-
-    // q1 - q2
-    template<class T>
-    Eigen::Quaternion<T> qDiff(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        return Eigen::Quaternion<T>(q1.coeffs() - q2.coeffs());
-    }
-
-    // q1 - q2: alias for qDiff
-    template<class T>
-    Eigen::Quaternion<T> qSub(const Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        return qDiff(q1, q2);
-    }
-
-    // q1 -= q2
-    template<class T>
-    void qDecrement(Eigen::Quaternion<T> &q1, const Eigen::Quaternion<T> &q2) {
-        q1.coeffs() -= q2.coeffs();
-    }
-
-    template<class T>
-    double qCoefficientSquareSum(Eigen::Quaternion<T> const &q) {
-        return q.coeffs().squaredNorm();
-    }
-
-    // -q
-    template<class T>
-    Eigen::Quaternion<T> qNeg(const Eigen::Quaternion<T> &q) {
-        return Eigen::Quaternion<T>(-q.coeffs());
-    }
-
-    // log(q)
-    template<class T>
-    Eigen::Quaternion<T> qLog(const Eigen::Quaternion<T> &q) {
-        T qNorm = q.norm();
-        Eigen::Matrix<T, 3, 1> x = acos(q.w() / qNorm) * q.vec().normalized();
-        return Eigen::Quaternion<T>(log(qNorm), x.x(), x.y(), x.z());
-    }
-
-    // exp(q)
-    template<class T>
-    Eigen::Quaternion<T> qExp(const Eigen::Quaternion<T> &q) {
-        Eigen::Matrix<T, 3, 1> x = q.vec();
-        T xNorm = x.norm();
-        return qMulScalar(Eigen::Quaternion<T>(Eigen::AngleAxis<T>(xNorm, x.normalized())), exp(q.w()));
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> vToQ(const Eigen::Matrix<T, 3, 1> &v) {
-        Eigen::Quaternion<T> q;
-        q.w() = 0;
-        q.vec() = v;
-        return q;
-    }
-
-    template<class T>
-    Eigen::Matrix<T, 3, 1> qRotate(const Eigen::Quaternion<T> &q, const Eigen::Matrix<T, 3, 1> &v) {
-        return (q * vToQ(v) * q.inverse()).vec();
-    }
-
-    /**
-    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
-    //*/
-    template<class T>
-    Eigen::Quaternion<T> qFromEulerAngles(const std::vector<T> &angles, const std::string &format = "xyz") {
-        Eigen::Quaternion<T> q = qIdentity<T>();
-        if (angles.size() > format.size()) {
-            throw std::runtime_error("Not all angles have the format specified!");
-        }
-        for (int i = 0; i < angles.size(); i++) {
-            if (format[i] == 'x') {
-                q = qxRotation(angles[i]) * q;
-            } else if (format[i] == 'y') {
-                q = qyRotation(angles[i]) * q;
-            } else if (format[i] == 'z') {
-                q = qzRotation(angles[i]) * q;
-            } else {
-                throw std::runtime_error(
-                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
-            }
-        }
-        return q;
-    }
-
-    /**
-    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
-    */
-    template<class T>
-    Eigen::Quaternion<T> qFromEulerAngles(const Eigen::Matrix<T, 3, 1> &angles, const std::string &format = "xyz") {
-        Eigen::Quaternion<T> q = Eigen::Quaternion<T>::Identity();
-        if (3 > format.size()) {
-            throw std::runtime_error("Not all angles have the format specified!");
-        }
-        for (int i = 0; i < 3; i++) {
-            if (format[i] == 'x') {
-                q = qxRotation(angles.row(i)) * q;
-            } else if (format[i] == 'y') {
-                q = qyRotation(angles.row(i)) * q;
-            } else if (format[i] == 'z') {
-                q = qzRotation(angles.row(i)) * q;
-            } else {
-                throw std::runtime_error(
-                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
-            }
-        }
-        return q;
-    }
-
-    template<class T>
-    Eigen::Quaternion<T> qFromRotationMatrix(const Eigen::Matrix<T, 3, 3> &rot) {
-        return Eigen::Quaternion<T>(rot);
-    }
-
-    /**
-    Format specifies the following: xyz means R has the form R_z * R_y * R_x, when rotating a point p like this: R * p
-    */
-    template<class T>
-    Eigen::Matrix<T, 3, 1> eulerAnglesFromQ(const Eigen::Quaternion<T> &q, const std::string &format = "xyz") {
-        if (format.size() < 3) {
-            throw std::runtime_error("Format " + format + " does not specify axis for each euler angle value");
-        }
-        int indices[3];
-        for (int i = 2; i >= 0; i--) {
-            if (format[i] == 'x') {
-                indices[2 - i] = 0;
-            } else if (format[i] == 'y') {
-                indices[2 - i] = 1;
-            } else if (format[i] == 'z') {
-                indices[2 - i] = 2;
-            } else {
-                throw std::runtime_error(
-                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
-            }
-        }
-        auto e = q.toRotationMatrix().eulerAngles(indices[0], indices[1], indices[2]);
-        swapData(e.x(), e.z());
-        return e;
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> subComponentWise(
+            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+        return m.array() - v;
     }
 
     template<class T, int N>
-    Eigen::Matrix<T, -1, N> convertVectorsToMatrixRows(const std::vector<Eigen::Matrix<T, N, 1>> &rows) {
+    Eigen::Matrix<T, -1, N> convertVectorsToMatrixRows(std::vector<Eigen::Matrix<T, N, 1>> const &rows) {
         Eigen::Matrix<T, -1, N> m = Eigen::Matrix<T, -1, N>::Zero(rows.size(), N);
         for (int i = 0; i < m.rows(); i++) {
             m.row(i) = rows[i];
@@ -300,7 +106,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    Eigen::Matrix<T, -1, 1> convertValuesToVector(const std::vector<T> &values) {
+    Eigen::Matrix<T, -1, 1> convertValuesToVector(std::vector<T> const &values) {
         Eigen::Matrix<T, -1, 1> v = Eigen::Matrix<T, -1, 1>::Zero(values.size(), 1);
         for (int i = 0; i < values.size(); i++) {
             v[i] = values[i];
@@ -309,7 +115,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    Eigen::Matrix<T, 1, -1> convertValuesToRowVector(const std::vector<T> &values) {
+    Eigen::Matrix<T, 1, -1> convertValuesToRowVector(std::vector<T> const &values) {
         Eigen::Matrix<T, 1, -1> v = Eigen::Matrix<T, 1, -1>::Zero(1, values.size());
         for (int i = 0; i < values.size(); i++) {
             v[i] = values[i];
@@ -317,50 +123,178 @@ namespace AndreiUtils {
         return v;
     }
 
-    template<class T>
-    Eigen::Matrix<T, 3, 1> qToRPY(const Eigen::Quaternion<T> &q) {
-        // first rotate around X, then round Y and finally around Z => R = Rx * Ry * Rz
-        // x points left, y points front, z point up
-        Eigen::Matrix<T, 3, 1> euler;
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    double vectorAngle(Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &v1,
+                       Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &v2) {
+        return acos(v1.normalized().dot(v2.normalized()));
+    }
 
-        double sqw = q.w() * q.w(), sqx = q.x() * q.x(), sqy = q.y() * q.y(), sqz = q.z() * q.z();
+    template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
+    double vectorAngleAlreadyNormalized(Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &n1,
+                                        Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &n2) {
+        return acos(n1.dot(n2));
+    }
 
-        // If quaternion is normalised the unit is one, otherwise it is the correction factor
-        double unit = sqx + sqy + sqz + sqw, test = q.x() * q.z() + q.y() * q.w();
-
-        if (test > 0.4999 * unit) {
-            // 0.4999f OR 0.5f - EPSILON: Singularity at north pole
-            euler.x() = 0;                                                                         // Roll
-            euler.y() = M_PI * 0.5f;                                                      // Pitch
-            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
-        } else if (test < -0.4999f * unit) {
-            // -0.4999f OR -0.5f + EPSILON: Singularity at south pole
-            euler.x() = 0;                                                                         // Roll
-            euler.y() = -M_PI * 0.5f;                                                     // Pitch
-            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
-        } else {
-            euler.x() = atan2(2 * q.x() * q.w() - 2 * q.y() * q.z(), sqw - sqx - sqy + sqz);  // Roll
-            euler.y() = asin(2 * test / unit);                                         // Pitch
-            euler.z() = atan2(2 * q.z() * q.w() - 2 * q.x() * q.y(), sqw + sqx - sqy - sqz);  // Yaw
+    template<typename T>
+    bool checkInsideTriangles(
+            Eigen::Matrix<T, 3, 1> const &p0, Eigen::Matrix<T, 3, -1> const &surfaceMatrix,
+            Eigen::Matrix<T, -1, 3> const &otherShiftedPoints, Eigen::Index const &surfacePointCount,
+            Eigen::Index const &otherPointCount, Eigen::Matrix<T, 3, -1> *otherSurfaceMatrix = nullptr,
+            Eigen::Matrix<T, 3, 1> *otherProjectedP0 = nullptr, bool verbose = false) {
+        bool withSettingOtherData = otherSurfaceMatrix != nullptr && otherProjectedP0 != nullptr;
+        Eigen::Matrix3d leastSquaresMatrixA;
+        leastSquaresMatrixA.col(2) = surfaceMatrix.col(surfacePointCount - 1);
+        Eigen::Matrix3Xd coefficients;
+        for (int surfaceVectorPairIndex = 0; surfaceVectorPairIndex < surfacePointCount - 2; ++surfaceVectorPairIndex) {
+            leastSquaresMatrixA.template leftCols<2>() = surfaceMatrix.template middleCols<2>(surfaceVectorPairIndex);
+            coefficients = AndreiUtils::leastSquares(leastSquaresMatrixA, otherShiftedPoints.transpose());
+            if (verbose) {
+                std::cout << "Coefficient matrix at surfaceVectorPairIndex " << surfaceVectorPairIndex << " ="
+                          << std::endl << coefficients << std::endl;
+            }
+            for (int otherPointIndex = 0; otherPointIndex < otherPointCount; ++otherPointIndex) {
+                if (inRange<double>(coefficients(0, otherPointIndex), 0, 1) &&
+                    inRange<double>(coefficients(1, otherPointIndex), 0, 1) &&
+                    inRange<double>(coefficients(0, otherPointIndex) + coefficients(1, otherPointIndex), 0, 1)) {
+                    return true;
+                }
+                if (withSettingOtherData && surfaceVectorPairIndex == 0) {
+                    coefficients(2, otherPointIndex) = 0;
+                    if (otherPointIndex == 0) {
+                        *otherProjectedP0 = leastSquaresMatrixA * coefficients.col(otherPointIndex);
+                    } else {
+                        otherSurfaceMatrix->col(otherPointIndex - 1) =
+                                leastSquaresMatrixA * coefficients.col(otherPointIndex) - *otherProjectedP0;
+                    }
+                }
+            }
         }
+        if (withSettingOtherData) {
+            // otherP0 should be p0 + surfaceMatrix * coefficients; but for computational efficiency, add p0 here
+            *otherProjectedP0 += p0;
+        }
+        return false;
+    }
 
-        // return (float)(180 / M_PI) * euler;  // convert to degrees
-        return euler;
+    template<typename T>
+    void getPerpendicularAxesFromOne(Eigen::Matrix<T, 3, 1> const &axis, Eigen::Matrix<T, 3, 1> &xAxis,
+                                     Eigen::Matrix<T, 3, 1> &yAxis) {
+        Eigen::Matrix<T, 3, 1> tmp(1, 0, 0);
+        if (AndreiUtils::greaterEqual(AndreiUtils::fastAbs(axis.dot(tmp)), 0.9)) {
+            // vectors are quasi-parallel
+            tmp.x() = 0;
+            tmp.y() = 1;
+        }
+        xAxis = axis.cross(tmp);
+        yAxis = axis.cross(xAxis);
+    }
+
+    template<typename T>
+    void getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> axis, Eigen::Matrix<T, 3, 1> &xAxis,
+                                      Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis,
+                                      std::string const &whichAxis = "z") {
+        if (whichAxis != "x" && whichAxis != "y" && whichAxis != "z") {
+            throw std::runtime_error("Unknown axis type to process!");
+        }
+        axis.normalize();
+        Eigen::Matrix<T, 3, 1> tmpAxis, tmpAxis2;
+        getPerpendicularAxesFromOne(axis, tmpAxis, tmpAxis2);
+        if (whichAxis == "z") {
+            xAxis = tmpAxis;
+            yAxis = tmpAxis2;
+            zAxis = axis;
+        } else if (whichAxis == "y") {
+            zAxis = tmpAxis;
+            xAxis = tmpAxis2;
+            yAxis = axis;
+        } else {
+            assert(whichAxis == "x");
+            yAxis = tmpAxis;
+            zAxis = tmpAxis2;
+            xAxis = axis;
+        }
+    }
+
+    template<typename T>
+    Eigen::Matrix<T, 3, 3> getAnyOrientationFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis,
+                                                        std::string const &whichAxis = "z") {
+        Eigen::Matrix<T, 3, 1> x, y, z;
+        getAnyOrientationFromOneAxis(axis, x, y, z, whichAxis);
+        Eigen::Matrix<T, 3, 3> res;
+        res.col(0) = x;
+        res.col(1) = y;
+        res.col(2) = z;
+        return res;
+    }
+
+    template<typename T>
+    Eigen::Quaternion<T> getAnyOrientationQuaternionFromOneAxis(Eigen::Matrix<T, 3, 1> const &axis,
+                                                                std::string const &whichAxis = "z") {
+        return Eigen::Quaternion<T>(getAnyOrientationFromOneAxis(axis, whichAxis));
+    }
+
+    template<typename T>
+    void getOrientationFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> axis1, Eigen::Matrix<T, 3, 1> axis2, Eigen::Matrix<T, 3, 1> &xAxis,
+            Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis, std::string const &whichAxis1 = "z",
+            std::string const &whichAxis2 = "x") {
+        if (whichAxis1 != "x" && whichAxis1 != "y" && whichAxis1 != "z") {
+            throw std::runtime_error("Unknown axis1 type to process!");
+        }
+        if (whichAxis2 != "x" && whichAxis2 != "y" && whichAxis2 != "z") {
+            throw std::runtime_error("Unknown axis2 type to process!");
+        }
+        axis1.normalize();
+        axis2.normalize();
+        Eigen::Matrix<T, 3, 1> tmpAxis;
+        if (whichAxis1 == "z") {
+            zAxis = axis1;
+            if (whichAxis2 == "y") {
+                xAxis = axis2.cross(zAxis);
+                yAxis = zAxis.cross(xAxis);
+            } else {
+                yAxis = zAxis.cross(axis2);
+                xAxis = yAxis.cross(zAxis);
+            }
+        } else if (whichAxis1 == "y") {
+            yAxis = axis1;
+            if (whichAxis2 == "x") {
+                zAxis = axis2.cross(yAxis);
+                xAxis = yAxis.cross(zAxis);
+            } else {
+                xAxis = yAxis.cross(axis2);
+                zAxis = xAxis.cross(yAxis);
+            }
+        } else {
+            assert(whichAxis1 == "x");
+            xAxis = axis1;
+            if (whichAxis2 == "z") {
+                yAxis = axis2.cross(xAxis);
+                zAxis = xAxis.cross(yAxis);
+            } else {
+                zAxis = xAxis.cross(axis2);
+                yAxis = zAxis.cross(xAxis);
+            }
+        }
+    }
+
+    template<typename T>
+    Eigen::Matrix<T, 3, 3> getOrientationFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+        Eigen::Matrix<T, 3, 1> x, y, z;
+        getOrientationFromTwoAxes(axis1, axis2, x, y, z, whichAxis1, whichAxis2);
+        Eigen::Matrix<T, 3, 3> res;
+        res.col(0) = x;
+        res.col(1) = y;
+        res.col(2) = z;
+        return res;
+    }
+
+    template<typename T>
+    Eigen::Quaternion<T> getOrientationQuaternionFromTwoAxes(
+            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+        return Eigen::Quaternion<T>(getOrientationFromTwoAxes(axis1, axis2, whichAxis1, whichAxis2));
     }
 }
-
-namespace std {
-    template<class T>
-    ostream &operator<<(ostream &os, const Eigen::Quaternion<T> &q) {
-        os << q.w() << " " << q.x() << " " << q.y() << " " << q.z();
-        return os;
-    }
-
-    template<class T>
-    istream &operator>>(istream &is, Eigen::Quaternion<T> &q) {
-        is >> q.w() >> q.x() >> q.y() >> q.z();
-        return is;
-    }
-}
-
-#endif //ANDREIUTILS_UTILSEIGEN_HPP

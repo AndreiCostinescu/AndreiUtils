@@ -16,7 +16,7 @@ namespace AndreiUtils {
 
     std::string convertInvalidValuesHandlingModeToString(const InvalidValuesHandlingMode &mode);
 
-    InvalidValuesHandlingMode convertStringToInvalidValuesHandlingMode(const std::string &mode);
+    InvalidValuesHandlingMode convertStringToInvalidValuesHandlingMode(std::string const &mode);
 }
 
 #endif //ANDREIUTILS_INVALIDVALUESHANDLINGMODE_H

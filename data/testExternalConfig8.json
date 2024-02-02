@@ -1,0 +1,5 @@
+{
+    "external-data": {
+        "externalConfig": "../data/testExternalConfig1.json"
+    }
+}

@@ -2,27 +2,23 @@
 // Created by Andrei on 20-Oct-21.
 //
 
-#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsImages.h>
-#include <AndreiUtils/utilsOpenMP.hpp>
+#include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsBinarySerialization.hpp>
 #include <cstring>
 #include <functional>
+#include <iostream>
 
+#ifdef WITH_OPENMP
+#include <AndreiUtils/utilsOpenMP.hpp>
+#endif
+
+using namespace AndreiUtils;
 using namespace std;
 
-void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
-                                    int width, int channels) {
-    if (rotation == RotationType::NO_ROTATION) {
-        return;
-    }
-
-    int nrBytesPerElement = getStandardTypeByteAmount(imageType);
-    int rowIncrement = width * channels;
-    int nrElements = height * rowIncrement * nrBytesPerElement;
-    auto *copy = new uint8_t[nrElements];
-    fastMemCopy(copy, data, nrElements);
-
-    int newHeight, newWidth;
+void AndreiUtils::imageDataRotationInto(uint8_t *dst, uint8_t *data, RotationType rotation, StandardTypes imageType,
+                                        int height, int width, int channels) {
+    int newHeight, newWidth, rowIncrement = width * channels, nrBytesPerElement = getStandardTypeByteAmount(imageType);
     function<int(int, int, int)> getCopyIndex;
     switch (rotation) {
         case LEFT_90: {
@@ -61,13 +57,31 @@ void AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, Standa
             for (int k = 0; k < channels; k++) {
                 dataIndex = i * newRowIncrement + j * channels + k;
                 copyIndex = getCopyIndex(i, j, k);
-                memcpy(data + dataIndex, copy + copyIndex, nrBytesPerElement);
+                memcpy(dst + copyIndex, data + dataIndex, nrBytesPerElement);
             }
         }
     }
 }
 
-void AndreiUtils::imageDataRotationWithDesiredParameters(
+uint8_t *AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height,
+                                        int width, int channels) {
+    if (rotation == RotationType::NO_ROTATION) {
+        return data;
+    }
+
+    int nrElements = height * width * channels * getStandardTypeByteAmount(imageType);
+    auto *copy = new uint8_t[nrElements];
+    #ifdef WITH_OPENMP
+    fastMemCopy(copy, data, nrElements);
+    #else
+    memcpy(copy, data, nrElements);
+    #endif
+
+    imageDataRotationInto(copy, data, rotation, imageType, height, width, channels);
+    return copy;
+}
+
+uint8_t *AndreiUtils::imageDataRotationWithDesiredParameters(
         uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
         int channels) {
     return imageDataRotation(data, applyRotation, imageType,
@@ -76,118 +90,115 @@ void AndreiUtils::imageDataRotationWithDesiredParameters(
                              channels);
 }
 
-bool AndreiUtils::readImageHeader(ifstream *fin, int &height, int &width, AndreiUtils::StandardTypes &type,
+bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, StandardTypes &type, int &channels) {
+    try {
+        deserialize(in, height);
+        deserialize(in, width);
+        deserialize<int>(in, type);
+        deserialize(in, channels);
+        return true;
+    } catch (exception &e) {
+        cout << "Caught exception while reading the image header: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool AndreiUtils::readImageData(ifstream &in, uint8_t *image, int nrBytes) {
+    try {
+        deserialize(in, image, nrBytes);
+        return true;
+    } catch (exception &e) {
+        cout << "Caught exception while reading the image data: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool readImageBinaryPrivate(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
+                            int &channels, int const *nrBytes = nullptr) {
+    if (!readImageHeader(in, height, width, type, channels) || reachedTheEndOfTheFile(in)) {
+        return false;
+    }
+
+    int _nrBytes = getStandardTypeByteAmount(type) * height * width * channels;
+    if (nrBytes == nullptr) {
+        delete[] image;
+        image = new uint8_t[_nrBytes];
+    } else if (*nrBytes != _nrBytes) {
+        throw runtime_error("Image data container does not have the same size as the file-stored image: " +
+                            to_string(*nrBytes) + " vs. " + to_string(_nrBytes));
+    }
+
+    return readImageData(in, image, _nrBytes);
+}
+
+bool AndreiUtils::readImageBinary(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
                                   int &channels) {
-    if (fin->peek() == EOF) {
-        return false;
-    }
-    fin->read((char *) &height, sizeof(int));         // rows
-    if (fin->fail() || fin->peek() == EOF) {
-        return false;
-    }
-    fin->read((char *) &width, sizeof(int));         // cols
-    if (fin->fail() || fin->peek() == EOF) {
-        return false;
-    }
-    fin->read((char *) &type, sizeof(int));         // type
-    if (fin->fail() || fin->peek() == EOF) {
-        return false;
-    }
-    fin->read((char *) &channels, sizeof(int));     // channels
-    return !fin->fail();
+    return readImageBinaryPrivate(in, image, height, width, type, channels);
 }
 
-bool AndreiUtils::readImageData(std::ifstream *fin, uint8_t *image, int nrBytes) {
-    fin->read((char *) image, nrBytes);
-    return !fin->fail();
+bool AndreiUtils::readImageBinary(ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type,
+                                  int &channels, int const nrBytes) {
+    return readImageBinaryPrivate(in, image, height, width, type, channels, &nrBytes);
 }
 
-bool AndreiUtils::readImageBinary(std::ifstream *fin, uint8_t *&image, int &height, int &width,
-                                  StandardTypes &type, int &channels) {
-    if (!readImageHeader(fin, height, width, type, channels) || fin->peek() == EOF) {
-        return false;
-    }
-
-    delete[] image;
-    int nrBytes = getStandardTypeByteAmount(type) * height * width * channels;
-    image = new uint8_t[nrBytes];
-
-    return readImageData(fin, image, nrBytes);
-}
-
-bool AndreiUtils::readImageBinary(std::ifstream *fin, uint8_t *image, int &height, int &width,
-                                  StandardTypes &type, int &channels, const int nrBytes) {
-    if (!readImageHeader(fin, height, width, type, channels) || fin->peek() == EOF) {
-        return false;
-    }
-
-    int storedBytes = getStandardTypeByteAmount(type) * height * width * channels;
-    if (nrBytes != storedBytes) {
-        throw runtime_error("Image data container does not have the same size as the file-stored image: " +
-                            to_string(nrBytes) + " vs. " + to_string(storedBytes));
-    }
-
-    return readImageData(fin, image, nrBytes);
-}
-
-bool AndreiUtils::readColorImageBinary(std::ifstream *fin, uint8_t *&image, int &height, int &width,
-                                       StandardTypes &type) {
+bool readColorImageBinaryPrivate(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
+                                 int const *nrBytes = nullptr) {
     int channels;
-    bool readSuccess = readImageBinary(fin, image, height, width, type, channels);
+    bool readSuccess = readImageBinaryPrivate(in, image, height, width, type, channels, nrBytes);
     if (readSuccess && channels != 3) {
         throw runtime_error("Expected image to have 3 channels, has " + to_string(channels));
     }
     return readSuccess;
 }
 
-bool AndreiUtils::readColorImageBinary(std::ifstream *fin, uint8_t *image, int &height, int &width,
-                                       StandardTypes &type, const int nrBytes) {
-    int channels;
-    bool readSuccess = readImageBinary(fin, image, height, width, type, channels, nrBytes);
-    if (readSuccess && channels != 3) {
-        throw runtime_error("Expected image to have 3 channels, has " + to_string(channels));
-    }
-    return readSuccess;
+bool AndreiUtils::readColorImageBinary(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type) {
+    return readColorImageBinaryPrivate(in, image, height, width, type);
 }
 
-bool AndreiUtils::readDepthImageBinary(std::ifstream *fin, uint16_t *&depth, int &height, int &width) {
+bool AndreiUtils::readColorImageBinary(ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type,
+                                       int const nrBytes) {
+    return readColorImageBinaryPrivate(in, image, height, width, type, &nrBytes);
+}
+
+template<typename T>
+bool readDepthImageBinaryPrivate(ifstream &in, T *&depth, int &height, int &width, StandardTypes expectedType,
+                                 int const *nrBytes = nullptr) {
     int channels;
     StandardTypes type;
-    bool readSuccess = readImageBinary(fin, (uint8_t *&) depth, height, width, type, channels);
-    if (!readSuccess) {
+    if (!readImageBinaryPrivate(in, (uint8_t *&) depth, height, width, type, channels, nrBytes)) {
         return false;
     }
     if (channels != 1) {
         throw runtime_error("Expected depth to have 1 channels, has " + to_string(channels));
     }
-    if (type != StandardTypes::TYPE_UINT_16) {
-        throw runtime_error("Expected depth to have type uint16, has " + to_string(type));
+    if (type != expectedType) {
+        throw runtime_error("Expected depth to have type " + to_string(expectedType) + ", has " + to_string(type));
     }
     return true;
 }
 
-bool AndreiUtils::readDepthImageBinary(std::ifstream *fin, uint16_t *depth, int &height, int &width,
-                                       const int nrBytes) {
-    int channels;
-    StandardTypes type;
-    bool readSuccess = readImageBinary(fin, (uint8_t *&) depth, height, width, type, channels);
-    if (!readSuccess) {
-        return false;
-    }
-    if (channels != 1) {
-        throw runtime_error("Expected depth to have 1 channels, has " + to_string(channels));
-    }
-    if (type != StandardTypes::TYPE_UINT_16) {
-        throw runtime_error("Expected depth to have type uint16, has " + to_string(type));
-    }
-    return true;
+bool AndreiUtils::readDepthImageBinary(ifstream &in, uint16_t *&depth, int &height, int &width) {
+    return readDepthImageBinaryPrivate(in, depth, height, width, StandardTypes::TYPE_UINT_16);
 }
 
-bool AndreiUtils::readDepthImageBinary(std::ifstream *fin, double *&depth, int &height, int &width) {
+bool AndreiUtils::readDepthImageBinary(ifstream &in, uint16_t *depth, int &height, int &width, int const nrBytes) {
+    return readDepthImageBinaryPrivate(in, depth, height, width, StandardTypes::TYPE_UINT_16, &nrBytes);
+}
+
+bool AndreiUtils::readDepthImageBinary(ifstream &in, double *&depth, int &height, int &width) {
+    return readDepthImageBinaryPrivate(in, depth, height, width, StandardTypes::TYPE_FLOAT_64);
+}
+
+bool AndreiUtils::readDepthImageBinary(ifstream &in, double *depth, int &height, int &width, const int nrBytes) {
+    return readDepthImageBinaryPrivate(in, depth, height, width, StandardTypes::TYPE_UINT_16, &nrBytes);
+}
+
+bool readDepthImageBinaryConvertPrivate(ifstream &in, double *&depth, int &height, int &width,
+                                        double conversionFactor, int const *nrBytes = nullptr) {
     int channels;
     StandardTypes type;
 
-    if (!readImageHeader(fin, height, width, type, channels) && fin->peek() == EOF) {
+    if (!readImageHeader(in, height, width, type, channels) && reachedTheEndOfTheFile(in)) {
         return false;
     }
     if (channels != 1) {
@@ -198,93 +209,96 @@ bool AndreiUtils::readDepthImageBinary(std::ifstream *fin, double *&depth, int &
     }
 
     int nrElements = height * width;
-    auto *tmpData = new uint16_t[nrElements];
-    int nrBytes = nrElements * (int) sizeof(uint16_t);
-    bool readSuccess = readImageData(fin, (uint8_t *) tmpData, nrBytes);
-    if (readSuccess) {
-        // don't return now because tmpData will not be deleted
-        delete[] depth;
-        depth = new double[nrElements];
-        for (int i = 0; i < nrElements; i++) {
-            depth[i] = tmpData[i] / 1000.0;
-        }
-    }
-
-    delete[] tmpData;
-    return true;
-}
-
-bool AndreiUtils::readDepthImageBinary(std::ifstream *fin, double *depth, int &height, int &width, const int nrBytes) {
-    int channels;
-    StandardTypes type;
-
-    if (!readImageHeader(fin, height, width, type, channels) && fin->peek() == EOF) {
-        return false;
-    }
-    if (channels != 1) {
-        throw runtime_error("Expected depth to have 1 channels, has " + to_string(channels));
-    }
-    if (type != StandardTypes::TYPE_UINT_16) {
-        throw runtime_error("Expected depth to have type uint16, has " + to_string(type));
-    }
-
-    int nrElements = height * width;
-    if (nrElements * sizeof(double) != nrBytes) {
+    if (nrBytes != nullptr && nrElements * sizeof(double) != *nrBytes) {
         throw runtime_error("Image data container does not have the same size as the file-stored image: " +
-                            to_string(nrBytes) + " vs. " + to_string(nrElements * sizeof(double)));
+                            to_string(*nrBytes) + " vs. " + to_string(nrElements * sizeof(double)));
     }
 
     auto *tmpData = new uint16_t[nrElements];
-    int tmpNrBytes = nrElements * (int) sizeof(uint16_t);
-    bool readSuccess = readImageData(fin, (uint8_t *) tmpData, tmpNrBytes);
+    int _nrBytes = nrElements * (int) sizeof(uint16_t);
+    bool readSuccess = readImageData(in, (uint8_t *) tmpData, _nrBytes);
     if (readSuccess) {
         // don't return now because tmpData will not be deleted
         delete[] depth;
         depth = new double[nrElements];
+        #ifdef WITH_OPENMP
+        fastSrcOp<uint16_t, double>(depth, tmpData, nrElements, [&conversionFactor](uint16_t const &x) {
+            return double(x) / conversionFactor;
+        });
+        #else
         for (int i = 0; i < nrElements; i++) {
-            depth[i] = tmpData[i] / 1000.0;
+            depth[i] = tmpData[i] / conversionFactor;
         }
+        #endif
     }
 
     delete[] tmpData;
-    return true;
+    return readSuccess;
 }
 
-void AndreiUtils::writeImageBinary(std::ofstream *fout, const uint8_t *image, int height, int width, StandardTypes type,
+bool AndreiUtils::readDepthImageBinaryConvert(ifstream &in, double *&depth, int &height, int &width,
+                                              double conversionFactor) {
+    return readDepthImageBinaryConvertPrivate(in, depth, height, width, conversionFactor, nullptr);
+}
+
+bool AndreiUtils::readDepthImageBinaryConvert(ifstream &in, double *depth, int &height, int &width, const int nrBytes,
+                                              double conversionFactor) {
+    return readDepthImageBinaryConvertPrivate(in, depth, height, width, conversionFactor, &nrBytes);
+}
+
+void AndreiUtils::writeImageBinary(ofstream &out, uint8_t const *image, int height, int width, StandardTypes type,
                                    int channels) {
-    fout->write((char *) &height, sizeof(int));
-    fout->write((char *) &width, sizeof(int));
-    fout->write((char *) &type, sizeof(int));
-    fout->write((char *) &channels, sizeof(int));
-    fout->write((char *) image, height * width * channels * getStandardTypeByteAmount(type));
+    serialize(out, height);
+    serialize(out, width);
+    serialize(out, type);
+    serialize(out, channels);
+    serialize(out, image, height * width * channels * getStandardTypeByteAmount(type));
 }
 
-void AndreiUtils::writeColorImageBinary(std::ofstream *fout, const uint8_t *image, int height, int width,
+void AndreiUtils::writeColorImageBinary(ofstream &out, uint8_t const *image, int height, int width,
                                         StandardTypes type) {
-    writeImageBinary(fout, image, height, width, type, 3);
+    writeImageBinary(out, image, height, width, type, 3);
 }
 
-void AndreiUtils::writeDepthImageBinary(std::ofstream *fout, const uint16_t *depth, int height, int width) {
-    writeImageBinary(fout, (uint8_t *) depth, height, width, StandardTypes::TYPE_UINT_16, 1);
+void AndreiUtils::writeDepthImageBinary(ofstream &out, uint16_t const *depth, int height, int width) {
+    writeImageBinary(out, (uint8_t *) depth, height, width, StandardTypes::TYPE_UINT_16, 1);
 }
 
-void AndreiUtils::writeDepthImageBinary(std::ofstream *fout, const double *depth, int height, int width) {
+void AndreiUtils::writeDepthImageBinary(ofstream &out, double const *depth, int height, int width) {
+    writeImageBinary(out, (uint8_t *) depth, height, width, StandardTypes::TYPE_FLOAT_64, 1);
+}
+
+void AndreiUtils::writeDepthImageBinaryConvert(ofstream &out, const double *depth, int height, int width,
+                                               double conversionFactor) {
     size_t nrElements = height * width;
     auto *tmpData = new uint16_t[nrElements];
-    fastSrcOp<double, uint16_t>(tmpData, depth, nrElements, [](const double &x) { return (uint16_t) (x * 1000); });
-    writeImageBinary(fout, (uint8_t *) tmpData, height, width, StandardTypes::TYPE_UINT_16, 1);
+    #ifdef WITH_OPENMP
+    fastSrcOp<double, uint16_t>(tmpData, depth, nrElements,
+                                [conversionFactor](const double &x) { return (uint16_t) (x * conversionFactor); });
+    #else
+    for (size_t i = 0; i < nrElements; i++) {
+        tmpData[i] = uint16_t(depth[i] * conversionFactor);
+    }
+    #endif
+    writeImageBinary(out, (uint8_t *) tmpData, height, width, StandardTypes::TYPE_UINT_16, 1);
     delete[] tmpData;
 }
 
 void AndreiUtils::swapColorImageChannels(uint8_t *image, int nrElements, int channels,
-                                         const std::vector<std::pair<int, int>> &channelSwaps) {
+                                         vector<pair<int, int>> const &channelSwaps) {
     for (const auto &channelSwap: channelSwaps) {
         if (channelSwap.first >= channels || channelSwap.second >= channels || channelSwap.first < 0 ||
             channelSwap.second < 0) {
             continue;
         }
+        #ifdef WITH_OPENMP
         fastForLoop<uint8_t>(image, nrElements, [&channelSwap](uint8_t *const image, size_t i, size_t) {
             swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
         }, channels);
+        #else
+        for (size_t i = 0; i < nrElements; i += channels) {
+            swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
+        }
+        #endif
     }
 }
