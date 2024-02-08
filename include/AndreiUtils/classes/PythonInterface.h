@@ -2,8 +2,7 @@
 // Created by Andrei on 26.09.22.
 //
 
-#ifndef ANDREIUTILS_PYTHONINTERFACE_H
-#define ANDREIUTILS_PYTHONINTERFACE_H
+#pragma once
 
 #include <AndreiUtils/utilsMap.hpp>
 #include <pybind11/embed.h>  // everything needed for embedding
@@ -51,5 +50,3 @@ namespace AndreiUtils {
         py::module module;
     };
 }
-
-#endif //ANDREIUTILS_PYTHONINTERFACE_H
