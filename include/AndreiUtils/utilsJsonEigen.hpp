@@ -9,6 +9,7 @@
 #include <AndreiUtils/classes/Symmetry.h>
 #include <AndreiUtils/classes/motion/MotionDeviceCaptureParameters.h>
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
+#include <AndreiUtils/classes/grasp/Grasp.h>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
@@ -561,90 +562,6 @@ namespace nlohmann {
         }
     };
 
-    template<>
-    struct adl_serializer<AndreiUtils::Symmetry> {
-        using T = AndreiUtils::Symmetry;
-
-        static void to_json(nlohmann::json &j, T const &data) {
-            j["type"] = data.type;
-            std::vector<double> v(3);
-            auto symmetryAxis = data.axis.normalized();
-            for (int i = 0; i < 3; i++) {
-                v[i] = symmetryAxis[i];
-            }
-            j["axis"] = v;
-            for (int i = 0; i < 3; i++) {
-                v[i] = data.axisDisplacementFromOrigin[i];
-            }
-            j["axisDisplacementFromOrigin"] = v;
-            if (data.type == "rotation") {
-                std::pair<double, double> degRange(AndreiUtils::rad2Deg(data.range.first),
-                                                   AndreiUtils::rad2Deg(data.range.second));
-                AndreiUtils::bringValueInCircularInterval<double>(degRange.first, 0, 360);
-                AndreiUtils::bringValueInCircularInterval<double>(degRange.second, 0, 360);
-                j["range"] = degRange;
-            } else {
-                j["range"] = data.range;
-            }
-        }
-
-        static void from_json(nlohmann::json const &j, T &data) {
-            data.type = j.at("type").get<std::string>();
-            std::vector<double> v = j.at("axis").get<std::vector<double>>();
-            for (int i = 0; i < 3; i++) {
-                data.axis[i] = v[i];
-            }
-            data.axis.normalize();
-            if (j.contains("axisDisplacementFromOrigin")) {
-                v = j.at("axisDisplacementFromOrigin").get<std::vector<double>>();
-                for (int i = 0; i < 3; i++) {
-                    data.axisDisplacementFromOrigin[i] = v[i];
-                }
-            }
-            data.range = j.at("range").get<std::pair<double, double>>();
-            if (data.type == "rotation") {
-                AndreiUtils::bringValueInCircularInterval<double>(data.range.first, 0, 360);
-                AndreiUtils::bringValueInCircularInterval<double>(data.range.second, 0, 360);
-                data.range.first = AndreiUtils::deg2Rad(data.range.first);
-                data.range.second = AndreiUtils::deg2Rad(data.range.second);
-            }
-        }
-    };
-
-    template<>
-    struct adl_serializer<AndreiUtils::MotionDeviceIntrinsicParameters> {
-        using T = AndreiUtils::MotionDeviceIntrinsicParameters;
-
-        static void to_json(nlohmann::json &j, T const &data) {
-            j.clear();
-            j["data"] = data.data;
-            j["biasVariances"] = data.biasVariances;
-            j["noiseVariances"] = data.noiseVariances;
-        }
-
-        static void from_json(nlohmann::json const &j, T &data) {
-            data.data = j.at("data").get<Eigen::MatrixXd>();
-            data.biasVariances = j.at("biasVariances").get<Eigen::VectorXd>();
-            data.noiseVariances = j.at("noiseVariances").get<Eigen::VectorXd>();
-        }
-    };
-
-    template<>
-    struct adl_serializer<AndreiUtils::MotionDeviceCaptureParameters> {
-        using T = AndreiUtils::MotionDeviceCaptureParameters;
-
-        static void to_json(nlohmann::json &j, T const &data) {
-            j.clear();
-            j["fps"] = data.fps;
-            j["intrinsics"] = data.intrinsics;
-        }
-
-        static void from_json(nlohmann::json const &j, T &data) {
-            data.fps = j.at("fps").get<double>();
-            data.intrinsics = j.at("intrinsics").get<AndreiUtils::MotionDeviceIntrinsicParameters>();
-        }
-    };
-
     template<typename Type, int SpatialDimension, int SpatialDivision, int Depth>
     struct adl_serializer<AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, Depth>> {
         using T = AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, Depth>;
@@ -672,4 +589,47 @@ namespace nlohmann {
             data.data = j.get<typename T::Data>();
         }
     };
+
+    template<>
+    struct adl_serializer<AndreiUtils::Symmetry> {
+        using T = AndreiUtils::Symmetry;
+
+        static void to_json(nlohmann::json &j, T const &data);
+
+        static void from_json(nlohmann::json const &j, T &data);
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::MotionDeviceIntrinsicParameters> {
+        using T = AndreiUtils::MotionDeviceIntrinsicParameters;
+
+        static void to_json(nlohmann::json &j, T const &data);
+
+        static void from_json(nlohmann::json const &j, T &data);
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::MotionDeviceCaptureParameters> {
+        using T = AndreiUtils::MotionDeviceCaptureParameters;
+
+        static void to_json(nlohmann::json &j, T const &data);
+
+        static void from_json(nlohmann::json const &j, T &data);
+    };
+
+    template<>
+    struct adl_serializer<AndreiUtils::Grasp> {
+        static void to_json(nlohmann::json &j, AndreiUtils::Grasp const &d, bool withCurrentPose = false);
+
+        static void from_json(nlohmann::json const &j, AndreiUtils::Grasp &d, bool withCurrentPose = false);
+    };
+
+    /*
+    template<>
+    struct adl_serializer<AndreiUtils::GraspWithAngleRange> {
+        static void to_json(nlohmann::json &j, AndreiUtils::GraspWithAngleRange const &d);
+
+        static void from_json(nlohmann::json const &j, AndreiUtils::GraspWithAngleRange &d);
+    };
+    //*/
 }

@@ -220,6 +220,7 @@ SET(UTILS_CLASSES
         )
 
 SET(UTILS_EIGEN)
+SET(UTILS_EIGEN_JSON)
 SET(UTILS_EIGEN_OPENCV)
 SET(UTILS_EIGEN_REALSENSE)
 SET(UTILS_JSON)
@@ -237,8 +238,14 @@ if (USE_EIGEN)
             src/classes/motion/MotionDeviceIntrinsicParameters.cpp src/classes/motion/MotionDeviceCaptureParameters.cpp
             src/classes/trajectory/TrajectoryBase.cpp src/classes/trajectory/CartesianTrajectory.cpp
             src/classes/trajectory/CartesianTrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
+            src/classes/grasp/Grasp.cpp
             src/classes/Symmetry.cpp src/classes/ParametrizablePoseParameters.cpp
             src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
+endif ()
+
+if (USE_EIGEN AND USE_JSON)
+    # depends on eigen and json
+    SET(UTILS_EIGEN_JSON src/utilsJsonEigen.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
@@ -303,6 +310,7 @@ set(GENERAL_UTILS
         ${UTILS_CLASSES}
         )
 set(EIGEN_UTILS ${UTILS_EIGEN})
+set(EIGEN_JSON_UTILS ${UTILS_EIGEN_JSON})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
 set(EIGEN_REALSENSE_UTILS ${UTILS_EIGEN_REALSENSE})
 set(JSON_UTILS ${UTILS_JSON})
@@ -368,6 +376,12 @@ if (USE_EIGEN)
     set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_EIGEN_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
     AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen" EIGEN_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
 
+    if (USE_JSON)
+        # EIGEN_JSON_UTILS
+        set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_json)
+        AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_json" EIGEN_JSON_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
+    endif ()
+
     if (USE_OPENCV)
         # EIGEN_OPENCV_UTILS
         set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_opencv)
@@ -385,6 +399,7 @@ endif ()
 set(UTILS
         ${GENERAL_UTILS}
         ${EIGEN_UTILS}
+        ${EIGEN_JSON_UTILS}
         ${EIGEN_OPENCV_UTILS}
         ${EIGEN_REALSENSE_UTILS}
         ${JSON_UTILS}
