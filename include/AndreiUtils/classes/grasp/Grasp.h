@@ -24,6 +24,10 @@ namespace AndreiUtils {
 
         [[nodiscard]] size_t getNrPoints() const;
 
+        virtual void update();
+
+        [[nodiscard]] std::vector<AndreiUtils::Posed> const &getCurrentGraspPointPoses();
+
         [[nodiscard]] std::vector<AndreiUtils::Posed> const &getGraspPointPoses() const;
 
         void setRelativeTo(AndreiUtils::Posed graspRelativeTo);

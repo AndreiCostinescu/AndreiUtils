@@ -18,6 +18,13 @@ size_t Grasp::getNrPoints() const {
     return this->graspPointPoses.size();
 }
 
+void Grasp::update() {}
+
+vector<Posed> const &Grasp::getCurrentGraspPointPoses() {
+    this->update();
+    return this->graspPointPoses;
+}
+
 vector<Posed> const &Grasp::getGraspPointPoses() const {
     return this->graspPointPoses;
 }
