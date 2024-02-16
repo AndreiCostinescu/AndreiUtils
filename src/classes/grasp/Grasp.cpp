@@ -4,13 +4,13 @@
 
 #include <AndreiUtils/classes/grasp/Grasp.h>
 #include <AndreiUtils/utilsGeometry.h>
-#include "AndreiUtils/classes/grasp/GraspWithAngleRange.h"
 
 using namespace AndreiUtils;
 using namespace std;
 
-Grasp::Grasp(vector<Posed> const &graspPointPoses) : graspPointPoses(graspPointPoses),
-                                                     originalGraspPointPoses(graspPointPoses) {}
+Grasp::Grasp(vector<Posed> const &graspPointPoses, bool hasGraspAngleRange, pair<double, double> const &graspAngleRange)
+        : graspPointPoses(graspPointPoses), originalGraspPointPoses(graspPointPoses), graspAngleRange(graspAngleRange),
+          hasGraspAngleRange(hasGraspAngleRange) {}
 
 Grasp::~Grasp() = default;
 
@@ -30,6 +30,18 @@ void Grasp::setRelativeTo(AndreiUtils::Posed graspRelativeTo) {
 void Grasp::composeRelativeTo(AndreiUtils::Posed const &graspRelativeTo) {
     this->relativeTo *= graspRelativeTo;
     this->updateGraspPointPosesFromRelativeTo();
+}
+
+pair<double, double> const &Grasp::getGraspAngleRange() const {
+    return this->graspAngleRange;
+}
+
+pair<double, double> &Grasp::getGraspAngleRange() {
+    return this->graspAngleRange;
+}
+
+bool Grasp::hasAngleRange() const {
+    return this->hasGraspAngleRange;
 }
 
 void Grasp::updateGraspPointPosesFromRelativeTo() {

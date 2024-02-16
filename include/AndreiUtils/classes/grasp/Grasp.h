@@ -16,7 +16,9 @@ namespace AndreiUtils {
     public:
         friend nlohmann::adl_serializer<Grasp, void>;
 
-        explicit Grasp(std::vector<AndreiUtils::Posed> const &graspPointPoses = {});
+        explicit Grasp(std::vector<AndreiUtils::Posed> const &graspPointPoses = {},
+                       bool hasGraspAngleRange = false,
+                       std::pair<double, double> const &graspAngleRange = {0, 0});
 
         virtual ~Grasp();
 
@@ -28,10 +30,18 @@ namespace AndreiUtils {
 
         void composeRelativeTo(AndreiUtils::Posed const &graspRelativeTo);
 
+        [[nodiscard]] std::pair<double, double> const &getGraspAngleRange() const;
+
+        [[nodiscard]] std::pair<double, double> &getGraspAngleRange();
+
+        [[nodiscard]] bool hasAngleRange() const;
+
     protected:
         void updateGraspPointPosesFromRelativeTo();
 
         AndreiUtils::Posed relativeTo;
         std::vector<AndreiUtils::Posed> graspPointPoses, originalGraspPointPoses;
+        std::pair<double, double> graspAngleRange;
+        bool hasGraspAngleRange;
     };
 }

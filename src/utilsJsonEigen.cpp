@@ -83,6 +83,11 @@ void adl_serializer<Grasp>::to_json(json &j, Grasp const &data, bool withCurrent
         j["currentPoints"] = data.graspPointPoses;
         j["relativeTo"] = data.relativeTo;
     }
+    if (data.hasGraspAngleRange) {
+        std::pair<double, double> degAngleRange(AndreiUtils::rad2Deg(data.graspAngleRange.first),
+                                                AndreiUtils::rad2Deg(data.graspAngleRange.second));
+        j["angleRange"] = degAngleRange;
+    }
 }
 
 void adl_serializer<Grasp>::from_json(json const &j, Grasp &data, bool withCurrentPose) {
@@ -94,20 +99,6 @@ void adl_serializer<Grasp>::from_json(json const &j, Grasp &data, bool withCurre
         data.graspPointPoses = data.originalGraspPointPoses;
         data.relativeTo = Posed::one;
     }
-}
-
-/*
-void adl_serializer<GraspWithAngleRange>::to_json(json &j, GraspWithAngleRange const &data) {
-    adl_serializer<Grasp>::to_json(j, data);
-    if (data.hasGraspAngleRange) {
-        std::pair<double, double> degAngleRange(AndreiUtils::rad2Deg(data.graspAngleRange.first),
-                                                AndreiUtils::rad2Deg(data.graspAngleRange.second));
-        j["angleRange"] = degAngleRange;
-    }
-}
-
-void adl_serializer<GraspWithAngleRange>::from_json(json const &j, GraspWithAngleRange &data) {
-    adl_serializer<Grasp>::from_json(j, data);
     data.hasGraspAngleRange = j.contains("angleRange");
     if (data.hasGraspAngleRange) {
         data.graspAngleRange = j.at("angleRange").get<std::pair<double, double>>();
@@ -115,4 +106,3 @@ void adl_serializer<GraspWithAngleRange>::from_json(json const &j, GraspWithAngl
         data.graspAngleRange.second = AndreiUtils::deg2Rad(data.graspAngleRange.second);
     }
 }
-//*/
