@@ -23,8 +23,8 @@ https://bitbucket.org/AndreiCostinescu/AndreiUtils
   - ```-DOPENCV_VERSION="4.5.1"``` (optional argument: set the desired version of the OpenCV library; default = "") 
 - ```-DWITH_OPENMP=On/Off``` (toggle to add/remove openmp utils to the library)
 - ```-DWITH_PTHREAD=On/Off``` (toggle to add/remove pthread utils to library)
-- ```-DWITH_PYBIND=On/Off``` (toggle to add/remove python/pybind utils to library)
-  - ```-DPYBIND_PYTHON_VERSION="3.7"``` (optional argument: set the desired python version that will be used; default = 3.7)
+- ```-DWITH_PYTHON=On/Off``` (toggle to add/remove python/pybind utils to library)
+  - ```-DPYBIND11_PYTHON_VERSION="3.7"``` (optional argument: set the desired python version that will be used; default = 3.7)
 - ```-DWITH_REALSENSE=On/Off``` (toggle to add/remove realsense utils to the library)
 - ```-DCMAKE_INSTALL_DIR="{Your Custom Installation Directory}"``` (optional argument: if desired to not install the library in ```/usr/local/```)
 
