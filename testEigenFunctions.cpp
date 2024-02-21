@@ -7,7 +7,6 @@
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
-#include <AndreiUtils/utilsEigenOpenCV.h>
 #include <iostream>
 
 using namespace AndreiUtils;
