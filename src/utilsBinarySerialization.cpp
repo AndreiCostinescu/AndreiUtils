@@ -12,11 +12,11 @@ void AndreiUtils::serialize(std::ofstream &out, std::string const &data) {
     out.write((char *) &nullEnding, sizeof(char));
 }
 
-void AndreiUtils::deserialize(std::ifstream &in, std::string &data) {
+void AndreiUtils::deserializeIn(std::ifstream &in, std::string &data) {
     std::string localData;
     char datum;
     while (true) {
-        deserialize(in, datum);
+        deserializeIn(in, datum);
         if (datum == 0) {
             break;
         }

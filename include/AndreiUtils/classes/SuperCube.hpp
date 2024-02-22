@@ -379,11 +379,11 @@ namespace AndreiUtils {
         void readBinary(std::ifstream &bin) override {
             try {
                 int mapSize;
-                deserialize(bin, mapSize);
+                deserializeIn(bin, mapSize);
                 this->subCubes.subCubes.clear();
                 for (int i = 0; i < mapSize; i++) {
                     int index;
-                    deserialize(bin, index);
+                    deserializeIn(bin, index);
                     DataIndex subCubeMinCorner = this->getSubCubeMinCorner(index);
                     this->subCubes.set(index, {*this, i, subCubeMinCorner,
                                                subCubeMinCorner + this->subCubeVolume}).readBinary(bin);

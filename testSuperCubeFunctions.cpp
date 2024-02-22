@@ -73,9 +73,9 @@ public:
     }
 
     void readBinary(std::ifstream &bin) override {
-        deserialize(bin, this->p.data(), 3);
-        deserialize(bin, this->sdf);
-        deserialize(bin, this->weight);
+        deserializeIn(bin, this->p.data(), 3);
+        deserializeIn(bin, this->sdf);
+        deserializeIn(bin, this->weight);
     }
 
     void update(TSDFData const &other) {

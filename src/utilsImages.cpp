@@ -92,10 +92,12 @@ uint8_t *AndreiUtils::imageDataRotationWithDesiredParameters(
 
 bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, StandardTypes &type, int &channels) {
     try {
-        deserialize(in, height);
-        deserialize(in, width);
-        deserialize<int>(in, type);
-        deserialize(in, channels);
+        deserializeIn(in, height);
+        deserializeIn(in, width);
+        int standardType;
+        deserializeIn(in, standardType);
+        type = StandardTypes(standardType);
+        deserializeIn(in, channels);
         return true;
     } catch (exception &e) {
         cout << "Caught exception while reading the image header: " << e.what() << endl;
@@ -109,7 +111,7 @@ bool AndreiUtils::skipImageData(std::ifstream &in, int nrBytes) {
 
 bool AndreiUtils::readImageData(ifstream &in, uint8_t *image, int nrBytes) {
     try {
-        deserialize(in, image, nrBytes);
+        deserializeIn(in, image, nrBytes);
         return true;
     } catch (exception &e) {
         cout << "Caught exception while reading the image data: " << e.what() << endl;

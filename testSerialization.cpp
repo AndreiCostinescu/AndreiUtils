@@ -20,7 +20,7 @@ void testSerializeInt() {
     cout << "Vector inside which deserialization occurs before: " << printVectorToString(deserialize, 5) << endl;
 
     ifstream fin("tmp.bin", std::ios::binary);
-    AndreiUtils::deserialize(fin, deserialize, 5);
+    AndreiUtils::deserializeIn(fin, deserialize, 5);
     cout << "Vector inside which deserialization occurs after: " << printVectorToString(deserialize, 5) << endl;
 
     ifstream fin2("tmp.bin", std::ios::binary);
@@ -44,7 +44,7 @@ void testSerializeString() {
 
     ifstream fin("tmp.bin", std::ios::binary);
     string sDeserialized;
-    AndreiUtils::deserialize(fin, sDeserialized);
+    AndreiUtils::deserializeIn(fin, sDeserialized);
     cout << "Deserialized string: " << sDeserialized << endl;
 }
 
@@ -76,7 +76,7 @@ void testSerializeComplex() {
     fout.close();
 
     ifstream fin("tmp.bin", std::ios::binary);
-    AndreiUtils::deserialize(fin, deserialized);
+    AndreiUtils::deserializeIn(fin, deserialized);
     cout << "Deserialized data: " << printVectorToString<map<pair<int, double>, string>>(
             deserialized, [](map<pair<int, double>, string> const &m) {
                 return "{" + printMapToStringConvertKey<pair<int, double>>(m, [](pair<int, double> const &key) {
