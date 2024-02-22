@@ -186,3 +186,11 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
 bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {
     return (in.peek() == EOF);
 }
+
+size_t AndreiUtils::getFileSize(ifstream &in) {
+    long prevPos = in.tellg();
+    in.seekg(0, std::ios::end);
+    size_t res = in.tellg();
+    in.seekg(prevPos, std::ios::beg);
+    return res;
+}

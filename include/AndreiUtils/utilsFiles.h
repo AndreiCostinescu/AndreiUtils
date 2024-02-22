@@ -30,4 +30,6 @@ namespace AndreiUtils {
     std::string simplifyRelativePath(std::string const &path);
 
     bool reachedTheEndOfTheFile(std::ifstream &in);
+
+    size_t getFileSize(std::ifstream &in);
 }

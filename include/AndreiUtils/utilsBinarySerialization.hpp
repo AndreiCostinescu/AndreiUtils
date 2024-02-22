@@ -72,6 +72,21 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    [[nodiscard]] bool skip(std::ifstream &in, int count = 1) {
+        long posBeforeSkip = in.tellg();
+        if (reachedTheEndOfTheFile(in)) {
+            in.seekg(posBeforeSkip);
+            return false;
+        }
+        in.seekg(count * sizeof(T), std::ios::cur);
+        if (in.tellg() > getFileSize(in)) {
+            in.seekg(posBeforeSkip);
+            return false;
+        }
+        return true;
+    }
+
+    template<typename T>
     void deserialize(std::ifstream &in, T &data) {
         if (reachedTheEndOfTheFile(in)) {
             throw std::runtime_error("There is no more data to be deserialized!");

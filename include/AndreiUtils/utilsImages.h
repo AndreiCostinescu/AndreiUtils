@@ -25,6 +25,8 @@ namespace AndreiUtils {
 
     bool readImageHeader(std::ifstream &in, int &height, int &width, StandardTypes &type, int &channels);
 
+    bool skipImageData(std::ifstream &in, int nrBytes);
+
     bool readImageData(std::ifstream &in, uint8_t *image, int nrBytes);
 
     bool readImageBinary(std::ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,

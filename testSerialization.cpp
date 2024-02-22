@@ -16,12 +16,24 @@ void testSerializeInt() {
     serialize(fout, vector, 5);
     fout.close();
 
-    ifstream fin("tmp.bin", std::ios::binary);
     int deserialize[5];
     cout << "Vector inside which deserialization occurs before: " << printVectorToString(deserialize, 5) << endl;
 
+    ifstream fin("tmp.bin", std::ios::binary);
     AndreiUtils::deserialize(fin, deserialize, 5);
     cout << "Vector inside which deserialization occurs after: " << printVectorToString(deserialize, 5) << endl;
+
+    ifstream fin2("tmp.bin", std::ios::binary);
+    cout << fin2.bad() << ", " << fin2.fail() << endl;
+    cout << fin2.tellg() << endl;
+    cout << AndreiUtils::skip<int>(fin2, 3) << endl;
+    cout << fin2.tellg() << endl;
+    cout << AndreiUtils::skip<int>(fin2, 3) << endl;
+    cout << fin2.tellg() << endl;
+    cout << AndreiUtils::skip<int>(fin2, 2) << endl;
+    cout << fin2.tellg() << endl;
+    cout << AndreiUtils::skip<int>(fin2, 1) << endl;
+    cout << fin2.tellg() << endl;
 }
 
 void testSerializeString() {
@@ -76,9 +88,9 @@ void testSerializeComplex() {
 int main() {
     cout << "Hello World!" << endl;
 
-    // testSerializeInt();
+    testSerializeInt();
     // testSerializeString();
-    testSerializeComplex();
+    // testSerializeComplex();
 
     return 0;
 }

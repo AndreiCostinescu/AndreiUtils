@@ -103,6 +103,10 @@ bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, Standar
     }
 }
 
+bool AndreiUtils::skipImageData(std::ifstream &in, int nrBytes) {
+    return skip<std::uint8_t>(in, nrBytes);
+}
+
 bool AndreiUtils::readImageData(ifstream &in, uint8_t *image, int nrBytes) {
     try {
         deserialize(in, image, nrBytes);
