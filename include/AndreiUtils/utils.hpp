@@ -112,8 +112,22 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    void minInPlace(T &a, T const &b) {
+        if (AndreiUtils::greater(a, b)) {
+            a = b;
+        }
+    }
+
+    template<typename T>
     inline T fastMax(T const &a, T const &b) {
         return (greater<T>(a, b) ? a : b);
+    }
+
+    template<typename T>
+    void maxInPlace(T &a, T const &b) {
+        if (AndreiUtils::less(a, b)) {
+            a = b;
+        }
     }
 
     template<typename T>
