@@ -148,6 +148,23 @@ bool AndreiUtils::endsWith(string const &str, string const &endQuery, size_t str
     return false;
 }
 
+bool AndreiUtils::endsWithInteger(std::string const &str, int &integer, std::string &restOfString) {
+    if (str.back() < '0' || str.back() > '9') {
+        return false;
+    }
+    integer = 0;
+    int multiplier = 1;
+    for (int index = int(str.size()); index-- > 0; multiplier *= 10) {
+        char const &c = str[index];
+        if (c < '0' || c > '9') {
+            restOfString = str.substr(0, index + 1);
+            break;
+        }
+        integer += multiplier * (c - '0');
+    }
+    return true;
+}
+
 string AndreiUtils::trim(string const &str, string const &whitespace) {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {

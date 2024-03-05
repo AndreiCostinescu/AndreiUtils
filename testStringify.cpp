@@ -51,11 +51,26 @@ void testStringRemove() {
     assert(AndreiUtils::removeRight(s, 12).empty());
 }
 
+void testStringEndsWith() {
+    string s = "Instance123", rest;
+    int number;
+    assert(AndreiUtils::endsWithInteger(s, number, rest));
+    cout << s << " ends with integer " << number << " (rest = " << rest << ")" << endl;
+    assert(!AndreiUtils::endsWithInteger("s", number, rest));
+    s = "Instance0";
+    assert(AndreiUtils::endsWithInteger(s, number, rest));
+    cout << s << " ends with integer " << number << " (rest = " << rest << ")" << endl;
+    s = "HopHop-45";
+    assert(AndreiUtils::endsWithInteger(s, number, rest));
+    cout << s << " ends with integer " << number << " (rest = " << rest << ")" << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testStringifyTypes();
-    testStringRemove();
+    // testStringRemove();
+    testStringEndsWith();
 
     return 0;
 }
