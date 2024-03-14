@@ -97,10 +97,15 @@ ParametersWithExternalConfig ParametersWithExternalConfig::at(string const &para
 
 void ParametersWithExternalConfig::writeParameters(std::string const &fileName, bool withWriteSubConfigs,
                                                    bool keepOrder, bool keepNewLines) const {
+    this->writeParameters(fileName, withWriteSubConfigs, keepOrder ? fileName : "", keepNewLines);
+}
+
+void ParametersWithExternalConfig::writeParameters(std::string const &fileName, bool withWriteSubConfigs,
+                                                   std::string const &templateContentFile, bool keepNewLines) const {
     nlohmann::json toWriteParameters;
-    this->updateParameters(toWriteParameters, withWriteSubConfigs, keepOrder, keepNewLines);
+    this->updateParameters(toWriteParameters, withWriteSubConfigs, templateContentFile.empty(), keepNewLines);
     // cout << "Writing " << toWriteParameters.dump(4) << " to file " << fileName << endl;
-    writeJsonFile(fileName, toWriteParameters, keepOrder, keepNewLines);
+    writeJsonFile(fileName, toWriteParameters, templateContentFile, keepNewLines);
 }
 
 std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion)
@@ -295,7 +300,7 @@ std::string ParametersWithExternalConfig::toStringPrivate(  // NOLINT(misc-no-re
             cout << ss.str() << endl;
             assert(external.externalConfigs.empty());
         }
-        ss << indent + AndreiUtils::tab << jsonData.dumpWithExistingIndent(4, ' ', indent.size() / 4) << endl;
+        ss << indent + AndreiUtils::tab << jsonData.dumpWithExistingIndent(4, ' ', (int) indent.size() / 4) << endl;
     }
     return ss.str();
 }
@@ -304,8 +309,8 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
         nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
         std::map<std::string, bool> const &collectOnlyTheseParameters) const {
     nlohmann::json theseParameters;
-    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, recurseSubConfigs, keepOrder, keepNewLines,
-                                                       collectOnlyTheseParameters);
+    this->collectAndUpdateParametersToWriteForThisFile(theseParameters, recurseSubConfigs, keepOrder,
+                                                       keepNewLines, collectOnlyTheseParameters);
     ExternalParameterData const &external = this->getExternalData();
     if (!external.externalParameters.empty()) {
         for (auto const &externalParameters: external.externalParameters) {
@@ -314,14 +319,16 @@ void ParametersWithExternalConfig::updateParameters(  // NOLINT(misc-no-recursio
             externalParameters.second.updateParameters(
                     toWriteExternalParameters, recurseSubConfigs, keepOrder, keepNewLines,
                     mapGet(external.externalParameterKeyAssociation, &externalParameters.second));
-            writeJsonFile(processedExternalFile, toWriteExternalParameters, keepOrder, keepNewLines);
+            writeJsonFile(processedExternalFile, toWriteExternalParameters, keepOrder ? processedExternalFile : "",
+                          keepNewLines);
         }
         theseParameters[ParametersWithExternalConfig::externalDataKey] = getMapKeys(external.externalParameters);
     }
     if (this->isExternalConfig()) {
         toWriteParameters[ParametersWithExternalConfig::externalConfigKey] = external.originalExternalFileName;
         // cout << "Writing parameters to file " << external.externalFileName << ": "<< theseParameters.dump(4) << endl;
-        writeJsonFile(external.externalFileName, theseParameters, keepOrder, keepNewLines);
+        writeJsonFile(external.externalFileName, theseParameters, keepOrder ? external.externalFileName : "",
+                      keepNewLines);
     } else {
         toWriteParameters = std::move(theseParameters);
     }

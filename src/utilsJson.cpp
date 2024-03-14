@@ -492,18 +492,18 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
 }
 
 void AndreiUtils::writeJsonFileKeepOrder(  // NOLINT(misc-no-recursion)
-        string const &path, json const &content, bool keepNewLines) {
-    if (!fileExists(path)) {
-        writeJsonFile(path, content, false);
+        string const &path, json const &content, bool keepNewLines, std::string const &originalContentFilePath) {
+    if (originalContentFilePath.empty() || !fileExists(originalContentFilePath)) {
+        writeJsonFile(path, content);
     }
-    json originalJsonContent(std::move(readJsonFile(path)));
+    json originalJsonContent(std::move(readJsonFile(originalContentFilePath)));
     if (originalJsonContent.type() != content.type() || !originalJsonContent.is_object()) {
-        writeJsonFile(path, content, false);
+        writeJsonFile(path, content);
     }
 
-    ifstream fin(path);
+    ifstream fin(originalContentFilePath);
     if (!fin.is_open()) {
-        throw runtime_error("Can not open file " + path);
+        throw runtime_error("Can not open file " + originalContentFilePath);
     }
     std::string line;
     vector<string> lineByLineContent;
@@ -539,9 +539,9 @@ void AndreiUtils::collectStringJsonContent(std::stringstream &stringContent, nlo
 }
 
 void AndreiUtils::writeJsonFile(  // NOLINT(misc-no-recursion)
-        string const &path, json const &content, bool keepOrder, bool keepEmptyLines) {
-    if (keepOrder) {
-        writeJsonFileKeepOrder(path, content, keepEmptyLines);
+        string const &path, json const &content, std::string const &originalFilePath, bool keepEmptyLines) {
+    if (!originalFilePath.empty()) {
+        writeJsonFileKeepOrder(path, content, keepEmptyLines, originalFilePath);
         return;
     }
     createNestedDirectory(path, true);

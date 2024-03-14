@@ -56,6 +56,9 @@ namespace AndreiUtils {
         void writeParameters(std::string const &fileName, bool withWriteSubConfigs, bool keepOrder = false,
                              bool keepNewLines = true) const;
 
+        void writeParameters(std::string const &fileName, bool withWriteSubConfigs,
+                             std::string const &templateContentFile = "", bool keepNewLines = true) const;
+
         [[nodiscard]] std::string toString(std::string const &indent = "", bool verbose = false) const;
 
     protected:
