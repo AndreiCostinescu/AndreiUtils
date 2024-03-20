@@ -95,11 +95,14 @@ string AndreiUtils::lastParts(string const &message, string const &partSplitter,
     return res;
 }
 
-string AndreiUtils::withoutFirstParts(string const &message, string const &partSplitter, int partCount) {
+string AndreiUtils::withoutFirstParts(string const &message, string const &partSplitter, int partsToRemoveFromStart) {
+    if (partsToRemoveFromStart < 0) {
+        return message;
+    }
     vector<string> split = splitString(message, partSplitter);
     string res;
-    for (int i = partCount; i < split.size(); i++) {
-        if (i > partCount) {
+    for (int i = partsToRemoveFromStart; i < split.size(); i++) {
+        if (i > partsToRemoveFromStart) {
             res += partSplitter;
         }
         res += split[i];
@@ -107,10 +110,13 @@ string AndreiUtils::withoutFirstParts(string const &message, string const &partS
     return res;
 }
 
-string AndreiUtils::withoutLastParts(string const &message, string const &partSplitter, int partCount) {
+string AndreiUtils::withoutLastParts(string const &message, string const &partSplitter, int partsToRemoveFromEnd) {
+    if (partsToRemoveFromEnd < 0) {
+        return message;
+    }
     vector<string> split = splitString(message, partSplitter);
     string res;
-    int n = (int) split.size() - partCount;
+    int n = (int) split.size() - AndreiUtils::fastMax(partsToRemoveFromEnd, 0);
     for (int i = 0; i < n; i++) {
         if (i > 0) {
             res += partSplitter;
@@ -118,6 +124,22 @@ string AndreiUtils::withoutLastParts(string const &message, string const &partSp
         res += split[i];
     }
     return res;
+}
+
+string AndreiUtils::removeFromStart(string const &message, string const &startPart) {
+    size_t const &startPartSize = startPart.size();
+    if (message.size() >= startPartSize && message.substr(0, startPartSize) == startPart) {
+        return message.substr(startPartSize, std::string::npos);
+    }
+    return message;
+}
+
+string AndreiUtils::removeFromEnd(string const &message, string const &endPart) {
+    size_t stringSize = message.size(), endPartSize = endPart.size();
+    if (stringSize >= endPartSize && message.substr(stringSize - endPartSize, endPartSize) == endPart) {
+        return message.substr(0, stringSize - endPartSize);
+    }
+    return message;
 }
 
 string AndreiUtils::toLowerString(string const &s) {
