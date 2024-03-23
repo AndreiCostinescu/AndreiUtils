@@ -35,7 +35,7 @@ namespace AndreiUtils {
             this->engine.seed(this->seed);
         }
 
-        [[nodiscard]] std::random_device::result_type const &getSeed(std::random_device::result_type newSeed) const {
+        [[nodiscard]] std::random_device::result_type const &getSeed() const {
             return this->seed;
         }
 
