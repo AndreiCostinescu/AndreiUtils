@@ -193,6 +193,8 @@ set(UTILS_SERIALIZATION src/utilsBinarySerialization.cpp)
 
 SET(UTILS_CAMERA src/utilsCamera.cpp)
 
+SET(UTILS_RANDOM src/utilsRandom.cpp)
+
 set(UTILS_CLASSES_CAMERA
         src/classes/camera/ImageParameters.cpp
         src/classes/camera/CameraIntrinsicParameters.cpp
@@ -308,6 +310,8 @@ set(GENERAL_UTILS
         ${UTILS_CAMERA}
 
         ${UTILS_CLASSES}
+
+        ${UTILS_RANDOM}
         )
 set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_JSON_UTILS ${UTILS_EIGEN_JSON})
