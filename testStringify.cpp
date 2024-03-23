@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/traits/stringify.hpp>
 #include <AndreiUtils/utilsString.h>
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 
@@ -65,6 +66,15 @@ void testStringEndsWith() {
     cout << s << " ends with integer " << number << " (rest = " << rest << ")" << endl;
 }
 
+void testStdAllOf() {
+    std::vector<std::string> v(0, "s");
+    auto res = std::all_of(v.begin(), v.end(), [](std::string const &s) {
+        cout << "Checking " << s << endl;
+        return s.size() % 2;
+    });
+    cout << "all of res = " << res << endl;
+}
+
 void testStringWithoutLastParts() {
     string s = "MilkInstance123";
     cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", -1) << endl;
@@ -96,7 +106,8 @@ int main() {
 
     // testStringifyTypes();
     // testStringRemove();
-    // testStringEndsWith();
+    testStringEndsWith();
+    testStdAllOf();
     // testStringWithoutLastParts();
     testRemoveFrom();
 
