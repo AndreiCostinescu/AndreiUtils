@@ -16,21 +16,26 @@ namespace AndreiUtils {
 
     void myAssert(bool cond, std::string const &message = "");
 
-    std::string operator *(std::string const &s, long long i);
+    std::string operator*(std::string const &s, long long i);
 
     std::string repeat(char const *s, long long i);
 
     std::vector<std::string> splitString(std::string const &message, std::string const &splitter);
 
     std::string joinStrings(std::vector<std::string> const &strings, std::string const &joiner);
-    
+
     std::string firstParts(std::string const &message, std::string const &partSplitter, int partCount);
 
     std::string lastParts(std::string const &message, std::string const &partSplitter, int partCount);
 
-    std::string withoutFirstParts(std::string const &message, std::string const &partSplitter, int partCount);
+    std::string withoutFirstParts(std::string const &message, std::string const &partSplitter,
+                                  int partsToRemoveFromStart);
 
-    std::string withoutLastParts(std::string const &message, std::string const &partSplitter, int partCount);
+    std::string withoutLastParts(std::string const &message, std::string const &partSplitter, int partsToRemoveFromEnd);
+
+    std::string removeFromStart(std::string const &message, std::string const &startPart);
+
+    std::string removeFromEnd(std::string const &message, std::string const &endPart);
 
     std::string toLowerString(std::string const &s);
 

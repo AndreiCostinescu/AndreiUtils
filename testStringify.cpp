@@ -73,6 +73,31 @@ void testStdAllOf() {
         return s.size() % 2;
     });
     cout << "all of res = " << res << endl;
+
+void testStringWithoutLastParts() {
+    string s = "MilkInstance123";
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", -1) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", 0) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", 1) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", 2) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "Instance", 3) << endl;
+    cout << endl;
+    s = "Milk123Instance123";
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "123", -1) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "123", 0) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "123", 1) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "123", 2) << endl;
+    cout << s << " -> " << AndreiUtils::withoutLastParts(s, "123", 3) << endl;
+}
+
+void testRemoveFrom() {
+    string s = "MilkInstance123";
+    cout << s << " -> " << AndreiUtils::removeFromStart(s, "Milk") << endl;
+    cout << s << " -> " << AndreiUtils::removeFromStart(s, "ilk") << endl;
+    cout << s << " -> " << AndreiUtils::removeFromStart(s, "MilkIn") << endl;
+    cout << s << " -> " << AndreiUtils::removeFromEnd(s, "123") << endl;
+    cout << s << " -> " << AndreiUtils::removeFromEnd(s, "12") << endl;
+    cout << s << " -> " << AndreiUtils::removeFromEnd(s, "e123") << endl;
 }
 
 int main() {
@@ -82,6 +107,8 @@ int main() {
     // testStringRemove();
     testStringEndsWith();
     testStdAllOf();
+    // testStringWithoutLastParts();
+    testRemoveFrom();
 
     return 0;
 }
