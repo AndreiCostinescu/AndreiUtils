@@ -73,6 +73,7 @@ void testStdAllOf() {
         return s.size() % 2;
     });
     cout << "all of res = " << res << endl;
+}
 
 void testStringWithoutLastParts() {
     string s = "MilkInstance123";
