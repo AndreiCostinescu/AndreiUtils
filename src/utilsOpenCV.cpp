@@ -6,7 +6,9 @@
 #include <AndreiUtils/utilsString.h>
 
 #ifdef WITH_OPENMP
+
 #include <AndreiUtils/utilsOpenMP.hpp>
+
 #endif
 
 using namespace cv;
@@ -42,19 +44,19 @@ void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
 uchar *AndreiUtils::copyMatData(const Mat &mat) {
     auto *dataPtr = new uchar[matByteSize(mat)];
     if (mat.isContinuous()) {
-        #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
         fastMemCopy(dataPtr, mat.ptr(0), (mat.dataend - mat.datastart));
-        #else
+#else
         memcpy(dataPtr, mat.ptr(0), (mat.dataend - mat.datastart) * sizeof(uchar));
-        #endif
+#endif
     } else {
         int rowSize = CV_ELEM_SIZE(mat.type()) * mat.cols;
         for (int r = 0; r < mat.rows; ++r) {
-            #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
             fastMemCopy(dataPtr + r * rowSize, mat.ptr(r), rowSize);
-            #else
+#else
             memcpy(dataPtr + r * rowSize, mat.ptr(r), rowSize * sizeof(uchar));
-            #endif
+#endif
         }
     }
     return dataPtr;
@@ -151,7 +153,7 @@ void AndreiUtils::displayImages(const vector<const Mat *> &images, const vector<
     cout << "Printed!" << endl;
 }
 
-void AndreiUtils::convertDepthToMillimetersUInt16(const Mat *depthMat, Mat &output) {
+void AndreiUtils::convertDepthToMillimetersUInt16(Mat const *depthMat, Mat &output) {
     depthMat->convertTo(output, CV_16U, 1000);
 }
 
@@ -159,7 +161,7 @@ void AndreiUtils::convertDepthToMillimetersUInt16(Mat *depthMat) {
     depthMat->convertTo(*depthMat, CV_16U, 1000);
 }
 
-void AndreiUtils::convertDepthToMetersDouble64(const Mat *depthMat, Mat &output) {
+void AndreiUtils::convertDepthToMetersDouble64(Mat const *depthMat, Mat &output) {
     depthMat->convertTo(output, CV_64F, 0.001);
 }
 
@@ -168,13 +170,39 @@ void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
 }
 
 void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point topLeftCorner, float fontSize,
-                                         const Scalar &textColor, int fontFace, int lineType) {
+                                         Scalar const &textColor, int fontFace, int lineType, int lineContentCap) {
     int rowTextSize = (int) (fontSize * 20) + 5;
     int thickness = (int) (2 * fontSize);
     vector<string> textLines = splitString(text, "\n");
     for (const auto &textLine: textLines) {
         topLeftCorner.y += rowTextSize;
-        cv::putText(image, textLine, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+        if (lineContentCap <= 0) {
+            cv::putText(image, textLine, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+        } else {
+            auto lineTextSplit = splitString(textLine, " ");
+            if (lineTextSplit.size() < 2) {
+                cv::putText(image, textLine, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+            } else {
+                int nrParts = (int) lineTextSplit.size(), partCount = 0;
+                std::string contentUntilNow;
+                for (int partIndex = 0; partIndex < nrParts; ++partIndex) {
+                    if (partCount == 0 || contentUntilNow.size() + lineTextSplit[partIndex].size() + (!partCount) <= lineContentCap) {
+                        if (partCount != 0) {
+                            contentUntilNow += " ";
+                        }
+                        contentUntilNow += lineTextSplit[partIndex];
+                        ++partCount;
+                    } else {
+                        cv::putText(image, contentUntilNow, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+                        topLeftCorner.y += rowTextSize;
+                        contentUntilNow = AndreiUtils::tab * 4 + lineTextSplit[partIndex];
+                        partCount = 1;
+                    }
+                }
+                assert(partCount != 0);
+                cv::putText(image, contentUntilNow, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+            }
+        }
     }
 }
 

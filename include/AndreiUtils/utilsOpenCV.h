@@ -40,7 +40,7 @@ namespace AndreiUtils {
 
     void displayTextOnOpenCVMat(cv::Mat &image, std::string const &text, cv::Point topLeftCorner, float fontSize = 0.6,
                                 const cv::Scalar &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
-                                int lineType = cv::LINE_AA);
+                                int lineType = cv::LINE_AA, int lineContentCap = -1);
 
     void recoverPoseFrom2dAnd3dPoints(
             cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
