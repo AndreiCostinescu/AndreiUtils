@@ -8,6 +8,7 @@
 #include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsMap.hpp>
+#include <cassert>
 #include <functional>
 #include <memory>
 #include <vector>

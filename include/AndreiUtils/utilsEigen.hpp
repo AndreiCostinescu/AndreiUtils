@@ -6,6 +6,7 @@
 
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenLeastSquares.h>
+#include <cassert>
 #include <Eigen/Dense>
 #include <iostream>
 #include <sstream>
