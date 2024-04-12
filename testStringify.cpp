@@ -101,15 +101,24 @@ void testRemoveFrom() {
     cout << s << " -> " << AndreiUtils::removeFromEnd(s, "e123") << endl;
 }
 
+void testStringifyComplexTypes() {
+    std::tuple<std::complex<double>, bool, std::vector<int>> v(1.2 + 4.5j, false, std::vector<int>{1, 2, 3, 4, 5});
+
+    cout << AndreiUtils::toString(v) << endl;
+    cout << AndreiUtils::toString(v) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testStringifyTypes();
     // testStringRemove();
-    testStringEndsWith();
-    testStdAllOf();
+    // testStringEndsWith();
+    // testStdAllOf();
     // testStringWithoutLastParts();
-    testRemoveFrom();
+    // testRemoveFrom();
+
+    testStringifyComplexTypes();
 
     return 0;
 }

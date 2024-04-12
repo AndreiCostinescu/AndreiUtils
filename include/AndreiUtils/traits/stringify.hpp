@@ -4,11 +4,13 @@
 
 #pragma once
 
+#include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <string>
 #include <sstream>
 #include <type_traits>
+#include <AndreiUtils/utilsVector.hpp>
 
 namespace AndreiUtils {
     template<typename T>
@@ -19,6 +21,16 @@ namespace AndreiUtils {
             return ss.str();
         }
     };
+
+    template<typename T>
+    std::string toString(T &datum) {
+        return stringify<T>::to_string(datum);
+    }
+
+    template<typename T>
+    std::string toString(T const &datum) {
+        return stringify<T>::to_string(datum);
+    }
 
     template<typename Type>
     struct stringify<Type &> {
@@ -72,13 +84,22 @@ namespace AndreiUtils {
         }
     };
 
-    template<typename T>
-    std::string toString(T &datum) {
-        return stringify<T>::to_string(datum);
-    }
+    template<typename ...TArgs>
+    struct stringify<std::tuple<TArgs...>> {
+    public:
+        static std::string to_string(std::tuple<TArgs...> const &datum) {
+            std::vector<std::string> res;
+            std::apply([&res](auto &&... args) {
+                ((res.emplace_back(toString(args))), ...);
+            }, datum);
+            return "(" + AndreiUtils::printVectorToString(res) + ")";
+        }
+    };
 
     template<typename T>
-    std::string toString(T const &datum) {
-        return stringify<T>::to_string(datum);
-    }
+    struct stringify<std::vector<T>> {
+        static std::string to_string(std::vector<T> const &datum) {
+            return "[" + AndreiUtils::printVectorToString(datum) + "]";
+        }
+    };
 }
