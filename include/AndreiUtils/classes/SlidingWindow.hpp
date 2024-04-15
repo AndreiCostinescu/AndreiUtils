@@ -153,6 +153,21 @@ namespace AndreiUtils {
 
         explicit SlidingWindow(unsigned size = 0) : data(size), index(0), size(size), dataSize(0) {}
 
+        virtual void updateSize(unsigned const &newSize) {
+            if (this->size != newSize) {
+                this->size = newSize;
+                std::vector<T> newRes(this->size);
+                // move the data in the sliding window in the correct order
+                int startIndex = (this->dataSize > 0) ? this->earliestIndex() : 0;
+                for (unsigned int i = 0; i < this->size && i < this->dataSize; i++) {
+                    newRes[i] = std::move(this->data[(startIndex + i) % this->size]);
+                }
+                this->data = std::move(newRes);
+                this->dataSize = AndreiUtils::fastMin(this->dataSize, this->size);
+                this->index = 0;
+            }
+        }
+
         [[nodiscard]] bool empty() const {
             return this->dataSize == 0;
         }
@@ -327,6 +342,8 @@ namespace AndreiUtils {
         }
 
         std::vector<T> data;
+        // size is the size of the data-container
+        // dataSize is the amount of data in the data-container
         unsigned index, size, dataSize;
     };
 
@@ -334,6 +351,17 @@ namespace AndreiUtils {
     class SlidingWindowWithInvalidValues : public SlidingWindow<T> {
     public:
         explicit SlidingWindowWithInvalidValues(unsigned size = 0) : SlidingWindow<T>(size), validData(size) {}
+
+        void updateSize(unsigned const &newSize) override {
+            SlidingWindow<T>::updateSize(newSize);
+            std::vector<uint8_t> newRes(this->size);
+            // move the data in the sliding window in the correct order
+            int startIndex = (this->dataSize > 0) ? this->earliestIndex() : 0;
+            for (unsigned int i = 0; i < this->size && i < this->dataSize; i++) {
+                newRes[i] = std::move(this->validData[(startIndex + i) % this->size]);
+            }
+            this->validData = std::move(newRes);
+        }
 
         void addData(T &&newData, bool valid = true) {
             assert(this->size > 0);
@@ -432,7 +460,7 @@ namespace AndreiUtils {
                                     criterion, verbose);
         }
 
-        std::vector<T> getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        [[nodiscard]] std::vector<T> getDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             std::vector<T> a(this->dataSize);
             int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
             for (unsigned int i = this->dataSize; i >= 1; i--) {
@@ -440,6 +468,26 @@ namespace AndreiUtils {
                 if (this->validData[dataIndex] ||
                     invalidValuesHandlingMode == InvalidValuesHandlingMode::IGNORE_INVALID) {
                     a[this->dataSize - i - nrInvalidValues] = this->data[dataIndex];
+                    nrValidValues++;
+                } else if (invalidValuesHandlingMode == InvalidValuesHandlingMode::SKIP_INVALID) {
+                    nrInvalidValues++;
+                } else {
+                    throw std::runtime_error("FAIL_UPON_INVALID mode selected");
+                }
+            }
+            a.resize(nrValidValues);
+            return a;
+        }
+
+        [[nodiscard]] std::vector<uint8_t> getValidDataInCorrectOrder(
+                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+            std::vector<uint8_t> a(this->dataSize);
+            int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
+            for (unsigned int i = this->dataSize; i >= 1; i--) {
+                dataIndex = (this->index + this->size - i) % this->size;
+                if (this->validData[dataIndex] ||
+                    invalidValuesHandlingMode == InvalidValuesHandlingMode::IGNORE_INVALID) {
+                    a[this->dataSize - i - nrInvalidValues] = this->validData[dataIndex];
                     nrValidValues++;
                 } else if (invalidValuesHandlingMode == InvalidValuesHandlingMode::SKIP_INVALID) {
                     nrInvalidValues++;

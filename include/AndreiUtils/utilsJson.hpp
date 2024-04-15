@@ -7,6 +7,7 @@
 #include <AndreiUtils/classes/camera/ImageCaptureParametersWithIntrinsics.h>
 #include <AndreiUtils/classes/camera/ImageParameters.h>
 #include <AndreiUtils/classes/Interval.hpp>
+#include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/json.hpp>
 #include <complex>
 
@@ -110,6 +111,46 @@ namespace nlohmann {
                 data = Type::createOnlyLowerBound(std::move(minValue));
             } else {
                 data = Type(std::move(minValue), std::move(maxValue));
+            }
+        }
+    };
+
+    template<typename T>
+    struct adl_serializer<AndreiUtils::SlidingWindow<T>> {
+        using Type = AndreiUtils::SlidingWindow<T>;
+
+        static void to_json(nlohmann::json &j, Type const &data) {
+            j["data"] = data.getDataInCorrectOrder();
+            j["size"] = data.getSize();
+        }
+
+        static void from_json(nlohmann::json const &j, Type &data) {
+            auto dataVector = j.at("data").get<std::vector<T>>();
+            auto dataSize = j.at("size").get<unsigned int>();
+            data.updateSize(dataSize);
+            for (auto &value: dataVector) {
+                data.addData(std::move(value));
+            }
+        }
+    };
+
+    template<typename T>
+    struct adl_serializer<AndreiUtils::SlidingWindowWithInvalidValues<T>> {
+        using Type = AndreiUtils::SlidingWindowWithInvalidValues<T>;
+
+        static void to_json(nlohmann::json &j, Type const &data) {
+            j["data"] = data.getDataInCorrectOrder(AndreiUtils::InvalidValuesHandlingMode::IGNORE_INVALID);
+            j["size"] = data.getSize();
+            j["valid"] = data.getValidDataInCorrectOrder(AndreiUtils::InvalidValuesHandlingMode::IGNORE_INVALID);
+        }
+
+        static void from_json(nlohmann::json const &j, Type &data) {
+            auto dataVector = j.at("data").get<std::vector<T>>();
+            auto validDataVector = j.at("valid").get<std::vector<uint8_t>>();
+            auto dataSize = j.at("size").get<unsigned int>();
+            data.updateSize(dataSize);
+            for (int i = 0; i < dataSize; ++i) {
+                data.addData(std::move(dataVector[i]), validDataVector[i]);
             }
         }
     };
