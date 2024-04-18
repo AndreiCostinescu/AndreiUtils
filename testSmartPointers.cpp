@@ -2,6 +2,7 @@
 // Created by Andrei on 03.11.22.
 //
 
+#include <AndreiUtils/classes/Pointer.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <iostream>
 #include <memory>
@@ -129,6 +130,55 @@ void testInstanceOf() {
     cout << AndreiUtils::pointerInstanceOf<B>(b) << endl;
 }
 
+class Tmp {
+public:
+    std::string s;
+};
+
+void testMyPointers() {
+    int a = 4;
+    AndreiUtils::Pointer<int> x(&a);
+
+    Tmp tmp;
+    tmp.s = "Name";
+    AndreiUtils::Pointer<Tmp> y(&tmp), z;
+    y->s = "Name2";
+    *y = tmp;
+    cout << x.get() << endl;
+    cout << *x << endl;
+    cout << y->s << endl;
+
+    shared_ptr<int> shX(make_shared<int>(4));
+    shared_ptr<Tmp> shY(make_shared<Tmp>());
+    shY->s = "Hello Bada$$";
+    x = shX;
+    cout << x.get() << endl;
+    cout << *x << endl;
+    y = std::move(shY);
+    cout << y->s << endl;
+    y = make_shared<Tmp>();
+    cout << "\"" << y->s << "\"" << endl;
+    z = y;
+    y->s = "Strawberry";
+    cout << "\"" << z->s << "\"" << endl;
+
+    AndreiUtils::Pointer<int, std::unique_ptr<int>> w;
+    w = make_unique<int>(42);
+    cout << *w << endl;
+
+    // Pointer<int, std::shared_ptr<Tmp>> q;  // throws compile-time error because int != Tmp
+
+    // Pointer<float> fl = x;
+    shared_ptr<float> shFl;
+    reinterpret_pointer_cast<float>(shX);
+
+    cout << (shFl == nullptr) << endl;
+    cout << (w == nullptr) << endl;
+    cout << (x == nullptr) << endl;
+
+    // w.reinterpretCast<float>();  // throws compile-time error because a unique_ptr does not have cast methods...
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -139,7 +189,8 @@ int main() {
     // testSharedPtrWithArray();
     // testVoidSharedPtr();
     // testCopyPointer();
-    testInstanceOf();
+    // testInstanceOf();
+    testMyPointers();
 
     return 0;
 }
