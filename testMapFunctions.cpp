@@ -242,6 +242,26 @@ void testMapEmplaceMoveCopy() {
     printMapConvertValue<int, MapEmplaceTestClass>(t, printer);
 }
 
+void testSingleElementFunctions() {
+    int key, value;
+    try {
+        std::map<int, int> m = {{1, 42}, {4, 1}};
+        getSingleElement(m, key, value);
+    } catch (std::runtime_error &e) {
+        assert(std::string(e.what()) == "Map does not have only one element (2)!");
+    }
+    try {
+        std::map<int, int> m;
+        getSingleElement(m, key, value);
+    } catch (std::runtime_error &e) {
+        assert(std::string(e.what()) == "Map does not have only one element (0)!");
+    }
+    std::map<int, int> m = {{1, 42}};
+    getSingleElement(m, key, value);
+    assert(key == 1);
+    assert(value == 42);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -250,7 +270,8 @@ int main() {
     // testMapRefAccessing();
     // testMapCopy();
     // testMapEmplace();
-    testMapEmplaceMoveCopy();
+    // testMapEmplaceMoveCopy();
+    testSingleElementFunctions();
 
     return 0;
 }

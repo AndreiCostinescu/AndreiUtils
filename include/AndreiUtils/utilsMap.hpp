@@ -6,6 +6,7 @@
 
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/traits/stringify.hpp>
+#include <cassert>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -623,6 +624,28 @@ namespace AndreiUtils {
             if (index++ == sampledIndex) {
                 return data.second;
             }
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void getSingleElement(std::map<T1, T2, C, A> const &m, T1 &key, T2 &value) {
+        if (m.size() != 1) {
+            throw std::runtime_error("Map does not have only one element (" + std::to_string(m.size()) + ")!");
+        }
+        for (auto const &elem: m) {
+            key = elem.first;
+            value = elem.second;
+        }
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void getSingleElement(std::map<T1, T2, C, A> &m, T1 *&key, T2 *&value) {
+        if (m.size() != 1) {
+            throw std::runtime_error("Map does not have only one element (" + std::to_string(m.size()) + ")!");
+        }
+        for (auto &elem: m) {
+            key = &elem.first;
+            value = &elem.second;
         }
     }
 }
