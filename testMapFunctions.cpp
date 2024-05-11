@@ -150,6 +150,7 @@ class MapEmplaceTestClass {
 public:
     double a, b;
     int c;
+
     MapEmplaceTestClass() : a(), b(), c() {
         cout << "Empty constructor..." << endl;
     }
@@ -160,9 +161,37 @@ public:
         cout << "Copy constructor..." << endl;
     }
 
-    MapEmplaceTestClass(MapEmplaceTestClass &&other) noexcept : a(other.a), b(other.b), c(other.c) {
+    MapEmplaceTestClass(MapEmplaceTestClass &&other) noexcept: a(other.a), b(other.b), c(other.c) {
         cout << "Move constructor..." << endl;
     }
+
+    MapEmplaceTestClass &operator=(MapEmplaceTestClass const &other) {
+        cout << "Copy assignment..." << endl;
+        if (this != &other) {
+            this->a = other.a;
+            this->b = other.b;
+            this->c = other.c;
+        }
+        return *this;
+    }
+
+    MapEmplaceTestClass &operator=(MapEmplaceTestClass &&other) noexcept {
+        cout << "Move assignment..." << endl;
+        if (this != &other) {
+            this->a = other.a;
+            this->b = other.b;
+            this->c = other.c;
+        }
+        return *this;
+    }
+};
+
+class MapEmplaceTestTestClass {
+public:
+    std::string name;
+    MapEmplaceTestClass tmp;
+
+    MapEmplaceTestTestClass(std::string name, MapEmplaceTestClass tmp) : name(std::move(name)), tmp(std::move(tmp)) {}
 };
 
 void testMapEmplace() {
@@ -242,6 +271,24 @@ void testMapEmplaceMoveCopy() {
     printMapConvertValue<int, MapEmplaceTestClass>(t, printer);
 }
 
+void createTmp(map<std::string, MapEmplaceTestTestClass> &t, std::string name, MapEmplaceTestClass tmp) {
+    // mapEmplace<string>(t, "Op1", std::move(name), std::move(tmp));
+    t.emplace(std::piecewise_construct, std::forward_as_tuple("key"),
+              std::forward_as_tuple(std::forward<std::string>(name), std::forward<MapEmplaceTestClass>(tmp)));
+}
+
+void testMapEmplaceMoveCopy2() {
+    using TMap = map<std::string, MapEmplaceTestTestClass>;
+    TMap t;
+
+    MapEmplaceTestClass tmp(1, 2, 3);
+    std::string name = "Name";
+    mapEmplace(t, name, name, std::move(tmp));
+
+    tmp = MapEmplaceTestClass(2, 3, 4);
+    createTmp(t, "Name 2", std::move(tmp));
+}
+
 void testSingleElementFunctions() {
     int key, value;
     try {
@@ -271,6 +318,7 @@ int main() {
     // testMapCopy();
     // testMapEmplace();
     // testMapEmplaceMoveCopy();
+    testMapEmplaceMoveCopy2();
     testSingleElementFunctions();
 
     return 0;
