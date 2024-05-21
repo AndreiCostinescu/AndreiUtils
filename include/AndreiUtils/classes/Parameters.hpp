@@ -99,6 +99,8 @@ namespace AndreiUtils {
 
         [[nodiscard]] nlohmann::json &getJsonReference();
 
+        virtual void clear();
+
     protected:
         bool isReference;
         nlohmann::json parameters;

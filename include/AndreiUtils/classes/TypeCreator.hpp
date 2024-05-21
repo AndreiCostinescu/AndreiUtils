@@ -58,6 +58,10 @@ namespace AndreiUtils {
             return AndreiUtils::mapContains(this->typeCreators, type);
         }
 
+        virtual void clear() {
+            this->typeCreators.clear();
+        }
+
     protected:
         std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsTypes...)>> typeCreators;
     };
@@ -136,6 +140,10 @@ namespace AndreiUtils {
             return AndreiUtils::mapContains(this->typeCreators, type);
         }
 
+        virtual void clear() {
+            this->typeCreators.clear();
+        }
+
     protected:
         std::map<TypeID, std::function<std::unique_ptr<Type>(CreatorArgumentsType)>> typeCreators;
     };
@@ -205,6 +213,10 @@ namespace AndreiUtils {
 
         virtual std::map<TypeID, std::function<std::unique_ptr<Type>()>> &getRegisteredTypes() {
             return this->typeCreators;
+        }
+
+        virtual void clear() {
+            this->typeCreators.clear();
         }
 
     protected:
@@ -286,6 +298,10 @@ namespace AndreiUtils {
             return AndreiUtils::mapContains(this->typeCreators, type);
         }
 
+        virtual void clear() {
+            this->typeCreators.clear();
+        }
+
     protected:
         std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsTypes...)>> typeCreators;
     };
@@ -364,6 +380,10 @@ namespace AndreiUtils {
             return AndreiUtils::mapContains(this->typeCreators, type);
         }
 
+        virtual void clear() {
+            this->typeCreators.clear();
+        }
+
     protected:
         std::map<TypeID, std::function<std::shared_ptr<Type>(CreatorArgumentsType)>> typeCreators;
     };
@@ -433,6 +453,10 @@ namespace AndreiUtils {
 
         virtual std::map<TypeID, std::function<std::shared_ptr<Type>()>> &getRegisteredTypes() {
             return this->typeCreators;
+        }
+
+        virtual void clear() {
+            this->typeCreators.clear();
         }
 
     protected:

@@ -176,3 +176,9 @@ nlohmann::json &Parameters::getJsonReference() {
     }
     return this->parameters;
 }
+
+void Parameters::clear() {
+    this->parameterReference = nullptr;
+    this->isReference = false;
+    this->parameters.clear();
+}

@@ -31,6 +31,8 @@ namespace AndreiUtils {
 
         [[nodiscard]] ConfigurationParameters getSubConfig(std::string const &subParametersFor) const;
 
+        void clear() override;
+
     protected:
         bool checkCorrectJsonParameters(nlohmann::json &_config) const;
 

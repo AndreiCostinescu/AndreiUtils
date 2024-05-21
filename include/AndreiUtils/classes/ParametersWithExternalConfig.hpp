@@ -61,10 +61,14 @@ namespace AndreiUtils {
 
         [[nodiscard]] std::string toString(std::string const &indent = "", bool verbose = false) const;
 
+        void clear() override;
+
     protected:
         class ExternalParameterData {
         public:
             ExternalParameterData();
+
+            void clear();
 
             std::map<std::string, ParametersWithExternalConfig> externalConfigs;
             std::map<std::string, ParametersWithExternalConfig> externalParameters;

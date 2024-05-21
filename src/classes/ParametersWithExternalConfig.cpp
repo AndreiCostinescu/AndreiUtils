@@ -113,6 +113,14 @@ std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion
     return this->toStringPrivate({}, indent, verbose);
 }
 
+void ParametersWithExternalConfig::clear() {
+    this->Parameters::clear();
+    this->configFileDirectory.clear();
+    this->externalDataPtr = nullptr;
+    this->isExternalDataReference = false;
+    this->externalData.clear();
+}
+
 ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config, std::string configFileDirectory) :
         ParametersWithExternalConfig() {
     this->configFileDirectory = std::move(configFileDirectory);
@@ -415,3 +423,14 @@ ParametersWithExternalConfig::ExternalParameterData &ParametersWithExternalConfi
 }
 
 ParametersWithExternalConfig::ExternalParameterData::ExternalParameterData() : isExternalConfig(false) {}
+
+void ParametersWithExternalConfig::ExternalParameterData::clear() {
+    this->externalConfigs.clear();
+    this->externalParameters.clear();
+    this->externalFileAssociation.clear();
+    this->externalParameterKeyAssociation.clear();
+    this->externalKeyToParametersAssociation.clear();
+    this->isExternalConfig = false;
+    this->externalFileName.clear();
+    this->originalExternalFileName.clear();
+}

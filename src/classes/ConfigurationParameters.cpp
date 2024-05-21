@@ -75,6 +75,11 @@ ConfigurationParameters ConfigurationParameters::getSubConfig(string const &subP
     return subConfig;
 }
 
+void ConfigurationParameters::clear() {
+    this->Parameters::clear();
+    this->parametersFor.clear();
+}
+
 bool ConfigurationParameters::checkCorrectJsonParameters(json &_config) const {  // NOLINT(misc-no-recursion)
     try {
         if (!this->parametersFor.empty()) {
