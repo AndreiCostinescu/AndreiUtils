@@ -13,6 +13,7 @@
 #include <AndreiUtils/classes/TypeCreator.hpp>
 #include <AndreiUtils/classes/TypeHelper.hpp>
 #include <AndreiUtils/classes/UnionFind.hpp>
+#include <AndreiUtils/classes/UserInteraction.hpp>
 #include <AndreiUtils/classes/graph/BFS.hpp>
 #include <AndreiUtils/classes/graph/DFS.hpp>
 #include <AndreiUtils/traits/is_hashable.hpp>
@@ -595,6 +596,20 @@ void testIntervals() {
     cout << endl << endl;
 }
 
+void testUserInteraction() {
+    UserInteraction user;
+    user << "Hello World!";
+    cout << "User responded with " << user.getBooleanResponse() << endl;
+
+    UserInteraction user1;
+    user1 << "Hello World!";
+    cout << "User responded with " << user1.getBooleanResponse() << endl;
+
+    UserInteraction user2;
+    user2 << "Hello World!" << " and hello again!";
+    cout << "User2 responded with " << user2.getBooleanResponse() << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -614,7 +629,8 @@ int main() {
     // testStringFindFunctions();
     // testTypes();
     // testAnyType();
-    testIntervals();
+    // testIntervals();
+    testUserInteraction();
 
     return 0;
 }
