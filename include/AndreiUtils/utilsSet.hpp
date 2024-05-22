@@ -9,17 +9,18 @@
 #include <vector>
 
 namespace AndreiUtils {
-    template<typename T>
-    std::set<T> setFromVector(std::vector<T> const &v) {
-        return std::set<T>(v.begin(), v.end());
+    template<typename T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
+    std::set<T, Compare, Alloc> setFromVector(std::vector<T> const &v) {
+        return std::set<T, Compare, Alloc>(v.begin(), v.end());
     }
 
-    template<typename T1, typename T2>
-    std::set<T1> setFromMapKeys(std::map<T1, T2> const &m) {
+    template<typename T1, typename T2, typename Compare = std::less<T1>, typename SetAlloc = std::allocator<T1>,
+            typename MapAlloc = std::allocator<std::pair<T1, T2>>>
+    std::set<T1, Compare, SetAlloc> setFromMapKeys(std::map<T1, T2, Compare, MapAlloc> const &m) {
         return setFromVector(getMapKeys(m));
     }
 
-    template<class T>
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
     void printSet(std::set<T> const &x, std::string const &separator = ", ") {
         bool firstPrint = true;
         for (auto const &elem: x) {
@@ -32,8 +33,8 @@ namespace AndreiUtils {
         std::cout << std::endl;
     }
 
-    template<class T>
-    void printSet(std::set<T> const &x, std::function<std::string(T const &)> const &stringConversion,
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
+    void printSet(std::set<T, Compare, Alloc> const &x, std::function<std::string(T const &)> const &stringConversion,
                   std::string const &separator = ", ") {
         bool firstPrint = true;
         for (auto const &elem: x) {
@@ -46,8 +47,8 @@ namespace AndreiUtils {
         std::cout << std::endl;
     }
 
-    template<class T>
-    void printSet(std::set<T> const &x,
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
+    void printSet(std::set<T, Compare, Alloc> const &x,
                   std::function<std::string(T const &, size_t const &index)> const &stringConversion,
                   std::string const &separator = ", ") {
         int index = 0;
@@ -61,8 +62,9 @@ namespace AndreiUtils {
         std::cout << std::endl;
     }
 
-    template<class T>
-    [[nodiscard]] std::string printSetToString(std::set<T> const &x, std::string const &separator = ", ") {
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
+    [[nodiscard]] std::string printSetToString(
+            std::set<T, Compare, Alloc> const &x, std::string const &separator = ", ") {
         std::stringstream s;
         bool firstPrint = true;
         for (auto const &elem: x) {
@@ -75,9 +77,9 @@ namespace AndreiUtils {
         return s.str();
     }
 
-    template<class T>
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
     [[nodiscard]] std::string printSetToString(
-            std::set<T> const &x, std::function<std::string(T const &)> const &stringConversion,
+            std::set<T, Compare, Alloc> const &x, std::function<std::string(T const &)> const &stringConversion,
             std::string const &separator = ", ") {
         std::stringstream s;
         bool firstPrint = true;
@@ -91,9 +93,10 @@ namespace AndreiUtils {
         return s.str();
     }
 
-    template<class T>
+    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
     [[nodiscard]] std::string printSetToString(
-            std::set<T> const &x, std::function<std::string(T const &, size_t const &)> const &stringConversion,
+            std::set<T, Compare, Alloc> const &x,
+            std::function<std::string(T const &, size_t const &)> const &stringConversion,
             std::string const &separator = ", ") {
         std::stringstream s;
         int index = 0;
