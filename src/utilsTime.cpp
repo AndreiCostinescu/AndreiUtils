@@ -34,22 +34,19 @@ AndreiUtils::SystemTimePoint AndreiUtils::now() {
 
 string AndreiUtils::convertChronoToString(SystemTimePoint const &time, string const &format) {
     time_t timeStruct;
-    stringstream ss;
     timeStruct = system_clock::to_time_t(time);
-    ss.clear();
-    ss.str(string());
-    ss << put_time(localtime(&timeStruct), format.c_str());
+    stringstream ss;
+    // ss << put_time(localtime(&timeStruct), format.c_str());
+    ss << put_time(gmtime(&timeStruct), format.c_str());
     return ss.str();
 }
 
 SystemTimePoint AndreiUtils::convertStringToChrono(string const &time, string const &format) {
     tm tm = {};
-    stringstream ss;
-    ss.clear();
-    ss.str(string());
-    ss << time;
+    stringstream ss(time);
     ss >> get_time(&tm, format.c_str());
-    return system_clock::from_time_t(mktime(&tm));
+    // return system_clock::from_time_t(mktime(&tm));
+    return system_clock::from_time_t(_mkgmtime(&tm));
 }
 
 string AndreiUtils::convertChronoToStringWithSubsecondsCustomJoin(SystemTimePoint const &time, string const &joiner) {

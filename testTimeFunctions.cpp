@@ -123,10 +123,56 @@ void testAccessTimeInMapVsVector() {
     }
 }
 
+void testSerializeDeserializeTimestamp() {
+    #if __cplusplus >= 202002L
+
+    cout << "With C++20 suppport!" << endl;
+    auto t = now();
+    auto s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    auto t1 = convertStringToChronoWithSubseconds(s);
+    auto s1 = convertChronoToStringWithSubseconds(t1);
+    cout << s1 << endl;
+    auto t2 = convertStringToChronoWithSubseconds(s1);
+    auto s2 = convertChronoToStringWithSubseconds(t2);
+    cout << s2 << endl;
+
+    #elif __cplusplus >= 201703L
+
+    cout << "With C++17 support!" << endl;
+    auto t = now();
+    auto s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+    t = convertStringToChronoWithSubseconds(s);
+    s = convertChronoToStringWithSubseconds(t);
+    cout << s << endl;
+
+    #endif
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
-    testAccessTimeInMapVsVector();
+    // testAccessTimeInMapVsVector();
+    testSerializeDeserializeTimestamp();
 
     return 0;
 }
