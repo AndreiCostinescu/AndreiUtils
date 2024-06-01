@@ -46,7 +46,11 @@ SystemTimePoint AndreiUtils::convertStringToChrono(string const &time, string co
     stringstream ss(time);
     ss >> get_time(&tm, format.c_str());
     // return system_clock::from_time_t(mktime(&tm));
+    #if defined(WIN32) || defined(WIN64)
     return system_clock::from_time_t(_mkgmtime(&tm));
+    #else
+    return system_clock::from_time_t(timegm(&tm));
+    #endif
 }
 
 string AndreiUtils::convertChronoToStringWithSubsecondsCustomJoin(SystemTimePoint const &time, string const &joiner) {
