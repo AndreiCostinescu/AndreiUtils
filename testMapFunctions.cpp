@@ -309,6 +309,17 @@ void testSingleElementFunctions() {
     assert(value == 42);
 }
 
+void testMapAddIfNotContains() {
+    map<int, string> x = {{1, "1"}, {0, "2"}};
+    printMap(x);
+    string *newElemAddr = mapAddIfNotContains<int, string>(x, 2, "0");
+    if (newElemAddr != &mapGet(x, 2)) {
+        throw std::runtime_error("Address of new element is wrong!");
+    }
+    *newElemAddr += "newElem";
+    printMap(x);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -318,8 +329,9 @@ int main() {
     // testMapCopy();
     // testMapEmplace();
     // testMapEmplaceMoveCopy();
-    testMapEmplaceMoveCopy2();
-    testSingleElementFunctions();
+    // testMapEmplaceMoveCopy2();
+    // testSingleElementFunctions();
+    testMapAddIfNotContains();
 
     return 0;
 }
