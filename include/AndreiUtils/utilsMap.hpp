@@ -302,17 +302,21 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
-    void mapAddIfNotContains(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
-        if (!mapContains(container, key)) {
-            mapEmplace(container, key, value);
+    T2 *mapAddIfNotContains(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+        T2 *res;
+        if (!mapGetIfContains(container, key, res)) {
+            return &(mapEmplace(container, key, value)->second);
         }
+        return res;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    void mapAddIfNotContains(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
-        if (!mapContains(container, const_cast<T1 *>(key))) {
-            mapEmplace(container, const_cast<T1 *>(key), value);
+    T2 *mapAddIfNotContains(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+        T2 *res;
+        if (!mapGetIfContains(container, const_cast<T1 *>(key), res)) {
+            return &(mapEmplace(container, const_cast<T1 *>(key), value)->second);
         }
+        return res;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
