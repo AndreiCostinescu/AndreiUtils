@@ -20,7 +20,6 @@
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
 #include <iostream>
-// #include <librealsense2/rs.hpp>
 
 using namespace AndreiUtils;
 using namespace Eigen;
