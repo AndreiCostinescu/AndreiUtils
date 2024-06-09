@@ -7,7 +7,6 @@
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
-#include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/TypeCreator.hpp>
@@ -23,7 +22,6 @@
 #include <iostream>
 
 using namespace AndreiUtils;
-using namespace Eigen;
 using namespace std;
 
 class Test {
@@ -478,15 +476,6 @@ void testInterpolation() {
     printVector(x.getResult());
     x.compute(0, 10, 99, false, false);
     printVector(x.getResult());
-    SlerpInterpolator<double> sx;
-    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 101, true, true);
-    printVector(sx.getResult());
-    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 100, true, false);
-    printVector(sx.getResult());
-    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 100, false, true);
-    printVector(sx.getResult());
-    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 99, false, false);
-    printVector(sx.getResult());
 }
 
 void testStringFindFunctions() {

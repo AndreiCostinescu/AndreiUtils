@@ -7,6 +7,7 @@
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
+#include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <iostream>
 
 using namespace AndreiUtils;
@@ -48,6 +49,18 @@ void testSurfaceTriangle() {
     checkInsideTriangles<double>(Vector3d(0, 0, 1), Matrix<double, 3, 4>(), Matrix<double, 4, 3>(), 4, 4);
 }
 
+void testInterpolation() {
+    SlerpInterpolator<double> sx;
+    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 101, true, true);
+    printVector(sx.getResult());
+    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 100, true, false);
+    printVector(sx.getResult());
+    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 100, false, true);
+    printVector(sx.getResult());
+    sx.compute(Quaterniond(1, 0, 0, 0), Quaterniond(0, 0, 0, 1), 99, false, false);
+    printVector(sx.getResult());
+}
+
 void testAnyOrientationFromAxis() {
     Vector3d axis(0, 0, 1);
     cout << getAnyOrientationFromOneAxis(axis, "x") << endl;
@@ -72,6 +85,7 @@ int main() {
     // testEigenSlidingWindow();
     // testEigenMatrixAddSub();
     // testSurfaceTriangle();
+    // testInterpolation();
     testAnyOrientationFromAxis();
 
     return 0;
