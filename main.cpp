@@ -19,6 +19,7 @@
 #include <AndreiUtils/traits/is_hashable.hpp>
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
+#include <functional>
 #include <iostream>
 
 using namespace AndreiUtils;
@@ -28,6 +29,23 @@ using namespace std;
 class Test {
 public:
     explicit Test(R<int> data) : a(&data) {}
+
+    void f1() const {
+        cout << "Called Test::f1" << endl;
+    }
+
+    void f2(int const &x) const {
+        cout << "Called Test::f2" << endl;
+    }
+
+    void f3(int const &x, Test const &other) const {
+        cout << "Called Test::f3" << endl;
+    }
+
+    [[nodiscard]] double f4(int const &x, Test const &other) const {
+        cout << "Called Test::f4" << endl;
+        return 0;
+    }
 
     int *a;
 };
@@ -609,6 +627,24 @@ void testUserInteraction() {
     cout << "User2 responded with " << user2.getBooleanResponse() << endl;
 }
 
+void testStoringFunctionsOfDifferentType() {
+    std::map<std::string, AnyType> functions;
+    int a = 5;
+    Test t(a);
+    mapEmplace<string>(functions, "f1", std::function<void()>([ObjectPtr = &t] { ObjectPtr->f1(); }));
+    mapEmplace<string>(functions, "f2",
+                       std::function<void(int const &)>([ObjectPtr = &t](int const &x) { ObjectPtr->f2(x); }));
+    mapEmplace<string>(functions, "f3", std::function<void(int const &, Test const &)>(
+            [ObjectPtr = &t](int const &x, Test const &ptr) { ObjectPtr->f3(x, ptr); }));
+    mapEmplace<string>(functions, "f4", std::function<double(int const &, Test const &)>(
+            [ObjectPtr = &t] (int const &x, Test const &ref) { return ObjectPtr->f4(x, ref); }));
+
+    mapGet<string>(functions, "f1").get<std::function<void()>>()();
+    mapGet<string>(functions, "f2").get<std::function<void(int const &)>>()(23);
+    mapGet<string>(functions, "f3").get<std::function<void(int const &, Test const &)>>()(23, t);
+    cout << mapGet<string>(functions, "f4").get<std::function<double(int const &, Test const &)>>()(23, t) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -629,7 +665,8 @@ int main() {
     // testTypes();
     // testAnyType();
     // testIntervals();
-    testUserInteraction();
+    // testUserInteraction();
+    testStoringFunctionsOfDifferentType();
 
     return 0;
 }

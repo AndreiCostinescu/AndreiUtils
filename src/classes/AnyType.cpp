@@ -3,7 +3,6 @@
 //
 
 #include <AndreiUtils/classes/AnyType.h>
-#include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -17,12 +16,11 @@ AnyType::AnyType(AnyType &&other) noexcept: content(other.content) {
 }
 
 AnyType::~AnyType() {
-    cout << "In destructor!" << endl;
-    delete content;
+    delete this->content;
 }
 
 AnyType &AnyType::swap(AnyType &other) {
-    std::swap(content, other.content);
+    std::swap(this->content, other.content);
     return *this;
 }
 
@@ -45,7 +43,11 @@ bool AnyType::empty() const {
 }
 
 std::type_info const &AnyType::getType() const {
-    return content ? content->getType() : typeid(void);
+    return this->content ? this->content->getType() : typeid(void);
+}
+
+std::string AnyType::getTypeName() const {
+    return this->content ? this->content->getTypeName() : typeid(void).name();
 }
 
 AnyType::PlaceHolder::~PlaceHolder() = default;

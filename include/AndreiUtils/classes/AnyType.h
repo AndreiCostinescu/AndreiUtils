@@ -5,15 +5,16 @@
 #pragma once
 
 #include <stdexcept>
+#include <string>
 
 namespace AndreiUtils {
     /**
      * @brief This data type can be used to represent any other data type (for example, integer, floating-point,
      * single- and double-precision, user defined types, etc.).
      *
-     * While the use of not explicitly declared variants such as this is not recommended, they can be of use when the needed
-     * data type can only be known at runtime, when the data type is expected to vary, or when optional parameters
-     * and parameter arrays are desired.
+     * While the use of not explicitly declared variants such as this is not recommended, they can be of use when the
+     * needed data type can only be known at runtime, when the data type is expected to vary, or when optional
+     * parameters and parameter arrays are desired.
      *
      * Inspired by: https://stackoverflow.com/a/18566446
      */
@@ -115,17 +116,11 @@ namespace AndreiUtils {
         /**
          * @brief The () operator.
          *
-         * @return The holded value.
+         * @return The held value.
          */
         template<typename ValueType>
         ValueType operator()() const {
-            if (this->empty()) {
-                throw std::runtime_error("AnyType is empty! Nothing to get");
-            } else if (getType() == typeid(ValueType)) {
-                return static_cast<AnyType::Holder<ValueType> *>(this->content)->held;
-            } else {
-                throw std::runtime_error("Wrong type to cast to!");
-            }
+            return this->template get<ValueType>();
         }
 
         /**
@@ -137,10 +132,11 @@ namespace AndreiUtils {
         ValueType get() const {
             if (this->empty()) {
                 throw std::runtime_error("AnyType is empty! Nothing to get");
-            } else if (getType() == typeid(ValueType)) {
+            } else if (this->getType() == typeid(ValueType)) {
                 return static_cast<AnyType::Holder<ValueType> *>(this->content)->held;
             } else {
-                throw std::runtime_error("Wrong type to cast to!");
+                throw std::runtime_error("Wrong type to cast to (has " + this->getTypeName() + ", requested " +
+                                         typeid(ValueType).name() + "!");
             }
         }
 
@@ -149,13 +145,18 @@ namespace AndreiUtils {
          *
          * @return <tt>true</tt> if the holder is empty; otherwise <tt>false</tt>.
          */
-        bool empty() const;
+        [[nodiscard]] bool empty() const;
 
     protected:
         /**
          * @brief Gets the type of the underlying value.
          */
-        std::type_info const &getType() const;
+        [[nodiscard]] std::type_info const &getType() const;
+
+        /**
+         * @brief Gets the type name of the underlying value.
+         */
+        [[nodiscard]] std::string getTypeName() const;
 
         /**
          * @brief The place holder structure..
@@ -169,12 +170,17 @@ namespace AndreiUtils {
             /**
              * @brief Gets the type of the underlying value.
              */
-            virtual const std::type_info &getType() const = 0;
+            [[nodiscard]] virtual std::type_info const &getType() const = 0;
+
+            /**
+             * @brief Gets the type name of the underlying value.
+             */
+            [[nodiscard]] virtual std::string getTypeName() const = 0;
 
             /**
              * @brief Clones the holder.
              */
-            virtual PlaceHolder *clone() const = 0;
+            [[nodiscard]] virtual PlaceHolder *clone() const = 0;
         };
 
         template<typename ValueType>
@@ -189,14 +195,21 @@ namespace AndreiUtils {
             /**
              * @brief Gets the type of the underlying value.
              */
-            std::type_info const &getType() const override {
+            [[nodiscard]] std::type_info const &getType() const override {
                 return typeid(ValueType);
+            }
+
+            /**
+             * @brief Gets the type name of the underlying value.
+             */
+            [[nodiscard]] std::string getTypeName() const override {
+                return typeid(ValueType).name();
             }
 
             /**
              * @brief Clones the holder.
              */
-            PlaceHolder *clone() const override {
+            [[nodiscard]] PlaceHolder *clone() const override {
                 return new Holder(held);
             }
 
