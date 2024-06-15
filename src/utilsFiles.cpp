@@ -144,7 +144,7 @@ bool AndreiUtils::isFilePathAbsolute(string const &path) {
 
 std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
     vector<string> res = splitString(replace(path, "\\", "/"), "/");
-    string directory = "./";
+    string directory = startsWith(path, "/") ? "/" : "./";
     for (int i = 0; i < res.size() - 1; i++) {
         if (res[i] == "." || res[i].empty()) {
             continue;
@@ -173,7 +173,7 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
             simplifiedPath[simplifiedPathSize++] = resPart;
         }
     }
-    string newPath;
+    string newPath = startsWith(path, "/") ? "/" : "";
     for (int i = 0; i < simplifiedPathSize; i++) {
         if (!newPath.empty()) {
             newPath += "/";
