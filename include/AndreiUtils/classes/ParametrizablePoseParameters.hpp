@@ -517,6 +517,7 @@ namespace AndreiUtils {
                 }
                 results.emplace_back(AndreiUtils::OperationType::operationTypePropagation(opData.first, inputTypes));
             }
+            return results.back();
         }
 
     protected:
