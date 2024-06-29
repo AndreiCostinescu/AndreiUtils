@@ -381,7 +381,7 @@ void testMapEmplaceForwardKey() {
     std::map<OnlyMovableData, int> m;
     OnlyMovableData datum;
     datum.i = 42;
-    mapEmplace(m, datum, 42);
+    mapEmplace(m, std::move(datum), 42);
     cout << stringify<OnlyMovableData>::to_string(datum) << endl;
     printMapConvertKey<OnlyMovableData>(m, [](OnlyMovableData const &d) {
         return stringify<OnlyMovableData>::to_string(d);
