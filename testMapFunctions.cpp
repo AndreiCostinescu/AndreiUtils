@@ -292,7 +292,8 @@ void testMapEmplaceMoveCopy2() {
 void testSingleElementFunctions() {
     int key, value;
     try {
-        std::map<int, int> m = {{1, 42}, {4, 1}};
+        std::map<int, int> m = {{1, 42},
+                                {4, 1}};
         getSingleElement(m, key, value);
     } catch (std::runtime_error &e) {
         assert(std::string(e.what()) == "Map does not have only one element (2)!");
@@ -310,7 +311,8 @@ void testSingleElementFunctions() {
 }
 
 void testMapAddIfNotContains() {
-    map<int, string> x = {{1, "1"}, {0, "2"}};
+    map<int, string> x = {{1, "1"},
+                          {0, "2"}};
     printMap(x);
     string *newElemAddr = mapAddIfNotContains<int, string>(x, 2, "0");
     if (newElemAddr != &mapGet(x, 2)) {
@@ -318,6 +320,75 @@ void testMapAddIfNotContains() {
     }
     *newElemAddr += "newElem";
     printMap(x);
+}
+
+class OnlyMovableData {
+public:
+    OnlyMovableData() : i(0), s("Hello World!") {}
+
+    OnlyMovableData(OnlyMovableData &&other) noexcept: i(std::move(other.i) + 1), s(std::move(other.s)) {
+        cout << "Move constructor!" << endl;
+    }
+
+    OnlyMovableData &operator=(OnlyMovableData &&other) noexcept {
+        cout << "Move assignment!" << endl;
+        if (this != &other) {
+            this->s = std::move(other.s);
+            this->i = std::move(other.i) + 1;
+        }
+        return *this;
+    }
+
+    bool operator==(OnlyMovableData const &other) const {
+        return this->i == other.i;
+    }
+
+    bool operator<(OnlyMovableData const &other) const {
+        return this->i < other.i;
+    }
+
+    int i;
+    std::string s;
+};
+
+template<>
+std::string AndreiUtils::stringify<OnlyMovableData>::to_string(OnlyMovableData const &datum) {
+    return "OnlyMovableData(" + std::to_string(datum.i) + ", " + datum.s + ")";
+}
+
+void testMapEmplaceForwardKey() {
+    map<int, string> x = {{1, "1"},
+                          {0, "2"}};
+    printMap(x);
+    try {
+        mapEmplace(x, std::move(1), "3");
+    } catch (std::runtime_error &e) {
+        cout << "Caught emplace exception: " << e.what() << endl;
+    }
+    printMap(x);
+
+    map<string, int> y = {{"1", 1},
+                          {"0", 2}};
+    std::string s("1");
+    try {
+        mapEmplace<string>(y, std::move(s), 3);
+    } catch (std::runtime_error &e) {
+        cout << "Caught emplace exception: " << e.what() << endl;
+    }
+    cout << "Value of \"s\" is " << s << endl;
+    printMap(y);
+
+    std::map<OnlyMovableData, int> m;
+    OnlyMovableData datum;
+    datum.i = 42;
+    mapEmplace(m, datum, 42);
+    cout << stringify<OnlyMovableData>::to_string(datum) << endl;
+    printMapConvertKey<OnlyMovableData>(m, [](OnlyMovableData const &d) {
+        return stringify<OnlyMovableData>::to_string(d);
+    });
+    OnlyMovableData other;
+    // other = datum;
+    // OnlyMovableData other2 = datum;
 }
 
 int main() {
@@ -331,7 +402,8 @@ int main() {
     // testMapEmplaceMoveCopy();
     // testMapEmplaceMoveCopy2();
     // testSingleElementFunctions();
-    testMapAddIfNotContains();
+    // testMapAddIfNotContains();
+    testMapEmplaceForwardKey();
 
     return 0;
 }
