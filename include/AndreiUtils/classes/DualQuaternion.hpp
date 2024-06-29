@@ -113,7 +113,9 @@ namespace AndreiUtils {
             this->d.x() = coefficients[5];
             this->d.y() = coefficients[6];
             this->d.z() = coefficients[7];
-            this->normalize();
+            if (!AndreiUtils::equal<double>(0, this->r.norm())) {
+                this->normalize();
+            }
         }
 
         void fromCoefficients(CR<Eigen::Matrix<T, 8, 1>> coefficients) {
