@@ -2,6 +2,7 @@
 // Created by Andrei on 20.11.23.
 //
 
+#include <AndreiUtils/traits/is_detected.hpp>
 #include <AndreiUtils/traits/is_numeric.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <iostream>
@@ -12,6 +13,10 @@ using namespace std;
 class Test {
 public:
     explicit Test(int &data) : a(&data) {}
+
+    void f(double, int) {}
+
+    void f(double, int, double) {}
 
     int *a;
 };
@@ -137,13 +142,58 @@ void testInstanceOf() {
     cout << "e instance of Test?: " << instanceOf<Test>(e) << endl;
 }
 
+template<class T>
+using has_f1 = decltype(std::declval<T&>().purr(std::declval<int>()));
+
+template<class T>
+using has_f2 = decltype(std::declval<T&>().f(std::declval<double>()));
+
+template<class T>
+using has_f3 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>()));
+
+template<class T>
+using has_f4 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>(), std::declval<double>()));
+
+template<class T>
+using has_f5 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<double>(), std::declval<double>()));
+
+template<class T>
+using has_f6 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<float>(), std::declval<double>()));
+
+template<class T>
+using has_f7 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>(), std::declval<float>()));
+
+template<class T>
+using has_f8 = decltype(std::declval<T&>().f(std::declval<Test>(), std::declval<int>(), std::declval<float>()));
+
+template<class T>
+using has_f9 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>(), std::declval<double>(), std::declval<float>()));
+
+template<class T>
+using has_f10 = decltype(std::declval<T&>().f(std::declval<int>()));
+
+void testIsDetected() {
+    cout << AndreiUtils::is_detected<has_f1, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f2, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f3, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f4, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f5, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f6, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f7, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f8, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f9, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f10, Test>::value << endl;
+    cout << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testTypeTraitsWithPointers();
     // testIntegralAndUnsignedTypes();
-    testIsNumericType();
+    // testIsNumericType();
     // testInstanceOf();
+    testIsDetected();
 
     return 0;
 }
