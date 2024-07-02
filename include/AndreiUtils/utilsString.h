@@ -51,6 +51,8 @@ namespace AndreiUtils {
 
     std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
+    auto const &strip = trim;
+
     std::string reduce(std::string const &str, std::string const &fill = " ", std::string const &whitespace = " \t");
 
     std::string removeComments(std::string const &s, std::string const &comment = "#");
