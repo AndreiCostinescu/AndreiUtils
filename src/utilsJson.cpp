@@ -13,6 +13,10 @@ using namespace AndreiUtils;
 using namespace nlohmann;
 using namespace std;
 
+json AndreiUtils::setJsonFromString(std::string const &jsonContent) {
+    return json::parse(jsonContent);
+}
+
 json AndreiUtils::readJsonFile(string const &path) {
     ifstream fin(path);
     if (!fin.is_open()) {

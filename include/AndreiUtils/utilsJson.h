@@ -9,6 +9,8 @@
 #include <sstream>
 
 namespace AndreiUtils {
+    nlohmann::json setJsonFromString(std::string const &jsonContent);
+
     nlohmann::json readJsonFile(std::string const &path);
 
     void writeJsonFileKeepOrder(std::string const &path, nlohmann::json const &content, bool keepNewLines = true,
