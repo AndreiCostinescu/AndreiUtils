@@ -195,6 +195,8 @@ SET(UTILS_CAMERA src/utilsCamera.cpp)
 
 SET(UTILS_RANDOM src/utilsRandom.cpp)
 
+SET(UTILS_MATCHING src/utilsMatching.cpp)
+
 set(UTILS_CLASSES_CAMERA
         src/classes/camera/ImageParameters.cpp
         src/classes/camera/CameraIntrinsicParameters.cpp
@@ -317,6 +319,8 @@ set(GENERAL_UTILS
         ${UTILS_CLASSES}
 
         ${UTILS_RANDOM}
+
+        ${UTILS_MATCHING}
         )
 set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_JSON_UTILS ${UTILS_EIGEN_JSON})
@@ -589,6 +593,13 @@ endif ()
 
 set(EXECUTABLE TestSet)
 add_executable(${EXECUTABLE} testSet.cpp)
+target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+if (${USE_OPENMP})
+    target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+endif ()
+
+set(EXECUTABLE TestMatching)
+add_executable(${EXECUTABLE} testMatching.cpp)
 target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
 if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
