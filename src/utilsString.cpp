@@ -188,14 +188,18 @@ bool AndreiUtils::endsWithInteger(std::string const &str, int &integer, std::str
 }
 
 string AndreiUtils::trim(string const &str, string const &whitespace) {
-    const auto strBegin = str.find_first_not_of(whitespace);
+    auto const strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {
         return "";
     } // no content
 
-    const auto strEnd = str.find_last_not_of(whitespace);
+    auto const strEnd = str.find_last_not_of(whitespace);
 
     return str.substr(strBegin, strEnd - strBegin + 1);
+}
+
+string AndreiUtils::strip(string const &str, string const &whiteSpace) {
+    return AndreiUtils::trim(str, whiteSpace);
 }
 
 string AndreiUtils::reduce(string const &str, string const &fill, string const &whitespace) {
@@ -204,12 +208,12 @@ string AndreiUtils::reduce(string const &str, string const &fill, string const &
     // replace sub ranges
     auto beginSpace = res.find_first_of(whitespace);
     while (beginSpace != string::npos) {
-        const auto endSpace = res.find_first_not_of(whitespace, beginSpace);
-        const auto range = endSpace - beginSpace;
+        auto const endSpace = res.find_first_not_of(whitespace, beginSpace);
+        auto const range = endSpace - beginSpace;
 
         res.replace(beginSpace, range, fill);
 
-        const auto newStart = beginSpace + fill.length();
+        auto const newStart = beginSpace + fill.length();
         beginSpace = res.find_first_of(whitespace, newStart);
     }
 
@@ -241,7 +245,7 @@ string AndreiUtils::replaceFirst(string const &s, string const &oldString, strin
 }
 
 size_t AndreiUtils::stringCount(string const &referenceString, string const &subString) {
-    const size_t step = subString.size();
+    size_t const step = subString.size();
 
     size_t count(0);
     size_t pos(0);
