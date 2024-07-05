@@ -129,6 +129,27 @@ void testResizeAndReserve() {
     }
 }
 
+class A {
+public:
+    static int count;
+
+    A() {
+        cout << "Create new A: " << ++count << endl;
+    }
+
+    ~A() {
+        cout << "Delete old A: " << --count << endl;
+    }
+};
+
+int A::count = 0;
+
+void testCreationOfDynamicSizeArray() {
+    A **m = new2dArray<A>(3, 5);
+    delete2dArray(m, 3);
+    assert(A::count == 0);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -138,7 +159,8 @@ int main() {
     // testSpliceVector();
     // testRemoveDuplicates();
     // testEigenDataAsArray();
-    testResizeAndReserve();
+    // testResizeAndReserve();
+    testCreationOfDynamicSizeArray();
 
     return 0;
 }

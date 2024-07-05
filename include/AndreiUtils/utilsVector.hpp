@@ -698,4 +698,21 @@ namespace AndreiUtils {
         }
         return res;
     }
+
+    template<typename T>
+    [[nodiscard]] T **new2dArray(long size1, long size2) {
+        T **res = new T *[size1];
+        for (long i = 0; i < size1; ++i) {
+            res[i] = new T[size2];
+        }
+        return res;
+    }
+
+    template<typename T>
+    void delete2dArray(T **mat, long size1) {
+        for (long i = 0; i < size1; ++i) {
+            delete[] mat[i];
+        }
+        delete[] mat;
+    }
 }
