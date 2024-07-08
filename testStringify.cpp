@@ -10,6 +10,20 @@
 
 using namespace std;
 
+void testSplitString() {
+    string s = "ToSplit";
+    assert(AndreiUtils::splitString(s, "To").size() == 2);
+    assert(AndreiUtils::splitString(s, "Spli").size() == 2);
+    assert(AndreiUtils::splitString(s, "Split").size() == 2);
+    assert(AndreiUtils::splitString(s, "ToSplit").size() == 2);
+    s = "ToSplitTo";
+    assert(AndreiUtils::splitString(s, "To").size() == 3);
+    assert(AndreiUtils::splitString(s, "Spli").size() == 2);
+    assert(AndreiUtils::splitString(s, "Split").size() == 2);
+    assert(AndreiUtils::splitString(s, "ToSplit").size() == 2);
+    assert(AndreiUtils::splitString(s, "ToSplitTo").size() == 2);
+}
+
 void testStringifyTypes() {
     int x = 5;
     int &y = x;
@@ -111,14 +125,14 @@ void testStringifyComplexTypes() {
 int main() {
     cout << "Hello World!" << endl;
 
+    testSplitString();
     // testStringifyTypes();
     // testStringRemove();
     // testStringEndsWith();
     // testStdAllOf();
     // testStringWithoutLastParts();
     // testRemoveFrom();
-
-    testStringifyComplexTypes();
+    // testStringifyComplexTypes();
 
     return 0;
 }

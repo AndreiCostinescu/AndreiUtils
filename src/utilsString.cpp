@@ -58,6 +58,9 @@ vector<string> AndreiUtils::splitString(string const &message, string const &spl
         start = end + ((string::npos - end >= splitter.size()) ? splitter.size() : 0);
         end = message.find(splitter, start);
     }
+    if (start == message.size()) {
+        res.emplace_back();
+    }
     return res;
 }
 
