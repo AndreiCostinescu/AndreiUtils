@@ -3,7 +3,7 @@
 //
 
 #include <AndreiUtils/utilsEigenGeometry.h>
-#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
+#include <AndreiUtils/utilsEigenGeometry.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsQuaternions.hpp>
 
@@ -28,8 +28,7 @@ Matrix3d AndreiUtils::zRotation(double angle) {
 }
 
 Vector3d AndreiUtils::sampleDirection() {
-    return addComponentWise(Vector3d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample()),
-                            -0.5).normalized();
+    return sampleUnitVector<double, 3>();
 }
 
 Quaterniond AndreiUtils::sampleOrientation() {

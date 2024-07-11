@@ -9,7 +9,7 @@
 #include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/classes/PoseDecoupledInterpolator.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
-#include <AndreiUtils/utilsEigen.hpp>
+#include <AndreiUtils/utilsEigenGeometry.hpp>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsVector.hpp>

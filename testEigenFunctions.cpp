@@ -7,6 +7,7 @@
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
+#include <AndreiUtils/utilsEigenGeometry.hpp>
 #include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <iostream>
 
