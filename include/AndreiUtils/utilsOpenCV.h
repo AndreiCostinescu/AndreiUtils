@@ -61,6 +61,11 @@ namespace AndreiUtils {
             std::vector<cv::Point3f> const &points3d, const CameraIntrinsicParameters &intrinsics);
 
     cv::Point2i castFromPointDouble(cv::Point2d const &p);
+
+    cv::Mat addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int borderWidth);
+
+    cv::Mat addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int topWidth, int rightWidth,
+                                      int bottomWidth, int leftWidth);
 }
 
 namespace cv {

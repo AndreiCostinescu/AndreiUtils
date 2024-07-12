@@ -186,14 +186,16 @@ void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point t
                 int nrParts = (int) lineTextSplit.size(), partCount = 0;
                 std::string contentUntilNow;
                 for (int partIndex = 0; partIndex < nrParts; ++partIndex) {
-                    if (partCount == 0 || contentUntilNow.size() + lineTextSplit[partIndex].size() + (!partCount) <= lineContentCap) {
+                    if (partCount == 0 ||
+                        contentUntilNow.size() + lineTextSplit[partIndex].size() + (!partCount) <= lineContentCap) {
                         if (partCount != 0) {
                             contentUntilNow += " ";
                         }
                         contentUntilNow += lineTextSplit[partIndex];
                         ++partCount;
                     } else {
-                        cv::putText(image, contentUntilNow, topLeftCorner, fontFace, fontSize, textColor, thickness, lineType);
+                        cv::putText(image, contentUntilNow, topLeftCorner, fontFace, fontSize, textColor, thickness,
+                                    lineType);
                         topLeftCorner.y += rowTextSize;
                         contentUntilNow = AndreiUtils::tab * 4 + lineTextSplit[partIndex];
                         partCount = 1;
@@ -244,4 +246,19 @@ void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
 
 Point2i AndreiUtils::castFromPointDouble(Point2d const &p) {
     return {int(p.x), int(p.y)};
-};
+}
+
+cv::Mat AndreiUtils::addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int borderWidth) {
+    cv::Mat res;
+    cv::copyMakeBorder(img, res, borderWidth, borderWidth, borderWidth, borderWidth, BORDER_CONSTANT, borderColor);
+    // cv::Mat res(img.rows + 2 * borderWidth, img.cols + 2 * borderWidth, CV_8UC3, borderColor);
+    // img.copyTo(res.colRange(borderWidth, borderWidth + img.cols).rowRange(borderWidth, borderWidth + img.rows));
+    return res;
+}
+
+cv::Mat AndreiUtils::addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int topWidth,
+                                               int rightWidth, int bottomWidth, int leftWidth) {
+    cv::Mat res;
+    cv::copyMakeBorder(img, res, topWidth, bottomWidth, leftWidth, rightWidth, BORDER_CONSTANT, borderColor);
+    return res;
+}

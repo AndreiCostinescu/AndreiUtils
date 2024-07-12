@@ -168,6 +168,12 @@ void testMatrixRelease() {
     cout << x.empty() << endl;
 }
 
+void testAddColorBorder() {
+    cv::Mat img(100, 100, CV_8UC3, cv::Scalar(255, 0, 0));
+    cv::imshow("Output", addColorBorderAroundImage(img, cv::Scalar(0, 0, 255), 10));
+    cv::waitKey(0);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -176,7 +182,8 @@ int main() {
     // testOpenCVMatrixAccessors();
     // testPrintingImagesOpenCV();
     // testOpenCVMatrixCropReference();
-    testMatrixRelease();
+    // testMatrixRelease();
+    testAddColorBorder();
 
     return 0;
 }
