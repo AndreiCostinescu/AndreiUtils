@@ -16,10 +16,15 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
+        explicit Pointer(T const &datum) : ptr(nullptr), smart(std::make_shared<T>(datum)), isRegular(false) {}
+
+        explicit Pointer(T &&datum) : ptr(nullptr), smart(std::make_shared<T>(std::forward<T>(datum))),
+                                      isRegular(false) {}
+
         // no marking as explicit because we want the conversion from pointer to Pointer
         Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(google-explicit-constructor)
 
-        // no marking as explicit because we want the conversion from shared_pointer to Pointer
+        // no marking as explicit because we want the conversion from SmartPtrType to Pointer
         Pointer(SmartPtrType datum) :  // NOLINT(google-explicit-constructor)
                 ptr(nullptr), smart(std::move(datum)), isRegular(false) {}
 
@@ -28,6 +33,27 @@ namespace AndreiUtils {
         Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
             other.ptr = nullptr;
             other.isRegular = false;
+        }
+
+        Pointer &operator=(T const &other) {
+            this->isRegular = false;
+            this->ptr = nullptr;
+            this->smart = std::make_shared<T>(other);
+            return *this;
+        }
+
+        Pointer &operator=(T &&other) {
+            this->isRegular = false;
+            this->ptr = nullptr;
+            this->smart = std::make_shared<T>(std::forward<T>(other));
+            return *this;
+        }
+
+        Pointer &operator=(T *other) {
+            this->isRegular = true;
+            this->ptr = other;
+            this->smart = nullptr;
+            return *this;
         }
 
         Pointer &operator=(Pointer const &other) {
