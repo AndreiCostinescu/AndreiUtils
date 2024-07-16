@@ -356,6 +356,18 @@ std::string AndreiUtils::stringify<OnlyMovableData>::to_string(OnlyMovableData c
     return "OnlyMovableData(" + std::to_string(datum.i) + ", " + datum.s + ")";
 }
 
+void testMapEmplaceKeyPointer() {
+    std::string keyVal = "2";
+    map<string, string> x = {{"1", "1"}, {"0", "2"}};
+    mapEmplace(x, &keyVal, "24");
+    printMap(x);
+    try {
+        mapEmplace(x, &keyVal, "42");
+    } catch (std::runtime_error &e) {
+        cout << "Caught emplace runtime error: " << e.what() << endl;
+    }
+}
+
 void testMapEmplaceForwardKey() {
     map<int, string> x = {{1, "1"},
                           {0, "2"}};
@@ -403,6 +415,7 @@ int main() {
     // testMapEmplaceMoveCopy2();
     // testSingleElementFunctions();
     // testMapAddIfNotContains();
+    testMapEmplaceKeyPointer();
     testMapEmplaceForwardKey();
 
     return 0;
