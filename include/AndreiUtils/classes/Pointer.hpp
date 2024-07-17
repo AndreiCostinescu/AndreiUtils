@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <AndreiUtils/traits/InstanceOf.hpp>
 #include <memory>
 
 namespace AndreiUtils {
@@ -122,6 +123,17 @@ namespace AndreiUtils {
             return std::reinterpret_pointer_cast<CastT>(this->smart);
         }
 
+        template<typename TypeCheck>
+        [[nodiscard]] bool isInstanceOf() const {
+            if (this->isRegular) {
+                return InstanceOf<TypeCheck, T *,
+                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->ptr);
+            } else {
+                return InstanceOf<TypeCheck, T *,
+                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->smart.get());
+            }
+        }
+
     protected:
         bool isRegular;
         T *ptr;
@@ -170,5 +182,10 @@ namespace AndreiUtils {
     template<typename CastT, typename T, typename SmartPtrT>
     Pointer<CastT, SmartPtrT> reinterpret_pointer_cast(Pointer<T, SmartPtrT> const &p) noexcept {
         return p.template reinterpretCast<CastT>();
+    }
+
+    template<typename TypeCheck, typename InstanceType, typename SmartPtrT>
+    bool pointerInstanceOf(Pointer<InstanceType, SmartPtrT> const &val) {
+        return val.template isInstanceOf<TypeCheck>();
     }
 }

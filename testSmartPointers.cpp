@@ -179,6 +179,19 @@ void testMyPointers() {
     // w.reinterpretCast<float>();  // throws compile-time error because a unique_ptr does not have cast methods...
 }
 
+void testMyPointersInstanceOf() {
+    A a("123");
+    B b;
+    AndreiUtils::Pointer<B> x(&b);
+    AndreiUtils::Pointer<A> y(&a);
+
+    cout << boolalpha;
+    cout << AndreiUtils::pointerInstanceOf<A>(x) << endl;
+    cout << AndreiUtils::pointerInstanceOf<A>(y) << endl;
+    cout << AndreiUtils::pointerInstanceOf<B>(x) << endl;
+    cout << AndreiUtils::pointerInstanceOf<B>(y) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -190,7 +203,8 @@ int main() {
     // testVoidSharedPtr();
     // testCopyPointer();
     // testInstanceOf();
-    testMyPointers();
+    // testMyPointers();
+    testMyPointersInstanceOf();
 
     return 0;
 }
