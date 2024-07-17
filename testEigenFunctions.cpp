@@ -79,15 +79,19 @@ void testAnyOrientationFromAxis() {
     cout << getAnyOrientationQuaternionFromOneAxis(axis, "z") << endl;
 }
 
+
+
+
+
 int main() {
     cout << "Hello World!" << endl;
 
     // testJointTrajectoryClass();
     // testEigenSlidingWindow();
-    // testEigenMatrixAddSub();
+     testEigenMatrixAddSub();
     // testSurfaceTriangle();
     // testInterpolation();
-    testAnyOrientationFromAxis();
+    //testAnyOrientationFromAxis();
 
     return 0;
 }

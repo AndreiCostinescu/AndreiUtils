@@ -5,6 +5,7 @@
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -87,10 +88,36 @@ void testInheritance() {
     cout << human2->defaultData.dump(4) << endl;
 }
 
-int main() {
+
+TEST(InheritanceTest, HumanConstruction) {
+
+    nlohmann::json j;
+    j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand",  "Left"},
+                                                                 {"RightHand", "Right"}};
+
+
+    auto human = std::make_shared<Human>("Human", j);
+
+
+    ASSERT_EQ(human->defaultData["data"]["properties"]["LeftHand"], "Left");
+    ASSERT_EQ(human->defaultData["data"]["properties"]["RightHand"], "Right");
+
+
+    auto human2 = std::make_shared<Human>("Human", "Andrei", j);
+
+
+    ASSERT_EQ(human2->defaultData["data"]["properties"]["LeftHand"], "Left");
+    ASSERT_EQ(human2->defaultData["data"]["properties"]["RightHand"], "Right");
+}
+
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+
     cout << "Hello World!" << endl;
 
     testInheritance();
 
-    return 0;
+    return RUN_ALL_TESTS();
+
 }

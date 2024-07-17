@@ -655,7 +655,7 @@ int main() {
     // testAnyType();
     // testIntervals();
     // testUserInteraction();
-    testStoringFunctionsOfDifferentType();
+    // testStoringFunctionsOfDifferentType();
 
     return 0;
 }
