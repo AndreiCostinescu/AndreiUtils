@@ -326,8 +326,6 @@ TEST(Dynamic2DArrayTest, ObjectLifecycle) {
 }
 
 
-
-
 int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 

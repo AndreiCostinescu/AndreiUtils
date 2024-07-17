@@ -436,7 +436,7 @@ set(ANDREI_UTILS_REQUIRED_LIBS ${TARGET_LIBRARY} ${ANDREI_UTILS_REQUIRED_LIBS})
 message(${ANDREI_UTILS_REQUIRED_LIBS})
 set(EXECUTABLE TestAndreiUtils)
 add_executable(${EXECUTABLE} main.cpp
-        test_all.cpp)
+)
 target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
 if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
@@ -606,12 +606,6 @@ if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
 endif ()
 
-set(EXECUTABLE TestAll)
-add_executable(${EXECUTABLE} test_all.cpp)
-target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
-if (${USE_OPENMP})
-    target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
-endif ()
 
 enable_testing()
 
@@ -630,7 +624,6 @@ target_link_libraries(${ANDREI_UTILS_REQUIRED_LIBS} gtest_main)
 
 gtest_discover_tests(TestSlidingWindow)
 gtest_discover_tests(TestVirtualInheritance)
-gtest_discover_tests(TestAll)
 
 include(cmake/installConfig.cmake)
 
