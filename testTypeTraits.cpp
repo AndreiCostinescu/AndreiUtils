@@ -187,7 +187,6 @@ void testIsDetected() {
     cout << endl;
 }
 
-
 TEST(TypeTraitsTest, Pointers) {
 
     B_ b;
@@ -195,7 +194,6 @@ TEST(TypeTraitsTest, Pointers) {
     EXPECT_EQ(tmpStruct<B_>::tmpF(b), "B");
     EXPECT_EQ(tmpStruct<A_*>::tmpF(a), "");
 }
-
 
 TEST(TypeTraitsTest, IntegralAndUnsignedTypes) {
 
@@ -216,7 +214,6 @@ TEST(TypeTraitsTest, IntegralAndUnsignedTypes) {
     EXPECT_TRUE(std::is_unsigned<uint64_t>::value);
 }
 
-
 TEST(TypeTraitsTest, IsNumericType) {
 
     EXPECT_TRUE(std::is_integral_v<bool>);
@@ -231,7 +228,6 @@ TEST(TypeTraitsTest, IsNumericType) {
     EXPECT_TRUE(AndreiUtils::is_numeric_v<int>);
     EXPECT_TRUE(AndreiUtils::is_numeric_v<double>);
 }
-
 
 TEST(TypeTraitsTest, InstanceOfCheck) {
     B_ b;
@@ -276,7 +272,6 @@ TEST(TypeTraitsTest, TestFunctionDetection) {
     EXPECT_FALSE((AndreiUtils::is_detected<has_f9, MyTest>::value));
     EXPECT_FALSE((AndreiUtils::is_detected<has_f10, MyTest>::value));
 }
-
 
 int main(int argc, char **argv) {
     cout << "Hello World!" << endl;

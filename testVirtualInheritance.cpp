@@ -89,16 +89,16 @@ void testInheritance() {
 }
 
 
-TEST(InheritanceTest, HumanConstruction) {
+TEST(VirtualInheritanceTest, TestInheritance) {
 
-    nlohmann::json j;
+    json j;
     j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand",  "Left"},
                                                                  {"RightHand", "Right"}};
 
 
     auto human = std::make_shared<Human>("Human", j);
 
-
+    cout << human->defaultData.dump(4) << endl;
     ASSERT_EQ(human->defaultData["data"]["properties"]["LeftHand"], "Left");
     ASSERT_EQ(human->defaultData["data"]["properties"]["RightHand"], "Right");
 

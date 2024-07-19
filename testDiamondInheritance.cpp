@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace std;
 
@@ -66,11 +67,37 @@ public:
     }
 };
 
-int main() {
-    cout << "Hello World!" << endl;
+TEST(ClassTest, TestConstructorAndPrintData) {
+    std::stringstream outputBuffer;
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf(outputBuffer.rdbuf());
 
     D d(10);
     d.printData(true);
 
-    return 0;
+    std::cout.rdbuf(oldCoutBuffer);
+
+    std::string output = outputBuffer.str();
+
+    std::string expected_output =
+        "In constructor of A0\n"
+        "In constructor of A\n"
+        "In constructor of B: 10\n"
+        "In constructor of C: 10\n"
+        "In constructor of D\n"
+        "Data of A0: 10\n"
+        "Data of A: 10\n"
+        "Data of B: 10\n"
+        "Data of C: 10\n"
+        "Data of D: 10\n";
+
+    EXPECT_EQ(output, expected_output);
+}
+
+int main(int argc, char **argv) {
+    cout << "Hello World!" << endl;
+
+    D d(10);
+    d.printData(true);
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

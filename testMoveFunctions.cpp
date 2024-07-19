@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -63,6 +64,8 @@ public:
         }
     }
 
+    T* getData() const { return data; }
+    bool owns() const { return ownsData; }
     T *data;
     bool ownsData;
 };
@@ -187,11 +190,97 @@ void testMixedDataContainerWithNonPointerAdd() {
     x.addData("e", F(3), true);
 }
 
-int main() {
+TEST(MoveTest, TestMoveSemantics) {
+
+    E<int> a(42);
+
+    EXPECT_EQ(a.getData() ? *a.getData() : -1, 42);
+    EXPECT_TRUE(a.owns());
+
+    E<int> b = std::move(a);
+    EXPECT_EQ(a.getData(), nullptr);
+    EXPECT_FALSE(a.owns());
+    EXPECT_EQ(b.getData() ? *b.getData() : -1, 42);
+    EXPECT_TRUE(b.owns());
+
+
+    E<int> c(std::move(b));
+    EXPECT_EQ(b.getData(), nullptr);
+    EXPECT_FALSE(b.owns());
+    EXPECT_EQ(c.getData() ? *c.getData() : -1, 42);
+    EXPECT_TRUE(c.owns());
+
+
+    E<int> d = c;
+    EXPECT_EQ(c.getData() ? *c.getData() : -1, 42);
+    EXPECT_TRUE(c.owns());
+    EXPECT_EQ(d.getData() ? *d.getData() : -1, 42);
+    EXPECT_FALSE(d.owns());
+
+
+    E<int> e(c);
+    EXPECT_EQ(c.getData() ? *c.getData() : -1, 42);
+    EXPECT_TRUE(c.owns());
+    EXPECT_EQ(e.getData() ? *e.getData() : -1, 42);
+    EXPECT_FALSE(e.owns());
+
+
+    E<int> f(d);
+    EXPECT_EQ(d.getData() ? *d.getData() : -1, 42);
+    EXPECT_FALSE(d.owns());
+    EXPECT_EQ(f.getData() ? *f.getData() : -1, 42);
+    EXPECT_FALSE(f.owns());
+
+    E<int> temp(69);
+    EXPECT_EQ(temp.getData() ? *temp.getData() : -1, 69);
+    EXPECT_TRUE(temp.owns());
+}
+
+TEST(MoveTest, TestMixedDataContainerWithNonPointerAdd) {
+    MixedDataContainer x;
+    F a(42);
+    F &b = a;
+    F const &f = a;
+    std::remove_reference<F &>::type *c = &a;
+    x.addData("a", a, true);
+
+    EXPECT_EQ(a.a, 42);
+    EXPECT_EQ(b.a, 42);
+    EXPECT_EQ(c->a, 42);
+    EXPECT_EQ(f.a, 42);
+
+    x.addData("b", b, true);
+
+    EXPECT_EQ(a.a, 42);
+    EXPECT_EQ(b.a, 42);
+    EXPECT_EQ(c->a, 42);
+    EXPECT_EQ(f.a, 42);
+
+    x.addData("c", c, true);
+    EXPECT_EQ(a.a, 42);
+    EXPECT_EQ(b.a, 42);
+    EXPECT_EQ(c->a, 42);
+    EXPECT_EQ(f.a, 42);
+
+    x.addData("f", f, true);
+    EXPECT_EQ(a.a, 42);
+    EXPECT_EQ(b.a, 42);
+    EXPECT_EQ(c->a, 42);
+    EXPECT_EQ(f.a, 42);
+
+    x.addData("d", std::move(a), true);
+    EXPECT_EQ(a.a, 0);
+    EXPECT_EQ(b.a, 0);
+    EXPECT_EQ(c->a, 0);
+    EXPECT_EQ(f.a, 0);
+    x.addData("e", F(3), true);
+}
+int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
     // testMoveSemantics();
-    testMixedDataContainerWithNonPointerAdd();
+    // testMixedDataContainerWithNonPointerAdd();
 
-    return 0;
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

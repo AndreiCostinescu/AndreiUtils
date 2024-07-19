@@ -75,7 +75,6 @@ TEST(SlidingWindowSerializationTest, BasicSerialization) {
 
 }
 
-
 TEST(SlidingWindowSerializationTest, WithInvalidValuesSerialization) {
     SlidingWindowWithInvalidValues<int> w(5);
     w.addData(1);
@@ -93,7 +92,6 @@ TEST(SlidingWindowSerializationTest, WithInvalidValuesSerialization) {
     std::cout << j.dump(4) << std::endl;
 
 }
-
 
 int main(int argc, char **argv) {
         cout << "Hello World!" << endl;

@@ -152,7 +152,7 @@ void testCreationOfDynamicSizeArray() {
 }
 
 
-TEST(SortMultipleVectorsTest, SortBasedOnPermutation) {
+TEST(VectorTest, SortBasedOnPermutation) {
     std::vector<double> x(10);
     std::iota(x.begin(), x.end(), 10.0);
 
@@ -185,8 +185,7 @@ TEST(SortMultipleVectorsTest, SortBasedOnPermutation) {
 
 }
 
-
-TEST(VectorAppendTest, AppendFunctions) {
+TEST(VectorTest, AppendFunctions) {
 
     Eigen::Vector3d x(1, 2, 3);
     std::vector<double> y{1, 2, 3, 4, 5, 6, 7};
@@ -215,8 +214,7 @@ TEST(VectorAppendTest, AppendFunctions) {
     ASSERT_EQ(res2, expectedRes5);
 }
 
-
-TEST(VectorEqualsTest, EqualityCheck) {
+TEST(VectorTest, EqualityCheck) {
 
     Eigen::Vector3d x(1, 2, 3);
     std::vector<double> y{1, 2, 3, 4, 5, 6, 7};
@@ -232,8 +230,7 @@ TEST(VectorEqualsTest, EqualityCheck) {
     ASSERT_FALSE(vectorEquals(y, res));
 }
 
-
-TEST(SpliceVectorTest, SpliceFunctionality) {
+TEST(VectorTest, SpliceFunctionality) {
 
     int n = 10;
     std::vector<double> x(n);
@@ -263,7 +260,7 @@ TEST(SpliceVectorTest, SpliceFunctionality) {
     ASSERT_EQ(result5, expected5);
 }
 
-TEST(RemoveDuplicatesTest, RemovingDuplicates) {
+TEST(VectorTest, RemovingDuplicates) {
     vector<int> x{10, 10, 10, 10, 1, 12, 13, 14, 1, 1, 1};
     set<int> s(x.begin(), x.end());
     vector<int> v(s.begin(), s.end());
@@ -274,8 +271,7 @@ TEST(RemoveDuplicatesTest, RemovingDuplicates) {
 
 }
 
-
-TEST(VectorFromArrayTest, EigenMatrixConversion) {
+TEST(VectorTest, EigenMatrixConversion) {
 
     Eigen::Matrix<double, 2, 3> bb;
     bb << -0.113, -0.113, -0.003,
@@ -288,8 +284,7 @@ TEST(VectorFromArrayTest, EigenMatrixConversion) {
     ASSERT_EQ(resultVector, expectedVector);
 }
 
-
-TEST(VectorResizeAndReserveTest, BasicOperations) {
+TEST(VectorTest, BasicOperations) {
 
     std::vector<int> v(10);
     for (int i = 0; i < 10; ++i) {
@@ -316,7 +311,7 @@ TEST(VectorResizeAndReserveTest, BasicOperations) {
     }
 }
 
-TEST(Dynamic2DArrayTest, ObjectLifecycle) {
+TEST(VectorTest, ObjectLifecycle) {
 
     A **m = new2dArray<A>(3, 5);
 
@@ -324,7 +319,6 @@ TEST(Dynamic2DArrayTest, ObjectLifecycle) {
 
     ASSERT_EQ(A::count, 0);
 }
-
 
 int main(int argc, char **argv) {
     cout << "Hello World!" << endl;

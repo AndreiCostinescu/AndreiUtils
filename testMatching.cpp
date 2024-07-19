@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/utilsMatching.h>
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -49,12 +50,61 @@ void testMatching3() {
     cout << maximalMatchingUnweightedUndirected(adjacency, nrU, nrV, true) << endl;
 }
 
-int main() {
+TEST(MatchingTests, TestMatching1) {
+    std::vector<std::vector<int>> adjacency(4);
+    adjacency[0].emplace_back(1);
+    adjacency[0].emplace_back(2);
+    adjacency[1].emplace_back(0);
+    adjacency[2].emplace_back(1);
+    adjacency[3].emplace_back(1);
+    adjacency[3].emplace_back(3);
+
+    int result = AndreiUtils::maximalMatchingUnweightedUndirected(adjacency, 4, 4, false);
+    EXPECT_EQ(result, 4);
+
+}
+
+TEST(MatchingTests, TestMatching2) {
+    int nrU = 4, nrV = 5;
+    std::vector<std::vector<int>> adjacency(nrU);
+    adjacency[0].emplace_back(0);
+    adjacency[0].emplace_back(1);
+    adjacency[0].emplace_back(2);
+    adjacency[0].emplace_back(3);
+    adjacency[0].emplace_back(4);
+    adjacency[1].emplace_back(3);
+    adjacency[2].emplace_back(1);
+    adjacency[3].emplace_back(2);
+    adjacency[3].emplace_back(4);
+
+
+    int result = AndreiUtils::maximalMatchingUnweightedUndirected(adjacency, 4, 4, false);
+    EXPECT_EQ(result, 4);
+}
+TEST(MatchingTests, TestMatching3) {
+    int nrU = 4, nrV = 5;
+    std::vector<std::vector<int>> adjacency(nrU);
+    adjacency[0].emplace_back(0);
+    adjacency[0].emplace_back(1);
+    adjacency[0].emplace_back(2);
+    adjacency[1].emplace_back(3);
+    adjacency[1].emplace_back(4);
+    adjacency[2].emplace_back(3);
+    adjacency[2].emplace_back(4);
+    adjacency[3].emplace_back(3);
+    adjacency[3].emplace_back(4);
+
+
+    int result = AndreiUtils::maximalMatchingUnweightedUndirected(adjacency, 4, 4, false);
+    EXPECT_EQ(result, 3);
+}
+
+int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
-    testMatching1();
-    testMatching2();
-    testMatching3();
-
-    return 0;
+    // testMatching1();
+    // testMatching2();
+    // testMatching3();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

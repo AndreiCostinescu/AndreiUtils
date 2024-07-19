@@ -6,6 +6,7 @@
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsTime.h>
 #include <AndreiUtils/utilsVector.hpp>
+#include <gtest/gtest.h>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -168,11 +169,77 @@ void testSerializeDeserializeTimestamp() {
     #endif
 }
 
-int main() {
+TEST(TimeTesting, AccessTimeInMapVsVector) {
+    int64_t N = static_cast<int64_t>(1e7);
+    vector<int64_t> v(N);
+    map<int64_t, bool> m;
+    Timer t;
+    double vector_time = 0.0;
+    double map_time = 0.0;
+
+    for (int64_t i = 0; i < N; i++) {
+        v[i] = i;
+        m[i] = true;
+    }
+
+    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
+                                    static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
+                                    static_cast<int64_t>(1e6), static_cast<int64_t>(1e7)};
+    bool res;
+
+    for (const auto& q : queries) {
+
+        t.start();
+        res = vectorContains(v, q);
+        vector_time += t.measure();
+        if (q < N) {
+            ASSERT_TRUE(res) << "Expected " << q << " to be found in vector";
+        }
+        t.start();
+        res = mapContains(m, q);
+        map_time += t.measure();
+        if (q < N) {
+            ASSERT_TRUE(res) << "Expected " << q << " to be found in map";
+        }
+    }
+
+    vector_time /= queries.size();
+    map_time /= queries.size();
+
+    std::cout << "Average vector access time: " << vector_time << " seconds" << std::endl;
+    std::cout << "Average map access time: " << map_time << " seconds" << std::endl;
+
+    ASSERT_LT(map_time, vector_time) << "Expected map access to be faster than vector access";
+}
+
+TEST(TimeTesting, SerializeDeserialize) {
+#if __cplusplus >= 202002L
+    auto t = now();
+    auto s = convertChronoToStringWithSubseconds(t);
+    auto t1 = convertStringToChronoWithSubseconds(s);
+    auto s1 = convertChronoToStringWithSubseconds(t1);
+    EXPECT_EQ(s, s1);
+    auto t2 = convertStringToChronoWithSubseconds(s1);
+    auto s2 = convertChronoToStringWithSubseconds(t2);
+    EXPECT_EQ(s1, s2);
+
+#elif __cplusplus >= 201703L
+    auto t = now();
+    auto s = convertChronoToStringWithSubseconds(t);
+    for (int i = 0; i < 5; ++i) {
+        t = convertStringToChronoWithSubseconds(s);
+        s = convertChronoToStringWithSubseconds(t);
+    }
+    EXPECT_EQ(s, convertChronoToStringWithSubseconds(convertStringToChronoWithSubseconds(s)));
+#endif
+}
+
+int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
     // testAccessTimeInMapVsVector();
     // testSerializeDeserializeTimestamp();
 
-    return 0;
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
