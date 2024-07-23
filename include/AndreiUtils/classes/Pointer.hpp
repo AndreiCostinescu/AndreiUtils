@@ -92,7 +92,7 @@ namespace AndreiUtils {
         }
 
         template<typename CastT>
-        inline Pointer<CastT> constCast() noexcept {
+        inline Pointer<CastT> constCast() const noexcept {
             if (this->isRegular) {
                 return const_cast<CastT *>(this->ptr);
             }
@@ -100,7 +100,7 @@ namespace AndreiUtils {
         }
 
         template<typename CastT>
-        inline Pointer<CastT> dynamicCast() noexcept {
+        inline Pointer<CastT> dynamicCast() const noexcept {
             if (this->isRegular) {
                 return dynamic_cast<CastT *>(this->ptr);
             }
@@ -108,7 +108,7 @@ namespace AndreiUtils {
         }
 
         template<typename CastT>
-        inline Pointer<CastT> staticCast() noexcept {
+        inline Pointer<CastT> staticCast() const noexcept {
             if (this->isRegular) {
                 return static_cast<CastT *>(this->ptr);
             }
@@ -116,7 +116,7 @@ namespace AndreiUtils {
         }
 
         template<typename CastT>
-        inline Pointer<CastT> reinterpretCast() noexcept {
+        inline Pointer<CastT> reinterpretCast() const noexcept {
             if (this->isRegular) {
                 return reinterpret_cast<CastT *>(this->ptr);
             }
