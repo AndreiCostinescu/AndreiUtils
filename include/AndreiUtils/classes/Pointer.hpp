@@ -17,6 +17,13 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
+        template<typename SubT>
+        explicit Pointer(SubT datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
+            this->operator=(std::move(datum));
+        }
+
+        explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
+
         explicit Pointer(T const &datum) : ptr(nullptr), smart(std::make_shared<T>(datum)), isRegular(false) {}
 
         explicit Pointer(T &&datum) : ptr(nullptr), smart(std::make_shared<T>(std::forward<T>(datum))),
@@ -34,6 +41,22 @@ namespace AndreiUtils {
         Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
             other.ptr = nullptr;
             other.isRegular = false;
+        }
+
+        template<typename SubT>
+        typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
+        operator=(SubT other) {
+            this->isRegular = false;
+            this->ptr = nullptr;
+            this->smart = std::make_shared<SubT>(std::move(other));
+            return *this;
+        }
+
+        Pointer &operator=(T &other) {
+            this->isRegular = true;
+            this->ptr = &other;
+            this->smart = nullptr;
+            return *this;
         }
 
         Pointer &operator=(T const &other) {
