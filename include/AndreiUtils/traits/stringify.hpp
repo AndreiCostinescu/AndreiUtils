@@ -15,8 +15,6 @@
 namespace AndreiUtils {
     template<typename T>
     struct stringify {
-        using Type = T;
-
         static std::string to_string(T const &datum) {
             std::stringstream ss;
             ss << datum;
