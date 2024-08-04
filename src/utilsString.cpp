@@ -190,6 +190,23 @@ bool AndreiUtils::endsWithInteger(std::string const &str, int &integer, std::str
     return true;
 }
 
+bool AndreiUtils::endsWithInteger(std::string const &str, long &longValue, std::string &restOfString) {
+    if (str.back() < '0' || str.back() > '9') {
+        return false;
+    }
+    longValue = 0;
+    int multiplier = 1;
+    for (int index = int(str.size()); index-- > 0; multiplier *= 10) {
+        char const &c = str[index];
+        if (c < '0' || c > '9') {
+            restOfString = str.substr(0, index + 1);
+            break;
+        }
+        longValue += multiplier * (c - '0');
+    }
+    return true;
+}
+
 string AndreiUtils::trim(string const &str, string const &whitespace) {
     auto const strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {

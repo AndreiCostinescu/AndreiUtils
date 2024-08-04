@@ -49,6 +49,8 @@ namespace AndreiUtils {
 
     bool endsWithInteger(std::string const &str, int &integer, std::string &restOfString);
 
+    bool endsWithInteger(std::string const &str, long &longVal, std::string &restOfString);
+
     std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
     std::string strip(std::string const &str, std::string const &whitespace = " \t");
