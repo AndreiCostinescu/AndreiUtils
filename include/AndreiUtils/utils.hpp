@@ -70,7 +70,7 @@ namespace AndreiUtils {
         if constexpr (std::is_integral<T>::value) {
             return a <= b;
         } else {
-            return (b - a) > -tol;
+            return (b - a) >= -tol;
         }
     }
 
@@ -88,7 +88,7 @@ namespace AndreiUtils {
         if constexpr (std::is_integral<T>::value) {
             return a >= b;
         } else {
-            return (a - b) > -tol;
+            return (a - b) >= -tol;
         }
     }
 
@@ -102,7 +102,7 @@ namespace AndreiUtils {
         if constexpr (std::is_integral<T>::value) {
             return a == b;
         } else {
-            return (fastAbs(a - b) < tol);
+            return (fastAbs(a - b) <= tol);
         }
     }
 
