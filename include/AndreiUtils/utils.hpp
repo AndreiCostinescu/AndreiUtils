@@ -58,7 +58,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool less(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a < b;
         } else {
             return (b - a) > tol;
@@ -67,7 +67,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool lessEqual(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a <= b;
         } else {
             return (b - a) > -tol;
@@ -76,7 +76,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool greater(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a > b;
         } else {
             return (a - b) > tol;
@@ -85,7 +85,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool greaterEqual(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a >= b;
         } else {
             return (a - b) > -tol;
@@ -99,7 +99,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool equal(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a == b;
         } else {
             return (fastAbs(a - b) < tol);
