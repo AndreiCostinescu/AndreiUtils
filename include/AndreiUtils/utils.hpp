@@ -94,7 +94,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline T fastAbs(T const &x) {
-        return (less<T>(x, 0) ? -x : x);
+        return (AndreiUtils::less<T>(x, 0) ? -x : x);
     }
 
     template<typename T>
@@ -108,7 +108,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline T fastMin(T const &a, T const &b) {
-        return (less<T>(a, b) ? a : b);
+        return (AndreiUtils::less<T>(a, b) ? a : b);
     }
 
     template<typename T>
@@ -120,7 +120,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline T fastMax(T const &a, T const &b) {
-        return (greater<T>(a, b) ? a : b);
+        return (AndreiUtils::greater<T>(a, b) ? a : b);
     }
 
     template<typename T>
