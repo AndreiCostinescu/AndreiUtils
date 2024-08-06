@@ -58,7 +58,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool less(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a < b;
         } else {
             return (b - a) > tol;
@@ -67,16 +67,16 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool lessEqual(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a <= b;
         } else {
-            return (b - a) > -tol;
+            return (b - a) >= -tol;
         }
     }
 
     template<typename T>
     inline bool greater(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a > b;
         } else {
             return (a - b) > tol;
@@ -85,30 +85,30 @@ namespace AndreiUtils {
 
     template<typename T>
     inline bool greaterEqual(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a >= b;
         } else {
-            return (a - b) > -tol;
+            return (a - b) >= -tol;
         }
     }
 
     template<typename T>
     inline T fastAbs(T const &x) {
-        return (less<T>(x, 0) ? -x : x);
+        return (AndreiUtils::less<T>(x, 0) ? -x : x);
     }
 
     template<typename T>
     inline bool equal(T const &a, T const &b, double tol = 1e-9) {
-        if (std::is_integral<T>::value) {
+        if constexpr (std::is_integral<T>::value) {
             return a == b;
         } else {
-            return (fastAbs(a - b) < tol);
+            return (fastAbs(a - b) <= tol);
         }
     }
 
     template<typename T>
     inline T fastMin(T const &a, T const &b) {
-        return (less<T>(a, b) ? a : b);
+        return (AndreiUtils::less<T>(a, b) ? a : b);
     }
 
     template<typename T>
@@ -120,7 +120,7 @@ namespace AndreiUtils {
 
     template<typename T>
     inline T fastMax(T const &a, T const &b) {
-        return (greater<T>(a, b) ? a : b);
+        return (AndreiUtils::greater<T>(a, b) ? a : b);
     }
 
     template<typename T>
