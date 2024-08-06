@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/classes/Pointer.hpp>
 #include <AndreiUtils/utils.hpp>
+#include <cassert>
 #include <iostream>
 #include <memory>
 
@@ -187,6 +188,95 @@ void testMyPointersInstanceOf() {
     cout << AndreiUtils::pointerInstanceOf<B>(y) << endl;
 }
 
+void testMyPointersCast() {
+    B b;
+    AndreiUtils::Pointer<B> x(&b);
+    AndreiUtils::Pointer<B> y(b);
+    auto xCast = x.dynamicCast<A>();
+    auto yCast = y.dynamicCast<A>();
+    assert(xCast != nullptr);
+    assert(yCast != nullptr);
+}
+
+class Test {
+public:
+    explicit Test(std::string s) : name(std::move(s)) { cout << "Constructor for " << this->name << "!" << endl; }
+
+    Test(Test const &other) : name(other.name) { cout << "Copy Constructor for " << this->name << "!" << endl; }
+
+    Test(Test &&other) noexcept: name(std::move(other.name)) {
+        cout << "Move Constructor for " << this->name << "!" << endl;
+    }
+
+    Test &operator=(Test const &other) {
+        if (this != &other) {
+            this->name = other.name;
+            cout << "Copy Assignment for " << this->name << "!" << endl;
+        }
+        return *this;
+    }
+
+    Test &operator=(Test &&other) noexcept {
+        if (this != &other) {
+            this->name = std::move(other.name);
+            cout << "Move Assignment" << this->name << "!" << endl;
+        }
+        return *this;
+    }
+
+    ~Test() { cout << "Destructor of " << this->name << "!" << endl; }
+
+    std::string name;
+};
+
+void testConstPointers() {
+    int x = 4;
+    int const y = 4;
+    cout << "0)" << endl;
+    AndreiUtils::Pointer<int> intPtr1(x);
+    cout << "1)" << endl;
+    AndreiUtils::Pointer<int> intPtr2(y);
+    cout << "2)" << endl;
+    AndreiUtils::Pointer<int const> intPtr3(x);
+    cout << "3)" << endl;
+    AndreiUtils::Pointer<int const> intPtr4(y);
+    cout << "4)" << endl;
+
+    Test t1("t1");
+    Test const t2("t2");
+    cout << "0)" << endl;
+    AndreiUtils::Pointer<Test> ptr1(t1);
+    cout << "1)" << endl;
+    AndreiUtils::Pointer<Test> ptr2(t2);
+    cout << "2)" << endl;
+    AndreiUtils::Pointer<Test const> ptr3(t1);
+    cout << "3)" << endl;
+    AndreiUtils::Pointer<Test const> ptr4(t2);
+    cout << "4)" << endl;
+    AndreiUtils::Pointer<Test> ptr5(Test("test5"));
+    cout << "5)" << endl;
+    AndreiUtils::Pointer<Test const> ptr6(Test("test6"));
+    cout << "6)" << endl;
+    assert(ptr6->name == "test6");
+    cout << ptr6->name << endl;
+    ptr6 = ptr2;
+    cout << "7.1)" << endl;
+    assert(ptr2->name == "t2");
+    cout << "7.2)" << endl;
+    assert(ptr6->name == "t2");
+    cout << "7.3)" << endl;
+    AndreiUtils::Pointer<Test const> ptr7;
+    ptr7 = std::move(ptr2);
+    cout << "8.1)" << endl;
+    assert(ptr7->name == "t2");
+    cout << "8.2)" << endl;
+    assert(ptr2 == nullptr);
+    cout << "8.3)" << endl;
+    assert(ptr6 != nullptr);
+    assert(ptr6->name.empty());
+    cout << "8.4)" << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -199,7 +289,9 @@ int main() {
     // testCopyPointer();
     // testInstanceOf();
     // testMyPointers();
-    testMyPointersInstanceOf();
+    // testMyPointersInstanceOf();
+    // testMyPointersCast();
+    testConstPointers();
 
     return 0;
 }
