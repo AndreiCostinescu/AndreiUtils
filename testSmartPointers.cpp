@@ -162,10 +162,6 @@ void testMyPointers() {
     y->s = "Strawberry";
     cout << "\"" << z->s << "\"" << endl;
 
-    AndreiUtils::Pointer<int, std::unique_ptr<int>> w;
-    w = make_unique<int>(42);
-    cout << *w << endl;
-
     // Pointer<int, std::shared_ptr<Tmp>> q;  // throws compile-time error because int != Tmp
 
     // Pointer<float> fl = x;
@@ -173,7 +169,6 @@ void testMyPointers() {
     reinterpret_pointer_cast<float>(shX);
 
     cout << (shFl == nullptr) << endl;
-    cout << (w == nullptr) << endl;
     cout << (x == nullptr) << endl;
 
     // w.reinterpretCast<float>();  // throws compile-time error because a unique_ptr does not have cast methods...

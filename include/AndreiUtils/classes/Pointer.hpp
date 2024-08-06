@@ -8,12 +8,11 @@
 #include <memory>
 
 namespace AndreiUtils {
-    template<typename T, typename SmartPtrType = std::shared_ptr<T>>
+    template<typename T>
     class Pointer {
     public:
-        static_assert(std::is_same<typename SmartPtrType::element_type, T>());
-
-        using element_type = T;
+        using ElementType = T;
+        using SmartPtrType = std::shared_ptr<ElementType>;
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
@@ -163,52 +162,52 @@ namespace AndreiUtils {
         SmartPtrType smart;
     };
 
-    template<typename T1, typename T1Smart, typename T2, typename T2Smart>
+    template<typename T1, typename T2>
     inline bool
-    operator==(AndreiUtils::Pointer<T1, T1Smart> const &ptr1, AndreiUtils::Pointer<T2, T2Smart> const &ptr2) noexcept {
+    operator==(AndreiUtils::Pointer<T1> const &ptr1, AndreiUtils::Pointer<T2> const &ptr2) noexcept {
         return ptr1.get() == ptr2.get();
     }
 
-    template<typename T, typename TSmart>
-    inline bool operator==(AndreiUtils::Pointer<T, TSmart> const &ptr, std::nullptr_t) noexcept { return !ptr; }
+    template<typename T>
+    inline bool operator==(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept { return !ptr; }
 
-    template<typename T, typename TSmart>
-    inline bool operator==(std::nullptr_t, AndreiUtils::Pointer<T, TSmart> const &ptr) noexcept { return !ptr; }
+    template<typename T>
+    inline bool operator==(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept { return !ptr; }
 
-    template<typename T1, typename T1Smart, typename T2, typename T2Smart>
+    template<typename T1, typename T2>
     inline bool
-    operator!=(AndreiUtils::Pointer<T1, T1Smart> const &ptr1, AndreiUtils::Pointer<T2, T2Smart> const &ptr2) noexcept {
+    operator!=(AndreiUtils::Pointer<T1> const &ptr1, AndreiUtils::Pointer<T2> const &ptr2) noexcept {
         return ptr1.get() != ptr2.get();
     }
 
-    template<typename T, typename TSmart>
-    inline bool operator!=(AndreiUtils::Pointer<T, TSmart> const &ptr, std::nullptr_t) noexcept { return (bool) ptr; }
+    template<typename T>
+    inline bool operator!=(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept { return (bool) ptr; }
 
-    template<typename T, typename TSmart>
-    inline bool operator!=(std::nullptr_t, AndreiUtils::Pointer<T, TSmart> const &ptr) noexcept { return (bool) ptr; }
+    template<typename T>
+    inline bool operator!=(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept { return (bool) ptr; }
 
-    template<typename CastT, typename T, typename SmartPtrT>
-    Pointer<CastT, SmartPtrT> static_pointer_cast(Pointer<T, SmartPtrT> const &p) {
+    template<typename CastT, typename T>
+    Pointer<CastT> static_pointer_cast(Pointer<T> const &p) {
         return p.template staticCast<CastT>();
     }
 
-    template<typename CastT, typename T, typename SmartPtrT>
-    Pointer<CastT, SmartPtrT> const_pointer_cast(Pointer<T, SmartPtrT> const &p) {
+    template<typename CastT, typename T>
+    Pointer<CastT> const_pointer_cast(Pointer<T> const &p) {
         return p.template constCast<CastT>();
     }
 
-    template<typename CastT, typename T, typename SmartPtrT>
-    Pointer<CastT, SmartPtrT> dynamic_pointer_cast(Pointer<T, SmartPtrT> const &p) {
+    template<typename CastT, typename T>
+    Pointer<CastT> dynamic_pointer_cast(Pointer<T> const &p) {
         return p.template dynamicCast<CastT>();
     }
 
-    template<typename CastT, typename T, typename SmartPtrT>
-    Pointer<CastT, SmartPtrT> reinterpret_pointer_cast(Pointer<T, SmartPtrT> const &p) noexcept {
+    template<typename CastT, typename T>
+    Pointer<CastT> reinterpret_pointer_cast(Pointer<T> const &p) noexcept {
         return p.template reinterpretCast<CastT>();
     }
 
-    template<typename TypeCheck, typename InstanceType, typename SmartPtrT>
-    bool pointerInstanceOf(Pointer<InstanceType, SmartPtrT> const &val) {
+    template<typename TypeCheck, typename InstanceType>
+    bool pointerInstanceOf(Pointer<InstanceType> const &val) {
         return val.template isInstanceOf<TypeCheck>();
     }
 }
