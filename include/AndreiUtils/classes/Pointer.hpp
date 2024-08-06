@@ -23,8 +23,6 @@ namespace AndreiUtils {
 
         explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
 
-        explicit Pointer(T const &datum) : ptr(nullptr), smart(std::make_shared<T>(datum)), isRegular(false) {}
-
         explicit Pointer(T &&datum) : ptr(nullptr), smart(std::make_shared<T>(std::forward<T>(datum))),
                                       isRegular(false) {}
 
@@ -55,13 +53,6 @@ namespace AndreiUtils {
             this->isRegular = true;
             this->ptr = &other;
             this->smart = nullptr;
-            return *this;
-        }
-
-        Pointer &operator=(T const &other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::make_shared<T>(other);
             return *this;
         }
 
