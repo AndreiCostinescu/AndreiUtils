@@ -121,6 +121,7 @@ namespace AndreiUtils {
             }
             Pointer<CastT> res(std::make_shared<CastT>(std::move(*this->smart)));
             this->smart = nullptr;
+            this->isRegular = true;
             return res;
         }
 
@@ -186,10 +187,10 @@ namespace AndreiUtils {
                                       isRegular(false) {}
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(google-explicit-constructor)
+        Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(*-explicit-constructor)
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T const *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(google-explicit-constructor)
+        Pointer(T const *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(*-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
         Pointer(SmartPtrType datum) :  // NOLINT(google-explicit-constructor)
@@ -201,6 +202,12 @@ namespace AndreiUtils {
             other.ptr = nullptr;
             other.isRegular = false;
         }
+
+        Pointer(Pointer<T> const &other) :   // NOLINT(*-explicit-constructor)
+                Pointer(other.template constCast<T const>()) {}
+
+        Pointer(Pointer<T> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                Pointer(std::move(std::move(other).template constCastMove<T const>())) {}
 
         template<typename SubT>
         typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
@@ -232,7 +239,7 @@ namespace AndreiUtils {
             return *this;
         }
 
-        Pointer &operator=(nullptr_t) {
+        Pointer &operator=(std::nullptr_t) {
             this->isRegular = true;
             this->ptr = nullptr;
             this->smart = nullptr;

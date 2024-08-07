@@ -275,6 +275,9 @@ void testConstPointers() {
     assert(ptr6 != nullptr);
     assert(ptr6->name.empty());
     cout << "8.4)" << endl;
+    AndreiUtils::Pointer<Test const> ptr8(std::move(ptr7));
+    AndreiUtils::Pointer<Test const> ptr9(std::move(ptr1));
+    // AndreiUtils::Pointer<Test> ptr10(std::move(ptr8));  // fails with wrong const-type
 }
 
 int main() {
