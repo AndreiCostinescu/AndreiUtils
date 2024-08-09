@@ -18,6 +18,24 @@ public:
         cout << "In A's destructor for " << this->name << "!" << endl;
     }
 
+    A(A const &other) = default;
+
+    A(A &&other) noexcept: name(std::move(other.name)) {}
+
+    A &operator=(A const &other) {
+        if (this != &other) {
+            this->name = other.name;
+        }
+        return *this;
+    }
+
+    A &operator=(A &&other) noexcept {
+        if (this != &other) {
+            this->name = std::move(other.name);
+        }
+        return *this;
+    }
+
     string name;
 };
 
@@ -119,6 +137,24 @@ void testCopyPointer() {
 class B : public A {
 public:
     B() : A("B") {}
+
+    B(B const &other) = default;
+
+    B(B &&other) noexcept: A(std::move(other)) {}
+
+    B &operator=(B const &other) {
+        if (this != &other) {
+            this->A::operator=(other);
+        }
+        return *this;
+    }
+
+    B &operator=(B &&other) noexcept {
+        if (this != &other) {
+            this->A::operator=(std::move(other));
+        }
+        return *this;
+    }
 };
 
 void testInstanceOf() {
@@ -235,7 +271,8 @@ void testConstPointers() {
     cout << "0)" << endl;
     AndreiUtils::Pointer<int> intPtr1(x);
     cout << "1)" << endl;
-    AndreiUtils::Pointer<int> intPtr2(y);
+    // AndreiUtils::Pointer<int> intPtr2(y);  // fails because Pointer<T> does not accept a "T const" value!
+    AndreiUtils::Pointer<int> intPtr2((int) y);
     cout << "2)" << endl;
     AndreiUtils::Pointer<int const> intPtr3(x);
     cout << "3)" << endl;
@@ -247,7 +284,8 @@ void testConstPointers() {
     cout << "0)" << endl;
     AndreiUtils::Pointer<Test> ptr1(t1);
     cout << "1)" << endl;
-    AndreiUtils::Pointer<Test> ptr2(t2);
+    // AndreiUtils::Pointer<Test> ptr2(t2);  // fails because Pointer<T> does not accept a "T const" value!
+    AndreiUtils::Pointer<Test> ptr2((Test) t2);
     cout << "2)" << endl;
     AndreiUtils::Pointer<Test const> ptr3(t1);
     cout << "3)" << endl;
@@ -280,6 +318,19 @@ void testConstPointers() {
     // AndreiUtils::Pointer<Test> ptr10(std::move(ptr8));  // fails with wrong const-type
 }
 
+void testPointerCast() {
+    AndreiUtils::Pointer<A> aPtr;
+    B b;
+    AndreiUtils::Pointer<B> bPtr(&b);
+    aPtr = bPtr;
+    assert(aPtr->name == "B");
+
+    //*
+    AndreiUtils::Pointer<A> aPtr2(b);
+    assert(aPtr2->name == "B");
+    //*/
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -295,6 +346,7 @@ int main() {
     // testMyPointersInstanceOf();
     // testMyPointersCast();
     testConstPointers();
+    testPointerCast();
 
     return 0;
 }
