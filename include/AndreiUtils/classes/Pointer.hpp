@@ -20,6 +20,8 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
+        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
+
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
             this->operator=(std::move(datum));
@@ -202,6 +204,8 @@ namespace AndreiUtils {
         using SmartPtrType = std::shared_ptr<ElementType>;
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
+
+        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT const &datum) : ptr(nullptr), smart(nullptr), isRegular(true) {

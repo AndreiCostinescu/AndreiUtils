@@ -325,10 +325,10 @@ void testPointerCast() {
     aPtr = bPtr;
     assert(aPtr->name == "B");
 
-    //*
     AndreiUtils::Pointer<A> aPtr2(b);
     assert(aPtr2->name == "B");
-    //*/
+
+    AndreiUtils::Pointer<A> aPtr3 = std::move(bPtr);
 }
 
 int main() {
