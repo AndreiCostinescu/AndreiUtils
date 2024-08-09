@@ -41,6 +41,17 @@ namespace AndreiUtils {
         }
 
         template<typename SubT>
+        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
+                ptr(other.ptr), smart(other.smart), isRegular(other.isRegular) {}
+
+        template<typename SubT>
+        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
+            other.ptr = nullptr;
+            other.isRegular = true;
+        }
+
+        template<typename SubT>
         typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
         operator=(SubT other) {
             this->isRegular = false;
@@ -200,7 +211,7 @@ namespace AndreiUtils {
 
         Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
             other.ptr = nullptr;
-            other.isRegular = false;
+            other.isRegular = true;
         }
 
         Pointer(Pointer<T> const &other) :   // NOLINT(*-explicit-constructor)
@@ -208,6 +219,25 @@ namespace AndreiUtils {
 
         Pointer(Pointer<T> &&other) noexcept:  // NOLINT(*-explicit-constructor)
                 Pointer(std::move(std::move(other).template constCastMove<T const>())) {}
+
+        template<typename SubT>
+        Pointer(Pointer<SubT const> const &other) :   // NOLINT(*-explicit-constructor)
+                ptr(other.ptr), smart(other.smart), isRegular(other.isRegular) {}
+
+        template<typename SubT>
+        Pointer(Pointer<SubT const> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
+            other.ptr = nullptr;
+            other.isRegular = true;
+        }
+
+        template<typename SubT>
+        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
+                Pointer(other.template constCast<SubT const>()) {}
+
+        template<typename SubT>
+        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                Pointer(std::move(std::move(other).template constCastMove<SubT const>())) {}
 
         template<typename SubT>
         typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
