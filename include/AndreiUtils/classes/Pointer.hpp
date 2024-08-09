@@ -176,7 +176,7 @@ namespace AndreiUtils {
 
         template<typename SubT>
         explicit Pointer(SubT const &datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
-            this->operator=(std::move(datum));
+            this->operator=(datum);
         }
 
         explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
