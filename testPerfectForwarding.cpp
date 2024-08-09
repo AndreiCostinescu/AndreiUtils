@@ -81,10 +81,6 @@ AndreiUtils::Pointer<T> createPointer(T &t) {
     return AndreiUtils::Pointer<T>(std::forward<T &>(t));
 }
 
-AndreiUtils::Pointer<T> createPointer(T const &t) {
-    return AndreiUtils::Pointer<T>(std::forward<T const &>(t));
-}
-
 AndreiUtils::Pointer<T> createPointer(T &&t) {
     return AndreiUtils::Pointer<T>(std::forward<T &&>(t));
 }
@@ -105,7 +101,7 @@ void testPerfectForwarding() {
 
     createPointer(x)->s += "!";
     cout << x.s << endl;
-    createPointer(y)->s += "!";
+    createPointer((T) y)->s += "!";
     cout << y.s << endl;
 }
 
