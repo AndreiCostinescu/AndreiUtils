@@ -49,4 +49,29 @@ namespace AndreiUtils {
     };
 
     extern RandomNumberGenerator<double> double01Sampler;
+
+    class RandomNumberGeneratorNormal {
+    public:
+        RandomNumberGeneratorNormal(double mean, double standardDeviation);
+
+        RandomNumberGeneratorNormal(double mean, double standardDeviation, std::random_device::result_type seed);
+
+        virtual ~RandomNumberGeneratorNormal();
+
+        double sample();
+
+        void setSeed(std::random_device::result_type newSeed);
+
+        [[nodiscard]] std::random_device::result_type const &getSeed() const;
+
+    protected:
+        // Class member initialization order https://en.cppreference.com/w/cpp/language/constructor#Initialization_order
+        std::random_device rd;
+        std::random_device::result_type seed;
+        std::default_random_engine engine;
+        // if floating point type: range is [minValue, maxValue); if integral type: range is [minValue, maxValue]
+        std::normal_distribution<double> distribution;
+    };
+
+    extern RandomNumberGeneratorNormal normal01Sampler;
 }
