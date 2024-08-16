@@ -176,6 +176,8 @@ SET(UTILS_GEOMETRY src/utilsGeometry.cpp)
 
 SET(UTILS_IMAGES src/utilsImages.cpp)
 
+SET(UTILS_LIMITS src/utilsLimits.cpp)
+
 SET(UTILS_NETWORK src/NetworkIncludes.cpp src/NetworkData.cpp)
 
 # depends on utils.hpp
