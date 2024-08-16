@@ -2,8 +2,7 @@
 // Created by Andrei on 24.03.22.
 //
 
-#ifndef ANDREIUTILS_UTILSARRAY_HPP
-#define ANDREIUTILS_UTILSARRAY_HPP
+#pragma once
 
 #include <functional>
 #include <iostream>
@@ -25,58 +24,102 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printMatrix(T *x, int rows, int cols) {
+    void printMatrix(T const *x, int rows, int cols, std::string const &separator = ", ", bool withNewline = true) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                std::cout << x[i * cols + j] << ", ";
+                if (j > 0) {
+                    std::cout << separator;
+                }
+                std::cout << x[i * cols + j];
             }
             std::cout << std::endl;
         }
-        std::cout << std::endl;
-    }
-
-    template<class T>
-    void printVector(T *x, int size) {
-        for (int i = 0; i < size; i++) {
-            if (i > 0) {
-                std::cout << ", ";
-            }
-            std::cout << x[i];
+        if (withNewline) {
+            std::cout << std::endl;
         }
-        std::cout << std::endl;
     }
 
     template<class T>
-    std::string printVectorToString(T *x, int size) {
-        std::stringstream s;
-        for (int i = 0; i < size; i++) {
-            if (i > 0) {
-                s << ", ";
+    void printMatrix(T const *x, int rows, int cols, std::function<std::string(T const &)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (j > 0) {
+                    std::cout << separator;
+                }
+                std::cout << stringConversion(x[i * cols + j]);
             }
-            s << x[i];
+            std::cout << std::endl;
+        }
+        if (withNewline) {
+            std::cout << std::endl;
+        }
+    }
+
+    template<class T>
+    void printMatrix(T const *x, int rows, int cols,
+                     std::function<std::string(T const &, int const &, int const &)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (j > 0) {
+                    std::cout << separator;
+                }
+                std::cout << stringConversion(x[i * cols + j], i, j);
+            }
+            std::cout << std::endl;
+        }
+        if (withNewline) {
+            std::cout << std::endl;
+        }
+    }
+
+    template<class T>
+    std::string printMatrixToString(T const *x, int rows, int cols, std::string const &separator = ", ") {
+        std::stringstream s;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (j > 0) {
+                    s << separator;
+                }
+                s << x[i * cols + j];
+            }
+            s << std::endl;
         }
         return s.str();
     }
 
     template<class T>
-    void printVector(T *x, int size, const std::function<std::string(T const &)> &stringConversion) {
-        for (int i = 0; i < size; i++) {
-            if (i > 0) {
-                std::cout << ", ";
+    std::string printMatrixToString(T const *x, int rows, int cols,
+                                    std::function<std::string(T const &)> const &stringConversion,
+                                    std::string const &separator = ", ") {
+        std::stringstream s;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (j > 0) {
+                    s << separator;
+                }
+                s << stringConversion(x[i * cols + j]);
             }
-            std::cout << stringConversion(x[i]);
+            s << std::endl;
         }
-        std::cout << std::endl;
+        return s.str();
     }
 
     template<class T>
-    std::string printVectorToString(T *x, int size, const std::function<std::string(T const &)> &stringConversion) {
+    std::string printMatrixToString(
+            T const *x, int rows, int cols,
+            std::function<std::string(T const &, int const &, int const &)> const &stringConversion,
+            std::string const &separator = ", ") {
         std::stringstream s;
-        for (int i = 0; i < size; i++) {
-            if (i > 0) {
-                s << ", ";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (j > 0) {
+                    s << separator;
+                }
+                s << stringConversion(x[i * cols + j], i, j);
             }
-            s << stringConversion(x[i]);
+            s << std::endl;
         }
         return s.str();
     }
@@ -88,5 +131,3 @@ namespace AndreiUtils {
         }
     }
 }
-
-#endif //ANDREIUTILS_UTILSARRAY_HPP

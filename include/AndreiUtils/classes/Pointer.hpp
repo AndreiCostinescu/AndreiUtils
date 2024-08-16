@@ -5,9 +5,13 @@
 #pragma once
 
 #include <AndreiUtils/traits/InstanceOf.hpp>
+#include <concepts>
 #include <memory>
 
 namespace AndreiUtils {
+    template<typename T, typename SubT>
+    concept StrictSubTypeOfT = std::is_base_of<T, SubT>::value && std::negation<std::is_same<T, SubT>>::value;
+
     template<typename T>
     class Pointer {
     public:
@@ -16,7 +20,9 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
-        template<typename SubT>
+        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
             this->operator=(std::move(datum));
         }
@@ -40,9 +46,16 @@ namespace AndreiUtils {
             other.isRegular = false;
         }
 
-        template<typename SubT>
-        typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
-        operator=(SubT other) {
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
+                Pointer(other.template cast<T>()) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                Pointer(std::move(std::move(other).template castMove<T>())) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer &operator=(SubT other) {
             this->isRegular = false;
             this->ptr = nullptr;
             this->smart = std::make_shared<SubT>(std::move(other));
@@ -104,23 +117,41 @@ namespace AndreiUtils {
             return this->get();
         }
 
-        template<typename CastT>
-        inline Pointer<CastT> constCast() const noexcept {
+        inline Pointer<T const> constCast() const noexcept {
             if (this->isRegular) {
-                return const_cast<CastT *>(this->ptr);
+                return const_cast<T const *>(this->ptr);
             }
-            return std::const_pointer_cast<CastT>(this->smart);
+            return std::const_pointer_cast<T const>(this->smart);
         }
 
-        template<typename CastT>
-        inline Pointer<CastT> constCastMove() && noexcept {
+        inline Pointer<T const> constCastMove() && noexcept {
             if (this->isRegular) {
-                Pointer<CastT> res(const_cast<CastT *>(this->ptr));
+                Pointer<T const> res(const_cast<T const *>(this->ptr));
                 this->ptr = nullptr;
                 return res;
             }
-            Pointer<CastT> res(std::make_shared<CastT>(std::move(*this->smart)));
+            Pointer<T const> res(std::make_shared<T const>(std::move(*this->smart)));
             this->smart = nullptr;
+            this->isRegular = true;
+            return res;
+        }
+
+        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        inline Pointer<ParentCastT> cast() const noexcept {
+            if (this->isRegular) {
+                return Pointer<ParentCastT>(this->ptr);
+            }
+            return Pointer<ParentCastT>(this->smart);
+        }
+
+        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        inline Pointer<ParentCastT> castMove() && noexcept {
+            if (this->isRegular) {
+                Pointer<ParentCastT> res(this->ptr);
+                this->ptr = nullptr;
+                return res;
+            }
+            Pointer<ParentCastT> res(std::move(this->smart));
             this->isRegular = true;
             return res;
         }
@@ -174,9 +205,11 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
-        template<typename SubT>
+        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT const &datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
-            this->operator=(std::move(datum));
+            this->operator=(datum);
         }
 
         explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
@@ -200,18 +233,33 @@ namespace AndreiUtils {
 
         Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
             other.ptr = nullptr;
-            other.isRegular = false;
+            other.isRegular = true;
         }
 
         Pointer(Pointer<T> const &other) :   // NOLINT(*-explicit-constructor)
-                Pointer(other.template constCast<T const>()) {}
+                Pointer(other.constCast()) {}
 
         Pointer(Pointer<T> &&other) noexcept:  // NOLINT(*-explicit-constructor)
-                Pointer(std::move(std::move(other).template constCastMove<T const>())) {}
+                Pointer(std::move(std::move(other).constCastMove())) {}
 
-        template<typename SubT>
-        typename std::enable_if<std::is_base_of<T, SubT>::value, Pointer &>::type  // NOLINT(misc-unconventional-assign-operator)
-        operator=(SubT const &other) {
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT const> const &other) :   // NOLINT(*-explicit-constructor)
+                Pointer(other.template cast<T>()) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT const> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                Pointer(std::move(std::move(other).template castMove<T>())) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
+                Pointer(other.constCast()) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
+                Pointer(std::move(std::move(other).constCastMove())) {}
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer &operator=(SubT const &other) {  // NOLINT(misc-unconventional-assign-operator)
             this->isRegular = true;
             this->ptr = &other;
             this->smart = nullptr;
@@ -281,12 +329,12 @@ namespace AndreiUtils {
         }
 
         Pointer &operator=(Pointer<T> const &other) {
-            *this = other.template constCast<T const>();
+            *this = other.constCast();
             return *this;
         }
 
         Pointer &operator=(Pointer<T> &&other) noexcept {
-            *this = std::move(std::move(other).template constCastMove<T const>());
+            *this = std::move(std::move(other).constCastMove());
             return *this;
         }
 
@@ -302,6 +350,28 @@ namespace AndreiUtils {
 
         T const *operator->() const noexcept {
             return this->get();
+        }
+
+        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        inline Pointer<ParentCastT const> cast() const noexcept {
+            static_assert(std::is_base_of<ParentCastT, T>::value, "Can't cast to non-parent type!");
+            if (this->isRegular) {
+                return Pointer<ParentCastT const>(this->ptr);
+            }
+            return Pointer<ParentCastT const>(this->smart);
+        }
+
+        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        inline Pointer<ParentCastT const> castMove() && noexcept {
+            static_assert(std::is_base_of<ParentCastT, T>::value, "Can't cast to non-parent type!");
+            if (this->isRegular) {
+                Pointer<ParentCastT const> res(this->ptr);
+                this->ptr = nullptr;
+                return res;
+            }
+            Pointer<ParentCastT const> res(std::move(this->smart));
+            this->isRegular = true;
+            return res;
         }
 
         template<typename CastT>

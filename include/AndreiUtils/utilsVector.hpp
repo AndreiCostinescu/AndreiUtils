@@ -253,39 +253,45 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(std::vector<T> const &x, std::string const &separator = ", ") {
+    void printVector(std::vector<T> const &x, std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < x.size(); i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << x[i];
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
     void printVector(std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
-                     std::string const &separator = ", ") {
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < x.size(); i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << stringConversion(x[i]);
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
     void printVector(std::vector<T> const &x,
                      std::function<std::string(T const &, size_t const &index)> const &stringConversion,
-                     std::string const &separator = ", ") {
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < x.size(); i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << stringConversion(x[i], i);
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
@@ -329,39 +335,45 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(T const *x, int size, std::string const &separator = ", ") {
+    void printVector(T const *x, int size, std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << x[i];
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
     void printVector(T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
-                     std::string const &separator = ", ") {
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << stringConversion(x[i]);
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
     void printVector(T const *x, int size,
                      std::function<std::string(T const &, size_t const &)> const &stringConversion,
-                     std::string const &separator = ", ") {
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << stringConversion(x[i], i);
         }
-        std::cout << std::endl;
+        if (withNewline) {
+            std::cout << std::endl;
+        }
     }
 
     template<class T>
