@@ -79,6 +79,17 @@ void testAnyOrientationFromAxis() {
     cout << getAnyOrientationQuaternionFromOneAxis(axis, "z") << endl;
 }
 
+void testSampleVectors() {
+    int N = 100;
+    for (int i = 0; i < N; ++i) {
+        cout << sampleVectorNormal<double, 3>(Vector3d::Zero(), 1).transpose() << endl;
+    }
+    cout << endl;
+    for (int i = 0; i < N; ++i) {
+        cout << sampleVectorNormal<double, 3>(Vector3d::Zero(), Vector3d{1.0, 0.5, 0.75}) << endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -87,7 +98,8 @@ int main() {
     // testEigenMatrixAddSub();
     // testSurfaceTriangle();
     // testInterpolation();
-    testAnyOrientationFromAxis();
+    // testAnyOrientationFromAxis();
+    testSampleVectors();
 
     return 0;
 }

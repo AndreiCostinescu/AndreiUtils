@@ -214,4 +214,16 @@ namespace AndreiUtils {
         }
         return addComponentWise(res, -0.5).normalized();
     }
+
+    template<typename T, int N>
+    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(
+            Eigen::Matrix<T, N, 1> const &mean, T const &standardDeviation) {
+        return normal01Sampler.sample() * sampleUnitVector<T, N>() * standardDeviation + mean;
+    }
+
+    template<typename T, int N>
+    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(
+            Eigen::Matrix<T, N, 1> const &mean, Eigen::Matrix<T, N, 1> const &standardDeviation) {
+        return (normal01Sampler.sample() * sampleUnitVector<T, N>()).cwiseProduct(standardDeviation) + mean;
+    }
 }
