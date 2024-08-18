@@ -76,4 +76,8 @@ namespace AndreiUtils {
     std::string removeLeft(std::string const &s, long count);
 
     std::string removeRight(std::string const &s, long count);
+
+    bool isStringBooleanTrueValue(std::string const &s);
+
+    bool isStringBooleanFalseValue(std::string const &s);
 }

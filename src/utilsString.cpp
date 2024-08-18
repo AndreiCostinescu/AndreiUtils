@@ -339,3 +339,11 @@ string AndreiUtils::removeRight(string const &s, long count) {
     return {s.begin(), s.end() - count};
 }
 
+bool AndreiUtils::isStringBooleanTrueValue(string const &s) {
+    return s == "yes" || s == "y" || s == "1" || s == "true";
+}
+
+bool AndreiUtils::isStringBooleanFalseValue(string const &s) {
+    return s == "no" || s == "n" || s == "0" || s == "false";
+}
+
