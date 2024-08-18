@@ -21,6 +21,9 @@ namespace AndreiUtils {
 
         static bool getBooleanSupervision(std::string const &prompt, std::function<UserResponse()> const &f = {});
 
+        static bool getBooleanSupervision(std::string const &prompt, bool expectBooleanValues,
+                                          std::function<UserResponse()> const &f = {});
+
         static int getIndexSupervision(
                 std::string const &prompt, int minIndex, int maxIndex, std::function<int()> const &f = {});
 
@@ -57,6 +60,9 @@ namespace AndreiUtils {
 
         [[nodiscard]] bool getBooleanResponse(std::function<UserResponse()> const &f = {}) const;
 
+        [[nodiscard]] bool getBooleanResponse(
+                bool expectBooleanValues, std::function<UserResponse()> const &f = {}) const;
+
         [[nodiscard]] int getIndexResponse(int minIndex, int maxIndex, std::function<int()> const &f = {}) const;
 
         [[nodiscard]] std::vector<int> getMultipleIndexResponse(int minIndex, int maxIndex, bool allowEmptyResponse,
@@ -66,7 +72,7 @@ namespace AndreiUtils {
 
     protected:
         static bool getBooleanSupervisionWithScenario(
-                std::string const &prompt, std::function<UserResponse()> const &f = {},
+                std::string const &prompt, bool expectBooleanValues, std::function<UserResponse()> const &f = {},
                 std::string const &scenarioResponse = "");
 
         static int getIndexSupervisionWithScenario(

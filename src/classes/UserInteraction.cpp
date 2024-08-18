@@ -14,7 +14,12 @@ using namespace AndreiUtils;
 using namespace std;
 
 bool UserInteraction::getBooleanSupervision(std::string const &prompt, std::function<UserResponse()> const &f) {
-    return UserInteraction::getBooleanSupervisionWithScenario(prompt, f);
+    return UserInteraction::getBooleanSupervisionWithScenario(prompt, false, f);
+}
+
+bool UserInteraction::getBooleanSupervision(std::string const &prompt, bool expectBooleanValues,
+                                            std::function<UserResponse()> const &f) {
+    return UserInteraction::getBooleanSupervisionWithScenario(prompt, expectBooleanValues, f);
 }
 
 int UserInteraction::getIndexSupervision(string const &prompt, int minIndex, int maxIndex, function<int()> const &f) {
@@ -86,9 +91,22 @@ bool UserInteraction::getBooleanResponse(function<UserResponse()> const &f) cons
             scenarioResponse.clear();
             this->scenario->close();
         }
-        return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), f, scenarioResponse);
+        return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), false, f, scenarioResponse);
     }
-    return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), f);
+    return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), false, f);
+}
+
+bool UserInteraction::getBooleanResponse(bool expectBooleanValues, function<UserResponse()> const &f) const {
+    if (this->useScenario()) {
+        string scenarioResponse;
+        if (!getline(*this->scenario, scenarioResponse)) {
+            scenarioResponse.clear();
+            this->scenario->close();
+        }
+        return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f,
+                                                                  scenarioResponse);
+    }
+    return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f);
 }
 
 int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()> const &f) const {
@@ -136,10 +154,12 @@ bool UserInteraction::useScenario() const {
 }
 
 bool UserInteraction::getBooleanSupervisionWithScenario(
-        string const &prompt, function<UserResponse()> const &f, string const &scenarioResponse) {
+        string const &prompt, bool expectBooleanValues, function<UserResponse()> const &f,
+        string const &scenarioResponse) {
     UserResponse res;
     while (true) {
-        cout << prompt << ((endsWith(prompt, "\n") && !endsWith(prompt, " ")) ? "" : " ") << "Type 'yes' or 'no': ";
+        cout << prompt << ((endsWith(prompt, "\n") && !endsWith(prompt, " ")) ? "" : " ")
+             << "Type " << (expectBooleanValues ? "'true' or 'false'" : "'yes' or 'no'") << ": ";
         if (f) {
             res = f();
         } else {
@@ -150,9 +170,9 @@ bool UserInteraction::getBooleanSupervisionWithScenario(
                 cout << scenarioResponse << endl;
                 response = scenarioResponse;
             }
-            if (response == "yes" || response == "y" || response == "1") {
+            if (AndreiUtils::isStringBooleanTrueValue(response)) {
                 res = UserResponse_OK;
-            } else if (response == "no" || response == "n" || response == "0") {
+            } else if (AndreiUtils::isStringBooleanFalseValue(response)) {
                 res = UserResponse_NOT_OK;
             } else if (response == "q" || response == "quit" || response == "exit") {
                 throw QuitRequestedException();
