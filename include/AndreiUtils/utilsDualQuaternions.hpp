@@ -30,13 +30,7 @@ namespace AndreiUtils {
             sequenceQuaternions[i] = sequence[i].getRotation();
         }
         averagePose.translate(average(sequencePositions));
-        Eigen::Quaterniond averageRotation;
-        qSetZero(averageRotation);
-        // take the log of each quaternion, sum the logs up, divide by the number of quaternions, exponentiate it
-        for (auto const &q: sequenceQuaternions) {
-            qIncrement(averageRotation, qLog(q));
-        }
-        averagePose.addRotation(qExp(qDivScalar(averageRotation, (double) sequenceQuaternions.size())));
+        averagePose.addRotation(qAverage(sequenceQuaternions));
         return averagePose;
     }
 }

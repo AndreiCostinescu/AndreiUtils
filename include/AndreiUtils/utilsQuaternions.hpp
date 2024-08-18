@@ -246,6 +246,17 @@ namespace AndreiUtils {
         // return (float)(180 / M_PI) * euler;  // convert to degrees
         return euler;
     }
+
+    template<typename T>
+    Eigen::Quaternion<T> qAverage(std::vector<Eigen::Quaternion<T>> const &sequenceQuaternions) {
+        Eigen::Quaterniond averageRotation;
+        qSetZero(averageRotation);
+        // take the log of each quaternion, sum the logs up, divide by the number of quaternions, exponentiate it
+        for (auto const &q: sequenceQuaternions) {
+            qIncrement(averageRotation, qLog(q));
+        }
+        return qExp(qDivScalar(averageRotation, (double) sequenceQuaternions.size()));
+    }
 }
 
 namespace std {
