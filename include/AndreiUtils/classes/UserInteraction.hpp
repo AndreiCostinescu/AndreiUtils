@@ -34,6 +34,8 @@ namespace AndreiUtils {
         static std::string getStringSupervision(
                 std::string const &prompt, bool allowEmpty, std::function<std::string()> const &f = {});
 
+        explicit UserInteraction(bool clearAfterEachResponse);
+
         explicit UserInteraction(std::string const &interactionScenario = "");
 
         UserInteraction(UserInteraction const &other);
@@ -58,17 +60,17 @@ namespace AndreiUtils {
 
         void setScenario(std::string const &scenarioFile);
 
-        [[nodiscard]] bool getBooleanResponse(std::function<UserResponse()> const &f = {}) const;
+        [[nodiscard]] bool getBooleanResponse(std::function<UserResponse()> const &f = {});
 
         [[nodiscard]] bool getBooleanResponse(
-                bool expectBooleanValues, std::function<UserResponse()> const &f = {}) const;
+                bool expectBooleanValues, std::function<UserResponse()> const &f = {});
 
-        [[nodiscard]] int getIndexResponse(int minIndex, int maxIndex, std::function<int()> const &f = {}) const;
+        [[nodiscard]] int getIndexResponse(int minIndex, int maxIndex, std::function<int()> const &f = {});
 
         [[nodiscard]] std::vector<int> getMultipleIndexResponse(int minIndex, int maxIndex, bool allowEmptyResponse,
-                                                                std::function<std::vector<int>()> const &f = {}) const;
+                                                                std::function<std::vector<int>()> const &f = {});
 
-        [[nodiscard]] std::string getStringResponse(bool allowEmpty, std::function<std::string()> const &f = {}) const;
+        [[nodiscard]] std::string getStringResponse(bool allowEmpty, std::function<std::string()> const &f = {});
 
     protected:
         static bool getBooleanSupervisionWithScenario(
@@ -89,6 +91,7 @@ namespace AndreiUtils {
 
         [[nodiscard]] bool useScenario() const;
 
+        bool clearAfterEachResponse;
         std::stringstream ss;
         std::shared_ptr<std::ifstream> scenario;
     };

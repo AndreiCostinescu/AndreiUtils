@@ -35,14 +35,18 @@ std::string UserInteraction::getStringSupervision(string const &prompt, bool all
     return UserInteraction::getStringSupervisionWithScenario(prompt, allowEmpty, f);
 }
 
-UserInteraction::UserInteraction(std::string const &scenario) {
+UserInteraction::UserInteraction(bool clearAfterEachResponse) : clearAfterEachResponse(clearAfterEachResponse) {}
+
+UserInteraction::UserInteraction(std::string const &scenario) : clearAfterEachResponse(false) {
     this->setScenario(scenario);
 }
 
-UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()), scenario(other.scenario) {}
+UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()), scenario(other.scenario),
+                                                                 clearAfterEachResponse(other.clearAfterEachResponse) {}
 
 UserInteraction::UserInteraction(UserInteraction &&other) noexcept:
-        ss(std::move(other.ss)), scenario(std::move(other.scenario)) {}
+        ss(std::move(other.ss)), scenario(std::move(other.scenario)),
+        clearAfterEachResponse(other.clearAfterEachResponse) {}
 
 UserInteraction::~UserInteraction() {
     this->clear();
@@ -55,6 +59,7 @@ UserInteraction &UserInteraction::operator=(UserInteraction const &other) {
     if (this != &other) {
         this->ss.str(other.ss.str());
         this->scenario = other.scenario;
+        this->clearAfterEachResponse = other.clearAfterEachResponse;
     }
     return *this;
 }
@@ -63,6 +68,7 @@ UserInteraction &UserInteraction::operator=(UserInteraction &&other) noexcept {
     if (this != &other) {
         this->ss = std::move(other.ss);
         this->scenario = std::move(other.scenario);
+        this->clearAfterEachResponse = other.clearAfterEachResponse;
     }
     return *this;
 }
@@ -84,69 +90,64 @@ void UserInteraction::setScenario(string const &scenarioFile) {
     }
 }
 
-bool UserInteraction::getBooleanResponse(function<UserResponse()> const &f) const {
-    if (this->useScenario()) {
-        string scenarioResponse;
-        if (!getline(*this->scenario, scenarioResponse)) {
-            scenarioResponse.clear();
-            this->scenario->close();
-        }
-        return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), false, f, scenarioResponse);
-    }
-    return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), false, f);
+bool UserInteraction::getBooleanResponse(function<UserResponse()> const &f) {
+    return this->getBooleanResponse(false, f);
 }
 
-bool UserInteraction::getBooleanResponse(bool expectBooleanValues, function<UserResponse()> const &f) const {
-    if (this->useScenario()) {
-        string scenarioResponse;
-        if (!getline(*this->scenario, scenarioResponse)) {
-            scenarioResponse.clear();
-            this->scenario->close();
-        }
-        return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f,
+bool UserInteraction::getBooleanResponse(bool expectBooleanValues, function<UserResponse()> const &f) {
+    string scenarioResponse;
+    if (this->useScenario() && !getline(*this->scenario, scenarioResponse)) {
+        scenarioResponse.clear();
+        this->scenario->close();
+    }
+    auto res = UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f,
                                                                   scenarioResponse);
+    if (this->clearAfterEachResponse) {
+        this->clear();
     }
-    return UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f);
+    return res;
 }
 
-int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()> const &f) const {
-    if (this->useScenario()) {
-        string scenarioResponse;
-        if (!getline(*this->scenario, scenarioResponse)) {
-            scenarioResponse.clear();
-            this->scenario->close();
-        }
-        return UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f,
-                                                                scenarioResponse);
+int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()> const &f) {
+    string scenarioResponse;
+    if (this->useScenario() && !getline(*this->scenario, scenarioResponse)) {
+        scenarioResponse.clear();
+        this->scenario->close();
     }
-    return UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f);
+    auto res = UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f,
+                                                                scenarioResponse);
+    if (this->clearAfterEachResponse) {
+        this->clear();
+    }
+    return res;
 }
 
 vector<int> UserInteraction::getMultipleIndexResponse(
-        int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) const {
-    if (this->useScenario()) {
-        string scenarioResponse;
-        if (!getline(*this->scenario, scenarioResponse)) {
-            scenarioResponse.clear();
-            this->scenario->close();
-        }
-        return UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
-                                                                        allowEmptyResponse, f, scenarioResponse);
+        int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) {
+    string scenarioResponse;
+    if (this->useScenario() && !getline(*this->scenario, scenarioResponse)) {
+        scenarioResponse.clear();
+        this->scenario->close();
     }
-    return UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
-                                                                    allowEmptyResponse, f);
+    auto res = UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
+                                                                        allowEmptyResponse, f, scenarioResponse);
+    if (this->clearAfterEachResponse) {
+        this->clear();
+    }
+    return res;
 }
 
-std::string UserInteraction::getStringResponse(bool allowEmpty, function<string()> const &f) const {
-    if (this->useScenario()) {
-        string scenarioResponse;
-        if (!getline(*this->scenario, scenarioResponse)) {
-            scenarioResponse.clear();
-            this->scenario->close();
-        }
-        return UserInteraction::getStringSupervisionWithScenario(this->ss.str(), allowEmpty, f, scenarioResponse);
+std::string UserInteraction::getStringResponse(bool allowEmpty, function<string()> const &f) {
+    string scenarioResponse;
+    if (this->useScenario() && !getline(*this->scenario, scenarioResponse)) {
+        scenarioResponse.clear();
+        this->scenario->close();
     }
-    return UserInteraction::getStringSupervisionWithScenario(this->ss.str(), allowEmpty, f);
+    auto res = UserInteraction::getStringSupervisionWithScenario(this->ss.str(), allowEmpty, f, scenarioResponse);
+    if (this->clearAfterEachResponse) {
+        this->clear();
+    }
+    return res;
 }
 
 bool UserInteraction::useScenario() const {
