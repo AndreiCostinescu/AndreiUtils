@@ -275,7 +275,7 @@ vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(
         }
         bool checkOk = true;
         for (auto const &resValue: res) {
-            if ((minIndex < 0 && maxIndex < 0) || (minIndex <= resValue && resValue <= maxIndex)) {
+            if (!((minIndex < 0 && maxIndex < 0) || (minIndex <= resValue && resValue <= maxIndex))) {
                 checkOk = false;
                 cout << "Input error: " << resValue << " is not in index interval [" << minIndex << ", " << maxIndex
                      << "]" << endl;
