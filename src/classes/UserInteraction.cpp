@@ -258,8 +258,11 @@ vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(
             bool conversionError = false;
             for (auto const &splitResValue: splitRes) {
                 int value;
-                if (!stringIsInteger(trim(splitResValue), value)) {
-                    cout << "\"" << trim(splitResValue) << "\" is not an index (i.e. integer) value!" << endl;
+                std::string trimmedValue = trim(splitResValue);
+                if (trimmedValue.empty()) {
+                    continue;
+                } else if (!stringIsInteger(trimmedValue, value)) {
+                    cout << "\"" << trimmedValue << "\" is not an index (i.e. not an integer) value!" << endl;
                     conversionError = true;
                     break;
                 }
