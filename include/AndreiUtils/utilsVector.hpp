@@ -271,7 +271,7 @@ namespace AndreiUtils {
 
     template<class T>
     void printVector(std::vector<T> const &x, std::string const &separator = ", ", bool withNewline = true) {
-        printVector(x, {}, separator, withNewline);
+        printVector(x, std::function<bool(T const &)>{}, separator, withNewline);
     }
 
     template<class T>
@@ -295,7 +295,7 @@ namespace AndreiUtils {
     template<class T>
     void printVector(std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
-        printVector(x, {}, stringConversion, separator, withNewline);
+        printVector(x, std::function<bool(T const &)>{}, stringConversion, separator, withNewline);
     }
 
     template<class T>
@@ -320,7 +320,7 @@ namespace AndreiUtils {
     void printVector(std::vector<T> const &x,
                      std::function<std::string(T const &, size_t const &index)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
-        printVector(x, {}, stringConversion, separator, withNewline);
+        printVector(x, std::function<bool(T const &, size_t const &)>{}, stringConversion, separator, withNewline);
     }
 
     template<class T>
@@ -342,7 +342,7 @@ namespace AndreiUtils {
 
     template<class T>
     [[nodiscard]] std::string printVectorToString(std::vector<T> const &x, std::string const &separator = ", ") {
-        return printVectorToString(x, {}, separator);
+        return printVectorToString(x, std::function<bool(T const &)>{}, separator);
     }
 
     template<class T>
@@ -366,7 +366,7 @@ namespace AndreiUtils {
     [[nodiscard]] std::string printVectorToString(
             std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
             std::string const &separator = ", ") {
-        return printVectorToString(x, {}, stringConversion, separator);
+        return printVectorToString(x, std::function<bool(T const &)>{}, stringConversion, separator);
     }
 
     template<class T>
@@ -391,7 +391,7 @@ namespace AndreiUtils {
     [[nodiscard]] std::string printVectorToString(
             std::vector<T> const &x, std::function<std::string(T const &, size_t const &)> const &stringConversion,
             std::string const &separator = ", ") {
-        return printVectorToString(x, {}, stringConversion, separator);
+        return printVectorToString(x, std::function<bool(T const &, size_t const &)>{}, stringConversion, separator);
     }
 
     template<class T>
@@ -413,7 +413,7 @@ namespace AndreiUtils {
 
     template<class T>
     void printVector(T const *x, int size, std::string const &separator = ", ", bool withNewline = true) {
-        printVector(x, size, {}, separator, withNewline);
+        printVector(x, size, std::function<bool(T const &)>{}, separator, withNewline);
     }
 
     template<class T>
@@ -437,7 +437,7 @@ namespace AndreiUtils {
     template<class T>
     void printVector(T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
-        printVector(x, size, {}, stringConversion, separator, withNewline);
+        printVector(x, size, std::function<bool(T const &)>{}, stringConversion, separator, withNewline);
     }
 
     template<class T>
@@ -462,7 +462,8 @@ namespace AndreiUtils {
     void printVector(T const *x, int size,
                      std::function<std::string(T const &, size_t const &)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
-        printVectorToString(x, size, {}, stringConversion, separator, withNewline);
+        printVectorToString(x, size, std::function<bool(T const &, size_t const &)>{}, stringConversion, separator,
+                            withNewline);
     }
 
     template<class T>
@@ -484,7 +485,7 @@ namespace AndreiUtils {
 
     template<class T>
     [[nodiscard]] std::string printVectorToString(T const *x, int size, std::string const &separator = ", ") {
-        return printVectorToString(x, size, {}, separator);
+        return printVectorToString(x, size, std::function<bool(T const &)>{}, separator);
     }
 
     template<class T>
@@ -508,7 +509,7 @@ namespace AndreiUtils {
     [[nodiscard]] std::string printVectorToString(
             T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
             std::string const &separator = ", ") {
-        return printVectorToString(x, size, {}, stringConversion, separator);
+        return printVectorToString(x, size, std::function<bool(T const &)>{}, stringConversion, separator);
     }
 
     template<class T>
@@ -533,7 +534,8 @@ namespace AndreiUtils {
     [[nodiscard]] std::string printVectorToString(
             T const *x, int size, std::function<std::string(T const &, size_t const &)> const &stringConversion,
             std::string const &separator = ", ") {
-        return printVectorToString(x, size, {}, stringConversion, separator);
+        return printVectorToString(x, size, std::function<bool(T const &, size_t const &)>{}, stringConversion,
+                                   separator);
     }
 
     template<class T>
