@@ -253,8 +253,12 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(std::vector<T> const &x, std::string const &separator = ", ", bool withNewline = true) {
+    void printVector(std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 std::cout << separator;
             }
@@ -266,13 +270,46 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
-                     std::string const &separator = ", ", bool withNewline = true) {
+    void printVector(std::vector<T> const &x, std::string const &separator = ", ", bool withNewline = true) {
+        printVector(x, {}, separator, withNewline);
+    }
+
+    template<class T>
+    void printVector(std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
+                     std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ",
+                     bool withNewline = true) {
         for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 std::cout << separator;
             }
             std::cout << stringConversion(x[i]);
+        }
+        if (withNewline) {
+            std::cout << std::endl;
+        }
+    }
+
+    template<class T>
+    void printVector(std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        printVector(x, {}, stringConversion, separator, withNewline);
+    }
+
+    template<class T>
+    void printVector(std::vector<T> const &x, std::function<bool(T const &, size_t const &)> const &elementFilter,
+                     std::function<std::string(T const &, size_t const &index)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i], i)) {
+                continue;
+            }
+            if (i > 0) {
+                std::cout << separator;
+            }
+            std::cout << stringConversion(x[i], i);
         }
         if (withNewline) {
             std::cout << std::endl;
@@ -283,21 +320,18 @@ namespace AndreiUtils {
     void printVector(std::vector<T> const &x,
                      std::function<std::string(T const &, size_t const &index)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
-        for (size_t i = 0; i < x.size(); i++) {
-            if (i > 0) {
-                std::cout << separator;
-            }
-            std::cout << stringConversion(x[i], i);
-        }
-        if (withNewline) {
-            std::cout << std::endl;
-        }
+        printVector(x, {}, stringConversion, separator, withNewline);
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x, std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(
+            std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
+            std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
@@ -307,11 +341,19 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x,
-                                                  std::function<std::string(T const &)> const &stringConversion,
-                                                  std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x, std::string const &separator = ", ") {
+        return printVectorToString(x, {}, separator);
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
+            std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
@@ -322,10 +364,21 @@ namespace AndreiUtils {
 
     template<class T>
     [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<std::string(T const &, size_t const &)> const &stringConversion,
+            std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
+            std::string const &separator = ", ") {
+        return printVectorToString(x, {}, stringConversion, separator);
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            std::vector<T> const &x, std::function<bool(T const &, size_t const &)> const &elementFilter,
+            std::function<std::string(T const &, size_t const &)> const &stringConversion,
             std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
+            if (elementFilter && elementFilter(x[i], i)) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
@@ -335,8 +388,19 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(T const *x, int size, std::string const &separator = ", ", bool withNewline = true) {
+    [[nodiscard]] std::string printVectorToString(
+            std::vector<T> const &x, std::function<std::string(T const &, size_t const &)> const &stringConversion,
+            std::string const &separator = ", ") {
+        return printVectorToString(x, {}, stringConversion, separator);
+    }
+
+    template<class T>
+    void printVector(T const *x, int size, std::function<bool(T const &)> const &elementFilter,
+                     std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 std::cout << separator;
             }
@@ -348,9 +412,18 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
-                     std::string const &separator = ", ", bool withNewline = true) {
+    void printVector(T const *x, int size, std::string const &separator = ", ", bool withNewline = true) {
+        printVector(x, size, {}, separator, withNewline);
+    }
+
+    template<class T>
+    void printVector(T const *x, int size, std::function<bool(T const &)> const &elementFilter,
+                     std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ",
+                     bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 std::cout << separator;
             }
@@ -362,10 +435,19 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    void printVector(T const *x, int size,
+    void printVector(T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        printVector(x, size, {}, stringConversion, separator, withNewline);
+    }
+
+    template<class T>
+    void printVector(T const *x, int size, std::function<bool(T const &, size_t const &)> const &elementFilter,
                      std::function<std::string(T const &, size_t const &)> const &stringConversion,
                      std::string const &separator = ", ", bool withNewline = true) {
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i], i)) {
+                continue;
+            }
             if (i > 0) {
                 std::cout << separator;
             }
@@ -377,9 +459,21 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(T const *x, int size, std::string const &separator = ", ") {
+    void printVector(T const *x, int size,
+                     std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                     std::string const &separator = ", ", bool withNewline = true) {
+        printVectorToString(x, size, {}, stringConversion, separator, withNewline);
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            T const *x, int size, std::function<bool(T const &)> const &elementFilter,
+            std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
@@ -389,11 +483,19 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(T const *x, int size,
-                                                  std::function<std::string(T const &)> const &stringConversion,
-                                                  std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(T const *x, int size, std::string const &separator = ", ") {
+        return printVectorToString(x, size, {}, separator);
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            T const *x, int size, std::function<bool(T const &)> const &elementFilter,
+            std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i])) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
@@ -404,16 +506,34 @@ namespace AndreiUtils {
 
     template<class T>
     [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<std::string(T const &, size_t const &)> const &stringConversion,
+            T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
+            std::string const &separator = ", ") {
+        return printVectorToString(x, size, {}, stringConversion, separator);
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            T const *x, int size, std::function<bool(T const &, size_t const &)> const &elementFilter,
+            std::function<std::string(T const &, size_t const &)> const &stringConversion,
             std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
+            if (elementFilter && elementFilter(x[i], i)) {
+                continue;
+            }
             if (i > 0) {
                 s << separator;
             }
             s << stringConversion(x[i], i);
         }
         return s.str();
+    }
+
+    template<class T>
+    [[nodiscard]] std::string printVectorToString(
+            T const *x, int size, std::function<std::string(T const &, size_t const &)> const &stringConversion,
+            std::string const &separator = ", ") {
+        return printVectorToString(x, size, {}, stringConversion, separator);
     }
 
     template<class T>

@@ -222,12 +222,14 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
+    typename std::map<T1, T2, C, A>::iterator
+    mapSet(std::map<T1, T2, C, A> &container, T1 const &key, T2 const &value) {
         return container.insert_or_assign(key, value).first;
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const *, T2>>>
-    typename std::map<T1, T2, C, A>::iterator mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
+    typename std::map<T1, T2, C, A>::iterator
+    mapSet(std::map<T1 *, T2, C, A> &container, T1 const *key, T2 const &value) {
         return container.insert_or_assign(const_cast<T1 *>(key), value).first;
     }
 
@@ -342,10 +344,15 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    void printMap(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
-                  std::string const &itemSeparator = "\n", bool withNewline = true) {
+    void printMap(std::map<T1, T2, C, A> const &container,
+                  std::function<bool(T1 const &, T2 const &)> const &elementFilter,
+                  std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
+                  bool withNewline = true) {
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 std::cout << itemSeparator;
             }
@@ -358,13 +365,23 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMap(std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
+                  std::string const &itemSeparator = "\n", bool withNewline = true) {
+        printMap(container, {}, keyValueSeparator, itemSeparator, withNewline);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMap(std::map<T1, T2, C, A> const &container,
+                  std::function<bool(T1 const &, T2 const &)> const &elementFilter,
                   std::function<std::string(T1 const &)> const &keyStringConversion,
                   std::function<std::string(T2 const &)> const &valueStringConversion,
                   std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
                   bool withNewline = true) {
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 std::cout << itemSeparator;
             }
@@ -378,12 +395,26 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMap(std::map<T1, T2, C, A> const &container,
+                  std::function<std::string(T1 const &)> const &keyStringConversion,
+                  std::function<std::string(T2 const &)> const &valueStringConversion,
+                  std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
+                  bool withNewline = true) {
+        printMap(container, {}, keyStringConversion, valueStringConversion, keyValueSeparator, itemSeparator,
+                 withNewline);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertKey(std::map<T1, T2, C, A> const &container,
+                            std::function<bool(T1 const &, T2 const &)> const &elementFilter,
                             std::function<std::string(T1 const &)> const &keyStringConversion,
                             std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
                             bool withNewline = true) {
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 std::cout << itemSeparator;
             }
@@ -396,12 +427,24 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMapConvertKey(std::map<T1, T2, C, A> const &container,
+                            std::function<std::string(T1 const &)> const &keyStringConversion,
+                            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
+                            bool withNewline = true) {
+        printMapConvertKey(container, {}, keyStringConversion, keyValueSeparator, itemSeparator, withNewline);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     void printMapConvertValue(std::map<T1, T2, C, A> const &container,
+                              std::function<bool(T1 const &, T2 const &)> const &elementFilter,
                               std::function<std::string(T2 const &)> const &valueStringConversion,
                               std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
                               bool withNewline = true) {
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 std::cout << itemSeparator;
             }
@@ -414,12 +457,23 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    void printMapConvertValue(std::map<T1, T2, C, A> const &container,
+                              std::function<std::string(T2 const &)> const &valueStringConversion,
+                              std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n",
+                              bool withNewline = true) {
+        printMapConvertValue(container, {}, valueStringConversion, keyValueSeparator, itemSeparator, withNewline);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     [[nodiscard]] std::string printMapToString(
-            std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
-            std::string const &itemSeparator = "\n") {
+            std::map<T1, T2, C, A> const &container, std::function<bool(T1 const &, T2 const &)> const &elementFilter,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 ss << itemSeparator;
             }
@@ -431,12 +485,23 @@ namespace AndreiUtils {
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     [[nodiscard]] std::string printMapToString(
-            std::map<T1, T2, C, A> const &container, std::function<std::string(T1 const &)> const &keyStringConversion,
+            std::map<T1, T2, C, A> const &container, std::string const &keyValueSeparator = " -> ",
+            std::string const &itemSeparator = "\n") {
+        return printMapToString(container, {}, keyValueSeparator, itemSeparator);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    [[nodiscard]] std::string printMapToString(
+            std::map<T1, T2, C, A> const &container, std::function<bool(T1 const &, T2 const &)> const &elementFilter,
+            std::function<std::string(T1 const &)> const &keyStringConversion,
             std::function<std::string(T2 const &)> const &valueStringConversion,
             std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 ss << itemSeparator;
             }
@@ -448,12 +513,25 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
-    [[nodiscard]] std::string printMapToStringConvertKey(
+    [[nodiscard]] std::string printMapToString(
             std::map<T1, T2, C, A> const &container, std::function<std::string(T1 const &)> const &keyStringConversion,
+            std::function<std::string(T2 const &)> const &valueStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        return printMapToString(container, {}, keyStringConversion, valueStringConversion, keyValueSeparator,
+                                itemSeparator);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    [[nodiscard]] std::string printMapToStringConvertKey(
+            std::map<T1, T2, C, A> const &container, std::function<bool(T1 const &, T2 const &)> const &elementFilter,
+            std::function<std::string(T1 const &)> const &keyStringConversion,
             std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 ss << itemSeparator;
             }
@@ -464,13 +542,23 @@ namespace AndreiUtils {
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    [[nodiscard]] std::string printMapToStringConvertKey(
+            std::map<T1, T2, C, A> const &container, std::function<std::string(T1 const &)> const &keyStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        return printMapToStringConvertKey(container, {}, keyStringConversion, keyValueSeparator, itemSeparator);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
     [[nodiscard]] std::string printMapToStringConvertValue(
-            std::map<T1, T2, C, A> const &container,
+            std::map<T1, T2, C, A> const &container, std::function<bool(T1 const &, T2 const &)> const &elementFilter,
             std::function<std::string(T2 const &)> const &valueStringConversion,
             std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
         std::stringstream ss;
         bool firstItem = true;
         for (auto const &containerItem: container) {
+            if (elementFilter && elementFilter(containerItem.first, containerItem.second)) {
+                continue;
+            }
             if (!firstItem) {
                 ss << itemSeparator;
             }
@@ -478,6 +566,14 @@ namespace AndreiUtils {
             firstItem = false;
         }
         return ss.str();
+    }
+
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
+    [[nodiscard]] std::string printMapToStringConvertValue(
+            std::map<T1, T2, C, A> const &container,
+            std::function<std::string(T2 const &)> const &valueStringConversion,
+            std::string const &keyValueSeparator = " -> ", std::string const &itemSeparator = "\n") {
+        return printMapToStringConvertValue(container, {}, valueStringConversion, keyValueSeparator, itemSeparator);
     }
 
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<const T1, T2>>>
