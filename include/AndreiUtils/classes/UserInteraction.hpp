@@ -72,6 +72,8 @@ namespace AndreiUtils {
 
         [[nodiscard]] std::string getStringResponse(bool allowEmpty, std::function<std::string()> const &f = {});
 
+        void tell();
+
     protected:
         static bool getBooleanSupervisionWithScenario(
                 std::string const &prompt, bool expectBooleanValues, std::function<UserResponse()> const &f = {},

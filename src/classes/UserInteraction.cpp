@@ -150,6 +150,13 @@ std::string UserInteraction::getStringResponse(bool allowEmpty, function<string(
     return res;
 }
 
+void UserInteraction::tell() {
+    cout << this->ss.str();
+    if (this->clearAfterEachResponse) {
+        this->clear();
+    }
+}
+
 bool UserInteraction::useScenario() const {
     return this->scenario != nullptr && this->scenario->is_open();
 }
