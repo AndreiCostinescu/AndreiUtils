@@ -3,6 +3,7 @@
 //
 
 #include <AndreiUtils/utilsMatching.h>
+#include <AndreiUtils/utilsVector.hpp>
 #include <iostream>
 
 using namespace AndreiUtils;
@@ -16,7 +17,9 @@ void testMatching1() {
     adjacency[2].emplace_back(1);
     adjacency[3].emplace_back(1);
     adjacency[3].emplace_back(3);
-    cout << maximalMatchingUnweightedUndirected(adjacency, 4, 4, true) << endl;
+    std::vector<int> matchResult;
+    cout << maximalMatchingUnweightedUndirected(adjacency, 4, 4, matchResult, true) << endl;
+    AndreiUtils::printVector(matchResult);
 }
 
 void testMatching2() {
@@ -31,7 +34,9 @@ void testMatching2() {
     adjacency[2].emplace_back(1);
     adjacency[3].emplace_back(2);
     adjacency[3].emplace_back(4);
-    cout << maximalMatchingUnweightedUndirected(adjacency, nrU, nrV, true) << endl;
+    std::vector<int> matchResult;
+    cout << maximalMatchingUnweightedUndirected(adjacency, nrU, nrV, matchResult, true) << endl;
+    AndreiUtils::printVector(matchResult);
 }
 
 void testMatching3() {
@@ -46,7 +51,9 @@ void testMatching3() {
     adjacency[2].emplace_back(4);
     adjacency[3].emplace_back(3);
     adjacency[3].emplace_back(4);
-    cout << maximalMatchingUnweightedUndirected(adjacency, nrU, nrV, true) << endl;
+    std::vector<int> matchResult;
+    cout << maximalMatchingUnweightedUndirected(adjacency, nrU, nrV, matchResult, true) << endl;
+    AndreiUtils::printVector(matchResult);
 }
 
 int main() {

@@ -7,8 +7,15 @@
 
 using namespace std;
 
-int AndreiUtils::maximalMatchingUnweightedUndirected(std::vector<std::vector<int>> const &adjacency,
-                                                     int nrVerticesU, int nrVerticesV, bool verbose) {
+int AndreiUtils::maximalMatchingUnweightedUndirected(
+        std::vector<std::vector<int>> const &adjacency, int nrVerticesU, int nrVerticesV, bool verbose) {
+    std::vector<int> matchResult;
+    return maximalMatchingUnweightedUndirected(adjacency, nrVerticesU, nrVerticesV, matchResult, verbose);
+}
+
+int AndreiUtils::maximalMatchingUnweightedUndirected(
+        std::vector<std::vector<int>> const &adjacency, int nrVerticesU, int nrVerticesV, std::vector<int> &matchResult,
+        bool verbose) {
     assert(adjacency.size() == nrVerticesU);
     // there is no node-index with this index in U because there are nrVerticesU vertices (starting from 0)
     int INF = -1;
@@ -111,18 +118,23 @@ int AndreiUtils::maximalMatchingUnweightedUndirected(std::vector<std::vector<int
         }
     }
 
-    if (verbose) {
-        for (int i = 0; i < nrVerticesU; ++i) {
-            if (pairU[i] != nrVerticesV) {
+    matchResult.resize(nrVerticesU, -1);
+    for (int i = 0; i < nrVerticesU; ++i) {
+        if (pairU[i] != nrVerticesV) {
+            matchResult[i] = pairU[i];
+            if (verbose) {
                 cout << i << " -> " << pairU[i] << endl;
             }
         }
+    }
+    if (verbose) {
         for (int i = 0; i < nrVerticesV; ++i) {
             if (pairV[i] != nrVerticesU) {
                 cout << i << " <- " << pairV[i] << endl;
             }
         }
     }
+
     delete[] pairU;
     delete[] pairV;
     delete[] dist;
