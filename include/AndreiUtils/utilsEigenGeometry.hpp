@@ -200,6 +200,16 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    Eigen::Matrix<T, 3, 3> getOrientationFromAxes(Eigen::Matrix<T, 3, 1> const &x, Eigen::Matrix<T, 3, 1> const &y,
+                                                  Eigen::Matrix<T, 3, 1> const &z) {
+        Eigen::Matrix<T, 3, 3> res;
+        res.col(0) = x;
+        res.col(1) = y;
+        res.col(2) = z;
+        return res;
+    }
+
+    template<typename T>
     Eigen::Quaternion<T> getOrientationQuaternionFromTwoAxes(
             Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
             std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
