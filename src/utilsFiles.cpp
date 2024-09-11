@@ -158,8 +158,7 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
     vector<string> res = splitString(replace(path, "\\", "/"), "/");
     vector<string> simplifiedPath;
     int simplifiedPathSize = 0;
-    for (int resIndex = 0; resIndex < res.size(); ++resIndex) {
-        auto const &resPart = res[resIndex];
+    for (auto const &resPart: res) {
         assert(simplifiedPath.size() >= simplifiedPathSize);
         if (resPart == ".") {
             continue;
