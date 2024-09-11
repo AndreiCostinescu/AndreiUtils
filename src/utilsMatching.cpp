@@ -140,3 +140,136 @@ int AndreiUtils::maximalMatchingUnweightedUndirected(
     delete[] dist;
     return result;
 }
+
+double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<double>> const &weights, int nrVerticesU,
+                                                      int nrVerticesV, bool verbose) {
+    std::vector<int> matchResult;
+    return maximalMatchingWeightedUndirected(weights, nrVerticesU, nrVerticesV, matchResult, verbose);
+}
+
+double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<double>> const &weights, int nrVerticesU,
+                                                      int nrVerticesV, vector<int> &matchResult, bool verbose) {
+    if (weights.size() != nrVerticesU) {
+        throw std::runtime_error(
+                "Weights vector does not have the size of " + std::to_string(nrVerticesU) + " but instead " +
+                std::to_string(weights.size()));
+    }
+    for (auto const &w: weights) {
+        if (w.size() != nrVerticesV) {
+            throw std::runtime_error(
+                    "Weight sub-vector does not have the size of " + std::to_string(nrVerticesV) + " but instead " +
+                    std::to_string(w.size()));
+        }
+    }
+    if (nrVerticesU > nrVerticesV) {
+        std::vector<int> matchResultSwitch;
+        std::vector<std::vector<double>> weightsSwitched(nrVerticesV, std::vector<double>(nrVerticesU));
+        for (int i = 0; i < nrVerticesU; ++i) {
+            for (int j = 0; j < nrVerticesV; ++j) {
+                weightsSwitched[j][i] = weights[i][j];
+            }
+        }
+        auto res = maximalMatchingWeightedUndirected(weightsSwitched, nrVerticesV, nrVerticesU, matchResultSwitch,
+                                                     verbose);
+        assert(matchResultSwitch.size() == nrVerticesV);
+        // switch the match result indices
+        matchResult = std::vector<int>(nrVerticesU, -1);
+        for (int i = 0; i < matchResultSwitch.size(); ++i) {
+            if (matchResultSwitch[i] >= 0) {
+                matchResult[matchResultSwitch[i]] = i;
+            }
+        }
+        return res;
+    }
+
+    // algorithm adapted from https://cp-algorithms.com/graph/hungarian-algorithm.html
+
+    double const INF = std::numeric_limits<double>::max();
+    // u and v are supposed to have size (nrVerticesU + 1) and (nrVerticesV + 1) respectively
+    std::vector<double> u(nrVerticesU + 1), v(nrVerticesV + 1);
+    std::vector<int> p(nrVerticesV + 1), way(nrVerticesV + 1);
+    for (int i = 1; i <= nrVerticesU; ++i) {
+        p[0] = i;
+        int j0 = 0;
+        std::vector<double> minv(nrVerticesV + 1, INF);
+        std::vector<bool> used(nrVerticesV + 1, false);
+        do {
+            used[j0] = true;
+            int i0 = p[j0], j1;
+            double delta = INF;
+            for (int j = 1; j <= nrVerticesV; ++j) {
+                if (!used[j]) {
+                    double cur = weights[i0 - 1][j - 1] - u[i0] - v[j];
+                    if (cur < minv[j]) {
+                        minv[j] = cur, way[j] = j0;
+                    }
+                    if (minv[j] < delta) {
+                        delta = minv[j], j1 = j;
+                    }
+                }
+            }
+            for (int j = 0; j <= nrVerticesV; ++j) {
+                if (used[j]) {
+                    if (u[p[j]] < INF / 2 && delta < INF / 2) {
+                        u[p[j]] += delta;
+                    } else {
+                        u[p[j]] = INF;
+                    }
+                    if (v[j] > -INF / 2 && delta < INF / 2) {
+                        v[j] -= delta;
+                    } else {
+                        v[j] = -INF;
+                    }
+                } else {
+                    minv[j] -= delta;
+                }
+            }
+            j0 = j1;
+        } while (p[j0] != 0);
+
+        // compute/update augmenting path
+        do {
+            int j1 = way[j0];
+            p[j0] = p[j1];
+            j0 = j1;
+        } while (j0);
+    }
+
+    if (verbose) {
+        cout << "Post matching: " << endl;
+        cout << "u = ";
+        for (auto const &elem: u) {
+            cout << elem << ", ";
+        }
+        cout << endl;
+        cout << "v = ";
+        for (auto const &elem: v) {
+            cout << elem << ", ";
+        }
+        cout << endl;
+        cout << "p = ";
+        for (auto const &elem: p) {
+            cout << elem << ", ";
+        }
+        cout << endl;
+        cout << "way = ";
+        for (auto const &elem: way) {
+            cout << elem << ", ";
+        }
+        cout << endl;
+    }
+
+    matchResult = std::vector<int>(nrVerticesU, -1);
+    for (int j = 1; j <= nrVerticesV; ++j) {
+        // add to match if weight[match[j]][j] is not infinity!
+        if (p[j] > 0 && weights[p[j] - 1][j - 1] != INF) {
+            if (verbose) {
+                cout << "Creating match " << p[j] - 1 << " to " << j - 1 << endl;
+            }
+            matchResult[p[j] - 1] = j - 1;
+        }
+    }
+
+    double cost = -v[0];
+    return cost;
+}
