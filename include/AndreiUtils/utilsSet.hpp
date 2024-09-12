@@ -114,7 +114,7 @@ namespace AndreiUtils {
     [[nodiscard]] std::set<T, Compare, Alloc> setIntersection(
             std::set<T, Compare, Alloc> const &s1, std::set<T, Compare, Alloc> const &s2) {
         std::set<T, Compare, Alloc> res;
-        std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()));
+        std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()), Compare());
         return res;
     }
 
@@ -122,7 +122,7 @@ namespace AndreiUtils {
     [[nodiscard]] std::set<T, Compare, Alloc> setUnion(
             std::set<T, Compare, Alloc> const &s1, std::set<T, Compare, Alloc> const &s2) {
         std::set<T, Compare, Alloc> res;
-        std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()));
+        std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()), Compare());
         return res;
     }
 }
