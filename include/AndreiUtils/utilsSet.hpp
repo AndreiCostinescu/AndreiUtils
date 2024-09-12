@@ -143,29 +143,7 @@ namespace AndreiUtils {
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] T &sampleFromSet(std::set<T, Compare, Alloc> &s, RandomNumberGenerator<int> &sampler) {
-        if (s.empty()) {
-            throw std::runtime_error("Can not sample an element from an empty set!");
-        }
-        int index = 0, sampledIndex = sampler.sample();
-        if (sampledIndex >= s.size()) {
-            throw std::runtime_error("Sampled index is greater than or equal to the set size!");
-        }
-        for (auto &elem: s) {
-            if (index++ == sampledIndex) {
-                return elem;
-            }
-        }
-    }
-
-    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
     [[nodiscard]] T const &sampleFromSet(std::set<T, Compare, Alloc> const &s) {
-        RandomNumberGenerator<int> sampler(0, s.size() - 1);
-        return sampleFromSet(s, sampler);
-    }
-
-    template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] T &sampleFromSet(std::set<T, Compare, Alloc> &s) {
         RandomNumberGenerator<int> sampler(0, s.size() - 1);
         return sampleFromSet(s, sampler);
     }
