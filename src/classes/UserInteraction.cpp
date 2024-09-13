@@ -35,18 +35,22 @@ std::string UserInteraction::getStringSupervision(string const &prompt, bool all
     return UserInteraction::getStringSupervisionWithScenario(prompt, allowEmpty, f);
 }
 
-UserInteraction::UserInteraction(bool clearAfterEachResponse) : clearAfterEachResponse(clearAfterEachResponse) {}
+UserInteraction::UserInteraction(bool clearAfterEachResponse, bool addNewLineAfterEachResponse) :
+        clearAfterEachResponse(clearAfterEachResponse), addNewLineAfterEachResponse(addNewLineAfterEachResponse) {}
 
-UserInteraction::UserInteraction(std::string const &scenario) : clearAfterEachResponse(false) {
+UserInteraction::UserInteraction(std::string const &scenario) :
+        clearAfterEachResponse(false), addNewLineAfterEachResponse(false) {
     this->setScenario(scenario);
 }
 
-UserInteraction::UserInteraction(UserInteraction const &other) : ss(other.ss.str()), scenario(other.scenario),
-                                                                 clearAfterEachResponse(other.clearAfterEachResponse) {}
+UserInteraction::UserInteraction(UserInteraction const &other) :
+        ss(other.ss.str()), scenario(other.scenario), clearAfterEachResponse(other.clearAfterEachResponse),
+        addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
 
 UserInteraction::UserInteraction(UserInteraction &&other) noexcept:
         ss(std::move(other.ss)), scenario(std::move(other.scenario)),
-        clearAfterEachResponse(other.clearAfterEachResponse) {}
+        clearAfterEachResponse(other.clearAfterEachResponse),
+        addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
 
 UserInteraction::~UserInteraction() {
     this->clear();
@@ -60,6 +64,7 @@ UserInteraction &UserInteraction::operator=(UserInteraction const &other) {
         this->ss.str(other.ss.str());
         this->scenario = other.scenario;
         this->clearAfterEachResponse = other.clearAfterEachResponse;
+        this->addNewLineAfterEachResponse = other.addNewLineAfterEachResponse;
     }
     return *this;
 }
@@ -69,6 +74,7 @@ UserInteraction &UserInteraction::operator=(UserInteraction &&other) noexcept {
         this->ss = std::move(other.ss);
         this->scenario = std::move(other.scenario);
         this->clearAfterEachResponse = other.clearAfterEachResponse;
+        this->addNewLineAfterEachResponse = other.addNewLineAfterEachResponse;
     }
     return *this;
 }
@@ -102,9 +108,7 @@ bool UserInteraction::getBooleanResponse(bool expectBooleanValues, function<User
     }
     auto res = UserInteraction::getBooleanSupervisionWithScenario(this->ss.str(), expectBooleanValues, f,
                                                                   scenarioResponse);
-    if (this->clearAfterEachResponse) {
-        this->clear();
-    }
+    this->postResponse();
     return res;
 }
 
@@ -116,9 +120,7 @@ int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()
     }
     auto res = UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f,
                                                                 scenarioResponse);
-    if (this->clearAfterEachResponse) {
-        this->clear();
-    }
+    this->postResponse();
     return res;
 }
 
@@ -131,9 +133,7 @@ vector<int> UserInteraction::getMultipleIndexResponse(
     }
     auto res = UserInteraction::getMultipleIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex,
                                                                         allowEmptyResponse, f, scenarioResponse);
-    if (this->clearAfterEachResponse) {
-        this->clear();
-    }
+    this->postResponse();
     return res;
 }
 
@@ -144,17 +144,13 @@ std::string UserInteraction::getStringResponse(bool allowEmpty, function<string(
         this->scenario->close();
     }
     auto res = UserInteraction::getStringSupervisionWithScenario(this->ss.str(), allowEmpty, f, scenarioResponse);
-    if (this->clearAfterEachResponse) {
-        this->clear();
-    }
+    this->postResponse();
     return res;
 }
 
 void UserInteraction::tell() {
     cout << this->ss.str();
-    if (this->clearAfterEachResponse) {
-        this->clear();
-    }
+    this->postResponse();
 }
 
 bool UserInteraction::useScenario() const {
@@ -322,4 +318,13 @@ std::string UserInteraction::getStringSupervisionWithScenario(
         }
     }
     return res;
+}
+
+void UserInteraction::postResponse() {
+    if (this->clearAfterEachResponse) {
+        this->clear();
+    }
+    if (this->addNewLineAfterEachResponse) {
+        this->ss << "\n";
+    }
 }

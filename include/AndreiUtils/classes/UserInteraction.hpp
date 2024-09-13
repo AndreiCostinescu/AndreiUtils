@@ -34,7 +34,7 @@ namespace AndreiUtils {
         static std::string getStringSupervision(
                 std::string const &prompt, bool allowEmpty, std::function<std::string()> const &f = {});
 
-        explicit UserInteraction(bool clearAfterEachResponse);
+        explicit UserInteraction(bool clearAfterEachResponse, bool addNewLineAfterEachResponse = true);
 
         explicit UserInteraction(std::string const &interactionScenario = "");
 
@@ -93,7 +93,9 @@ namespace AndreiUtils {
 
         [[nodiscard]] bool useScenario() const;
 
-        bool clearAfterEachResponse;
+        void postResponse();
+
+        bool clearAfterEachResponse, addNewLineAfterEachResponse;
         std::stringstream ss;
         std::shared_ptr<std::ifstream> scenario;
     };
