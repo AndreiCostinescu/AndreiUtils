@@ -196,7 +196,7 @@ double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<do
         std::vector<bool> used(nrVerticesV + 1, false);
         do {
             used[j0] = true;
-            int i0 = p[j0], j1;
+            int i0 = p[j0], j1 = 0;
             double delta = INF;
             for (int j = 1; j <= nrVerticesV; ++j) {
                 if (!used[j]) {
