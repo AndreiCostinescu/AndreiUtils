@@ -263,6 +263,24 @@ void testWeightedMatching8() {
 }
 
 void testWeightedMatching9() {
+    int n = 1, m = 3;
+    double const INF = std::numeric_limits<double>::max();
+    std::vector<std::vector<double>> weights(n, std::vector<double>(m));
+    weights[0][0] = INF;
+    weights[0][1] = INF;
+    weights[0][2] = INF;
+
+    std::vector<int> matchResult;
+    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    cout << "cost = " << cost << endl;
+    cout << "Match: ";
+    for (int i = 0; i < matchResult.size(); ++i) {
+        cout << "(" << i << " -> " << matchResult[i] << "), ";
+    }
+    cout << endl;
+}
+
+void testWeightedMatching10() {
     int n = 4, m = 3;
     double const INF = std::numeric_limits<double>::max();
     std::vector<std::vector<double>> weights(n, std::vector<double>(m));
@@ -297,6 +315,7 @@ int main() {
     testWeightedMatching6();
     testWeightedMatching7();
     testWeightedMatching8();
+    testWeightedMatching9();
 
     double const INF = std::numeric_limits<double>::max();
     cout << -INF << endl;
