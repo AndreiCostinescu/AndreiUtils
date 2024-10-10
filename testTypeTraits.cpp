@@ -6,13 +6,14 @@
 #include <AndreiUtils/traits/is_numeric.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace AndreiUtils;
 using namespace std;
 
-class Test {
+class MyTest {
 public:
-    explicit Test(int &data) : a(&data) {}
+    explicit MyTest(int &data) : a(&data) {}
 
     void f(double, int) {}
 
@@ -117,16 +118,16 @@ void testIsNumericType() {
 void testInstanceOf() {
     B_ b;
     int _tmp = 1;
-    Test e(_tmp);
+    MyTest e(_tmp);
     A_ *a = &b;
     A_ c;
 
     cout << "A is polymorphic? " << is_polymorphic<A_>::value << endl;
     cout << "B is polymorphic? " << is_polymorphic<B_>::value << endl;
-    cout << "Test is polymorphic? " << is_polymorphic<Test>::value << endl;
+    cout << "Test is polymorphic? " << is_polymorphic<MyTest>::value << endl;
     cout << "A* is polymorphic? " << is_polymorphic<A_ *>::value << endl;
     cout << "B* is polymorphic? " << is_polymorphic<B_ *>::value << endl;
-    cout << "Test* is polymorphic? " << is_polymorphic<Test *>::value << endl;
+    cout << "Test* is polymorphic? " << is_polymorphic<MyTest *>::value << endl;
 
     cout << "a instance of A?: " << instanceOf<A_>(a) << endl;
     cout << "b instance of A?: " << instanceOf<A_>(b) << endl;
@@ -136,10 +137,10 @@ void testInstanceOf() {
     cout << "b instance of B?: " << instanceOf<B_>(b) << endl;
     cout << "c instance of B?: " << instanceOf<B_>(c) << endl;
     cout << "e instance of B?: " << instanceOf<B_>(e) << endl;
-    cout << "a instance of Test?: " << instanceOf<Test>(a) << endl;
-    cout << "b instance of Test?: " << instanceOf<Test>(b) << endl;
-    cout << "c instance of Test?: " << instanceOf<Test>(c) << endl;
-    cout << "e instance of Test?: " << instanceOf<Test>(e) << endl;
+    cout << "a instance of Test?: " << instanceOf<MyTest>(a) << endl;
+    cout << "b instance of Test?: " << instanceOf<MyTest>(b) << endl;
+    cout << "c instance of Test?: " << instanceOf<MyTest>(c) << endl;
+    cout << "e instance of Test?: " << instanceOf<MyTest>(e) << endl;
 }
 
 template<class T>
@@ -164,7 +165,7 @@ template<class T>
 using has_f7 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>(), std::declval<float>()));
 
 template<class T>
-using has_f8 = decltype(std::declval<T&>().f(std::declval<Test>(), std::declval<int>(), std::declval<float>()));
+using has_f8 = decltype(std::declval<T&>().f(std::declval<MyTest>(), std::declval<int>(), std::declval<float>()));
 
 template<class T>
 using has_f9 = decltype(std::declval<T&>().f(std::declval<double>(), std::declval<int>(), std::declval<double>(), std::declval<float>()));
@@ -173,27 +174,114 @@ template<class T>
 using has_f10 = decltype(std::declval<T&>().f(std::declval<int>()));
 
 void testIsDetected() {
-    cout << AndreiUtils::is_detected<has_f1, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f2, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f3, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f4, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f5, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f6, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f7, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f8, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f9, Test>::value << endl;
-    cout << AndreiUtils::is_detected<has_f10, Test>::value << endl;
+    cout << AndreiUtils::is_detected<has_f1, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f2, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f3, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f4, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f5, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f6, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f7, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f8, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f9, MyTest>::value << endl;
+    cout << AndreiUtils::is_detected<has_f10, MyTest>::value << endl;
     cout << endl;
 }
 
-int main() {
+TEST(TypeTraitsTest, Pointers) {
+
+    B_ b;
+    A_* a = &b;
+    EXPECT_EQ(tmpStruct<B_>::tmpF(b), "B");
+    EXPECT_EQ(tmpStruct<A_*>::tmpF(a), "");
+}
+
+TEST(TypeTraitsTest, IntegralAndUnsignedTypes) {
+
+    EXPECT_TRUE(std::is_integral<bool>::value);
+    EXPECT_TRUE(std::is_unsigned<bool>::value);
+
+
+    EXPECT_TRUE(std::is_integral<long long>::value);
+    EXPECT_TRUE(std::is_integral<int64_t>::value);
+
+    EXPECT_TRUE(std::is_integral<unsigned long long>::value);
+    EXPECT_TRUE(std::is_integral<uint64_t>::value);
+
+    EXPECT_FALSE(std::is_unsigned<long long>::value);
+    EXPECT_FALSE(std::is_unsigned<int64_t>::value);
+
+    EXPECT_TRUE(std::is_unsigned<unsigned long long>::value);
+    EXPECT_TRUE(std::is_unsigned<uint64_t>::value);
+}
+
+TEST(TypeTraitsTest, IsNumericType) {
+
+    EXPECT_TRUE(std::is_integral_v<bool>);
+    EXPECT_TRUE(std::is_integral_v<int>);
+    EXPECT_FALSE(std::is_integral_v<double>);
+
+    EXPECT_FALSE(std::is_floating_point_v<bool>);
+    EXPECT_FALSE(std::is_floating_point_v<int>);
+    EXPECT_TRUE(std::is_floating_point_v<double>);
+
+    EXPECT_TRUE(AndreiUtils::is_numeric_v<bool>);
+    EXPECT_TRUE(AndreiUtils::is_numeric_v<int>);
+    EXPECT_TRUE(AndreiUtils::is_numeric_v<double>);
+}
+
+TEST(TypeTraitsTest, InstanceOfCheck) {
+    B_ b;
+    int _tmp = 1;
+    MyTest e(_tmp);
+    A_ *a = &b;
+    A_ c;
+
+    EXPECT_TRUE(std::is_polymorphic_v<A_>);
+    EXPECT_TRUE(std::is_polymorphic_v<B_>);
+    EXPECT_FALSE(std::is_polymorphic_v<MyTest>);
+    EXPECT_FALSE(std::is_polymorphic_v<A_ *>);
+    EXPECT_FALSE(std::is_polymorphic_v<B_ *>);
+    EXPECT_FALSE(std::is_polymorphic_v<MyTest *>);
+
+    EXPECT_TRUE(instanceOf<A_>(a));
+    EXPECT_TRUE(instanceOf<A_>(b));
+    EXPECT_TRUE(instanceOf<A_>(c));
+    EXPECT_FALSE(instanceOf<A_>(e));
+
+    EXPECT_TRUE(instanceOf<B_>(a));
+    EXPECT_TRUE(instanceOf<B_>(b));
+    EXPECT_FALSE(instanceOf<B_>(c));
+    EXPECT_FALSE(instanceOf<B_>(e));
+
+    EXPECT_FALSE(instanceOf<Test>(a));
+    EXPECT_FALSE(instanceOf<Test>(b));
+    EXPECT_FALSE(instanceOf<Test>(c));
+    EXPECT_FALSE(instanceOf<Test>(e));
+}
+
+TEST(TypeTraitsTest, TestFunctionDetection) {
+
+    EXPECT_FALSE((AndreiUtils::is_detected<has_f1, MyTest>::value));
+    EXPECT_FALSE((AndreiUtils::is_detected<has_f2, MyTest>::value));
+    EXPECT_TRUE((AndreiUtils::is_detected<has_f3, MyTest>::value));
+    EXPECT_TRUE((AndreiUtils::is_detected<has_f4, MyTest>::value));
+    EXPECT_TRUE((AndreiUtils::is_detected<has_f5, MyTest>::value));
+    EXPECT_TRUE((AndreiUtils::is_detected<has_f6, MyTest>::value));
+    EXPECT_TRUE((AndreiUtils::is_detected<has_f7, MyTest>::value));
+    EXPECT_FALSE((AndreiUtils::is_detected<has_f8, MyTest>::value));
+    EXPECT_FALSE((AndreiUtils::is_detected<has_f9, MyTest>::value));
+    EXPECT_FALSE((AndreiUtils::is_detected<has_f10, MyTest>::value));
+}
+
+int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
     // testTypeTraitsWithPointers();
     // testIntegralAndUnsignedTypes();
     // testIsNumericType();
     // testInstanceOf();
-    testIsDetected();
+    // testIsDetected();
 
-    return 0;
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

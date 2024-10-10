@@ -46,7 +46,7 @@ function(AndreiUtilsAddTarget targetName targetSources targetLinkDependencies)
     target_include_directories(${targetName} PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:include>
-            )
+    )
     if (NOT "${${targetCompileOptions}}" STREQUAL "")
         target_compile_options(${targetName} PUBLIC ${${targetCompileOptions}})
     endif ()
@@ -204,12 +204,12 @@ set(UTILS_CLASSES_CAMERA
         src/classes/camera/CameraIntrinsicParameters.cpp
         src/classes/camera/ImageCaptureParameters.cpp
         src/classes/camera/ImageCaptureParametersWithIntrinsics.cpp
-        )
+)
 
 set(UTILS_CLASSES_GRAPH
         src/classes/graph/NodeData.cpp
         src/classes/graph/EdgeData.cpp
-        )
+)
 
 SET(UTILS_CLASSES
         src/classes/AnyType.cpp
@@ -223,7 +223,7 @@ SET(UTILS_CLASSES
         src/classes/UserInteraction.cpp
         ${UTILS_CLASSES_CAMERA}
         ${UTILS_CLASSES_GRAPH}
-        )
+)
 
 SET(UTILS_EIGEN)
 SET(UTILS_EIGEN_JSON)
@@ -323,7 +323,7 @@ set(GENERAL_UTILS
         ${UTILS_RANDOM}
 
         ${UTILS_MATCHING}
-        )
+)
 set(EIGEN_UTILS ${UTILS_EIGEN})
 set(EIGEN_JSON_UTILS ${UTILS_EIGEN_JSON})
 set(EIGEN_OPENCV_UTILS ${UTILS_EIGEN_OPENCV})
@@ -424,7 +424,7 @@ set(UTILS
         ${PTHREAD_UTILS}
         ${PYTHON_UTILS}
         ${REALSENSE_UTILS}
-        )
+)
 message("Utils = ${UTILS}")
 
 # used when AndreiUtils is included as a submodule/subproject/subdirectory
@@ -627,5 +627,24 @@ target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
 if (${USE_OPENMP})
     target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
 endif ()
+
+
+enable_testing()
+
+include(FetchContent)
+
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG origin/main)
+
+FetchContent_MakeAvailable(googletest)
+
+include(GoogleTest)
+
+target_link_libraries(${ANDREI_UTILS_REQUIRED_LIBS} gtest_main)
+
+gtest_discover_tests(TestSlidingWindow)
+gtest_discover_tests(TestVirtualInheritance)
 
 include(cmake/installConfig.cmake)

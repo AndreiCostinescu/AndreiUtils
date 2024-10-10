@@ -216,7 +216,7 @@ int main() {
     cout << "Hello World!" << endl;
 
     // testSuperCube();
-    testSuperCubeSphere();
+    // testSuperCubeSphere();
 
     return 0;
 }
