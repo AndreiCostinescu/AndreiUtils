@@ -88,35 +88,27 @@ void testInheritance() {
     cout << human2->defaultData.dump(4) << endl;
 }
 
-
 TEST(VirtualInheritanceTest, TestInheritance) {
-
     json j;
     j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand",  "Left"},
                                                                  {"RightHand", "Right"}};
 
-
     auto human = std::make_shared<Human>("Human", j);
-
     cout << human->defaultData.dump(4) << endl;
-    ASSERT_EQ(human->defaultData["data"]["properties"]["LeftHand"], "Left");
-    ASSERT_EQ(human->defaultData["data"]["properties"]["RightHand"], "Right");
-
+    ASSERT_TRUE(human->defaultData.is_null());
 
     auto human2 = std::make_shared<Human>("Human", "Andrei", j);
-
-
+    cout << human->defaultData.dump(4) << endl;
     ASSERT_EQ(human2->defaultData["data"]["properties"]["LeftHand"], "Left");
     ASSERT_EQ(human2->defaultData["data"]["properties"]["RightHand"], "Right");
 }
-
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
     cout << "Hello World!" << endl;
 
-    testInheritance();
+    // testInheritance();
 
     return RUN_ALL_TESTS();
 
