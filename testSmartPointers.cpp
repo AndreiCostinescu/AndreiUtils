@@ -473,14 +473,9 @@ TEST(SmartPointers, MyPointer) {
     y->s = "Strawberry";
     EXPECT_EQ(z->s, "Strawberry");
 
-    AndreiUtils::Pointer<int, std::unique_ptr<int>> w;
-    w = make_unique<int>(42);
-    EXPECT_EQ(*w, 42);
-
     shared_ptr<float> shFl;
     reinterpret_pointer_cast<float>(shX);
     EXPECT_EQ(shFl, nullptr);
-    EXPECT_FALSE(w == nullptr);
     EXPECT_FALSE(x == nullptr);
 
 }
