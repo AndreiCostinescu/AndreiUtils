@@ -12,6 +12,8 @@
 #include <vector>
 
 namespace AndreiUtils {
+    bool matEqual(cv::Mat const &m1, cv::Mat const &m2);
+
     size_t matByteSize(const cv::Mat &mat);
 
     void imageRotation(cv::Mat *image, RotationType rotation = RotationType::NO_ROTATION);

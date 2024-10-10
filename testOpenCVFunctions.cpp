@@ -174,6 +174,19 @@ void testAddColorBorder() {
     cv::waitKey(0);
 }
 
+void testMatEqual() {
+    cv::Mat m1(100, 100, CV_8UC3, 100);
+    cv::Mat m2(150, 150, CV_8UC3, 100);
+    cv::Mat m3(150, 150, CV_8UC3, 101);
+    cv::Mat m4(150, 150, CV_8UC3, 100);
+    cout << matEqual(m1, m2) << endl;
+    cout << matEqual(m1, m3) << endl;
+    cout << matEqual(m1, m4) << endl;
+    cout << matEqual(m2, m3) << endl;
+    cout << matEqual(m2, m4) << endl;
+    cout << matEqual(m3, m4) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -183,7 +196,8 @@ int main() {
     // testPrintingImagesOpenCV();
     // testOpenCVMatrixCropReference();
     // testMatrixRelease();
-    testAddColorBorder();
+    // testAddColorBorder();
+    testMatEqual();
 
     return 0;
 }

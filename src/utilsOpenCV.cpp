@@ -14,6 +14,13 @@
 using namespace cv;
 using namespace std;
 
+bool AndreiUtils::matEqual(Mat const &m1, Mat const &m2) {
+    if (m1.size != m2.size) {
+        return false;
+    }
+    return cv::sum(m1 != m2) == cv::Scalar(0,0,0,0);
+}
+
 size_t AndreiUtils::matByteSize(const Mat &mat) {
     if (mat.isContinuous()) {
         return (mat.dataend - mat.datastart);
