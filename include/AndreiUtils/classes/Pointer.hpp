@@ -83,6 +83,13 @@ namespace AndreiUtils {
             return *this;
         }
 
+        Pointer &operator=(SmartPtrType other) {
+            this->isRegular = false;
+            this->ptr = nullptr;
+            this->smart = std::move(other);
+            return *this;
+        }
+
         Pointer &operator=(Pointer const &other) {
             if (this != &other) {
                 this->isRegular = other.isRegular;
@@ -115,6 +122,12 @@ namespace AndreiUtils {
 
         T *operator->() const noexcept {
             return this->get();
+        }
+
+        void reset() {
+            this->isRegular = true;
+            this->ptr = nullptr;
+            this->smart = nullptr;
         }
 
         inline Pointer<T const> constCast() const noexcept {
@@ -308,6 +321,13 @@ namespace AndreiUtils {
             return *this;
         }
 
+        Pointer &operator=(SmartPtrType other) {
+            this->isRegular = false;
+            this->ptr = nullptr;
+            this->smart = std::move(other);
+            return *this;
+        }
+
         Pointer &operator=(Pointer const &other) {
             if (this != &other) {
                 this->isRegular = other.isRegular;
@@ -350,6 +370,12 @@ namespace AndreiUtils {
 
         T const *operator->() const noexcept {
             return this->get();
+        }
+
+        void reset() {
+            this->isRegular = true;
+            this->ptr = nullptr;
+            this->smart = nullptr;
         }
 
         template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value

@@ -438,7 +438,6 @@ TEST(SmartPointers, TestInstanceOf) {
     EXPECT_TRUE(AndreiUtils::pointerInstanceOf<A>(b));
     EXPECT_FALSE(AndreiUtils::pointerInstanceOf<B>(a));
     EXPECT_TRUE(AndreiUtils::pointerInstanceOf<B>(b));
-
 }
 
 TEST(SmartPointers, MyPointer) {
@@ -475,7 +474,15 @@ TEST(SmartPointers, MyPointer) {
     reinterpret_pointer_cast<float>(shX);
     EXPECT_EQ(shFl, nullptr);
     EXPECT_FALSE(x == nullptr);
+}
 
+TEST(SmartPointers, MyPointerAssignment) {
+    AndreiUtils::Pointer<int> x;
+    EXPECT_TRUE(x == nullptr);
+    x = 5;
+    EXPECT_EQ(*x, 5);
+    x = std::make_shared<int>(42);
+    EXPECT_EQ(*x, 42);
 }
 
 int main(int argc, char **argv) {
@@ -492,8 +499,8 @@ int main(int argc, char **argv) {
     // testMyPointers();
     // testMyPointersInstanceOf();
     // testMyPointersCast();
-    testConstPointers();
-    testPointerCast();
+    // testConstPointers();
+    // testPointerCast();
 
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
