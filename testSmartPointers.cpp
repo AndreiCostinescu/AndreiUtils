@@ -333,19 +333,17 @@ void testPointerCast() {
 }
 
 TEST(SmartPointers, FirstExample) {
+    std::unique_ptr<A> a(new A("2"));
+    EXPECT_EQ(a->name, "2");
 
-        std::unique_ptr<A> a(new A("2"));
-        EXPECT_EQ(a->name, "2");
+    a.reset(new A("3"));
+    EXPECT_EQ(a->name, "3");
 
-        a.reset(new A("3"));
-        EXPECT_EQ(a->name, "3");
+    auto sharedA = make_shared<A>("213");
+    EXPECT_EQ(sharedA->name, "213");
 
-        auto sharedA = make_shared<A>("213");
-        EXPECT_EQ(sharedA->name, "213");
-
-        A b("4");
-        EXPECT_EQ(b.name, "4");
-
+    A b("4");
+    EXPECT_EQ(b.name, "4");
 }
 
 TEST(SmartPointers, ResetPointer) {
