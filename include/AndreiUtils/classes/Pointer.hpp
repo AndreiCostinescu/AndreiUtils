@@ -76,6 +76,13 @@ namespace AndreiUtils {
             return *this;
         }
 
+        Pointer &operator=(std::nullptr_t) {
+            this->isRegular = true;
+            this->ptr = nullptr;
+            this->smart = nullptr;
+            return *this;
+        }
+
         Pointer &operator=(T *other) {
             this->isRegular = true;
             this->ptr = other;
