@@ -20,7 +20,8 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
-        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
+        // no marking as explicit because we want the conversion from pointer to Pointer
+        Pointer(std::nullptr_t) : Pointer() {}  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
@@ -234,7 +235,8 @@ namespace AndreiUtils {
 
         Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
 
-        explicit Pointer(std::nullptr_t) : ptr(nullptr), smart(nullptr), isRegular(true) {}
+        // no marking as explicit because we want the conversion from pointer to Pointer
+        Pointer(std::nullptr_t) : Pointer() {}  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
         explicit Pointer(SubT const &datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
