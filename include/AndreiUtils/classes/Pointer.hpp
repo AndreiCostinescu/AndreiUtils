@@ -2,7 +2,8 @@
 // Created by Andrei on 18-Apr-24.
 //
 
-#pragma once
+#ifndef ANDREI_UTILS_POINTER_HPP
+#define ANDREI_UTILS_POINTER_HPP
 
 #include <AndreiUtils/traits/InstanceOf.hpp>
 #include <concepts>
@@ -18,208 +19,86 @@ namespace AndreiUtils {
         using ElementType = T;
         using SmartPtrType = std::shared_ptr<ElementType>;
 
-        Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
+        Pointer();
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(std::nullptr_t) : Pointer() {}  // NOLINT(*-explicit-constructor)
+        Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        explicit Pointer(SubT datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
-            this->operator=(std::move(datum));
-        }
+        explicit Pointer(SubT datum);
 
-        explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
+        explicit Pointer(T &datum);
 
-        explicit Pointer(T const &datum) : ptr(), smart(std::make_shared<T>(datum)), isRegular(false) {}
+        explicit Pointer(T const &datum);
 
-        explicit Pointer(T &&datum) : ptr(nullptr), smart(std::make_shared<T>(std::forward<T>(datum))),
-                                      isRegular(false) {}
+        explicit Pointer(T &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(google-explicit-constructor)
+        Pointer(T *datum);  // NOLINT(google-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
-        Pointer(SmartPtrType datum) :  // NOLINT(google-explicit-constructor)
-                ptr(nullptr), smart(std::move(datum)), isRegular(false) {}
+        Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
 
-        Pointer(Pointer const &other) : ptr(other.ptr), smart(other.smart), isRegular(other.isRegular) {}
+        Pointer(Pointer const &other);
 
-        Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
-            other.ptr = nullptr;
-            other.isRegular = false;
-        }
+        Pointer(Pointer &&other) noexcept;
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
-                Pointer(other.template cast<T>()) {}
+        Pointer(Pointer<SubT> const &other);   // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
-                Pointer(std::move(std::move(other).template castMove<T>())) {}
+        Pointer(Pointer<SubT> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer &operator=(SubT other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::make_shared<SubT>(std::move(other));
-            return *this;
-        }
+        Pointer &operator=(SubT other);
 
-        Pointer &operator=(T &other) {
-            this->isRegular = true;
-            this->ptr = &other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T &other);
 
-        Pointer &operator=(T const &other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::make_shared<T>(other);
-            return *this;
-        }
+        Pointer &operator=(T const &other);
 
-        Pointer &operator=(T &&other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::make_shared<T>(std::forward<T>(other));
-            return *this;
-        }
+        Pointer &operator=(T &&other);
 
-        Pointer &operator=(std::nullptr_t) {
-            this->isRegular = true;
-            this->ptr = nullptr;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(std::nullptr_t);
 
-        Pointer &operator=(T *other) {
-            this->isRegular = true;
-            this->ptr = other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T *other);
 
-        Pointer &operator=(SmartPtrType other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::move(other);
-            return *this;
-        }
+        Pointer &operator=(SmartPtrType other);
 
-        Pointer &operator=(Pointer const &other) {
-            if (this != &other) {
-                this->isRegular = other.isRegular;
-                this->ptr = other.ptr;
-                this->smart = other.smart;
-            }
-            return *this;
-        }
+        Pointer &operator=(Pointer const &other);
 
-        Pointer &operator=(Pointer &&other) noexcept {
-            if (this != &other) {
-                this->isRegular = other.isRegular;
-                this->ptr = other.ptr;
-                this->smart = std::move(other.smart);
-                other.ptr = nullptr;
-                other.isRegular = false;
-            }
-            return *this;
-        }
+        Pointer &operator=(Pointer &&other) noexcept;
 
-        explicit operator bool() const { return this->get() != nullptr; }
+        explicit operator bool() const;
 
-        [[nodiscard]] T *get() const {
-            return isRegular ? this->ptr : this->smart.get();
-        }
+        [[nodiscard]] T *get() const;
 
-        T &operator*() const noexcept {
-            return *(this->get());
-        }
+        T &operator*() const noexcept;
 
-        T *operator->() const noexcept {
-            return this->get();
-        }
+        T *operator->() const noexcept;
 
-        void reset() {
-            this->isRegular = true;
-            this->ptr = nullptr;
-            this->smart = nullptr;
-        }
+        void reset();
 
-        inline Pointer<T const> constCast() const noexcept {
-            if (this->isRegular) {
-                return const_cast<T const *>(this->ptr);
-            }
-            return std::const_pointer_cast<T const>(this->smart);
-        }
+        Pointer<T const> constCast() const noexcept;
 
-        inline Pointer<T const> constCastMove() && noexcept {
-            if (this->isRegular) {
-                Pointer<T const> res(const_cast<T const *>(this->ptr));
-                this->ptr = nullptr;
-                return res;
-            }
-            Pointer<T const> res(std::make_shared<T const>(std::move(*this->smart)));
-            this->smart = nullptr;
-            this->isRegular = true;
-            return res;
-        }
+        Pointer<T const> constCastMove() && noexcept;
 
         template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
-        inline Pointer<ParentCastT> cast() const noexcept {
-            if (this->isRegular) {
-                return Pointer<ParentCastT>(this->ptr);
-            }
-            return Pointer<ParentCastT>(this->smart);
-        }
+        Pointer<ParentCastT> cast() const noexcept;
 
         template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
-        inline Pointer<ParentCastT> castMove() && noexcept {
-            if (this->isRegular) {
-                Pointer<ParentCastT> res(this->ptr);
-                this->ptr = nullptr;
-                return res;
-            }
-            Pointer<ParentCastT> res(std::move(this->smart));
-            this->isRegular = true;
-            return res;
-        }
+        Pointer<ParentCastT> castMove() && noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> dynamicCast() const noexcept {
-            if (this->isRegular) {
-                return dynamic_cast<CastT *>(this->ptr);
-            }
-            return std::dynamic_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> dynamicCast() const noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> staticCast() const noexcept {
-            if (this->isRegular) {
-                return static_cast<CastT *>(this->ptr);
-            }
-            return std::static_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> staticCast() const noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> reinterpretCast() const noexcept {
-            if (this->isRegular) {
-                return reinterpret_cast<CastT *>(this->ptr);
-            }
-            return std::reinterpret_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> reinterpretCast() const noexcept;
 
         template<typename TypeCheck>
-        [[nodiscard]] bool isInstanceOf() const {
-            if (this->isRegular) {
-                return InstanceOf<TypeCheck, T *,
-                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->ptr);
-            } else {
-                return InstanceOf<TypeCheck, T *,
-                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->smart.get());
-            }
-        }
+        [[nodiscard]] bool isInstanceOf() const;
 
     protected:
         bool isRegular;
@@ -233,233 +112,104 @@ namespace AndreiUtils {
         using ElementType = T const;
         using SmartPtrType = std::shared_ptr<ElementType>;
 
-        Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
+        Pointer();
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(std::nullptr_t) : Pointer() {}  // NOLINT(*-explicit-constructor)
+        Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        explicit Pointer(SubT const &datum) : ptr(nullptr), smart(nullptr), isRegular(true) {
-            this->operator=(datum);
-        }
+        explicit Pointer(SubT const &datum);
 
-        explicit Pointer(T &datum) : ptr(&datum), smart(), isRegular(true) {}
+        explicit Pointer(T &datum);
 
-        explicit Pointer(T const &datum) : ptr(&datum), smart(), isRegular(true) {}
+        explicit Pointer(T const &datum);
 
-        explicit Pointer(T &&datum) : ptr(nullptr), smart(std::make_shared<T const>(std::forward<T>(datum))),
-                                      isRegular(false) {}
+        explicit Pointer(T &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(*-explicit-constructor)
+        Pointer(T *datum);  // NOLINT(*-explicit-constructor)
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T const *datum) : ptr(datum), smart(nullptr), isRegular(true) {}  // NOLINT(*-explicit-constructor)
+        Pointer(T const *datum);  // NOLINT(*-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
-        Pointer(SmartPtrType datum) :  // NOLINT(google-explicit-constructor)
-                ptr(nullptr), smart(std::move(datum)), isRegular(false) {}
+        Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
 
-        Pointer(Pointer const &other) : ptr(other.ptr), smart(other.smart), isRegular(other.isRegular) {}
+        Pointer(Pointer const &other);
 
-        Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)), isRegular(other.isRegular) {
-            other.ptr = nullptr;
-            other.isRegular = true;
-        }
+        Pointer(Pointer &&other) noexcept;
 
-        Pointer(Pointer<T> const &other) :   // NOLINT(*-explicit-constructor)
-                Pointer(other.constCast()) {}
+        Pointer(Pointer<T> const &other);   // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer<T> &&other) noexcept:  // NOLINT(*-explicit-constructor)
-                Pointer(std::move(std::move(other).constCastMove())) {}
+        Pointer(Pointer<T> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT const> const &other) :   // NOLINT(*-explicit-constructor)
-                Pointer(other.template cast<T>()) {}
+        Pointer(Pointer<SubT const> const &other);   // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT const> &&other) noexcept:  // NOLINT(*-explicit-constructor)
-                Pointer(std::move(std::move(other).template castMove<T>())) {}
+        Pointer(Pointer<SubT const> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> const &other) :   // NOLINT(*-explicit-constructor)
-                Pointer(other.constCast()) {}
+        Pointer(Pointer<SubT> const &other);   // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> &&other) noexcept:  // NOLINT(*-explicit-constructor)
-                Pointer(std::move(std::move(other).constCastMove())) {}
+        Pointer(Pointer<SubT> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
         template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer &operator=(SubT const &other) {  // NOLINT(misc-unconventional-assign-operator)
-            this->isRegular = true;
-            this->ptr = &other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(SubT const &other);
 
-        Pointer &operator=(T &other) {
-            this->isRegular = true;
-            this->ptr = &other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T &other);
 
-        Pointer &operator=(T const &other) {
-            this->isRegular = true;
-            this->ptr = &other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T const &other);
 
-        Pointer &operator=(T &&other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::make_shared<T const>(std::forward<T>(other));
-            return *this;
-        }
+        Pointer &operator=(T &&other);
 
-        Pointer &operator=(std::nullptr_t) {
-            this->isRegular = true;
-            this->ptr = nullptr;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(std::nullptr_t);
 
-        Pointer &operator=(T *other) {
-            this->isRegular = true;
-            this->ptr = other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T *other);
 
-        Pointer &operator=(T const *other) {
-            this->isRegular = true;
-            this->ptr = other;
-            this->smart = nullptr;
-            return *this;
-        }
+        Pointer &operator=(T const *other);
 
-        Pointer &operator=(SmartPtrType other) {
-            this->isRegular = false;
-            this->ptr = nullptr;
-            this->smart = std::move(other);
-            return *this;
-        }
+        Pointer &operator=(SmartPtrType other);
 
-        Pointer &operator=(Pointer const &other) {
-            if (this != &other) {
-                this->isRegular = other.isRegular;
-                this->ptr = other.ptr;
-                this->smart = other.smart;
-            }
-            return *this;
-        }
+        Pointer &operator=(Pointer const &other);
 
-        Pointer &operator=(Pointer &&other) noexcept {
-            if (this != &other) {
-                this->isRegular = other.isRegular;
-                this->ptr = other.ptr;
-                this->smart = std::move(other.smart);
-                other.ptr = nullptr;
-                other.isRegular = false;
-            }
-            return *this;
-        }
+        Pointer &operator=(Pointer &&other) noexcept;
 
-        Pointer &operator=(Pointer<T> const &other) {
-            *this = other.constCast();
-            return *this;
-        }
+        Pointer &operator=(Pointer<T> const &other);
 
-        Pointer &operator=(Pointer<T> &&other) noexcept {
-            *this = std::move(std::move(other).constCastMove());
-            return *this;
-        }
+        Pointer &operator=(Pointer<T> &&other) noexcept;
 
-        explicit operator bool() const { return this->get() != nullptr; }
+        explicit operator bool() const;
 
-        [[nodiscard]] T const *get() const {
-            return isRegular ? this->ptr : this->smart.get();
-        }
+        [[nodiscard]] T const *get() const;
 
-        T const &operator*() const noexcept {
-            return *(this->get());
-        }
+        T const &operator*() const noexcept;
 
-        T const *operator->() const noexcept {
-            return this->get();
-        }
+        T const *operator->() const noexcept;
 
-        void reset() {
-            this->isRegular = true;
-            this->ptr = nullptr;
-            this->smart = nullptr;
-        }
+        void reset();
 
         template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
-        inline Pointer<ParentCastT const> cast() const noexcept {
-            static_assert(std::is_base_of<ParentCastT, T>::value, "Can't cast to non-parent type!");
-            if (this->isRegular) {
-                return Pointer<ParentCastT const>(this->ptr);
-            }
-            return Pointer<ParentCastT const>(this->smart);
-        }
+        Pointer<ParentCastT const> cast() const noexcept;
 
         template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
-        inline Pointer<ParentCastT const> castMove() && noexcept {
-            static_assert(std::is_base_of<ParentCastT, T>::value, "Can't cast to non-parent type!");
-            if (this->isRegular) {
-                Pointer<ParentCastT const> res(this->ptr);
-                this->ptr = nullptr;
-                return res;
-            }
-            Pointer<ParentCastT const> res(std::move(this->smart));
-            this->isRegular = true;
-            return res;
-        }
+        Pointer<ParentCastT const> castMove() && noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> constCast() const noexcept {
-            if (this->isRegular) {
-                return const_cast<CastT *>(this->ptr);
-            }
-            return std::const_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> constCast() const noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> dynamicCast() const noexcept {
-            if (this->isRegular) {
-                return dynamic_cast<CastT *>(this->ptr);
-            }
-            return std::dynamic_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> dynamicCast() const noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> staticCast() const noexcept {
-            if (this->isRegular) {
-                return static_cast<CastT *>(this->ptr);
-            }
-            return std::static_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> staticCast() const noexcept;
 
         template<typename CastT>
-        inline Pointer<CastT> reinterpretCast() const noexcept {
-            if (this->isRegular) {
-                return reinterpret_cast<CastT *>(this->ptr);
-            }
-            return std::reinterpret_pointer_cast<CastT>(this->smart);
-        }
+        Pointer<CastT> reinterpretCast() const noexcept;
 
         template<typename TypeCheck>
-        [[nodiscard]] bool isInstanceOf() const {
-            if (this->isRegular) {
-                return InstanceOf<TypeCheck, T *,
-                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->ptr);
-            } else {
-                return InstanceOf<TypeCheck, T *,
-                        std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->smart.get());
-            }
-        }
+        [[nodiscard]] bool isInstanceOf() const;
 
     protected:
         bool isRegular;
@@ -516,3 +266,8 @@ namespace AndreiUtils {
         return val.template isInstanceOf<TypeCheck>();
     }
 }
+
+#include <AndreiUtils/classes/Pointer.tpp>
+#include <AndreiUtils/classes/PointerConst.tpp>
+
+#endif  // ANDREI_UTILS_POINTER_HPP
