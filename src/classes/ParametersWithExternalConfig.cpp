@@ -121,6 +121,10 @@ void ParametersWithExternalConfig::clear() {
     this->externalData.clear();
 }
 
+ParametersWithExternalConfig ParametersWithExternalConfig::cloneAsExternal() const {
+    return {this->getJson(), this->configFileDirectory};
+}
+
 ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config, std::string configFileDirectory) :
         ParametersWithExternalConfig() {
     this->configFileDirectory = std::move(configFileDirectory);

@@ -182,3 +182,7 @@ void Parameters::clear() {
     this->isReference = false;
     this->parameters.clear();
 }
+
+Parameters Parameters::clone() const {
+    return Parameters(this->getJson());
+}

@@ -63,6 +63,8 @@ namespace AndreiUtils {
 
         void clear() override;
 
+        [[nodiscard]] ParametersWithExternalConfig cloneAsExternal() const;
+
     protected:
         class ExternalParameterData {
         public:

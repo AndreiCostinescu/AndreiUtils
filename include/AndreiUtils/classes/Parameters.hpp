@@ -101,6 +101,8 @@ namespace AndreiUtils {
 
         virtual void clear();
 
+        [[nodiscard]] Parameters clone() const;
+
     protected:
         bool isReference;
         nlohmann::json parameters;
