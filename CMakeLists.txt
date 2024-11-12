@@ -319,6 +319,7 @@ set(GENERAL_UTILS
         ${UTILS_EXCEPTIONS}
         ${UTILS_GEOMETRY}
         ${UTILS_IMAGES}
+        ${UTILS_LIMITS}
 
         ${UTILS_NETWORK}
         ${UTILS_STRINGS}
