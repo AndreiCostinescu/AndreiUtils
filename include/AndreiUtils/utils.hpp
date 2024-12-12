@@ -217,6 +217,17 @@ namespace AndreiUtils {
     int signOf(T val, double tol = 1e-9) {
         return (AndreiUtils::less(T(0), val, tol)) - (AndreiUtils::less(val, T(0), tol));
     }
+
+    // make it template to work with different types: long, char, short, int, unsigned char, unsigned short, etc.
+    template<typename T>
+    T factorial(T val, T const &one = T(1)) {
+        T res = one;
+        while (val >= one) {
+            res = res * val;
+            val = val - one;
+        }
+        return res;
+    }
 }
 
 #endif //ANDREIUTILS_UTILS_HPP

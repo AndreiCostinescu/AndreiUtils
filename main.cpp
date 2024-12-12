@@ -634,6 +634,37 @@ void testStoringFunctionsOfDifferentType() {
     cout << mapGet<string>(functions, "f4").get<std::function<double(int const &, Test const &)>>()(23, t) << endl;
 }
 
+void testStdAlgorithms() {
+    std::vector<bool> v1;
+    std::vector<bool> v2 = {false, true};
+    std::vector<bool> v3 = {true, true};
+    std::vector<bool> v4 = {false, false};
+    cout << "all of v1: " << std::all_of(v1.begin(), v1.end(), [](auto const &b) { return b; }) << endl;
+    cout << "all of v2: " << std::all_of(v2.begin(), v2.end(), [](auto const &b) { return b; }) << endl;
+    cout << "all of v3: " << std::all_of(v3.begin(), v3.end(), [](auto const &b) { return b; }) << endl;
+    cout << "all of v4: " << std::all_of(v4.begin(), v4.end(), [](auto const &b) { return b; }) << endl;
+    cout << "any of v1: " << std::any_of(v1.begin(), v1.end(), [](auto const &b) { return b; }) << endl;
+    cout << "any of v2: " << std::any_of(v2.begin(), v2.end(), [](auto const &b) { return b; }) << endl;
+    cout << "any of v3: " << std::any_of(v3.begin(), v3.end(), [](auto const &b) { return b; }) << endl;
+    cout << "any of v4: " << std::any_of(v4.begin(), v4.end(), [](auto const &b) { return b; }) << endl;
+}
+
+void testFactorial() {
+    cout << (int) AndreiUtils::factorial(char(5)) << endl;
+    cout << AndreiUtils::factorial(short(5)) << endl;
+    cout << AndreiUtils::factorial(int(5)) << endl;
+    cout << AndreiUtils::factorial(long(5)) << endl;
+    cout << AndreiUtils::factorial(long(5)) << endl;
+    cout << (int) AndreiUtils::factorial(int8_t(5)) << endl;
+    cout << AndreiUtils::factorial(int16_t(5)) << endl;
+    cout << AndreiUtils::factorial(int32_t(5)) << endl;
+    cout << AndreiUtils::factorial(int64_t(5)) << endl;
+    cout << (int) AndreiUtils::factorial(uint8_t(5)) << endl;
+    cout << AndreiUtils::factorial(uint16_t(5)) << endl;
+    cout << AndreiUtils::factorial(uint32_t(5)) << endl;
+    cout << AndreiUtils::factorial(uint64_t(5)) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -656,6 +687,8 @@ int main() {
     // testIntervals();
     // testUserInteraction();
     // testStoringFunctionsOfDifferentType();
+    // testStdAlgorithms();
+    testFactorial();
 
     return 0;
 }
