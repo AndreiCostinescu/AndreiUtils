@@ -68,7 +68,7 @@ std::string AndreiUtils::joinStrings(vector<string> const &strings, string const
     if (strings.empty()) return "";
     string res = strings[0];
     for (int i = 1; i < strings.size(); ++i) {
-        res += joiner + res[i];
+        res += joiner + strings[i];
     }
     return res;
 }
