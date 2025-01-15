@@ -136,6 +136,16 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    bool Pointer<T>::operator<(Pointer const &other) const {
+        return this->get() < other.get();
+    }
+
+    template<typename T>
+    bool Pointer<T>::operator<(Pointer<T const> const &other) const {
+        return this->get() < other.get();
+    }
+
+    template<typename T>
     Pointer<T>::operator bool() const { return this->get() != nullptr; }
 
     template<typename T>

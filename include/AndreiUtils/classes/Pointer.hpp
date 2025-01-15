@@ -68,6 +68,10 @@ namespace AndreiUtils {
 
         Pointer &operator=(Pointer &&other) noexcept;
 
+        [[nodiscard]] bool operator<(Pointer const &other) const;
+
+        [[nodiscard]] bool operator<(Pointer<T const> const &other) const;
+
         explicit operator bool() const;
 
         [[nodiscard]] T *get() const;
@@ -179,6 +183,10 @@ namespace AndreiUtils {
         Pointer &operator=(Pointer<T> const &other);
 
         Pointer &operator=(Pointer<T> &&other) noexcept;
+
+        [[nodiscard]] bool operator<(Pointer<T> const &other) const;
+
+        [[nodiscard]] bool operator<(Pointer<T const> const &other) const;
 
         explicit operator bool() const;
 
