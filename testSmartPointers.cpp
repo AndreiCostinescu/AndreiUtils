@@ -37,6 +37,10 @@ public:
         return *this;
     }
 
+    [[nodiscard]] virtual std::string details() const {
+        return "An A of name " + this->name;
+    }
+
     string name;
 };
 
@@ -139,6 +143,10 @@ class B : public A {
 public:
     B() : A("B") {}
 
+    ~B() override {
+        cout << "Destroying " << this->name << " with x = " << this->x << endl;
+    }
+
     B(B const &other) = default;
 
     B(B &&other) noexcept: A(std::move(other)), x(other.x++) {}
@@ -157,6 +165,11 @@ public:
         }
         return *this;
     }
+
+    [[nodiscard]] std::string details() const override {
+        return "A B with x = " + std::to_string(this->x) + " and " + this->A::details();
+    }
+
 protected:
     int x = 0;
 };
@@ -515,6 +528,28 @@ TEST(SmartPointers, TestTypeWithSubTypes) {
     // static_assert(std::is_base_of_v<int, int>);  // these assertions fail
     // static_assert(std::is_base_of_v<float, float>);  // these assertions fail
     // static_assert(std::is_base_of_v<double, double>);  // these assertions fail
+}
+
+TEST(SmartPointers, TestAssigningSubTypes) {
+    B x1;
+    cout << x1.details() << endl;
+    AndreiUtils::Pointer<A const> ptr(x1);
+    cout << x1.details() << endl;
+    cout << ptr->details() << endl;
+    AndreiUtils::Pointer<A const> ptr2(std::move(x1));
+    cout << x1.details() << endl;
+    cout << ptr->details() << endl;
+    cout << ptr2->details() << endl;
+    cout << endl << endl;
+    B x2;
+    cout << x2.details() << endl;
+    ptr = x2;
+    cout << x2.details() << endl;
+    cout << ptr->details() << endl;
+    ptr2 = std::move(x2);
+    cout << x2.details() << endl;
+    cout << ptr->details() << endl;
+    cout << ptr2->details() << endl;
 }
 
 int main(int argc, char **argv) {
