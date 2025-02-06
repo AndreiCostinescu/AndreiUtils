@@ -861,9 +861,28 @@ namespace AndreiUtils {
     }
 
     template<typename OpResT, typename T>
+    std::vector<OpResT>
+    vectorOp(std::vector<T> &v, std::function<void(std::vector<OpResT> &, T &)> const &op) {
+        std::vector<OpResT> res;
+        for (auto &elem: v) {
+            op(res, elem);
+        }
+        return res;
+    }
+
+    template<typename OpResT, typename T>
     std::vector<OpResT> vectorOp(std::vector<T> const &v, std::function<OpResT(T const &)> const &op) {
         std::vector<OpResT> res;
         for (auto const &elem: v) {
+            res.emplace_back(std::move(op(elem)));
+        }
+        return res;
+    }
+
+    template<typename OpResT, typename T>
+    std::vector<OpResT> vectorOp(std::vector<T> &v, std::function<OpResT(T &)> const &op) {
+        std::vector<OpResT> res;
+        for (auto &elem: v) {
             res.emplace_back(std::move(op(elem)));
         }
         return res;
