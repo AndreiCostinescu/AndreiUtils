@@ -2,11 +2,11 @@
 // Created by Andrei on 03.11.22.
 //
 
+#include <algorithm>
 #include <AndreiUtils/utilsVector.hpp>
 #include <Eigen/Dense>
 #include <random>
 #include <gtest/gtest.h>
-
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -318,6 +318,16 @@ TEST(VectorTest, ObjectLifecycle) {
     delete2dArray(m, 3);
 
     ASSERT_EQ(A::count, 0);
+}
+
+TEST(VectorTest, StdAllOfEmpty) {
+    std::vector<int> x;
+    EXPECT_TRUE(std::all_of(x.begin(), x.end(), [](auto const &val) { return val == 5; }));
+}
+
+TEST(VectorTest, StdAnyOfEmpty) {
+    std::vector<int> x;
+    EXPECT_FALSE(std::any_of(x.begin(), x.end(), [](auto const &val) { return val == 5; }));
 }
 
 int main(int argc, char **argv) {
