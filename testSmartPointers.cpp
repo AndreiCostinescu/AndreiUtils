@@ -37,6 +37,10 @@ public:
         return *this;
     }
 
+    [[nodiscard]] virtual std::string details() const {
+        return "An A of name " + this->name;
+    }
+
     string name;
 };
 
@@ -139,9 +143,13 @@ class B : public A {
 public:
     B() : A("B") {}
 
+    ~B() override {
+        cout << "Destroying " << this->name << " with x = " << this->x << endl;
+    }
+
     B(B const &other) = default;
 
-    B(B &&other) noexcept: A(std::move(other)) {}
+    B(B &&other) noexcept: A(std::move(other)), x(other.x++) {}
 
     B &operator=(B const &other) {
         if (this != &other) {
@@ -153,9 +161,17 @@ public:
     B &operator=(B &&other) noexcept {
         if (this != &other) {
             this->A::operator=(std::move(other));
+            this->x = other.x++;
         }
         return *this;
     }
+
+    [[nodiscard]] std::string details() const override {
+        return "A B with x = " + std::to_string(this->x) + " and " + this->A::details();
+    }
+
+protected:
+    int x = 0;
 };
 
 void testInstanceOf() {
@@ -272,13 +288,14 @@ void testConstPointers() {
     cout << "0)" << endl;
     AndreiUtils::Pointer<int> intPtr1(x);
     cout << "1)" << endl;
-    // AndreiUtils::Pointer<int> intPtr2(y);  // fails because Pointer<T> does not accept a "T const" value!
-    AndreiUtils::Pointer<int> intPtr2((int) y);
+    AndreiUtils::Pointer<int> intPtr2(y);
     cout << "2)" << endl;
-    AndreiUtils::Pointer<int const> intPtr3(x);
+    AndreiUtils::Pointer<int> intPtr3((int) y);
     cout << "3)" << endl;
-    AndreiUtils::Pointer<int const> intPtr4(y);
+    AndreiUtils::Pointer<int const> intPtr4(x);
     cout << "4)" << endl;
+    AndreiUtils::Pointer<int const> intPtr5(y);
+    cout << "5)" << endl;
 
     Test t1("t1");
     Test const t2("t2");
@@ -315,8 +332,9 @@ void testConstPointers() {
     assert(ptr6->name.empty());
     cout << "8.4)" << endl;
     AndreiUtils::Pointer<Test const> ptr8(std::move(ptr7));
-    AndreiUtils::Pointer<Test const> ptr9(std::move(ptr1));
-    // AndreiUtils::Pointer<Test> ptr10(std::move(ptr8));  // fails with wrong const-type
+    AndreiUtils::Pointer<Test const> ptr9(ptr1);
+    AndreiUtils::Pointer<Test const> ptr10(std::move(ptr1));
+    // AndreiUtils::Pointer<Test> ptr11(std::move(ptr8));  // fails with wrong const-type
 }
 
 void testPointerCast() {
@@ -483,6 +501,55 @@ TEST(SmartPointers, MyPointerAssignment) {
     EXPECT_EQ(*x, 5);
     x = std::make_shared<int>(42);
     EXPECT_EQ(*x, 42);
+}
+
+TEST(SmartPointers, SubClassPointer) {
+    B b;
+    AndreiUtils::Pointer<A> x1(&b);
+    AndreiUtils::Pointer<A const> y1(&b);
+    B const bConst;
+    // AndreiUtils::Pointer<A> z1(&bConst);  // not possible
+    AndreiUtils::Pointer<A const> w1(&bConst);
+
+    A a;
+    AndreiUtils::Pointer<A> x(&a);
+    AndreiUtils::Pointer<A const> y2(&a);
+    A const aConst;
+    // AndreiUtils::Pointer<A> z2(&aConst);  // not possible
+    AndreiUtils::Pointer<A const> w2(&aConst);
+}
+
+TEST(SmartPointers, TestTypeWithSubTypes) {
+    static_assert(std::is_base_of_v<A, A>);
+    static_assert(std::is_base_of_v<A, B>);
+    static_assert(std::is_base_of_v<B, B>);
+    // static_assert(std::is_base_of_v<B, A>);  // these assertions fail
+    // static_assert(std::is_base_of_v<A, int>);  // these assertions fail
+    // static_assert(std::is_base_of_v<int, int>);  // these assertions fail
+    // static_assert(std::is_base_of_v<float, float>);  // these assertions fail
+    // static_assert(std::is_base_of_v<double, double>);  // these assertions fail
+}
+
+TEST(SmartPointers, TestAssigningSubTypes) {
+    B x1;
+    cout << x1.details() << endl;
+    AndreiUtils::Pointer<A const> ptr(x1);
+    cout << x1.details() << endl;
+    cout << ptr->details() << endl;
+    AndreiUtils::Pointer<A const> ptr2(std::move(x1));
+    cout << x1.details() << endl;
+    cout << ptr->details() << endl;
+    cout << ptr2->details() << endl;
+    cout << endl << endl;
+    B x2;
+    cout << x2.details() << endl;
+    ptr = x2;
+    cout << x2.details() << endl;
+    cout << ptr->details() << endl;
+    ptr2 = std::move(x2);
+    cout << x2.details() << endl;
+    cout << ptr->details() << endl;
+    cout << ptr2->details() << endl;
 }
 
 int main(int argc, char **argv) {

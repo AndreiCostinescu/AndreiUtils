@@ -10,6 +10,11 @@
 #include <memory>
 
 namespace AndreiUtils {
+    // the first condition is to handle non-class types such as int, float, double
+    // (which fail the std::is_base_of<int, int> condition...)
+    template<typename T, typename SubT>
+    concept TypeWithSubTypes = std::is_same_v<T, SubT> || std::is_base_of_v<T, SubT>;
+
     template<typename T, typename SubT>
     concept StrictSubTypeOfT = std::is_base_of<T, SubT>::value && std::negation<std::is_same<T, SubT>>::value;
 
@@ -24,14 +29,14 @@ namespace AndreiUtils {
         // no marking as explicit because we want the conversion from pointer to Pointer
         Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        explicit Pointer(SubT datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type &datum);
 
-        explicit Pointer(T &datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type const &datum);
 
-        explicit Pointer(T const &datum);
-
-        explicit Pointer(T &&datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
         Pointer(T *datum);  // NOLINT(google-explicit-constructor)
@@ -39,24 +44,28 @@ namespace AndreiUtils {
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
         Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
 
-        Pointer(Pointer const &other);
+        Pointer(Pointer const &other);   // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer &&other) noexcept;
+        Pointer(Pointer &&other) noexcept;   // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> const &other);   // NOLINT(*-explicit-constructor)
+        // differentiation between StrictSubType is needed because of the protected (isRegular, ptr, smart)
+        // members of Pointer<Type> which must be accessible from the constructor or Pointer<T>
+        // (but they would not be accessible without this differentiation because of their protected status)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> &&other) noexcept;  // NOLINT(*-explicit-constructor)
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer(Pointer<Type> const &other);   // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer &operator=(SubT other);
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer(Pointer<Type> &&other) noexcept;   // NOLINT(*-explicit-constructor)
 
-        Pointer &operator=(T &other);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type &other);
 
-        Pointer &operator=(T const &other);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type const &other);
 
-        Pointer &operator=(T &&other);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type &&other);
 
         Pointer &operator=(std::nullptr_t);
 
@@ -67,6 +76,12 @@ namespace AndreiUtils {
         Pointer &operator=(Pointer const &other);
 
         Pointer &operator=(Pointer &&other) noexcept;
+
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer &operator=(Pointer<Type> const &other);
+
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         [[nodiscard]] bool operator<(Pointer const &other) const;
 
@@ -86,10 +101,10 @@ namespace AndreiUtils {
 
         Pointer<T const> constCastMove() && noexcept;
 
-        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        template<typename ParentCastT> requires TypeWithSubTypes<ParentCastT, T>
         Pointer<ParentCastT> cast() const noexcept;
 
-        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        template<typename ParentCastT> requires TypeWithSubTypes<ParentCastT, T>
         Pointer<ParentCastT> castMove() && noexcept;
 
         template<typename CastT>
@@ -121,14 +136,14 @@ namespace AndreiUtils {
         // no marking as explicit because we want the conversion from pointer to Pointer
         Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        explicit Pointer(SubT const &datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type &datum);
 
-        explicit Pointer(T &datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type const &datum);
 
-        explicit Pointer(T const &datum);
-
-        explicit Pointer(T &&datum);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        explicit Pointer(Type &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
         Pointer(T *datum);  // NOLINT(*-explicit-constructor)
@@ -143,30 +158,26 @@ namespace AndreiUtils {
 
         Pointer(Pointer &&other) noexcept;
 
-        Pointer(Pointer<T> const &other);   // NOLINT(*-explicit-constructor)
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer(Pointer<Type const> const &other);  // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer<T> &&other) noexcept;  // NOLINT(*-explicit-constructor)
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer(Pointer<Type const> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT const> const &other);   // NOLINT(*-explicit-constructor)
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer(Pointer<Type> const &other);  // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT const> &&other) noexcept;  // NOLINT(*-explicit-constructor)
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer(Pointer<Type> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> const &other);   // NOLINT(*-explicit-constructor)
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type &other);
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer(Pointer<SubT> &&other) noexcept;  // NOLINT(*-explicit-constructor)
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type const &other);
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
-        Pointer &operator=(SubT const &other);
-
-        Pointer &operator=(T &other);
-
-        Pointer &operator=(T const &other);
-
-        Pointer &operator=(T &&other);
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Type &&other);
 
         Pointer &operator=(std::nullptr_t);
 
@@ -180,9 +191,17 @@ namespace AndreiUtils {
 
         Pointer &operator=(Pointer &&other) noexcept;
 
-        Pointer &operator=(Pointer<T> const &other);
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer &operator=(Pointer<Type const> const &other);
 
-        Pointer &operator=(Pointer<T> &&other) noexcept;
+        template<typename Type> requires StrictSubTypeOfT<T, Type>
+        Pointer &operator=(Pointer<Type const> &&other) noexcept;
+
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Pointer<Type> const &other);
+
+        template<typename Type> requires TypeWithSubTypes<T, Type>
+        Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         [[nodiscard]] bool operator<(Pointer<T> const &other) const;
 
@@ -198,10 +217,10 @@ namespace AndreiUtils {
 
         void reset();
 
-        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        template<typename ParentCastT> requires TypeWithSubTypes<ParentCastT, T>
         Pointer<ParentCastT const> cast() const noexcept;
 
-        template<typename ParentCastT> requires std::is_base_of<ParentCastT, T>::value
+        template<typename ParentCastT> requires TypeWithSubTypes<ParentCastT, T>
         Pointer<ParentCastT const> castMove() && noexcept;
 
         template<typename CastT>
