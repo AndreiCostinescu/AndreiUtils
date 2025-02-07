@@ -552,6 +552,17 @@ TEST(SmartPointers, TestAssigningSubTypes) {
     cout << ptr2->details() << endl;
 }
 
+TEST(SmartPointers, ConstAssignmentForNormalPointers) {
+    int *x;
+    int const *xConst;
+    int y = 5;
+    int const yConst = 5;
+    x = &y;
+    // x = &yConst;  // <- does not compile
+    xConst = &y;
+    xConst = &yConst;
+}
+
 int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
