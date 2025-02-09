@@ -116,7 +116,7 @@ namespace AndreiUtils {
     Pointer<T> &Pointer<T>::operator=(Type &&other) {
         this->isRegular = false;
         this->ptr = nullptr;
-        this->smart = std::make_shared<T>(std::forward<Type>(other));
+        this->smart = std::make_shared<std::conditional_t<std::is_const_v<T>, Type const, Type>>(std::forward<Type>(other));
         return *this;
     }
 
