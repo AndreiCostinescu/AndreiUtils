@@ -275,6 +275,27 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    Pointer<std::remove_const_t<T>> Pointer<T>::constCast() const noexcept requires std::is_const_v<T> {
+        if (this->isRegular) {
+            return Pointer<std::remove_const_t<T>>(const_cast<std::remove_const_t<T> *>(this->ptr));
+        }
+        return Pointer<std::remove_const_t<T>>(std::const_pointer_cast<std::remove_const_t<T>>(this->smart));
+    }
+
+    template<typename T>
+    Pointer<std::remove_const_t<T>> Pointer<T>::constCastMove() && noexcept requires std::is_const_v<T> {
+        if (this->isRegular) {
+            Pointer<std::remove_const_t<T>> res(const_cast<std::remove_const_t<T> *>(this->ptr));
+            this->ptr = nullptr;
+            return res;
+        }
+        Pointer<std::remove_const_t<T>> res(std::make_shared<std::remove_const_t<T>>(std::move(*this->smart)));
+        this->smart = nullptr;
+        this->isRegular = true;
+        return res;
+    }
+
+    template<typename T>
     template<typename ParentCastT>
     requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
     Pointer<ParentCastT> Pointer<T>::cast() const noexcept {

@@ -151,6 +151,10 @@ namespace AndreiUtils {
 
         Pointer<T const> constCastMove() && noexcept requires NotConst<T>;
 
+        Pointer<std::remove_const_t<T>> constCast() const noexcept requires std::is_const_v<T>;
+
+        Pointer<std::remove_const_t<T>> constCastMove() && noexcept requires std::is_const_v<T>;
+
         template<typename ParentCastT>
         requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
         Pointer<ParentCastT> cast() const noexcept;
