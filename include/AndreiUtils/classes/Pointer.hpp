@@ -175,6 +175,9 @@ namespace AndreiUtils {
         template<typename TypeCheck>
         [[nodiscard]] bool isInstanceOf() const;
 
+        template<typename TypeCheck>
+        [[nodiscard]] bool isInstanceOf(TypeCheck const *&res) const;
+
     protected:
         bool isRegular;
         T *ptr;
@@ -226,6 +229,11 @@ namespace AndreiUtils {
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(Pointer<InstanceType> const &val) {
         return val.template isInstanceOf<TypeCheck>();
+    }
+
+    template<typename TypeCheck, typename InstanceType>
+    bool pointerInstanceOf(Pointer<InstanceType> const &val, TypeCheck const *&res) {
+        return val.template isInstanceOf<TypeCheck>(res);
     }
 }
 

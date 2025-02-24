@@ -357,4 +357,16 @@ namespace AndreiUtils {
                     std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->smart.get());
         }
     }
+
+    template<typename T>
+    template<typename TypeCheck>
+    bool Pointer<T>::isInstanceOf(TypeCheck const *&res) const {
+        if (this->isRegular) {
+            return InstanceOf<TypeCheck, T *, std::is_polymorphic<
+                    typename std::remove_pointer<T>::type>::value>::getIfIsInstance(this->ptr, res);
+        } else {
+            return InstanceOf<TypeCheck, T *, std::is_polymorphic<
+                    typename std::remove_pointer<T>::type>::value>::get(this->smart.get(), res);
+        }
+    }
 }

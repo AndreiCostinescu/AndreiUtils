@@ -19,9 +19,21 @@ namespace AndreiUtils {
     }
 
     template<typename TypeCheck, typename InstanceType>
+    bool instanceOf(InstanceType const &val, TypeCheck const *&res) {
+        return InstanceOf<TypeCheck, InstanceType, std::is_polymorphic<
+                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val, res);
+    }
+
+    template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::shared_ptr<InstanceType> const &val) {
         return InstanceOf<TypeCheck, InstanceType *,
                 std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
+    }
+
+    template<typename TypeCheck, typename InstanceType>
+    bool pointerInstanceOf(std::shared_ptr<InstanceType> const &val, TypeCheck const *&res) {
+        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
+                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
     }
 
     template<typename TypeCheck, typename InstanceType>
@@ -31,9 +43,21 @@ namespace AndreiUtils {
     }
 
     template<typename TypeCheck, typename InstanceType>
+    bool pointerInstanceOf(std::unique_ptr<InstanceType> const &val, TypeCheck const *&res) {
+        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
+                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
+    }
+
+    template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::weak_ptr<InstanceType> const &val) {
         return InstanceOf<TypeCheck, InstanceType *,
                 std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
+    }
+
+    template<typename TypeCheck, typename InstanceType>
+    bool pointerInstanceOf(std::weak_ptr<InstanceType> const &val, TypeCheck const *&res) {
+        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
+                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
     }
 
     template<typename T>
