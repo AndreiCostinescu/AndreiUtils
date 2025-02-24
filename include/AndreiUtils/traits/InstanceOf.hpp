@@ -11,28 +11,28 @@ namespace AndreiUtils {
     template<typename TypeCheck, typename InstanceType, bool IsInstanceTypePolymorphic>
     struct InstanceOf {
         static bool get(InstanceType const &) {
-            return std::is_same_v<TypeCheck, InstanceType>;
+            return std::is_same_v<std::remove_const_t<TypeCheck>, std::remove_const_t<InstanceType>>;
         }
     };
 
     template<typename TypeCheck, typename InstanceType>
     struct InstanceOf<TypeCheck, InstanceType *, false> {
         static bool get(InstanceType const *) {
-            return std::is_same_v<TypeCheck, InstanceType>;
+            return std::is_same_v<std::remove_const_t<TypeCheck>, std::remove_const_t<InstanceType>>;
         }
     };
 
-    template<typename T, typename InstanceType>
-    struct InstanceOf<T, InstanceType, true> {
+    template<typename TypeCheck, typename InstanceType>
+    struct InstanceOf<TypeCheck, InstanceType, true> {
         static bool get(InstanceType const &val) {
-            return dynamic_cast<T const *>(&val) != nullptr;
+            return dynamic_cast<TypeCheck const *>(&val) != nullptr;
         }
     };
 
-    template<typename T, typename InstanceType>
-    struct InstanceOf<T, InstanceType *, true> {
+    template<typename TypeCheck, typename InstanceType>
+    struct InstanceOf<TypeCheck, InstanceType *, true> {
         static bool get(InstanceType const *val) {
-            return dynamic_cast<T const *>(val) != nullptr;
+            return dynamic_cast<TypeCheck const *>(val) != nullptr;
         }
     };
 }
