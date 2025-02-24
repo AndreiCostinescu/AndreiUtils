@@ -10,8 +10,15 @@
 namespace AndreiUtils {
     template<typename TypeCheck, typename InstanceType, bool IsInstanceTypePolymorphic>
     struct InstanceOf {
-        static bool get(InstanceType const &val) {
-            return false;
+        static bool get(InstanceType const &) {
+            return std::is_same_v<TypeCheck, InstanceType>;
+        }
+    };
+
+    template<typename TypeCheck, typename InstanceType>
+    struct InstanceOf<TypeCheck, InstanceType *, false> {
+        static bool get(InstanceType const *) {
+            return std::is_same_v<TypeCheck, InstanceType>;
         }
     };
 

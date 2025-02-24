@@ -188,7 +188,6 @@ void testIsDetected() {
 }
 
 TEST(TypeTraitsTest, Pointers) {
-
     B_ b;
     A_* a = &b;
     EXPECT_EQ(tmpStruct<B_>::tmpF(b), "B");
@@ -196,7 +195,6 @@ TEST(TypeTraitsTest, Pointers) {
 }
 
 TEST(TypeTraitsTest, IntegralAndUnsignedTypes) {
-
     EXPECT_TRUE(std::is_integral<bool>::value);
     EXPECT_TRUE(std::is_unsigned<bool>::value);
 
@@ -215,7 +213,6 @@ TEST(TypeTraitsTest, IntegralAndUnsignedTypes) {
 }
 
 TEST(TypeTraitsTest, IsNumericType) {
-
     EXPECT_TRUE(std::is_integral_v<bool>);
     EXPECT_TRUE(std::is_integral_v<int>);
     EXPECT_FALSE(std::is_integral_v<double>);
@@ -253,14 +250,14 @@ TEST(TypeTraitsTest, InstanceOfCheck) {
     EXPECT_FALSE(instanceOf<B_>(c));
     EXPECT_FALSE(instanceOf<B_>(e));
 
-    EXPECT_FALSE(instanceOf<Test>(a));
-    EXPECT_FALSE(instanceOf<Test>(b));
-    EXPECT_FALSE(instanceOf<Test>(c));
-    EXPECT_FALSE(instanceOf<Test>(e));
+    EXPECT_FALSE(instanceOf<MyTest>(a));
+    EXPECT_FALSE(instanceOf<MyTest>(b));
+    EXPECT_FALSE(instanceOf<MyTest>(c));
+    EXPECT_TRUE(instanceOf<MyTest>(e));
+    EXPECT_TRUE(instanceOf<MyTest>(&e));
 }
 
 TEST(TypeTraitsTest, TestFunctionDetection) {
-
     EXPECT_FALSE((AndreiUtils::is_detected<has_f1, MyTest>::value));
     EXPECT_FALSE((AndreiUtils::is_detected<has_f2, MyTest>::value));
     EXPECT_TRUE((AndreiUtils::is_detected<has_f3, MyTest>::value));
