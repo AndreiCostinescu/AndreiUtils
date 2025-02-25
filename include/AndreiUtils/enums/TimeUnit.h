@@ -18,11 +18,15 @@ namespace AndreiUtils {
         NANOSECOND,
     };
 
-    double getMultiplicationFactorRelativeToSeconds(TimeUnit timeUnit);
+    [[nodiscard]] TimeUnit getLargestTimeUnit();
 
-    std::string convertTimeUnitToString(const TimeUnit &timeUnit);
+    [[nodiscard]] TimeUnit getSmallestTimeUnit();
 
-    TimeUnit convertStringToTimeUnit(std::string const &timeUnit);
+    [[nodiscard]] double getMultiplicationFactorRelativeToSeconds(TimeUnit timeUnit);
+
+    [[nodiscard]] std::string convertTimeUnitToString(TimeUnit const &timeUnit);
+
+    [[nodiscard]] TimeUnit convertStringToTimeUnit(std::string const &timeUnit);
 }
 
 #endif //ANDREIUTILS_TIMEUNITS_H

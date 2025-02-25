@@ -9,6 +9,14 @@
 using namespace AndreiUtils;
 using namespace std;
 
+AndreiUtils::TimeUnit AndreiUtils::getLargestTimeUnit() {
+    return AndreiUtils::TimeUnit::DAY;
+}
+
+AndreiUtils::TimeUnit AndreiUtils::getSmallestTimeUnit() {
+    return AndreiUtils::TimeUnit::NANOSECOND;
+}
+
 double AndreiUtils::getMultiplicationFactorRelativeToSeconds(TimeUnit timeUnit) {
     switch (timeUnit) {
         case DAY: {
@@ -38,7 +46,7 @@ double AndreiUtils::getMultiplicationFactorRelativeToSeconds(TimeUnit timeUnit) 
     }
 }
 
-std::string AndreiUtils::convertTimeUnitToString(const TimeUnit &timeUnit) {
+std::string AndreiUtils::convertTimeUnitToString(TimeUnit const &timeUnit) {
     switch (timeUnit) {
         case DAY: {
             return "d";
