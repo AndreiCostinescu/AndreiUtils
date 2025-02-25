@@ -369,4 +369,13 @@ namespace AndreiUtils {
                     typename std::remove_pointer<T>::type>::value>::get(this->smart.get(), res);
         }
     }
+
+    template<typename T>
+    bool Pointer<T>::getIfPtrIsSmartPtr(Pointer::SmartPtrType &smartRef) const {
+        if (!this->isRegular) {
+            smartRef = this->smart;
+            return true;
+        }
+        return false;
+    }
 }

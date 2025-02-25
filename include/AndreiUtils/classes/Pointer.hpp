@@ -178,6 +178,8 @@ namespace AndreiUtils {
         template<typename TypeCheck>
         [[nodiscard]] bool isInstanceOf(TypeCheck const *&res) const;
 
+        [[nodiscard]] bool getIfPtrIsSmartPtr(SmartPtrType &smartRef) const;
+
     protected:
         bool isRegular;
         T *ptr;
