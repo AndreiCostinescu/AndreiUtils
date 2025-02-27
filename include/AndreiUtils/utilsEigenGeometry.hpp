@@ -232,4 +232,15 @@ namespace AndreiUtils {
             Eigen::Matrix<T, N, 1> const &mean, Eigen::Matrix<T, N, 1> const &standardDeviation) {
         return (normal01Sampler.sample() * sampleUnitVector<T, N>()).cwiseProduct(standardDeviation) + mean;
     }
+
+    template<typename T, int Rows, int Cols, int Options, int _MaxRows, int _MaxCols>
+    [[nodiscard]] bool coefficientWiseApproximate(Eigen::Matrix<T, Rows, Cols, Options, _MaxRows, _MaxCols> const &a,
+                                                  Eigen::Matrix<T, Rows, Cols, Options, _MaxRows, _MaxCols> const &b,
+                                                  double const tolerance = 1e-9, bool const allowEqual = false) {
+        T const maxCoefficient = (a - b).cwiseAbs().maxCoeff();
+        if (allowEqual) {
+            return maxCoefficient <= tolerance;
+        }
+        return maxCoefficient < tolerance;
+    }
 }
