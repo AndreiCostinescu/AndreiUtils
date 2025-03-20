@@ -833,6 +833,18 @@ namespace AndreiUtils {
         return res;
     }
 
+    template<typename CastT, typename T>
+    [[nodiscard]] std::vector<CastT> vectorCast(std::vector<T> const &v) {
+        std::vector<CastT> res;
+        if (v.empty()) {
+            return res;
+        }
+        for (auto const &vElem: v) {
+            res.emplace_back(vElem);
+        }
+        return res;
+    }
+
     template<typename T>
     [[nodiscard]] T **new2dArray(long size1, long size2) {
         T **res = new T *[size1];
