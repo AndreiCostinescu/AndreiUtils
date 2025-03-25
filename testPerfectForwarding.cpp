@@ -86,7 +86,7 @@ AndreiUtils::Pointer<T> createPointer(T &&t) {
 }
 
 AndreiUtils::Pointer<T> createPointer(T *t) {
-    return AndreiUtils::Pointer<T>(t);
+    return {t};
 }
 
 void testPerfectForwarding() {
@@ -99,9 +99,11 @@ void testPerfectForwarding() {
     cout << f2(x) << endl;
     cout << f2(y) << endl;
 
-    createPointer(x)->s += "!";
+    auto tmp = createPointer(x);
+    tmp->s += "!";
     cout << x.s << endl;
-    createPointer((T) y)->s += "!";
+    tmp = createPointer(static_cast<T>(y));
+    tmp->s += "!";
     cout << y.s << endl;
 }
 
