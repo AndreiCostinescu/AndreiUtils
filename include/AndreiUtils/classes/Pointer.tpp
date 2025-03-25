@@ -247,11 +247,6 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    T &&Pointer<T>::getMoveData() && {
-        return isRegular ? std::move(*this->ptr) : std::move(*this->smart);
-    }
-
-    template<typename T>
     void Pointer<T>::reset() {
         this->isRegular = true;
         this->ptr = nullptr;

@@ -141,11 +141,15 @@ namespace AndreiUtils {
 
         [[nodiscard]] T *get() const &;
 
+        [[nodiscard]] T *get() const && = delete;
+
         T *operator->() const & noexcept;
+
+        T *operator->() const && noexcept = delete;
 
         T &operator*() const & noexcept;
 
-        [[nodiscard]] T &&getMoveData() &&;
+        T &operator*() const && noexcept = delete;
 
         void reset();
 
