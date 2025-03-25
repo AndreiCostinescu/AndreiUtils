@@ -139,9 +139,9 @@ namespace AndreiUtils {
 
         explicit operator bool() const;
 
-        [[nodiscard]] T *get() const &;
+        [[nodiscard]] T *get() const & noexcept;
 
-        [[nodiscard]] T *get() const && = delete;
+        [[nodiscard]] T *get() const && noexcept = delete;
 
         T *operator->() const & noexcept;
 
@@ -188,7 +188,7 @@ namespace AndreiUtils {
 
     protected:
         bool isRegular;
-        T *ptr;
+        T *regular;
         SmartPtrType smart;
     };
 

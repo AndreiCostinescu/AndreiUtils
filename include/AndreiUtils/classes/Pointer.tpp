@@ -6,7 +6,7 @@
 
 namespace AndreiUtils {
     template<typename T>
-    Pointer<T>::Pointer() : ptr(nullptr), smart(nullptr), isRegular(true) {}
+    Pointer<T>::Pointer() : regular(nullptr), smart(nullptr), isRegular(true) {}
 
     // no marking as explicit because we want the conversion from pointer to Pointer
     template<typename T>
@@ -15,14 +15,14 @@ namespace AndreiUtils {
     template<typename T>
     template<typename Type>
     requires TypeWithSubTypes<T, Type>
-    Pointer<T>::Pointer(Type &datum) : ptr(&datum), smart(), isRegular(true) {}
+    Pointer<T>::Pointer(Type &datum) : regular(&datum), smart(), isRegular(true) {}
 
     template<typename T>
     template<typename Type>
     requires TypeWithSubTypes<T, Type>
     Pointer<T>::Pointer(Type const &datum) : Pointer() {
         if constexpr (std::is_const_v<T>) {
-            this->ptr = &datum;
+            this->regular = &datum;
         } else {
             this->smart = std::make_shared<Type>(datum);
             this->isRegular = false;
@@ -32,29 +32,30 @@ namespace AndreiUtils {
     template<typename T>
     template<typename Type>
     requires TypeWithSubTypes<T, Type>
-    Pointer<T>::Pointer(Type &&datum) : ptr(nullptr), smart(std::make_shared<Type>(std::forward<Type>(datum))),
+    Pointer<T>::Pointer(Type &&datum) : regular(nullptr), smart(std::make_shared<Type>(std::forward<Type>(datum))),
                                         isRegular(false) {}
 
     // no marking as explicit because we want the conversion from pointer to Pointer
     template<typename T>
-    Pointer<T>::Pointer(T *datum) : ptr(datum), smart(nullptr), isRegular(true) {}
+    Pointer<T>::Pointer(T *datum) : regular(datum), smart(nullptr), isRegular(true) {}
 
     // no marking as explicit because we want the conversion from pointer to Pointer
     template<typename T>
     Pointer<T>::Pointer(std::remove_const_t<T> *datum) requires std::is_const_v<T>:
-            ptr(datum), smart(nullptr), isRegular(true) {}
+            regular(datum), smart(nullptr), isRegular(true) {}
 
     // no marking as explicit because we want the conversion from SmartPtrType to Pointer
     template<typename T>
-    Pointer<T>::Pointer(SmartPtrType datum) : ptr(nullptr), smart(std::move(datum)), isRegular(false) {}
+    Pointer<T>::Pointer(SmartPtrType datum) : regular(nullptr), smart(std::move(datum)), isRegular(false) {}
 
     template<typename T>
-    Pointer<T>::Pointer(Pointer const &other) : ptr(other.ptr), smart(other.smart), isRegular(other.isRegular) {}
+    Pointer<T>::Pointer(Pointer const &other) : regular(other.regular), smart(other.smart),
+                                                isRegular(other.isRegular) {}
 
     template<typename T>
-    Pointer<T>::Pointer(Pointer &&other) noexcept: ptr(other.ptr), smart(std::move(other.smart)),
+    Pointer<T>::Pointer(Pointer &&other) noexcept: regular(other.regular), smart(std::move(other.smart)),
                                                    isRegular(other.isRegular) {
-        other.ptr = nullptr;
+        other.regular = nullptr;
         other.isRegular = false;
     }
 
@@ -91,7 +92,7 @@ namespace AndreiUtils {
     requires TypeWithSubTypes<T, Type>
     Pointer<T> &Pointer<T>::operator=(Type &other) {
         this->isRegular = true;
-        this->ptr = &other;
+        this->regular = &other;
         this->smart = nullptr;
         return *this;
     }
@@ -101,7 +102,7 @@ namespace AndreiUtils {
     requires TypeWithSubTypes<T, Type>
     Pointer<T> &Pointer<T>::operator=(Type const &other) {
         if constexpr (std::is_const_v<T>) {
-            this->ptr = &other;
+            this->regular = &other;
             this->isRegular = true;
         } else {
             this->smart = std::make_shared<Type>(other);
@@ -115,7 +116,7 @@ namespace AndreiUtils {
     requires TypeWithSubTypes<T, Type>
     Pointer<T> &Pointer<T>::operator=(Type &&other) {
         this->isRegular = false;
-        this->ptr = nullptr;
+        this->regular = nullptr;
         this->smart = std::make_shared<std::conditional_t<std::is_const_v<T>, Type const, Type>>(std::forward<Type>(other));
         return *this;
     }
@@ -123,7 +124,7 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<T> &Pointer<T>::operator=(std::nullptr_t) {
         this->isRegular = true;
-        this->ptr = nullptr;
+        this->regular = nullptr;
         this->smart = nullptr;
         return *this;
     }
@@ -131,7 +132,7 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<T> &Pointer<T>::operator=(T *other) {
         this->isRegular = true;
-        this->ptr = other;
+        this->regular = other;
         this->smart = nullptr;
         return *this;
     }
@@ -139,7 +140,7 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<T> &Pointer<T>::operator=(std::remove_const_t<T> *other) requires std::is_const_v<T> {
         this->isRegular = true;
-        this->ptr = other;
+        this->regular = other;
         this->smart = nullptr;
         return *this;
     }
@@ -147,7 +148,7 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<T> &Pointer<T>::operator=(SmartPtrType other) {
         this->isRegular = false;
-        this->ptr = nullptr;
+        this->regular = nullptr;
         this->smart = std::move(other);
         return *this;
     }
@@ -156,7 +157,7 @@ namespace AndreiUtils {
     Pointer<T> &Pointer<T>::operator=(Pointer const &other) {
         if (this != &other) {
             this->isRegular = other.isRegular;
-            this->ptr = other.ptr;
+            this->regular = other.regular;
             this->smart = other.smart;
         }
         return *this;
@@ -166,9 +167,9 @@ namespace AndreiUtils {
     Pointer<T> &Pointer<T>::operator=(Pointer &&other) noexcept {
         if (this != &other) {
             this->isRegular = other.isRegular;
-            this->ptr = other.ptr;
+            this->regular = other.regular;
             this->smart = std::move(other.smart);
-            other.ptr = nullptr;
+            other.regular = nullptr;
             other.isRegular = false;
         }
         return *this;
@@ -232,8 +233,8 @@ namespace AndreiUtils {
     Pointer<T>::operator bool() const { return this->get() != nullptr; }
 
     template<typename T>
-    T *Pointer<T>::get() const & {
-        return isRegular ? this->ptr : this->smart.get();
+    T *Pointer<T>::get() const & noexcept {
+        return isRegular ? this->regular : this->smart.get();
     }
 
     template<typename T>
@@ -249,14 +250,14 @@ namespace AndreiUtils {
     template<typename T>
     void Pointer<T>::reset() {
         this->isRegular = true;
-        this->ptr = nullptr;
+        this->regular = nullptr;
         this->smart = nullptr;
     }
 
     template<typename T>
     Pointer<T const> Pointer<T>::constCast() const noexcept requires NotConst<T> {
         if (this->isRegular) {
-            return const_cast<T const *>(this->ptr);
+            return const_cast<T const *>(this->regular);
         }
         return std::const_pointer_cast<T const>(this->smart);
     }
@@ -264,8 +265,8 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<T const> Pointer<T>::constCastMove() && noexcept requires NotConst<T> {
         if (this->isRegular) {
-            Pointer<T const> res(const_cast<T const *>(this->ptr));
-            this->ptr = nullptr;
+            Pointer<T const> res(const_cast<T const *>(this->regular));
+            this->regular = nullptr;
             return res;
         }
         Pointer<T const> res(std::make_shared<T const>(std::move(*this->smart)));
@@ -277,7 +278,7 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<std::remove_const_t<T>> Pointer<T>::constCast() const noexcept requires std::is_const_v<T> {
         if (this->isRegular) {
-            return Pointer<std::remove_const_t<T>>(const_cast<std::remove_const_t<T> *>(this->ptr));
+            return Pointer<std::remove_const_t<T>>(const_cast<std::remove_const_t<T> *>(this->regular));
         }
         return Pointer<std::remove_const_t<T>>(std::const_pointer_cast<std::remove_const_t<T>>(this->smart));
     }
@@ -285,8 +286,8 @@ namespace AndreiUtils {
     template<typename T>
     Pointer<std::remove_const_t<T>> Pointer<T>::constCastMove() && noexcept requires std::is_const_v<T> {
         if (this->isRegular) {
-            Pointer<std::remove_const_t<T>> res(const_cast<std::remove_const_t<T> *>(this->ptr));
-            this->ptr = nullptr;
+            Pointer<std::remove_const_t<T>> res(const_cast<std::remove_const_t<T> *>(this->regular));
+            this->regular = nullptr;
             return res;
         }
         Pointer<std::remove_const_t<T>> res(std::make_shared<std::remove_const_t<T>>(std::move(*this->smart)));
@@ -300,7 +301,7 @@ namespace AndreiUtils {
     requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
     Pointer<ParentCastT> Pointer<T>::cast() const noexcept {
         if (this->isRegular) {
-            return Pointer<ParentCastT>(this->ptr);
+            return Pointer<ParentCastT>(this->regular);
         }
         return Pointer<ParentCastT>(this->smart);
     }
@@ -310,8 +311,8 @@ namespace AndreiUtils {
     requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
     Pointer<ParentCastT> Pointer<T>::castMove() && noexcept {
         if (this->isRegular) {
-            Pointer<ParentCastT> res(this->ptr);
-            this->ptr = nullptr;
+            Pointer<ParentCastT> res(this->regular);
+            this->regular = nullptr;
             return res;
         }
         Pointer<ParentCastT> res(std::move(this->smart));
@@ -323,7 +324,7 @@ namespace AndreiUtils {
     template<typename CastT>
     inline Pointer<CastT> Pointer<T>::dynamicCast() const noexcept {
         if (this->isRegular) {
-            return dynamic_cast<CastT *>(this->ptr);
+            return dynamic_cast<CastT *>(this->regular);
         }
         return std::dynamic_pointer_cast<CastT>(this->smart);
     }
@@ -332,7 +333,7 @@ namespace AndreiUtils {
     template<typename CastT>
     inline Pointer<CastT> Pointer<T>::staticCast() const noexcept {
         if (this->isRegular) {
-            return static_cast<CastT *>(this->ptr);
+            return static_cast<CastT *>(this->regular);
         }
         return std::static_pointer_cast<CastT>(this->smart);
     }
@@ -341,7 +342,7 @@ namespace AndreiUtils {
     template<typename CastT>
     inline Pointer<CastT> Pointer<T>::reinterpretCast() const noexcept {
         if (this->isRegular) {
-            return reinterpret_cast<CastT *>(this->ptr);
+            return reinterpret_cast<CastT *>(this->regular);
         }
         return std::reinterpret_pointer_cast<CastT>(this->smart);
     }
@@ -351,7 +352,7 @@ namespace AndreiUtils {
     bool Pointer<T>::isInstanceOf() const {
         if (this->isRegular) {
             return InstanceOf<TypeCheck, T *,
-                    std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->ptr);
+                    std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->regular);
         } else {
             return InstanceOf<TypeCheck, T *,
                     std::is_polymorphic<typename std::remove_pointer<T>::type>::value>::get(this->smart.get());
@@ -363,7 +364,7 @@ namespace AndreiUtils {
     bool Pointer<T>::isInstanceOf(TypeCheck const *&res) const {
         if (this->isRegular) {
             return InstanceOf<TypeCheck, T *, std::is_polymorphic<
-                    typename std::remove_pointer<T>::type>::value>::getIfIsInstance(this->ptr, res);
+                    typename std::remove_pointer<T>::type>::value>::getIfIsInstance(this->regular, res);
         } else {
             return InstanceOf<TypeCheck, T *, std::is_polymorphic<
                     typename std::remove_pointer<T>::type>::value>::get(this->smart.get(), res);
