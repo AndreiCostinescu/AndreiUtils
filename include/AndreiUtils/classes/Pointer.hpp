@@ -151,6 +151,10 @@ namespace AndreiUtils {
 
         T &operator*() const && noexcept = delete;
 
+        [[nodiscard]] T *ptr() const && noexcept;
+
+        [[nodiscard]] T &&value() const && noexcept;
+
         void reset();
 
         Pointer<T const> constCast() const noexcept requires NotConst<T>;

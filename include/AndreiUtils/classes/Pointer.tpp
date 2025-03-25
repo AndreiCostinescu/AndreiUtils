@@ -248,6 +248,16 @@ namespace AndreiUtils {
     }
 
     template<typename T>
+    T *Pointer<T>::ptr() const && noexcept {
+        return isRegular ? this->regular : this->smart.get();
+    }
+
+    template<typename T>
+    T &&Pointer<T>::value() const && noexcept {
+        return isRegular ? std::move(*this->regular) : std::move(*this->smart);
+    }
+
+    template<typename T>
     void Pointer<T>::reset() {
         this->isRegular = true;
         this->regular = nullptr;
