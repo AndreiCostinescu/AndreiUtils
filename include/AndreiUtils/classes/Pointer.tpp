@@ -232,18 +232,25 @@ namespace AndreiUtils {
     Pointer<T>::operator bool() const { return this->get() != nullptr; }
 
     template<typename T>
-    T *Pointer<T>::get() const {
+    T *Pointer<T>::get() const & {
         return isRegular ? this->ptr : this->smart.get();
     }
 
     template<typename T>
-    T &Pointer<T>::operator*() const noexcept {
+    T *Pointer<T>::operator->() const & noexcept {
+        return this->get();
+    }
+
+    template<typename T>
+    T &Pointer<T>::operator*() const & noexcept {
         return *(this->get());
     }
 
     template<typename T>
-    T *Pointer<T>::operator->() const noexcept {
-        return this->get();
+    T Pointer<T>::operator*() const && noexcept {
+        // if this temporary object is the sole owner of the smart-ptr, the underlying object will be destroyed...
+        // so move it in that case!
+        return isRegular ? *this->ptr : (this->smart.unique() ? std::move(*this->smart) : *this->smart);
     }
 
     template<typename T>

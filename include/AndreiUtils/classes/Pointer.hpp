@@ -139,11 +139,13 @@ namespace AndreiUtils {
 
         explicit operator bool() const;
 
-        [[nodiscard]] T *get() const;
+        [[nodiscard]] T *get() const &;
 
-        T &operator*() const noexcept;
+        T *operator->() const & noexcept;
 
-        T *operator->() const noexcept;
+        T &operator*() const & noexcept;
+
+        T operator*() const && noexcept;
 
         void reset();
 
