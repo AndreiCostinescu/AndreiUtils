@@ -145,7 +145,7 @@ namespace AndreiUtils {
 
         T &operator*() const & noexcept;
 
-        T operator*() const && noexcept;
+        [[nodiscard]] T &&getMoveData() &&;
 
         void reset();
 

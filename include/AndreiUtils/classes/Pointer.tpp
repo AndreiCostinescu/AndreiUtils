@@ -247,10 +247,8 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    T Pointer<T>::operator*() const && noexcept {
-        // if this temporary object is the sole owner of the smart-ptr, the underlying object will be destroyed...
-        // so move it in that case!
-        return isRegular ? *this->ptr : (this->smart.unique() ? std::move(*this->smart) : *this->smart);
+    T &&Pointer<T>::getMoveData() && {
+        return isRegular ? std::move(*this->ptr) : std::move(*this->smart);
     }
 
     template<typename T>
