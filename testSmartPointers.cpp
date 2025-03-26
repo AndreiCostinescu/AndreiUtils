@@ -595,6 +595,19 @@ TEST(SmartPointers, CheckConstCast) {
     EXPECT_EQ(a.name, "");
 }
 
+template<typename T>
+T id(T const &x) {
+    return x;
+}
+
+TEST(SmartPointers, TestMoveValue) {
+    A a("Test A");
+    AndreiUtils::Pointer<A> x(a);
+    auto y = id(x).moveTempValue();
+    EXPECT_EQ(a.name, "");
+    EXPECT_EQ(y.name, "Test A");
+}
+
 int main(int argc, char **argv) {
     cout << "Hello World!" << endl;
 
