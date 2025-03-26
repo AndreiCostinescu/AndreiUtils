@@ -248,12 +248,12 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    T *Pointer<T>::ptr() const && noexcept {
+    T *Pointer<T>::ptrOfTempValue() const && noexcept {
         return isRegular ? this->regular : this->smart.get();
     }
 
     template<typename T>
-    T &&Pointer<T>::value() const && noexcept {
+    T &&Pointer<T>::moveTempValue() const && noexcept {
         return isRegular ? std::move(*this->regular) : std::move(*this->smart);
     }
 

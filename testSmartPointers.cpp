@@ -568,7 +568,7 @@ TEST(SmartPointers, CheckConstCast) {
     // x->name = "123";
     cout << x->name << endl;
     EXPECT_EQ(x->name, "12");
-    x.constCast().value().name = "Overwrite-constness: 123";
+    x.constCast().moveTempValue().name = "Overwrite-constness: 123";
     cout << x->name << endl;
     EXPECT_EQ(x->name, "Overwrite-constness: 123");
 
@@ -576,7 +576,7 @@ TEST(SmartPointers, CheckConstCast) {
     AndreiUtils::Pointer<A const> y(obj);
     cout << y->name << endl;
     EXPECT_EQ(y->name, "Object A");
-    y.constCast().ptr()->name = "Overwrite-constness: Object A modified! HAHA";
+    y.constCast().ptrOfTempValue()->name = "Overwrite-constness: Object A modified! HAHA";
     cout << y->name << endl;
     EXPECT_EQ(y->name, "Overwrite-constness: Object A modified! HAHA");
 
@@ -584,7 +584,7 @@ TEST(SmartPointers, CheckConstCast) {
     AndreiUtils::Pointer<A const> z(a);
     cout << z->name << endl;
     EXPECT_EQ(z->name, "12");
-    auto newA = z.constCast().value();
+    auto newA = z.constCast().moveTempValue();
     EXPECT_EQ(z->name, "");
     EXPECT_EQ(a.name, "");
     newA.name = "Overwrite-constness: 123";

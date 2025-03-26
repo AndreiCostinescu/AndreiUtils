@@ -151,9 +151,9 @@ namespace AndreiUtils {
 
         T &operator*() const && noexcept = delete;
 
-        [[nodiscard]] T *ptr() const && noexcept;
+        [[nodiscard]] T *ptrOfTempValue() const && noexcept;
 
-        [[nodiscard]] T &&value() const && noexcept;
+        [[nodiscard]] T &&moveTempValue() const && noexcept;
 
         void reset();
 
