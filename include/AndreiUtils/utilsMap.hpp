@@ -333,6 +333,16 @@ namespace AndreiUtils {
         return res;
     }
 
+    template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>, typename ...Args>
+    [[nodiscard]] T2 &mapGetCreate(std::map<T1, T2, C, A> &container, T1 const &key, Args &&... args) {
+        return *mapAddIfNotContains(container, key, std::forward<Args>(args)...);
+    }
+
+    template<class T1, class T2, typename C = std::less<T1 *>, typename A = std::allocator<std::pair<T1 const *, T2>>, typename ...Args>
+    [[nodiscard]] T2 &mapGetCreate(std::map<T1 *, T2, C, A> &container, T1 const *key, Args &&... args) {
+        return *mapAddIfNotContains(container, key, std::forward<Args>(args)...);
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
     bool mapDelete(std::map<T1, T2, C, A> &container, T1 const &key) {
         return (container.erase(key) > 0);
