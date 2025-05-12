@@ -403,6 +403,15 @@ void testMapEmplaceForwardKey() {
     // OnlyMovableData other2 = datum;
 }
 
+void testMapOp() {
+    map<int, string> x = {{1, "1"},
+                          {0, "2"}};
+    auto res = mapOp<std::string, int, int, std::string>(x, [](int const &key, std::string const &val) {
+        return std::make_pair(val, key);
+    });
+    AndreiUtils::printMap(res);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -415,8 +424,9 @@ int main() {
     // testMapEmplaceMoveCopy2();
     // testSingleElementFunctions();
     // testMapAddIfNotContains();
-    testMapEmplaceKeyPointer();
-    testMapEmplaceForwardKey();
+    // testMapEmplaceKeyPointer();
+    // testMapEmplaceForwardKey();
+    testMapOp();
 
     return 0;
 }
