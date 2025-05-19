@@ -9,14 +9,15 @@
 using namespace std;
 
 int AndreiUtils::maximalMatchingUnweightedUndirected(
-        std::vector<std::vector<int>> const &adjacency, int nrVerticesU, int nrVerticesV, bool verbose) {
+        std::vector<std::vector<int>> const &adjacency, int const nrVerticesU, int const nrVerticesV,
+        bool const verbose) {
     std::vector<int> matchResult;
     return maximalMatchingUnweightedUndirected(adjacency, nrVerticesU, nrVerticesV, matchResult, verbose);
 }
 
 int AndreiUtils::maximalMatchingUnweightedUndirected(
-        std::vector<std::vector<int>> const &adjacency, int nrVerticesU, int nrVerticesV, std::vector<int> &matchResult,
-        bool verbose) {
+        std::vector<std::vector<int>> const &adjacency, int const nrVerticesU, int const nrVerticesV,
+        std::vector<int> &matchResult, bool const verbose) {
     assert(adjacency.size() == nrVerticesU);
     // there is no node-index with this index in U because there are nrVerticesU vertices (starting from 0)
     int INF = -1;
@@ -142,14 +143,16 @@ int AndreiUtils::maximalMatchingUnweightedUndirected(
     return result;
 }
 
-double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<double>> const &weights, int nrVerticesU,
-                                                      int nrVerticesV, bool verbose) {
+double AndreiUtils::maximalMatchingMinWeightUndirected(
+        std::vector<std::vector<double>> const &weights, int const nrVerticesU, int const nrVerticesV,
+        bool const verbose) {
     std::vector<int> matchResult;
-    return maximalMatchingWeightedUndirected(weights, nrVerticesU, nrVerticesV, matchResult, verbose);
+    return maximalMatchingMinWeightUndirected(weights, nrVerticesU, nrVerticesV, matchResult, verbose);
 }
 
-double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<double>> const &weights, int nrVerticesU,
-                                                      int nrVerticesV, vector<int> &matchResult, bool verbose) {
+double AndreiUtils::maximalMatchingMinWeightUndirected(
+        std::vector<std::vector<double>> const &weights, int const nrVerticesU, int const nrVerticesV,
+        vector<int> &matchResult, bool const verbose) {
     if (weights.size() != nrVerticesU) {
         throw std::runtime_error(
                 "Weights vector does not have the size of " + std::to_string(nrVerticesU) + " but instead " +
@@ -170,8 +173,8 @@ double AndreiUtils::maximalMatchingWeightedUndirected(std::vector<std::vector<do
                 weightsSwitched[j][i] = weights[i][j];
             }
         }
-        auto res = maximalMatchingWeightedUndirected(weightsSwitched, nrVerticesV, nrVerticesU, matchResultSwitch,
-                                                     verbose);
+        auto const res = maximalMatchingMinWeightUndirected(
+                weightsSwitched, nrVerticesV, nrVerticesU, matchResultSwitch, verbose);
         assert(matchResultSwitch.size() == nrVerticesV);
         // switch the match result indices
         matchResult = std::vector<int>(nrVerticesU, -1);
