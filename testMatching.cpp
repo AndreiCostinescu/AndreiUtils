@@ -73,7 +73,7 @@ void testWeightedMatching1() {
     weights[2][2] = 150;
     weights[2][3] = 300;
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -99,7 +99,7 @@ void testWeightedMatching2() {
     weights[3][2] = 300;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -125,7 +125,7 @@ void testWeightedMatching3() {
     weights[3][2] = 150;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -152,7 +152,7 @@ void testWeightedMatching4() {
     weights[3][2] = 300;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -179,7 +179,7 @@ void testWeightedMatching5() {
     weights[3][2] = 300;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -206,7 +206,7 @@ void testWeightedMatching6() {
     weights[3][2] = 300;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -230,7 +230,7 @@ void testWeightedMatching7() {
     weights[2][2] = INF;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -254,7 +254,7 @@ void testWeightedMatching8() {
     weights[2][2] = INF;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -272,7 +272,7 @@ void testWeightedMatching9() {
     weights[0][2] = INF;
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
@@ -292,7 +292,7 @@ void testWeightedMatching10() {
     }
 
     std::vector<int> matchResult;
-    double cost = maximalMatchingWeightedUndirected(weights, n, m, matchResult);
+    double cost = maximalMatchingMinWeightUndirected(weights, n, m, matchResult);
     cout << "cost = " << cost << endl;
     cout << "Match: ";
     for (int i = 0; i < matchResult.size(); ++i) {
