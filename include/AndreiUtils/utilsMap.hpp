@@ -623,6 +623,20 @@ namespace AndreiUtils {
         return res;
     }
 
+    template<class TRes1, class TRes2, class T1, class T2,
+             typename CRes = std::less<TRes1>, typename ARes = std::allocator<std::pair<TRes1 const, TRes2>>,
+             typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
+    [[nodiscard]] std::map<TRes1, TRes2, CRes, ARes> mapOp(
+            std::map<T1, T2, C, A> const &container,
+            std::function<std::pair<TRes1, TRes2>(T1 const &key, T2 const &val)> const &op) {
+        std::map<TRes1, TRes2, CRes, ARes> res;
+        for (auto const &elem: container) {
+            auto resElem = op(elem.first, elem.second);
+            AndreiUtils::mapEmplace(res, resElem.first, resElem.second);
+        }
+        return res;
+    }
+
     template<class T1, class T2, typename C = std::less<T1>, typename A = std::allocator<std::pair<T1 const, T2>>>
     void filterAndOperateOnMap(std::map<T1, T2, C, A> &container,
                                std::function<void(typename std::map<T1, T2, C, A>::citerator const &)> const &op,
