@@ -172,12 +172,18 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
             simplifiedPath[simplifiedPathSize++] = resPart;
         }
     }
-    string newPath = startsWith(path, "/") ? "/" : "";
+    string newPath;
     for (int i = 0; i < simplifiedPathSize; i++) {
-        if (!newPath.empty()) {
+        if (simplifiedPath[i].empty()) {
+            continue;
+        }
+        if (!newPath.empty() || startsWith(path, "/")) {
             newPath += "/";
         }
         newPath += simplifiedPath[i];
+    }
+    if (newPath.empty()) {
+        newPath = startsWith(path, "/") ? "/" : ".";
     }
     return newPath;
 }

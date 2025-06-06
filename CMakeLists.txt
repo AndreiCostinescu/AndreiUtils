@@ -659,6 +659,13 @@ if (${WITH_TESTS})
     if (${USE_OPENMP})
         target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
     endif ()
+
+    set(EXECUTABLE TestFileUtils)
+    add_executable(${EXECUTABLE} testFileUtils.cpp)
+    target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+    if (${USE_OPENMP})
+        target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+    endif ()
 endif ()
 
 include(cmake/installConfig.cmake)
