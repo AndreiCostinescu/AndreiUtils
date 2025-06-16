@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const int AndreiUtils::threadSleepTime = 1;
+int const AndreiUtils::threadSleepTime = 1;
 
 void AndreiUtils::sleepMSec(int mSec) {
     chrono::milliseconds milliseconds(mSec);
@@ -20,10 +20,23 @@ void AndreiUtils::sleepUSec(int uSec) {
     this_thread::sleep_for(microseconds);
 }
 
-void AndreiUtils::threadBarrier(volatile atomic<int> &threadVariable, bool yieldOrSleep) {
+void AndreiUtils::threadBarrier(volatile atomic<int> &threadVariable, bool yieldOrSleep, bool waitUntilZero) {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
-    while (atomic_load(&threadVariable)) {
+    while (waitUntilZero == atomic_load(&threadVariable)) {
+        if (yieldOrSleep) {
+            threadYield();
+        } else {
+            sleepMSec(threadSleepTime);
+        }
+    }
+#pragma clang diagnostic pop
+}
+
+void AndreiUtils::threadBarrier(volatile atomic<bool> &threadVariable, bool yieldOrSleep, bool waitUntilFalse) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
+    while (waitUntilFalse == threadVariable.load()) {
         if (yieldOrSleep) {
             threadYield();
         } else {

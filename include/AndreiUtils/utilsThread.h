@@ -8,13 +8,16 @@
 #include <atomic>
 
 namespace AndreiUtils {
-    extern const int threadSleepTime;
+    extern int const threadSleepTime;
 
     void sleepMSec(int mSec);
 
     void sleepUSec(int uSec);
 
-    void threadBarrier(volatile std::atomic<int> &threadVariable, bool yieldOrSleep = false);
+    void threadBarrier(volatile std::atomic<int> &threadVariable, bool yieldOrSleep = false, bool waitUntilZero = true);
+
+    void threadBarrier(volatile std::atomic<bool> &threadVariable, bool yieldOrSleep = false,
+                       bool waitUtilFalse = true);
 
     void threadYield();
 }
