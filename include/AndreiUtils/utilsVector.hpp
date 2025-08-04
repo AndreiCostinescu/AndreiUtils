@@ -48,6 +48,32 @@ namespace AndreiUtils {
         return avg;
     }
 
+    template<typename T>
+    [[nodiscard]] T vectorMin(std::vector<T> const &a) {
+        if (a.empty()) {
+            throw std::runtime_error("There is no min-value in an empty vector!");
+        }
+        T min = a[0];
+        size_t n = a.size();
+        for (size_t i = 1; i < n; i++) {
+            AndreiUtils::minInPlace(min, a[i]);
+        }
+        return min;
+    }
+
+    template<typename T>
+    [[nodiscard]] T vectorMax(std::vector<T> const &a) {
+        if (a.empty()) {
+            throw std::runtime_error("There is no min-value in an empty vector!");
+        }
+        T max = a[0];
+        size_t n = a.size();
+        for (size_t i = 1; i < n; i++) {
+            AndreiUtils::maxInPlace(max, a[i]);
+        }
+        return max;
+    }
+
     template<class T>
     void forLoop(std::vector<T> const &array, size_t size,
                  std::function<void(std::vector<T> const &, size_t, size_t)> const &op, size_t increment = 1) {
