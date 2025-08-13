@@ -62,6 +62,55 @@ namespace AndreiUtils {
         }
     }
 
+    template <auto N>
+    struct IntToConstexprString {
+    private:
+        static constexpr std::size_t num_digits() {
+            auto n = N;
+            std::size_t digits = (n == 0) ? 1 : 0;
+            if (n < 0) {
+                ++digits; // for '-'
+                n = -n;
+            }
+            while (n > 0) {
+                n /= 10;
+                ++digits;
+            }
+            return digits;
+        }
+
+    public:
+        static constexpr std::size_t size = num_digits();
+        std::array<char, size + 1> data{}; // +1 for '\0'
+
+        // Constructor: fills the array at compile time
+        constexpr IntToConstexprString() : data{} {
+            auto n = N;
+            std::size_t pos = size;
+            this->data[pos] = '\0';
+
+            bool neg = false;
+            if (n < 0) {
+                neg = true;
+                n = -n;
+            }
+
+            do {
+                this->data[--pos] = static_cast<char>('0' + (n % 10));
+                n /= 10;
+            } while (n > 0);
+
+            if (neg) {
+                this->data[0] = '-';
+            }
+        }
+
+        // Allow implicit conversion to const char*
+        constexpr operator const char*() const {
+            return this->data.data();
+        }
+    };
+
     template<typename... Args>
     constexpr std::size_t totalLength() { return (0 + ... + argLength<Args>()); }
 

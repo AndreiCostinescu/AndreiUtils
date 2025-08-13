@@ -89,7 +89,7 @@ int main() {
     // std::is_same_v<char, std::remove_extent_t<T>>
 
     std::cout << combined.view() << "\n"; // prints "hello world!"
-    auto const x = concatenate("123", "1234", "21345");
+    auto const x = concatenate("123", IntToConstexprString<1234>{}, "21345");
     std::cout << x.view() << "\n"; // prints "123123421345"
     std::cout << x.c_str() << "\n"; // prints "123123421345"
     std::cout << ListOfTypes<Derived, Base, Base, Derived>::typesToString<>().view() << std::endl;
