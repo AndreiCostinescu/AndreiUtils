@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <AndreiUtils/traits/stringify.hpp>
 #include <functional>
 #include <fstream>
 #include <memory>
@@ -54,7 +55,7 @@ namespace AndreiUtils {
 
         template<typename T>
         UserInteraction &operator<<(T const &data) {
-            this->ss << data;
+            this->ss << AndreiUtils::toString(data);
             return *this;
         }
 

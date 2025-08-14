@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <AndreiUtils/traits/stringify.hpp>
 #include <array>
 #include <string_view>
 #include <string>
@@ -185,4 +186,25 @@ namespace AndreiUtils {
     std::string operator+(T1 const &lhs, T2 const &rhs) {
         return std::string{concatenate(lhs, rhs)};
     }
+
+    template<std::size_t N>
+    struct stringify<ConstexprString<N>> {
+        static std::string to_string(ConstexprString<N> const &datum) {
+            return std::string(datum);
+        }
+    };
+
+    template<auto N>
+    struct stringify<IntToConstexprString<N>> {
+        static std::string to_string(IntToConstexprString<N> const &datum) {
+            return std::string(datum);
+        }
+    };
+
+    template<bool B>
+    struct stringify<BoolToConstexprString<B>> {
+        static std::string to_string(BoolToConstexprString<B> const &datum) {
+            return std::string(datum);
+        }
+    };
 }
