@@ -12,13 +12,29 @@
 
 namespace AndreiUtils {
     template<typename T>
-    concept HasDataAndSize = requires { T::data; T::size; };
+    concept HasDataAndSize =
+            // 1) Require that T::size is a constant expression convertible to std::size_t
+            requires
+            {
+                typename std::integral_constant<std::size_t, T::size>;
+            }
+            // 2) Require that there's a non-static member `data` whose type is std::array<char, T::size>
+            && requires(std::remove_cvref_t<T> &u)
+            {
+                { u.data } -> std::same_as<std::array<char, T::size + 1> &>;
+            }
+            // 3) Allow for const types
+            && requires(std::remove_cvref_t<T> const &cu) {
+                { cu.data } -> std::same_as<const std::array<char, T::size + 1>&>;
+            }
+            && !std::same_as<std::remove_cvref_t<T>, std::string>
+            && !std::same_as<std::remove_cvref_t<T>, std::string_view>;
 
     // Struct to hold compile-time string and provide string_view
     template<std::size_t N>
     struct ConstexprString {
         static constexpr std::size_t size = N;
-        std::array<char, N + 1> data{};  // +1 for null terminator
+        std::array<char, size + 1> data{};  // +1 for null terminator
 
         constexpr ConstexprString() = default;
 
@@ -34,9 +50,9 @@ namespace AndreiUtils {
             return std::string(this->view());
         }
 
-        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+        [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
-        constexpr char const *c_str() const { return this->data.data(); }
+        [[nodiscard]] constexpr char const *c_str() const { return this->data.data(); }
 
     protected:
         template<typename T>
@@ -101,9 +117,9 @@ namespace AndreiUtils {
             return std::string(this->view());
         }
 
-        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+        [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
-        constexpr char const * c_str() const { return this->data.data(); }
+        [[nodiscard]] constexpr char const * c_str() const { return this->data.data(); }
     };
 
     template<bool B>
@@ -144,9 +160,9 @@ namespace AndreiUtils {
             return std::string(this->view());
         }
 
-        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+        [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
-        constexpr char const * c_str() const { return this->data.data(); }
+        [[nodiscard]] constexpr char const * c_str() const { return this->data.data(); }
     };
 
     template<typename T>

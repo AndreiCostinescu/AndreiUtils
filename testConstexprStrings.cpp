@@ -104,6 +104,8 @@ int main() {
     std::cout << s1 << std::endl;
     std::cout << static_cast<std::string>(combined) << std::endl;
 
+    static_assert(HasDataAndSize<IntToConstexprString<42>>, "Error");
+
     std::cout << ("Hello " + x) << std::endl;
     std::cout << (x + "Hello ") << std::endl;
     std::cout << x + x << std::endl;
@@ -134,4 +136,11 @@ int main() {
     std::cout << (ConstexprString<5>{"1234"} == ConstexprString<5>{"1234\0"}) << std::endl;
     std::cout << (x == x) << std::endl;
     std::cout << (x != x) << std::endl;
+
+    std::cout << ("1234" == x) << std::endl;
+    std::cout << ("1234" != x) << std::endl;
+    std::cout << (std::string("1234") != x) << std::endl;
+    std::cout << (std::string("1234") == x) << std::endl;
+    std::cout << (std::string("1234") == std::string("x")) << std::endl;
+    std::cout << (std::string("1234") != std::string("x")) << std::endl;
 }
