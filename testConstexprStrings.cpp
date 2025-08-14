@@ -103,4 +103,23 @@ int main() {
     std::cout << s << std::endl;
     std::cout << s1 << std::endl;
     std::cout << static_cast<std::string>(combined) << std::endl;
+
+    std::cout << ("Hello " + x) << std::endl;
+    std::cout << (x + "Hello ") << std::endl;
+    std::cout << x + x << std::endl;
+
+    std::cout << AndreiUtils::concatenate(IntToConstexprString<1234>{}, BoolToConstexprString<false>{}, "Hello World!").view() << std::endl;
+    std::cout << x + IntToConstexprString<1234>{} << std::endl;
+    std::cout << IntToConstexprString<1234>{} + x << std::endl;
+    std::cout << IntToConstexprString<1234>{} + IntToConstexprString<2345>{} << std::endl;
+
+    std::cout << x + BoolToConstexprString<false>{} << std::endl;
+    std::cout << BoolToConstexprString<false>{} + x << std::endl;
+    std::cout << BoolToConstexprString<false>{} + BoolToConstexprString<true>{} << std::endl;
+
+    std::cout << IntToConstexprString<12>{} + BoolToConstexprString<true>{} << std::endl;
+    std::cout << BoolToConstexprString<false>{} + IntToConstexprString<42>{} << std::endl;
+    std::cout << "Hello " + IntToConstexprString<1234>{} << std::endl;
+    std::cout << IntToConstexprString<1234>{} + " World" << std::endl;
+    std::cout << BoolToConstexprString<false>{} + "World" << std::endl;
 }

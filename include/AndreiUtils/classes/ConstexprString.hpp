@@ -10,32 +10,16 @@
 #include <cstddef>
 
 namespace AndreiUtils {
+    template<typename T>
+    concept HasDataAndSize = requires { T::data; T::size; };
+
     // Struct to hold compile-time string and provide string_view
     template<std::size_t N>
     struct ConstexprString {
         static constexpr std::size_t size = N;
-
         std::array<char, N + 1> data{};  // +1 for null terminator
 
         constexpr ConstexprString() = default;
-
-        // Implicit conversion to std::string at runtime
-        operator std::string() const {
-            return std::string(this->view());
-        }
-
-        template<typename T>
-        constexpr void appendToData(T const &arg, std::size_t &pos) {
-            if constexpr (std::is_array_v<T> && std::is_same_v<char, std::remove_extent_t<T>>) {
-                for (std::size_t i = 0; i < std::extent_v<T> - 1; ++i)
-                    this->data[pos++] = arg[i];
-            } else if constexpr (requires { T::data; T::size; }) {
-                for (std::size_t i = 0; i < T::size; ++i)
-                    this->data[pos++] = arg.data[i];
-            } else {
-                static_assert(sizeof(T) == 0, "Unsupported type for concatenate");
-            }
-        }
 
         template<typename... Args>
         explicit constexpr ConstexprString(Args const &... args) {
@@ -44,28 +28,34 @@ namespace AndreiUtils {
             this->data[N] = '\0';
         }
 
+        // don't make this explicit
+        operator std::string() const {
+            return std::string(this->view());
+        }
+
+        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+
         constexpr char const *c_str() const { return this->data.data(); }
 
-        constexpr std::string_view view() const { return std::string_view(data.data(), N); }
+    protected:
+        template<typename T>
+        constexpr void appendToData(T const &arg, std::size_t &pos) {
+            if constexpr (std::is_array_v<T> && std::is_same_v<char, std::remove_extent_t<T>>) {
+                for (std::size_t i = 0; i < std::extent_v<T> - 1; ++i)
+                    this->data[pos++] = arg[i];
+            } else if constexpr (HasDataAndSize<T>) {
+                for (std::size_t i = 0; i < T::size; ++i)
+                    this->data[pos++] = arg.data[i];
+            } else {
+                static_assert(sizeof(T) == 0, "Unsupported type for concatenate");
+            }
+        }
     };
 
-    template<typename T>
-    constexpr std::size_t argLength() {
-        if constexpr (std::is_array_v<std::remove_reference_t<T>> &&
-                      std::is_same_v<char, std::remove_extent_t<std::remove_const_t<std::remove_reference_t<T>>>>) {
-            return std::extent_v<std::remove_reference_t<T>> - 1;
-        } else if constexpr (requires { T::size; }) {
-            return T::size;
-        } else {
-            static_assert(sizeof(T) == 0, "Unsupported type for concatenate");
-            return 0;
-        }
-    }
-
-    template <auto N>
+    template<auto N>
     struct IntToConstexprString {
-    private:
-        static constexpr std::size_t num_digits() {
+    protected:
+        static constexpr std::size_t numDigits() {
             auto n = N;
             std::size_t digits = (n == 0) ? 1 : 0;
             if (n < 0) {
@@ -80,11 +70,11 @@ namespace AndreiUtils {
         }
 
     public:
-        static constexpr std::size_t size = num_digits();
+        static constexpr std::size_t size = numDigits();
         std::array<char, size + 1> data{}; // +1 for '\0'
 
         // Constructor: fills the array at compile time
-        constexpr IntToConstexprString() : data{} {
+        constexpr IntToConstexprString() {
             auto n = N;
             std::size_t pos = size;
             this->data[pos] = '\0';
@@ -105,11 +95,71 @@ namespace AndreiUtils {
             }
         }
 
-        // Allow implicit conversion to const char*
-        constexpr operator const char*() const {
-            return this->data.data();
+        // don't make this explicit
+        operator std::string() const {
+            return std::string(this->view());
         }
+
+        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+
+        constexpr char const * c_str() const { return this->data.data(); }
     };
+
+    template<bool B>
+    struct BoolToConstexprString {
+    protected:
+        static constexpr std::size_t numChars() {
+            if constexpr (B) {
+                return 4;
+            } else {
+                return 5;
+            }
+        }
+
+    public:
+        static constexpr std::size_t size = numChars();
+        std::array<char, size + 1> data{}; // +1 for '\0'
+
+        // Constructor: fills the array at compile time
+        constexpr BoolToConstexprString() {
+            std::size_t pos = size;
+            this->data[pos] = '\0';
+            if constexpr (B) {
+                this->data[0] = 't';
+                this->data[1] = 'r';
+                this->data[2] = 'u';
+                this->data[3] = 'e';
+            } else {
+                this->data[0] = 'f';
+                this->data[1] = 'a';
+                this->data[2] = 'l';
+                this->data[3] = 's';
+                this->data[4] = 'e';
+            }
+        }
+
+        // don't make this explicit
+        operator std::string() const {
+            return std::string(this->view());
+        }
+
+        constexpr std::string_view view() const { return std::string_view(this->data.data(), this->size); }
+
+        constexpr char const * c_str() const { return this->data.data(); }
+    };
+
+    template<typename T>
+    constexpr std::size_t argLength() {
+        if constexpr (std::is_array_v<std::remove_reference_t<T>> &&
+                      std::is_same_v<char, std::remove_extent_t<std::remove_const_t<std::remove_reference_t<T>>>>) {
+            return std::extent_v<std::remove_reference_t<T>> - 1;
+        } else if constexpr (requires { T::size; }) {
+            return T::size;
+        } else {
+            static_assert(sizeof(T) == 0, "Unsupported type for concatenate");
+            return 0;
+        }
+    }
 
     template<typename... Args>
     constexpr std::size_t totalLength() { return (0 + ... + argLength<Args>()); }
@@ -117,4 +167,22 @@ namespace AndreiUtils {
     // Function to concatenate compile-time strings
     template<typename... Args>
     constexpr auto concatenate(Args const &... args) { return ConstexprString<totalLength<Args...>()>{args...}; }
+
+    // std::string + ConstexprString-like
+    template<HasDataAndSize T>
+    std::string operator+(std::string const &lhs, T const &rhs) {
+        return lhs + std::string(rhs);
+    }
+
+    // ConstexprString-like + std::string
+    template<HasDataAndSize T>
+    std::string operator+(T const &lhs, std::string const &rhs) {
+        return std::string(lhs) + rhs;
+    }
+
+    // ConstexprString-like + ConstexprString-like
+    template<HasDataAndSize T1, HasDataAndSize T2>
+    std::string operator+(T1 const &lhs, T2 const &rhs) {
+        return std::string{concatenate(lhs, rhs)};
+    }
 }
