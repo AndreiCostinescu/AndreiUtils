@@ -122,4 +122,16 @@ int main() {
     std::cout << "Hello " + IntToConstexprString<1234>{} << std::endl;
     std::cout << IntToConstexprString<1234>{} + " World" << std::endl;
     std::cout << BoolToConstexprString<false>{} + "World" << std::endl;
+
+    std::cout << (IntToConstexprString<123>{} == IntToConstexprString<123>{}) << std::endl;
+    std::cout << (IntToConstexprString<123>{} == IntToConstexprString<124>{}) << std::endl;
+    std::cout << (BoolToConstexprString<false>{} == BoolToConstexprString<false>{}) << std::endl;
+    std::cout << (BoolToConstexprString<true>{} == BoolToConstexprString<true>{}) << std::endl;
+    std::cout << (BoolToConstexprString<true>{} == BoolToConstexprString<false>{}) << std::endl;
+    std::cout << (ConstexprString<4>{"1234"} == ConstexprString<4>{"1234"}) << std::endl;
+    std::cout << (ConstexprString<4>{"1234"} == ConstexprString<4>{"1235"}) << std::endl;
+    std::cout << (ConstexprString<4>{"1234"} == ConstexprString<5>{"1235"}) << std::endl;
+    std::cout << (ConstexprString<5>{"1234"} == ConstexprString<5>{"1234\0"}) << std::endl;
+    std::cout << (x == x) << std::endl;
+    std::cout << (x != x) << std::endl;
 }

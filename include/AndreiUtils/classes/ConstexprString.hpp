@@ -207,4 +207,36 @@ namespace AndreiUtils {
             return std::string(datum);
         }
     };
+
+    template<HasDataAndSize T>
+    bool operator==(std::string const &lhs, T const &rhs) {
+        return lhs == std::string{rhs};
+    }
+
+    template<HasDataAndSize T>
+    bool operator==(T const &lhs, std::string const &rhs) {
+        return rhs == std::string{lhs};
+    }
+
+    template<HasDataAndSize T>
+    bool operator!=(std::string const &lhs, T const &rhs) {
+        return !operator==(lhs, rhs);
+    }
+
+    template<HasDataAndSize T>
+    bool operator!=(T const &lhs, std::string const &rhs) {
+        return !operator==(lhs, rhs);
+    }
+
+    template<HasDataAndSize T1, HasDataAndSize T2>
+    constexpr bool operator==(T1 const &lhs, T2 const &rhs) {
+        return lhs.size == rhs.size && std::equal(lhs.data.begin(), lhs.data.end(), rhs.data.begin());
+    }
+
+    template<HasDataAndSize T1, HasDataAndSize T2>
+    constexpr bool operator!=(T1 const &lhs, T2 const &rhs) {
+        return !operator==(lhs, rhs);
+    }
+
+
 }
