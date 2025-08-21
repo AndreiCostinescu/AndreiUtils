@@ -104,6 +104,10 @@ void testFloatSlidingWindow() {
 class A_ {
 public:
     virtual ~A_() = default;
+
+    virtual void print() const {
+        cout << "From A!" << endl;
+    }
 };
 
 class B_ : virtual public A_ {
@@ -111,12 +115,24 @@ public:
     bool operator<(CR<B_> other) const {
         return true;
     }
+
+    void print() const override {
+        cout << "From B!" << endl;
+    }
 };
 
 class C_ : virtual public A_ {
+public:
+    void print() const override {
+        cout << "From C!" << endl;
+    }
 };
 
 class D_ : public B_, public C_ {
+public:
+    void print() const override {
+        cout << "From D!" << endl;
+    }
 };
 
 void testTypeCreator() {
@@ -665,6 +681,17 @@ void testFactorial() {
     cout << AndreiUtils::factorial(uint64_t(5)) << endl;
 }
 
+void print(A_ &aVal) {
+    aVal.print();
+}
+
+void testPolymorphismForReferenceArguments() {
+    A_ a;
+    B_ b;
+    print(a);
+    print(b);
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -688,7 +715,8 @@ int main() {
     // testUserInteraction();
     // testStoringFunctionsOfDifferentType();
     // testStdAlgorithms();
-    testFactorial();
+    // testFactorial();
+    testPolymorphismForReferenceArguments();
 
     return 0;
 }
