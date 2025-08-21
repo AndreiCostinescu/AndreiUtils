@@ -21,6 +21,9 @@ namespace AndreiUtils {
                                std::negation<std::is_same<std::remove_const_t<T>, std::remove_const_t<SubT>>>::value;
 
     template<typename T>
+    concept NotAbstract = std::negation_v<std::is_abstract<T>>;
+
+    template<typename T>
     concept NotConst = std::negation_v<std::is_const<T>>;
 
     template<typename T1, typename T2>
@@ -147,9 +150,9 @@ namespace AndreiUtils {
 
         T *operator->() const && noexcept = delete;
 
-        T &operator*() const & noexcept;
+        T &operator*() const & noexcept requires NotAbstract<T>;
 
-        T &operator*() const && noexcept = delete;
+        T &operator*() const && noexcept requires NotAbstract<T> = delete;
 
         [[nodiscard]] T *ptrOfTempValue() const && noexcept;
 

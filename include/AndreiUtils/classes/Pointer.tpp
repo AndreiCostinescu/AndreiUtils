@@ -243,7 +243,7 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    T &Pointer<T>::operator*() const & noexcept {
+    T &Pointer<T>::operator*() const & noexcept requires NotAbstract<T> {
         return *(this->get());
     }
 
