@@ -6,6 +6,7 @@
 #include <AndreiUtils/classes/Interval.hpp>
 #include <AndreiUtils/classes/LinearInterpolator.hpp>
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
+#include <AndreiUtils/classes/PriorityQueue.hpp>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
 #include <AndreiUtils/classes/Timer.hpp>
@@ -20,6 +21,7 @@
 #include <AndreiUtils/utilsMap.hpp>
 #include <functional>
 #include <iostream>
+#include <queue>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -665,6 +667,42 @@ void testFactorial() {
     cout << AndreiUtils::factorial(uint64_t(5)) << endl;
 }
 
+struct Custom {
+    int a, b;
+};
+
+struct CustomComparison {
+    bool operator()(Custom const &a, Custom const &b) {
+        return a.b > b.b;  // lowest priority first
+    }
+};
+
+void testPriorityQueue() {
+    PriorityQueue<int> queue;
+    queue.add(5, 5);
+    queue.add(4, 4);
+    queue.add(3, 3);
+    queue.add(1, 2);
+    queue.add(2, 1);
+    std::priority_queue<Custom, std::vector<Custom>, CustomComparison> q;
+    q.emplace(5, 5);
+    q.emplace(4, 4);
+    q.emplace(3, 3);
+    q.emplace(1, 2);
+    q.emplace(2, 1);
+    while (!queue.empty()) {
+        auto const min = queue.extractMin();
+        cout << min.first << ": " << min.second << endl;
+    }
+    cout << endl;
+    while (!q.empty()) {
+        auto const &min = q.top();
+        cout << min.a << ": " << min.b << endl;
+        q.pop();
+    }
+    cout << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -688,7 +726,8 @@ int main() {
     // testUserInteraction();
     // testStoringFunctionsOfDifferentType();
     // testStdAlgorithms();
-    testFactorial();
+    // testFactorial();
+    testPriorityQueue();
 
     return 0;
 }
