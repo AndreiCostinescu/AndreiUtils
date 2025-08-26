@@ -5,10 +5,10 @@
 #ifndef ANDREIUTILS_CLASSES_CIRCULARARRAY_HPP
 #define ANDREIUTILS_CLASSES_CIRCULARARRAY_HPP
 
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <stdexcept>
-#include <utils/utils.hpp>
 #include <vector>
 
 namespace AndreiUtils {
