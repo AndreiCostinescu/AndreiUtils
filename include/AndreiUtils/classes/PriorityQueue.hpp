@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace AndreiUtils {
-    template<class T, class P>
+    template<class T, class P = int>
     class PriorityQueue {
     public:
         explicit PriorityQueue() : PriorityQueue(0) {}
