@@ -8,7 +8,7 @@
 using namespace AndreiUtils;
 using namespace std;
 
-PythonInterpreterGuard PythonInterface::guard;  // NOLINT(cert-err58-cpp)
+py::scoped_interpreter *PythonInterface::guard = nullptr;  // NOLINT(cert-err58-cpp)
 
 PythonInterface::PythonInterface() noexcept : module(), functions() {}
 
@@ -22,6 +22,7 @@ PythonInterface::~PythonInterface() {
 }
 
 void PythonInterface::reInitialize(string const &moduleName, vector<string> const &toImportFunctionNames) {
+    AndreiUtils::PythonInterface::initInterpreter();
     this->module.release();
     this->functions.clear();
     try {
@@ -49,4 +50,10 @@ void PythonInterface::cleanup() {
 
 size_t PythonInterface::getFunctionSize() const {
     return this->functions.size();
+}
+
+void PythonInterface::initInterpreter() {
+    if (PythonInterface::guard == nullptr) {
+        PythonInterface::guard = new py::scoped_interpreter;  // intentionally leak memory... to be reclaimed by OS
+    }
 }

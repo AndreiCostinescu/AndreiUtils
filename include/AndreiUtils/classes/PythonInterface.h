@@ -12,11 +12,6 @@
 namespace py = pybind11;
 
 namespace AndreiUtils {
-    class PythonInterpreterGuard {
-    protected:
-        py::scoped_interpreter guard;  // NOLINT(cert-err58-cpp); start the interpreter and keep it alive
-    };
-
     class PythonInterface {
     public:
         PythonInterface() noexcept;
@@ -45,7 +40,16 @@ namespace AndreiUtils {
         [[nodiscard]] size_t getFunctionSize() const;
 
     protected:
-        static PythonInterpreterGuard guard;
+        static void initInterpreter();
+
+        // Intentionally leak memory because third-party packages (e.g. numpy) use global variables...
+        // The destruction order of global variables is not guaranteed in C++ and py::objects call PY_DECREF upon destruction
+        // However, if the global/static interpreter is destroyed before those global objects
+        //  (because destruction order is not guaranteed in c++!),
+        //  them calling PY_DECREF causes segmentation faults because the interpreter was already destroyed!
+        // This is the cause for errors at the end of the program!
+        // Leaked memory will/should be reclaimed by the OS
+        static py::scoped_interpreter *guard;
         std::map<std::string, py::function> functions;
         py::module module;
     };
