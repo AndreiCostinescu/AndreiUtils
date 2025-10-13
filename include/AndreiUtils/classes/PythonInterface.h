@@ -39,6 +39,8 @@ namespace AndreiUtils {
 
         [[nodiscard]] size_t getFunctionSize() const;
 
+        [[nodiscard]] bool isInitialized() const;
+
     protected:
         static void initInterpreter();
 
@@ -52,5 +54,6 @@ namespace AndreiUtils {
         static py::scoped_interpreter *guard;
         std::map<std::string, py::function> functions;
         py::module module;
+        bool initialized;
     };
 }

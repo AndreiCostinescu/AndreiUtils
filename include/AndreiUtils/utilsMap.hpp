@@ -801,4 +801,13 @@ namespace AndreiUtils {
             value = &elem.second;
         }
     }
+
+    template<class T1, class T2, typename C1 = std::less<T1>, typename A1 = std::allocator<std::pair<T1 const, T2>>, typename C2 = std::less<T2>, typename A2 = std::allocator<std::pair<T2 const, T1>>>
+    std::map<T2, T1, C2, A2> mapSwitchKeysWithValues(std::map<T1, T2, C1, A1> const &m) {
+        std::map<T2, T1, C2, A2> res;
+        for (auto const &[key, value]: m) {
+            AndreiUtils::mapEmplace(res, value, key);
+        }
+        return res;
+    }
 }

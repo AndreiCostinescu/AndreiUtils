@@ -412,6 +412,10 @@ void testMapOp() {
     AndreiUtils::printMap(res);
 }
 
+void testMapSwitchKeysWithValues() {
+    AndreiUtils::printMap(AndreiUtils::mapSwitchKeysWithValues(std::map<std::string, int>{{"1", 1}, {"2", 42}}));
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -426,7 +430,8 @@ int main() {
     // testMapAddIfNotContains();
     // testMapEmplaceKeyPointer();
     // testMapEmplaceForwardKey();
-    testMapOp();
+    // testMapOp();
+    testMapSwitchKeysWithValues();
 
     return 0;
 }

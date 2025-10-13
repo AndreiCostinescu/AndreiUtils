@@ -10,7 +10,7 @@ using namespace std;
 
 py::scoped_interpreter *PythonInterface::guard = nullptr;  // NOLINT(cert-err58-cpp)
 
-PythonInterface::PythonInterface() noexcept : module(), functions() {}
+PythonInterface::PythonInterface() noexcept : functions(), module(), initialized(false) {}
 
 PythonInterface::PythonInterface(string const &moduleName, vector<string> const &toImportFunctionNames) :
         PythonInterface() {
@@ -30,7 +30,9 @@ void PythonInterface::reInitialize(string const &moduleName, vector<string> cons
         for (auto &importNames: toImportFunctionNames) {
             this->functions[importNames] = this->module.attr(importNames.c_str());
         }
+        this->initialized = true;
     } catch (exception &e) {
+        this->initialized = false;
         throw std::runtime_error("Exception in python: " + string(e.what()));
     }
 }
@@ -46,10 +48,15 @@ map<string, py::function> const &PythonInterface::getFunctions() const {
 void PythonInterface::cleanup() {
     this->functions.clear();
     this->module.release();
+    this->initialized = false;
 }
 
 size_t PythonInterface::getFunctionSize() const {
     return this->functions.size();
+}
+
+bool PythonInterface::isInitialized() const {
+    return this->initialized;
 }
 
 void PythonInterface::initInterpreter() {
