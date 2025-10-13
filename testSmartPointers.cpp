@@ -503,6 +503,19 @@ TEST(SmartPointers, MyPointerAssignment) {
     EXPECT_EQ(*x, 42);
 }
 
+TEST(SmartPointers, MyPointerSmartPtrAssignment) {
+    AndreiUtils::Pointer<A> x(std::make_shared<B>());
+    EXPECT_TRUE(x != nullptr);
+    x = std::make_shared<B>();
+    EXPECT_TRUE(x != nullptr);
+}
+
+void testF(AndreiUtils::Pointer<A>) {}
+
+TEST(SmartPointers, FunctionWithMyPointerPassSmartPtr) {
+    testF(std::make_shared<B>());
+}
+
 TEST(SmartPointers, SubClassPointer) {
     B b;
     AndreiUtils::Pointer<A> x1(&b);

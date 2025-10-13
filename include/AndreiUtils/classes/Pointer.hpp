@@ -64,6 +64,10 @@ namespace AndreiUtils {
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
         Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
 
+        // no marking as explicit because we want the conversion from SmartPtrType to Pointer
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer(std::shared_ptr<SubT> datum);  // NOLINT(google-explicit-constructor)
+
         Pointer(Pointer const &other);   // NOLINT(*-explicit-constructor)
 
         Pointer(Pointer &&other) noexcept;   // NOLINT(*-explicit-constructor)
@@ -111,6 +115,9 @@ namespace AndreiUtils {
         Pointer &operator=(std::remove_const_t<T> *other) requires std::is_const_v<T>;
 
         Pointer &operator=(SmartPtrType other);
+
+        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        Pointer &operator=(std::shared_ptr<SubT> other);
 
         Pointer &operator=(Pointer const &other);
 
