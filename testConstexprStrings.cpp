@@ -79,6 +79,8 @@ public:
 #include <iostream>
 
 int main() {
+    static_assert(HasDataAndSize<ConstexprString<4>>);
+
     static_assert(concatenate("").size == 0, "Error");
     static_assert(std::is_array_v<const char [5]>, "Error");
     static_assert(std::is_array_v<std::remove_reference_t<const char (&)[5]>>, "Error");

@@ -4,11 +4,14 @@
 
 #pragma once
 
+#include <algorithm>
 #include <AndreiUtils/traits/stringify.hpp>
 #include <array>
 #include <string_view>
 #include <string>
 #include <cstddef>
+#include <concepts>
+#include <type_traits>
 
 namespace AndreiUtils {
     template<typename T>
@@ -16,16 +19,17 @@ namespace AndreiUtils {
             // 1) Require that T::size is a constant expression convertible to std::size_t
             requires
             {
-                typename std::integral_constant<std::size_t, T::size>;
+                typename std::integral_constant<std::size_t, std::remove_cvref_t<T>::size>;
             }
             // 2) Require that there's a non-static member `data` whose type is std::array<char, T::size>
             && requires(std::remove_cvref_t<T> &u)
             {
-                { u.data } -> std::same_as<std::array<char, T::size + 1> &>;
+                requires std::same_as<decltype((u.data)), std::array<char, std::remove_cvref_t<T>::size + 1> &>;
             }
             // 3) Allow for const types
-            && requires(std::remove_cvref_t<T> const &cu) {
-                { cu.data } -> std::same_as<const std::array<char, T::size + 1>&>;
+            && requires(std::remove_cvref_t<T> const &cu)
+            {
+                requires std::same_as<decltype((cu.data)), std::array<char, std::remove_cvref_t<T>::size + 1> const &>;
             }
             && !std::same_as<std::remove_cvref_t<T>, std::string>
             && !std::same_as<std::remove_cvref_t<T>, std::string_view>;
@@ -119,7 +123,7 @@ namespace AndreiUtils {
 
         [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
-        [[nodiscard]] constexpr char const * c_str() const { return this->data.data(); }
+        [[nodiscard]] constexpr char const *c_str() const { return this->data.data(); }
     };
 
     template<bool B>
@@ -162,7 +166,7 @@ namespace AndreiUtils {
 
         [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
-        [[nodiscard]] constexpr char const * c_str() const { return this->data.data(); }
+        [[nodiscard]] constexpr char const *c_str() const { return this->data.data(); }
     };
 
     template<typename T>
@@ -253,6 +257,4 @@ namespace AndreiUtils {
     constexpr bool operator!=(T1 const &lhs, T2 const &rhs) {
         return !operator==(lhs, rhs);
     }
-
-
 }
