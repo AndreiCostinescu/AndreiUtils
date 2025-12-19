@@ -113,7 +113,9 @@ void testRealsenseOptionsToString() {
     cout << rs2_option_to_string(RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE) << endl;
     cout << rs2_option_to_string(RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE) << endl;
     cout << rs2_option_to_string(RS2_OPTION_EMITTER_FREQUENCY) << endl;
+    #if RS2_API_VERSION >= 25400
     cout << rs2_option_to_string(RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE) << endl;
+    #endif
     cout << rs2_option_to_string(RS2_OPTION_COUNT) << endl;
 }
 
@@ -211,8 +213,10 @@ void testRealsenseOptionStringsToString() {
     cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE)) << endl;
     cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE)) << endl;
     cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_EMITTER_FREQUENCY)) << endl;
+    #if RS2_API_VERSION >= 25400
     cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE)) << endl;
-    // cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_COUNT)) << endl;
+    #endif
+    cout << getRealsenseOptionFromString(rs2_option_to_string(RS2_OPTION_COUNT)) << endl;
 }
 
 int main() {
