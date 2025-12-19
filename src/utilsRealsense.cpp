@@ -297,195 +297,295 @@ rs2_option AndreiUtils::getRealsenseOptionFromString(std::string const &option) 
     auto optionLower = AndreiUtils::toLowerString(option);
     if (optionLower == "backlight compensation") {
         return RS2_OPTION_BACKLIGHT_COMPENSATION;
-    } else if (optionLower == "brightness") {
-        return RS2_OPTION_BRIGHTNESS;
-    } else if (optionLower == "contrast") {
-        return RS2_OPTION_CONTRAST;
-    } else if (optionLower == "exposure") {
-        return RS2_OPTION_EXPOSURE;
-    } else if (optionLower == "gain") {
-        return RS2_OPTION_GAIN;
-    } else if (optionLower == "gamma") {
-        return RS2_OPTION_GAMMA;
-    } else if (optionLower == "hue") {
-        return RS2_OPTION_HUE;
-    } else if (optionLower == "saturation") {
-        return RS2_OPTION_SATURATION;
-    } else if (optionLower == "white balance") {
-        return RS2_OPTION_WHITE_BALANCE;
-    } else if (optionLower == "enable auto exposure") {
-        return RS2_OPTION_ENABLE_AUTO_EXPOSURE;
-    } else if (optionLower == "enable auto white balance") {
-        return RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE;
-    } else if (optionLower == "visual preset") {
-        return RS2_OPTION_VISUAL_PRESET;
-    } else if (optionLower == "laser power") {
-        return RS2_OPTION_LASER_POWER;
-    } else if (optionLower == "accuracy") {
-        return RS2_OPTION_ACCURACY;
-    } else if (optionLower == "motion range") {
-        return RS2_OPTION_MOTION_RANGE;
-    } else if (optionLower == "filter option") {
-        return RS2_OPTION_FILTER_OPTION;
-    } else if (optionLower == "confidence threshold") {
-        return RS2_OPTION_CONFIDENCE_THRESHOLD;
-    } else if (optionLower == "emitter enabled") {
-        return RS2_OPTION_EMITTER_ENABLED;
-    } else if (optionLower == "frames queue size") {
-        return RS2_OPTION_FRAMES_QUEUE_SIZE;
-    } else if (optionLower == "total frame drops") {
-        return RS2_OPTION_TOTAL_FRAME_DROPS;
-    } else if (optionLower == "fisheye auto exposure mode") {
-        return RS2_OPTION_AUTO_EXPOSURE_MODE;
-    } else if (optionLower == "power line frequency") {
-        return RS2_OPTION_POWER_LINE_FREQUENCY;
-    } else if (optionLower == "asic temperature") {
-        return RS2_OPTION_ASIC_TEMPERATURE;
-    } else if (optionLower == "error polling enabled") {
-        return RS2_OPTION_ERROR_POLLING_ENABLED;
-    } else if (optionLower == "projector temperature") {
-        return RS2_OPTION_PROJECTOR_TEMPERATURE;
-    } else if (optionLower == "output trigger enabled") {
-        return RS2_OPTION_OUTPUT_TRIGGER_ENABLED;
-    } else if (optionLower == "motion module temperature") {
-        return RS2_OPTION_MOTION_MODULE_TEMPERATURE;
-    } else if (optionLower == "enable motion correction") {
-        return RS2_OPTION_ENABLE_MOTION_CORRECTION;
-    } else if (optionLower == "auto exposure priority") {
-        return RS2_OPTION_AUTO_EXPOSURE_PRIORITY;
-    } else if (optionLower == "color scheme") {
-        return RS2_OPTION_COLOR_SCHEME;
-    } else if (optionLower == "histogram equalization enabled") {
-        return RS2_OPTION_HISTOGRAM_EQUALIZATION_ENABLED;
-    } else if (optionLower == "min distance") {
-        return RS2_OPTION_MIN_DISTANCE;
-    } else if (optionLower == "max distance") {
-        return RS2_OPTION_MAX_DISTANCE;
-    } else if (optionLower == "texture source") {
-        return RS2_OPTION_TEXTURE_SOURCE;
-    } else if (optionLower == "filter magnitude") {
-        return RS2_OPTION_FILTER_MAGNITUDE;
-    } else if (optionLower == "filter smooth alpha") {
-        return RS2_OPTION_FILTER_SMOOTH_ALPHA;
-    } else if (optionLower == "filter smooth delta") {
-        return RS2_OPTION_FILTER_SMOOTH_DELTA;
-    } else if (optionLower == "holes fill") {
-        return RS2_OPTION_HOLES_FILL;
-    } else if (optionLower == "stereo baseline") {
-        return RS2_OPTION_STEREO_BASELINE;
-    } else if (optionLower == "auto exposure converge step") {
-        return RS2_OPTION_AUTO_EXPOSURE_CONVERGE_STEP;
-    } else if (optionLower == "inter cam sync mode") {
-        return RS2_OPTION_INTER_CAM_SYNC_MODE;
-    } else if (optionLower == "stream filter") {
-        return RS2_OPTION_STREAM_FILTER;
-    } else if (optionLower == "stream format filter") {
-        return RS2_OPTION_STREAM_FORMAT_FILTER;
-    } else if (optionLower == "stream index filter") {
-        return RS2_OPTION_STREAM_INDEX_FILTER;
-    } else if (optionLower == "emitter on off") {
-        return RS2_OPTION_EMITTER_ON_OFF;
-    } else if (optionLower == "zero order point x") {
-        return RS2_OPTION_ZERO_ORDER_POINT_X;
-    } else if (optionLower == "zero order point y") {
-        return RS2_OPTION_ZERO_ORDER_POINT_Y;
-    } else if (optionLower == "ldd temperature") {
-        return RS2_OPTION_LLD_TEMPERATURE;
-    } else if (optionLower == "mc temperature") {
-        return RS2_OPTION_MC_TEMPERATURE;
-    } else if (optionLower == "ma temperature") {
-        return RS2_OPTION_MA_TEMPERATURE;
-    } else if (optionLower == "hardware preset") {
-        return RS2_OPTION_HARDWARE_PRESET;
-    } else if (optionLower == "global time enabled") {
-        return RS2_OPTION_GLOBAL_TIME_ENABLED;
-    } else if (optionLower == "apd temperature") {
-        return RS2_OPTION_APD_TEMPERATURE;
-    } else if (optionLower == "enable mapping") {
-        return RS2_OPTION_ENABLE_MAPPING;
-    } else if (optionLower == "enable relocalization") {
-        return RS2_OPTION_ENABLE_RELOCALIZATION;
-    } else if (optionLower == "enable pose jumping") {
-        return RS2_OPTION_ENABLE_POSE_JUMPING;
-    } else if (optionLower == "enable dynamic calibration") {
-        return RS2_OPTION_ENABLE_DYNAMIC_CALIBRATION;
-    } else if (optionLower == "depth offset") {
-        return RS2_OPTION_DEPTH_OFFSET;
-    } else if (optionLower == "led power") {
-        return RS2_OPTION_LED_POWER;
-    } else if (optionLower == "zero order enabled") {
-        return RS2_OPTION_ZERO_ORDER_ENABLED;
-    } else if (optionLower == "enable map preservation") {
-        return RS2_OPTION_ENABLE_MAP_PRESERVATION;
-    } else if (optionLower == "freefall detection enabled") {
-        return RS2_OPTION_FREEFALL_DETECTION_ENABLED;
-    } else if (optionLower == "receiver gain") {
-        return RS2_OPTION_AVALANCHE_PHOTO_DIODE;
-    } else if (optionLower == "post processing sharpening") {
-        return RS2_OPTION_POST_PROCESSING_SHARPENING;
-    } else if (optionLower == "pre processing sharpening") {
-        return RS2_OPTION_PRE_PROCESSING_SHARPENING;
-    } else if (optionLower == "noise filtering") {
-        return RS2_OPTION_NOISE_FILTERING;
-    } else if (optionLower == "invalidation bypass") {
-        return RS2_OPTION_INVALIDATION_BYPASS;
-    } else if (optionLower == "ambient light") {
-        return RS2_OPTION_AMBIENT_LIGHT;
-    } else if (optionLower == "digital gain") {
-        return RS2_OPTION_DIGITAL_GAIN;
-    } else if (optionLower == "sensor mode") {
-        return RS2_OPTION_SENSOR_MODE;
-    } else if (optionLower == "emitter always on") {
-        return RS2_OPTION_EMITTER_ALWAYS_ON;
-    } else if (optionLower == "thermal compensation") {
-        return RS2_OPTION_THERMAL_COMPENSATION;
-    } else if (optionLower == "trigger camera accuracy health") {
-        return RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH;
-    } else if (optionLower == "reset camera accuracy health") {
-        return RS2_OPTION_RESET_CAMERA_ACCURACY_HEALTH;
-    } else if (optionLower == "host performance") {
-        return RS2_OPTION_HOST_PERFORMANCE;
-    } else if (optionLower == "hdr enabled") {
-        return RS2_OPTION_HDR_ENABLED;
-    } else if (optionLower == "sequence name") {
-        return RS2_OPTION_SEQUENCE_NAME;
-    } else if (optionLower == "sequence size") {
-        return RS2_OPTION_SEQUENCE_SIZE;
-    } else if (optionLower == "sequence id") {
-        return RS2_OPTION_SEQUENCE_ID;
-    } else if (optionLower == "humidity temperature") {
-        return RS2_OPTION_HUMIDITY_TEMPERATURE;
-    } else if (optionLower == "enable max usable range") {
-        return RS2_OPTION_ENABLE_MAX_USABLE_RANGE;
-    } else if (optionLower == "alternate ir") {
-        return RS2_OPTION_ALTERNATE_IR;
-    } else if (optionLower == "noise estimation") {
-        return RS2_OPTION_NOISE_ESTIMATION;
-    } else if (optionLower == "enable ir reflectivity") {
-        return RS2_OPTION_ENABLE_IR_REFLECTIVITY;
-    } else if (optionLower == "auto exposure limit") {
-        return RS2_OPTION_AUTO_EXPOSURE_LIMIT;
-    } else if (optionLower == "auto gain limit") {
-        return RS2_OPTION_AUTO_GAIN_LIMIT;
-    } else if (optionLower == "auto rx sensitivity") {
-        return RS2_OPTION_AUTO_RX_SENSITIVITY;
-    } else if (optionLower == "transmitter frequency") {
-        return RS2_OPTION_TRANSMITTER_FREQUENCY;
-    } else if (optionLower == "vertical binning") {
-        return RS2_OPTION_VERTICAL_BINNING;
-    } else if (optionLower == "receiver sensitivity") {
-        return RS2_OPTION_RECEIVER_SENSITIVITY;
-    } else if (optionLower == "auto exposure limit toggle") {
-        return RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE;
-    } else if (optionLower == "auto gain limit toggle") {
-        return RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE;
-    } else if (optionLower == "emitter frequency") {
-        return RS2_OPTION_EMITTER_FREQUENCY;
-    } else if (optionLower == "auto exposure mode") {
-        return RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE;
-    } else if (optionLower == "count") {
-        return RS2_OPTION_COUNT;
-    } else {
-        throw std::runtime_error("Unknown realsense option: " + option);
     }
+    if (optionLower == "brightness") {
+        return RS2_OPTION_BRIGHTNESS;
+    }
+    if (optionLower == "contrast") {
+        return RS2_OPTION_CONTRAST;
+    }
+    if (optionLower == "exposure") {
+        return RS2_OPTION_EXPOSURE;
+    }
+    if (optionLower == "gain") {
+        return RS2_OPTION_GAIN;
+    }
+    if (optionLower == "gamma") {
+        return RS2_OPTION_GAMMA;
+    }
+     if (optionLower == "hue") {
+        return RS2_OPTION_HUE;
+    }
+    if (optionLower == "saturation") {
+        return RS2_OPTION_SATURATION;
+    }
+    if (optionLower == "white balance") {
+        return RS2_OPTION_WHITE_BALANCE;
+    }
+    if (optionLower == "enable auto exposure") {
+        return RS2_OPTION_ENABLE_AUTO_EXPOSURE;
+    }
+    if (optionLower == "enable auto white balance") {
+        return RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE;
+    }
+    if (optionLower == "visual preset") {
+        return RS2_OPTION_VISUAL_PRESET;
+    }
+    if (optionLower == "laser power") {
+        return RS2_OPTION_LASER_POWER;
+    }
+    if (optionLower == "accuracy") {
+        return RS2_OPTION_ACCURACY;
+    }
+    if (optionLower == "motion range") {
+        return RS2_OPTION_MOTION_RANGE;
+    }
+    if (optionLower == "filter option") {
+        return RS2_OPTION_FILTER_OPTION;
+    }
+    if (optionLower == "confidence threshold") {
+        return RS2_OPTION_CONFIDENCE_THRESHOLD;
+    }
+    if (optionLower == "emitter enabled") {
+        return RS2_OPTION_EMITTER_ENABLED;
+    }
+     if (optionLower == "frames queue size") {
+        return RS2_OPTION_FRAMES_QUEUE_SIZE;
+    }
+    if (optionLower == "total frame drops") {
+        return RS2_OPTION_TOTAL_FRAME_DROPS;
+    }
+    if (optionLower == "fisheye auto exposure mode") {
+        return RS2_OPTION_AUTO_EXPOSURE_MODE;
+    }
+    if (optionLower == "power line frequency") {
+        return RS2_OPTION_POWER_LINE_FREQUENCY;
+    }
+    if (optionLower == "asic temperature") {
+        return RS2_OPTION_ASIC_TEMPERATURE;
+    }
+    if (optionLower == "error polling enabled") {
+        return RS2_OPTION_ERROR_POLLING_ENABLED;
+    }
+    if (optionLower == "projector temperature") {
+        return RS2_OPTION_PROJECTOR_TEMPERATURE;
+    }
+    if (optionLower == "output trigger enabled") {
+        return RS2_OPTION_OUTPUT_TRIGGER_ENABLED;
+    }
+    if (optionLower == "motion module temperature") {
+        return RS2_OPTION_MOTION_MODULE_TEMPERATURE;
+    }
+    if (optionLower == "enable motion correction") {
+        return RS2_OPTION_ENABLE_MOTION_CORRECTION;
+    }
+     if (optionLower == "auto exposure priority") {
+        return RS2_OPTION_AUTO_EXPOSURE_PRIORITY;
+    }
+    if (optionLower == "color scheme") {
+        return RS2_OPTION_COLOR_SCHEME;
+    }
+    if (optionLower == "histogram equalization enabled") {
+        return RS2_OPTION_HISTOGRAM_EQUALIZATION_ENABLED;
+    }
+    if (optionLower == "min distance") {
+        return RS2_OPTION_MIN_DISTANCE;
+    }
+    if (optionLower == "max distance") {
+        return RS2_OPTION_MAX_DISTANCE;
+    }
+    if (optionLower == "texture source") {
+        return RS2_OPTION_TEXTURE_SOURCE;
+    }
+    if (optionLower == "filter magnitude") {
+        return RS2_OPTION_FILTER_MAGNITUDE;
+    }
+    if (optionLower == "filter smooth alpha") {
+        return RS2_OPTION_FILTER_SMOOTH_ALPHA;
+    }
+    if (optionLower == "filter smooth delta") {
+        return RS2_OPTION_FILTER_SMOOTH_DELTA;
+    }
+    if (optionLower == "holes fill") {
+        return RS2_OPTION_HOLES_FILL;
+    }
+    if (optionLower == "stereo baseline") {
+        return RS2_OPTION_STEREO_BASELINE;
+    }
+    if (optionLower == "auto exposure converge step") {
+        return RS2_OPTION_AUTO_EXPOSURE_CONVERGE_STEP;
+    }
+    if (optionLower == "inter cam sync mode") {
+        return RS2_OPTION_INTER_CAM_SYNC_MODE;
+    }
+    if (optionLower == "stream filter") {
+        return RS2_OPTION_STREAM_FILTER;
+    }
+    if (optionLower == "stream format filter") {
+        return RS2_OPTION_STREAM_FORMAT_FILTER;
+    }
+    if (optionLower == "stream index filter") {
+        return RS2_OPTION_STREAM_INDEX_FILTER;
+    }
+    if (optionLower == "emitter on off") {
+        return RS2_OPTION_EMITTER_ON_OFF;
+    }
+    if (optionLower == "zero order point x") {
+        return RS2_OPTION_ZERO_ORDER_POINT_X;
+    }
+    if (optionLower == "zero order point y") {
+        return RS2_OPTION_ZERO_ORDER_POINT_Y;
+    }
+    if (optionLower == "ldd temperature") {
+        return RS2_OPTION_LLD_TEMPERATURE;
+    }
+    if (optionLower == "mc temperature") {
+        return RS2_OPTION_MC_TEMPERATURE;
+    }
+    if (optionLower == "ma temperature") {
+        return RS2_OPTION_MA_TEMPERATURE;
+    }
+    if (optionLower == "hardware preset") {
+        return RS2_OPTION_HARDWARE_PRESET;
+    }
+    if (optionLower == "global time enabled") {
+        return RS2_OPTION_GLOBAL_TIME_ENABLED;
+    }
+    if (optionLower == "apd temperature") {
+        return RS2_OPTION_APD_TEMPERATURE;
+    }
+    if (optionLower == "enable mapping") {
+        return RS2_OPTION_ENABLE_MAPPING;
+    }
+    if (optionLower == "enable relocalization") {
+        return RS2_OPTION_ENABLE_RELOCALIZATION;
+    }
+    if (optionLower == "enable pose jumping") {
+        return RS2_OPTION_ENABLE_POSE_JUMPING;
+    }
+    if (optionLower == "enable dynamic calibration") {
+        return RS2_OPTION_ENABLE_DYNAMIC_CALIBRATION;
+    }
+    if (optionLower == "depth offset") {
+        return RS2_OPTION_DEPTH_OFFSET;
+    }
+    if (optionLower == "led power") {
+        return RS2_OPTION_LED_POWER;
+    }
+    if (optionLower == "zero order enabled") {
+        return RS2_OPTION_ZERO_ORDER_ENABLED;
+    }
+    if (optionLower == "enable map preservation") {
+        return RS2_OPTION_ENABLE_MAP_PRESERVATION;
+    }
+    if (optionLower == "freefall detection enabled") {
+        return RS2_OPTION_FREEFALL_DETECTION_ENABLED;
+    }
+    if (optionLower == "receiver gain") {
+        return RS2_OPTION_AVALANCHE_PHOTO_DIODE;
+    }
+    if (optionLower == "post processing sharpening") {
+        return RS2_OPTION_POST_PROCESSING_SHARPENING;
+    }
+    if (optionLower == "pre processing sharpening") {
+        return RS2_OPTION_PRE_PROCESSING_SHARPENING;
+    }
+    if (optionLower == "noise filtering") {
+        return RS2_OPTION_NOISE_FILTERING;
+    }
+    if (optionLower == "invalidation bypass") {
+        return RS2_OPTION_INVALIDATION_BYPASS;
+    }
+    if (optionLower == "ambient light") {
+        return RS2_OPTION_AMBIENT_LIGHT;
+    }
+    if (optionLower == "digital gain") {
+        return RS2_OPTION_DIGITAL_GAIN;
+    }
+    if (optionLower == "sensor mode") {
+        return RS2_OPTION_SENSOR_MODE;
+    }
+    if (optionLower == "emitter always on") {
+        return RS2_OPTION_EMITTER_ALWAYS_ON;
+    }
+    if (optionLower == "thermal compensation") {
+        return RS2_OPTION_THERMAL_COMPENSATION;
+    }
+    if (optionLower == "trigger camera accuracy health") {
+        return RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH;
+    }
+    if (optionLower == "reset camera accuracy health") {
+        return RS2_OPTION_RESET_CAMERA_ACCURACY_HEALTH;
+    }
+    if (optionLower == "host performance") {
+        return RS2_OPTION_HOST_PERFORMANCE;
+    }
+    if (optionLower == "hdr enabled") {
+        return RS2_OPTION_HDR_ENABLED;
+    }
+    if (optionLower == "sequence name") {
+        return RS2_OPTION_SEQUENCE_NAME;
+    }
+    if (optionLower == "sequence size") {
+        return RS2_OPTION_SEQUENCE_SIZE;
+    }
+    if (optionLower == "sequence id") {
+        return RS2_OPTION_SEQUENCE_ID;
+    }
+    if (optionLower == "humidity temperature") {
+        return RS2_OPTION_HUMIDITY_TEMPERATURE;
+    }
+    if (optionLower == "enable max usable range") {
+        return RS2_OPTION_ENABLE_MAX_USABLE_RANGE;
+    }
+    if (optionLower == "alternate ir") {
+        return RS2_OPTION_ALTERNATE_IR;
+    }
+    if (optionLower == "noise estimation") {
+        return RS2_OPTION_NOISE_ESTIMATION;
+    }
+    if (optionLower == "enable ir reflectivity") {
+        return RS2_OPTION_ENABLE_IR_REFLECTIVITY;
+    }
+    if (optionLower == "auto exposure limit") {
+        return RS2_OPTION_AUTO_EXPOSURE_LIMIT;
+    }
+    if (optionLower == "auto gain limit") {
+        return RS2_OPTION_AUTO_GAIN_LIMIT;
+    }
+    if (optionLower == "auto rx sensitivity") {
+        return RS2_OPTION_AUTO_RX_SENSITIVITY;
+    }
+    if (optionLower == "transmitter frequency") {
+        return RS2_OPTION_TRANSMITTER_FREQUENCY;
+    }
+    if (optionLower == "vertical binning") {
+        return RS2_OPTION_VERTICAL_BINNING;
+    }
+    if (optionLower == "receiver sensitivity") {
+        return RS2_OPTION_RECEIVER_SENSITIVITY;
+    }
+    if (optionLower == "auto exposure limit toggle") {
+        return RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE;
+    }
+    if (optionLower == "auto gain limit toggle") {
+        return RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE;
+    }
+    if (optionLower == "emitter frequency") {
+        return RS2_OPTION_EMITTER_FREQUENCY;
+    }
+    if (optionLower == "auto exposure mode") {
+        #if RS2_API_VERSION >= 25400
+        return RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE;
+        #else
+        throw std::runtime_error(
+                std::string(
+                        "The \"auto exposure mode\" option does not exist in the librealsense version ") +
+                RS2_API_VERSION_STR);
+        #endif
+    }
+    if (optionLower == "count") {
+        return RS2_OPTION_COUNT;
+    }
+    throw std::runtime_error("Unknown realsense option: " + option);
 }
