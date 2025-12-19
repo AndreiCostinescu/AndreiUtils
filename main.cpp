@@ -688,7 +688,7 @@ struct Custom {
 };
 
 struct CustomComparison {
-    bool operator()(Custom const &a, Custom const &b) {
+    bool operator()(Custom const &a, Custom const &b) const {
         return a.b > b.b;  // lowest priority first
     }
 };
@@ -701,11 +701,11 @@ void testPriorityQueue() {
     queue.add(1, 2);
     queue.add(2, 1);
     std::priority_queue<Custom, std::vector<Custom>, CustomComparison> q;
-    q.emplace(5, 5);
-    q.emplace(4, 4);
-    q.emplace(3, 3);
-    q.emplace(1, 2);
-    q.emplace(2, 1);
+    q.push({5, 5});
+    q.push({4, 4});
+    q.push({3, 3});
+    q.push({1, 2});
+    q.push({2, 1});
     while (!queue.empty()) {
         auto const min = queue.extractMin();
         cout << min.first << ": " << min.second << endl;
