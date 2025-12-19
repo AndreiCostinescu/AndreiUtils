@@ -5,33 +5,15 @@
 #ifndef ANDREI_UTILS_POINTER_HPP
 #define ANDREI_UTILS_POINTER_HPP
 
+#include <AndreiUtils/concepts/FirstConstSecondNot.hpp>
+#include <AndreiUtils/concepts/NotConst.hpp>
+#include <AndreiUtils/concepts/StrictSubType.hpp>
+#include <AndreiUtils/concepts/SubType.hpp>
+#include <AndreiUtils/concepts/TypesWithSameConst.hpp>
 #include <AndreiUtils/traits/InstanceOf.hpp>
-#include <concepts>
 #include <memory>
 
 namespace AndreiUtils {
-    // the first condition is to handle non-class types such as int, float, double
-    // (which fail the std::is_base_of<int, int> condition...)
-    template<typename T, typename SubT>
-    concept TypeWithSubTypes = std::is_same_v<std::remove_const_t<T>, std::remove_const_t<SubT>> ||
-                               std::is_base_of_v<std::remove_const_t<T>, std::remove_const_t<SubT>>;
-
-    template<typename T, typename SubT>
-    concept StrictSubTypeOfT = std::is_base_of_v<std::remove_const_t<T>, std::remove_const_t<SubT>> &&
-                               std::negation<std::is_same<std::remove_const_t<T>, std::remove_const_t<SubT>>>::value;
-
-    template<typename T>
-    concept NotAbstract = std::negation_v<std::is_abstract<T>>;
-
-    template<typename T>
-    concept NotConst = std::negation_v<std::is_const<T>>;
-
-    template<typename T1, typename T2>
-    concept TypesWithSameConst = (std::is_const_v<T1> == std::is_const_v<T2>);
-
-    template<typename T1, typename T2>
-    concept FirstConstSecondNot = (std::is_const_v<T1> && !std::is_const_v<T2>);
-
     template<typename T>
     class Pointer {
     public:
@@ -44,15 +26,15 @@ namespace AndreiUtils {
         Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         explicit Pointer(Type &datum);
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         explicit Pointer(Type const &datum);
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         explicit Pointer(Type &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
@@ -65,7 +47,7 @@ namespace AndreiUtils {
         Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        template<typename SubT> requires StrictSubType<T, SubT>
         Pointer(std::shared_ptr<SubT> datum);  // NOLINT(google-explicit-constructor)
 
         Pointer(Pointer const &other);   // NOLINT(*-explicit-constructor)
@@ -81,31 +63,31 @@ namespace AndreiUtils {
         // (but they would not be accessible without this differentiation because of their protected status)
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && TypesWithSameConst<T, Type>
+        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer(Pointer<Type> const &other);   // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && TypesWithSameConst<T, Type>
+        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer(Pointer<Type> &&other) noexcept;   // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && FirstConstSecondNot<T, Type>
+        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer(Pointer<Type> const &other);  // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && FirstConstSecondNot<T, Type>
+        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer(Pointer<Type> &&other) noexcept;  // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         Pointer &operator=(Type &other);
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         Pointer &operator=(Type const &other);
 
         template<typename Type>
-        requires TypeWithSubTypes<T, Type>
+        requires SubType<T, Type>
         Pointer &operator=(Type &&other);
 
         Pointer &operator=(std::nullptr_t);
@@ -116,7 +98,7 @@ namespace AndreiUtils {
 
         Pointer &operator=(SmartPtrType other);
 
-        template<typename SubT> requires StrictSubTypeOfT<T, SubT>
+        template<typename SubT> requires StrictSubType<T, SubT>
         Pointer &operator=(std::shared_ptr<SubT> other);
 
         Pointer &operator=(Pointer const &other);
@@ -128,19 +110,19 @@ namespace AndreiUtils {
         Pointer &operator=(Pointer<std::remove_const_t<T>> &&other) noexcept requires std::is_const_v<T>;
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && TypesWithSameConst<T, Type>
+        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer &operator=(Pointer<Type> const &other);
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && TypesWithSameConst<T, Type>
+        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && FirstConstSecondNot<T, Type>
+        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer &operator=(Pointer<Type> const &other);
 
         template<typename Type>
-        requires StrictSubTypeOfT<T, Type> && FirstConstSecondNot<T, Type>
+        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         [[nodiscard]] bool operator<(Pointer<std::remove_const_t<T>> const &other) const;
@@ -157,9 +139,9 @@ namespace AndreiUtils {
 
         T *operator->() const && noexcept = delete;
 
-        T &operator*() const & noexcept requires NotAbstract<T>;
+        T &operator*() const & noexcept;
 
-        T &operator*() const && noexcept requires NotAbstract<T> = delete;
+        T &operator*() const && noexcept = delete;
 
         [[nodiscard]] T *ptrOfTempValue() const && noexcept;
 
@@ -176,11 +158,11 @@ namespace AndreiUtils {
         Pointer<std::remove_const_t<T>> constCastMove() && noexcept requires std::is_const_v<T>;
 
         template<typename ParentCastT>
-        requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
+        requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
         Pointer<ParentCastT> cast() const noexcept;
 
         template<typename ParentCastT>
-        requires TypeWithSubTypes<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
+        requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
         Pointer<ParentCastT> castMove() && noexcept;
 
         template<typename CastT>
