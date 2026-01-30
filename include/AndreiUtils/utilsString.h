@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -80,4 +81,10 @@ namespace AndreiUtils {
     bool isStringBooleanTrueValue(std::string const &s);
 
     bool isStringBooleanFalseValue(std::string const &s);
+
+    bool isStringAFloatingPointValue(std::string const &str, double &value);
+
+    bool isInputStringStreamAtEnd(std::istringstream &ss);
+
+    std::string surroundWithIfNotAlready(std::string const &toSurround, std::string const &surroundingString);
 }

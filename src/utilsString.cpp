@@ -347,3 +347,28 @@ bool AndreiUtils::isStringBooleanFalseValue(string const &s) {
     return s == "no" || s == "n" || s == "0" || s == "false";
 }
 
+bool AndreiUtils::isStringAFloatingPointValue(const std::string &str, double &value) {
+    std::istringstream iss(str);
+    double readValue;
+    iss >> std::noskipws >> readValue; // noskipws considers leading whitespace invalid
+    bool success = iss.eof() && !iss.fail();
+    if (success) {
+        value = readValue;
+    }
+    return success;
+}
+
+bool AndreiUtils::isInputStringStreamAtEnd(std::istringstream &ss) {
+    return ss.eof() || (ss >> std::ws).eof();
+}
+
+std::string AndreiUtils::surroundWithIfNotAlready(std::string const &toSurround, std::string const &surroundingString) {
+    std::string result = toSurround;
+    if (!result.starts_with(surroundingString)) {
+        result = surroundingString + result;
+    }
+    if (!result.ends_with(surroundingString)) {
+        result += surroundingString;
+    }
+    return result;
+}
