@@ -301,10 +301,9 @@ namespace AndreiUtils {
 
             edge->update(newEdgeId, newN1, newN2);
             if (edgeId != newEdgeId) {
-                mapDelete(this->edges, edgeId);
+                // first add edge to new map and then delete it from the original container
                 mapAdd<EdgeId, EdgeTPtr const>(this->edges, newEdgeId, edge);
-                this->allocatedEdges[newEdgeId] = this->allocatedEdges[edgeId];
-                mapDelete(this->allocatedEdges, edgeId);
+                mapDelete(this->edges, edgeId);
             }
         }
 
