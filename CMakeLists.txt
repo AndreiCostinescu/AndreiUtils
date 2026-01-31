@@ -230,6 +230,7 @@ SET(UTILS_CLASSES
         src/classes/IndexIntervalSeries.cpp
         src/classes/MixedDataContainer.cpp
         src/classes/RandomNumberGenerator.cpp
+        src/classes/TemplateParser.cpp
         src/classes/Timer.cpp
         src/classes/UnionFind.cpp
         src/classes/UserInteraction.cpp

@@ -2,10 +2,10 @@
 // Created by Andrei on 29.11.23.
 //
 
+#include <AndreiUtils/classes/TemplateParser.h>
 #include <AndreiUtils/traits/stringify.hpp>
 #include <AndreiUtils/utilsString.h>
 #include <algorithm>
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 
@@ -143,7 +143,7 @@ TEST(StringUtilsTest, WithoutLastParts) {
 
     s = "Milk123Instance123";
     EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", -1), "Milk123Instance123");
-    EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", 0),  "Milk123Instance123");
+    EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", 0), "Milk123Instance123");
     EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", 1), "Milk123Instance");
     EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", 2), "Milk");
     EXPECT_EQ(AndreiUtils::withoutLastParts(s, "123", 3), "");
@@ -188,8 +188,75 @@ TEST(StringUtilsTest, StringTrim) {
     firstPos = s.find_first_not_of('e');
     EXPECT_EQ(firstPos, 0);
     EXPECT_THROW({
-        auto _ = s.substr(s.find_first_not_of("Help"));
-    }, std::exception);
+                     auto _ = s.substr(s.find_first_not_of("Help"));
+                 }, std::exception);
+}
+
+TEST(StringUtilsTest, StringTemplateParser) {
+    // Test cases
+    std::vector<std::string> failureCases = {
+            "A<",
+            "",
+            "   ",
+            "std::function<void(int, std::string)>",
+            " A < 1 <",
+            " A < 1 <>",
+            " A < 1 <>>, B",
+            " A < 1 <>>, ",
+            " A < 1 <>>, B<>",
+            " A < 1 <>>: B",
+            " A < 1 <>>: ",
+            " A < 1 <>>: B<>",
+    };
+    std::vector<std::pair<std::string, std::string>> testCases = {
+            {"int",                                                     "int"},
+            {"std::vector<int>",                                        "std::vector<int>"},
+            {"std::map<std::string, int>",                              "std::map<std::string, int>"},
+            {"std::vector<std::vector<int>>",                           "std::vector<std::vector<int>>"},
+            {"std::map<std::string, std::vector<int>>",                 "std::map<std::string, std::vector<int>>"},
+            {"std::unordered_map<std::string, std::pair<int, double>>", "std::unordered_map<std::string, std::pair<int, double>>"},
+            {"    this is a   long __   type declaration   ",           "this is a long __ type declaration"},
+            {"MyClass<T1, T2<T3, T4<T5>>>",                             "MyClass<T1, T2<T3, T4<T5>>>"},
+            {"unsigned int",                                            "unsigned int"},
+            {"std::vector< int >",                                      "std::vector<int>"},
+            {"std::vector< unsigned int >",                             "std::vector<unsigned int>"},
+            {"std::map< std::string , std::vector< unsigned int > >",   "std::map<std::string, std::vector<unsigned int>>"},
+            {"std::map< std::string , std::vector< unsigned int > > ",  "std::map<std::string, std::vector<unsigned int>>"},
+            {" A< B < 1 , 3,  5 , 2 > , C< 42 > >  ",                   "A<B<1, 3, 5, 2>, C<42>>"},
+            {" A< B <  >, C< 42 > >  ",                                 "A<B<>, C<42>>"},
+            {" A< 1 < > > ",                                            "A<1<>>"},
+            {"A<1<>>",                                                  "A<1<>>"},
+            {"A<1<:>>",                                                 "A<1<:>>"},  // should this be accepted as valid???
+    };
+
+    for (auto const &test: testCases) {
+        try {
+            std::cout << "Parsing: \"" << test.first << "\"\n";
+            AndreiUtils::TemplateType parsed = AndreiUtils::TemplateParser::parse(test.first);
+
+            std::cout << "  Base type: " << parsed.baseType << "\n";
+            std::cout << "  Is template: " << (parsed.isTemplate() ? "yes" : "no") << "\n";
+
+            if (parsed.isTemplate()) {
+                std::cout << "  Template args count: " << parsed.templateArgs.size() << "\n";
+                for (size_t i = 0; i < parsed.templateArgs.size(); ++i) {
+                    std::cout << "    Arg " << i << ": " << parsed.templateArgs[i].toString() << "\n";
+                }
+            }
+            std::cout << "\n";
+
+            EXPECT_EQ(parsed.toString(), test.second);
+        } catch (std::exception const &e) {
+            std::cout << "  ERROR: " << e.what() << "\n\n";
+            EXPECT_TRUE(false);
+        }
+    }
+    for (auto const &failureTest: failureCases) {
+        EXPECT_THROW({
+                         std::cout << "Expecting failure for: \"" << failureTest << "\"\n";
+                         AndreiUtils::TemplateParser::parse(failureTest);
+                     }, std::exception);
+    }
 }
 
 int main(int argc, char **argv) {
