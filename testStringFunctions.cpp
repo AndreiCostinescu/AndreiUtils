@@ -170,6 +170,28 @@ TEST(StringUtilsTest, ComplexTypes) {
     EXPECT_EQ(AndreiUtils::toString(v), expected);  // check two times!
 }
 
+TEST(StringUtilsTest, StringTrim) {
+    std::string s = "Help";
+    auto lastPos = s.find_last_not_of('p');
+    EXPECT_EQ(lastPos, 2);
+    lastPos = s.find_last_not_of('b');
+    EXPECT_EQ(lastPos, s.size() - 1);
+    lastPos = s.find_last_not_of("Help");
+    EXPECT_EQ(lastPos, std::string::npos);
+    EXPECT_EQ(s.substr(0, s.find_last_not_of("Help") + 1), "");
+    EXPECT_EQ(std::string::npos + 1, 0);
+
+    auto firstPos = s.find_first_not_of("Help");
+    EXPECT_EQ(firstPos, std::string::npos);
+    firstPos = s.find_first_not_of('H');
+    EXPECT_EQ(firstPos, 1);
+    firstPos = s.find_first_not_of('e');
+    EXPECT_EQ(firstPos, 0);
+    EXPECT_THROW({
+        auto _ = s.substr(s.find_first_not_of("Help"));
+    }, std::exception);
+}
+
 int main(int argc, char **argv) {
 
     cout << "Hello World!" << endl;

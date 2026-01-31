@@ -211,15 +211,39 @@ string AndreiUtils::trim(string const &str, string const &whitespace) {
     auto const strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {
         return "";
-    } // no content
+    }  // no content
 
-    auto const strEnd = str.find_last_not_of(whitespace);
-
+    // this is never std::string::npos because otherwise the find_first_not_of would have been std::string::npos
+    auto const strEnd = str.find_last_not_of(whitespace);  // returns the last position in the string!
     return str.substr(strBegin, strEnd - strBegin + 1);
+}
+
+string AndreiUtils::trimEnd(string const &str, string const &whitespace) {
+    auto const strEnd = str.find_last_not_of(whitespace);
+    if (strEnd == std::string::npos) {
+        return "";
+    }  // no content
+    return str.substr(0, strEnd + 1);
+}
+
+string AndreiUtils::trimStart(string const &str, string const &whitespace) {
+    auto const strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == string::npos) {
+        return "";
+    }  // no content
+    return str.substr(strBegin);
 }
 
 string AndreiUtils::strip(string const &str, string const &whiteSpace) {
     return AndreiUtils::trim(str, whiteSpace);
+}
+
+string AndreiUtils::stripEnd(string const &str, string const &whiteSpace) {
+    return AndreiUtils::trimEnd(str, whiteSpace);
+}
+
+string AndreiUtils::stripStart(string const &str, string const &whiteSpace) {
+    return AndreiUtils::trimStart(str, whiteSpace);
 }
 
 string AndreiUtils::reduce(string const &str, string const &fill, string const &whitespace) {

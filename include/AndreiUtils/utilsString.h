@@ -54,7 +54,15 @@ namespace AndreiUtils {
 
     std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
+    std::string trimEnd(std::string const &str, std::string const &whitespace = " \t");
+
+    std::string trimStart(std::string const &str, std::string const &whitespace = " \t");
+
     std::string strip(std::string const &str, std::string const &whitespace = " \t");
+
+    std::string stripEnd(std::string const &str, std::string const &whitespace = " \t");
+
+    std::string stripStart(std::string const &str, std::string const &whitespace = " \t");
 
     std::string reduce(std::string const &str, std::string const &fill = " ", std::string const &whitespace = " \t");
 
