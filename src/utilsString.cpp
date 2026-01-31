@@ -278,10 +278,13 @@ size_t AndreiUtils::stringCount(string const &referenceString, string const &sub
     return count;
 }
 
-pair<string, string> AndreiUtils::getKeyAndValue(string &line) {
-    size_t equal_pos = line.find('=');
-    string key = trim(line.substr(0, equal_pos));
-    string val = trim(line.substr(equal_pos + 1, string::npos));
+pair<string, string> AndreiUtils::getKeyAndValue(string &line, std::string const &keySplitter) {
+    if (keySplitter.empty()) {
+        throw std::invalid_argument("The splitter of key and value should not be empty!");
+    }
+    size_t splitPosition = line.find(keySplitter);
+    string key = trim(line.substr(0, splitPosition));
+    string val = trim(line.substr(splitPosition + keySplitter.size(), string::npos));
     return {key, val};
 }
 

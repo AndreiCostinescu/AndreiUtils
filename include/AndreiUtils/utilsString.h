@@ -66,7 +66,7 @@ namespace AndreiUtils {
 
     size_t stringCount(std::string const &referenceString, std::string const &subString);
 
-    std::pair<std::string, std::string> getKeyAndValue(std::string &line);
+    std::pair<std::string, std::string> getKeyAndValue(std::string &line, std::string const &keySplitter = "=");
 
     std::string padLeftUntil(std::string const &s, std::string const &pad, int stringSizeLimit = -1,
                              long padTimes = -1);
