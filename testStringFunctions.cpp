@@ -259,19 +259,34 @@ TEST(StringUtilsTest, StringTemplateParser) {
     }
 }
 
+TEST(StringUtilsTest, TestCapitalizeAndLowercase) {
+    // Test cases
+    std::vector<std::tuple<std::string, std::string, std::string>> testCases = {
+        {"int", "int", "Int"},
+        {"s", "s", "S"},
+        {"Tmp", "tmp", "Tmp"},
+        {"TMP", "tMP", "TMP"},
+        {"", "", ""},
+        {"A<1<:>>", "a<1<:>>", "A<1<:>>"},
+        {"123", "123", "123"},
+        {"::Hello", "::Hello", "::Hello"},
+        {"::hello", "::hello", "::hello"},
+    };
+
+    for (auto const &test: testCases) {
+        try {
+            auto input = get<0>(test);
+            EXPECT_EQ(get<1>(test), AndreiUtils::makeStartLowerCase(input));
+            EXPECT_EQ(get<2>(test), AndreiUtils::makeStartUpperCase(input));
+        } catch (std::exception const &e) {
+            std::cout << "  ERROR: " << e.what() << "\n\n";
+            EXPECT_TRUE(false);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
-
     cout << "Hello World!" << endl;
-
-    // testSplitString();
-    // testStringifyTypes();
-    // testStringRemove();
-    // testStringEndsWith();
-    // testStdAllOf();
-    // testStringWithoutLastParts();
-    // testRemoveFrom();
-    // testStringifyComplexTypes();
-
 
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

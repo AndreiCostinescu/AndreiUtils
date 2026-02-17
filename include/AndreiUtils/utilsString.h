@@ -42,6 +42,12 @@ namespace AndreiUtils {
 
     std::string toUpperString(std::string const &s);
 
+    std::string capitalize(std::string const &s);
+
+    std::string makeStartUpperCase(std::string const &s);
+
+    std::string makeStartLowerCase(std::string const &s);
+
     bool contains(std::string const &who, std::string const &what);
 
     bool startsWith(std::string const &str, std::string const &startQuery, size_t strSkipFirstCharactersAmount = 0);

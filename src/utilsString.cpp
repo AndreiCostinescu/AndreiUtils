@@ -146,14 +146,36 @@ string AndreiUtils::removeFromEnd(string const &message, string const &endPart) 
 }
 
 string AndreiUtils::toLowerString(string const &s) {
-    string res = s;
-    transform(res.begin(), res.end(), res.begin(), [](unsigned char c) { return tolower(c); });
+    auto res = s;
+    std::ranges::transform(res, res.begin(), [](unsigned char c) { return std::tolower(c); });
     return res;
 }
 
 string AndreiUtils::toUpperString(string const &s) {
-    string res = s;
-    transform(res.begin(), res.end(), res.begin(), [](unsigned char c) { return toupper(c); });
+    auto res = s;
+    std::ranges::transform(res, res.begin(), [](unsigned char c) { return std::toupper(c); });
+    return res;
+}
+
+std::string AndreiUtils::capitalize(std::string const &s) {
+    return makeStartUpperCase(s);
+}
+
+std::string AndreiUtils::makeStartUpperCase(std::string const &s) {
+    auto res = s;
+    if (res.empty()) {
+        return res;
+    }
+    res[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(res[0])));
+    return res;
+}
+
+std::string AndreiUtils::makeStartLowerCase(std::string const &s) {
+    auto res = s;
+    if (res.empty()) {
+        return res;
+    }
+    res[0] = static_cast<char>(std::tolower(static_cast<unsigned char>(res[0])));
     return res;
 }
 
