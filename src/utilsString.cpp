@@ -7,6 +7,7 @@
 #include <AndreiUtils/utils.hpp>
 #include <cassert>
 #include <iostream>
+#include <filesystem>
 
 using namespace std;
 
@@ -420,4 +421,12 @@ std::string AndreiUtils::surroundWithIfNotAlready(std::string const &toSurround,
         result += surroundingString;
     }
     return result;
+}
+
+std::string AndreiUtils::joinAndInterpretAsFilePath(std::vector<std::string> const &paths) {
+    std::filesystem::path result;
+    for (auto const &p : paths) {
+        result /= p;
+    }
+    return result.generic_string();
 }
