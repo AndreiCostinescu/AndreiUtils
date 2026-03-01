@@ -6,6 +6,7 @@
 #include <AndreiUtils/utilsString.h>
 #include <cassert>
 #include <iostream>
+#include <filesystem>
 #include <sys/stat.h>
 
 #if defined(_WIN32)
@@ -198,4 +199,12 @@ size_t AndreiUtils::getFileSize(ifstream &in) {
     size_t res = in.tellg();
     in.seekg(prevPos, std::ios::beg);
     return res;
+}
+
+std::string AndreiUtils::joinAndInterpretAsFilePath(std::vector<std::string> const &paths) {
+    std::filesystem::path result;
+    for (auto const &p : paths) {
+        result /= p;
+    }
+    return result.generic_string();
 }

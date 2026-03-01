@@ -101,6 +101,4 @@ namespace AndreiUtils {
     bool isInputStringStreamAtEnd(std::istringstream &ss);
 
     std::string surroundWithIfNotAlready(std::string const &toSurround, std::string const &surroundingString);
-
-    [[nodiscard]] std::string joinAndInterpretAsFilePath(std::vector<std::string> const &paths);
 }

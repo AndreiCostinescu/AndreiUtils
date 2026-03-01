@@ -32,4 +32,6 @@ namespace AndreiUtils {
     bool reachedTheEndOfTheFile(std::ifstream &in);
 
     size_t getFileSize(std::ifstream &in);
+
+    [[nodiscard]] std::string joinAndInterpretAsFilePath(std::vector<std::string> const &paths);
 }
