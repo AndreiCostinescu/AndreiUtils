@@ -206,5 +206,5 @@ std::string AndreiUtils::joinToPath(std::vector<std::string> const &pathSegments
     for (auto const &p: pathSegments) {
         result /= p;
     }
-    return result.generic_string();
+    return simplifyRelativePath(result.generic_string());
 }
