@@ -33,5 +33,5 @@ namespace AndreiUtils {
 
     size_t getFileSize(std::ifstream &in);
 
-    [[nodiscard]] std::string joinAndInterpretAsFilePath(std::vector<std::string> const &paths);
+    [[nodiscard]] std::string joinToPath(std::vector<std::string> const &pathSegments);
 }

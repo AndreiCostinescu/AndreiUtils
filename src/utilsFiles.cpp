@@ -201,9 +201,9 @@ size_t AndreiUtils::getFileSize(ifstream &in) {
     return res;
 }
 
-std::string AndreiUtils::joinAndInterpretAsFilePath(std::vector<std::string> const &paths) {
+std::string AndreiUtils::joinToPath(std::vector<std::string> const &pathSegments) {
     std::filesystem::path result;
-    for (auto const &p : paths) {
+    for (auto const &p: pathSegments) {
         result /= p;
     }
     return result.generic_string();
