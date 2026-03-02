@@ -50,10 +50,6 @@ public:
     int *a;
 };
 
-void fileTesting() {
-    cout << getCurrentDirectory(true) << endl;
-}
-
 void testPointerReference() {
     int b = 5;
     auto t = Test(b);

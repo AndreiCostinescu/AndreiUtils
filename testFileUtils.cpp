@@ -9,6 +9,10 @@
 using namespace AndreiUtils;
 using namespace std;
 
+void currentDirectoryTest() {
+    cout << getCurrentDirectory(true) << endl;
+}
+
 void simplifyPathTest() {
     cout << AndreiUtils::getRelativeDirectoryOfPath("../RobotModelling/123.json") << endl;
     cout << AndreiUtils::getRelativeDirectoryOfPath("../RobotModelling/") << endl;
@@ -45,10 +49,17 @@ void simplifyPathTest() {
     cout << AndreiUtils::printVectorToString(splitString(replace(AndreiUtils::getRelativeDirectoryOfPath("/home/andrei/RobotModelling"), "\\", "/"), "/")) << endl;
 }
 
+void joinToPathTest() {
+    cout << "Join output: " << AndreiUtils::joinToPath({"/home/", "/andrei/", "/relative.txt"}) << endl;
+    cout << "Join output: " << AndreiUtils::joinToPath({"/home/", "andrei/", "relative.txt"}) << endl;
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
+    currentDirectoryTest();
     simplifyPathTest();
+    joinToPathTest();
 
     return 0;
 }
