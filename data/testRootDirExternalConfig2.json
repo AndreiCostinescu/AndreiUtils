@@ -1,0 +1,7 @@
+{
+    "name": "modified x2 data",
+    "version": "2.0.0",
+    "dependencies": {
+        "externalConfig": "data/testRootDirExternalConfig3.json"
+    }
+}

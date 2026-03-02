@@ -23,22 +23,39 @@ std::string const ParametersWithExternalConfig::externalConfigKey("externalConfi
 std::string const ParametersWithExternalConfig::externalDataKey("external");
 
 ParametersWithExternalConfig::ParametersWithExternalConfig() :
-        Parameters(), externalDataPtr(nullptr), isExternalDataReference(false), configFileDirectory("./") {}
+        Parameters(), externalDataPtr(nullptr), isExternalDataReference(false), rootDirectoryForExternalData("./"),
+        externalFilesRelativeToFileLocation(true) {}
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(string const &fileName) :  // NOLINT(misc-no-recursion)
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+        string const &fileName, std::string const &rootDirectoryForExternalData) :  // NOLINT(misc-no-recursion)
         ParametersWithExternalConfig() {
-    this->configFileDirectory = getRelativeDirectoryOfPath(fileName);
+    this->externalFilesRelativeToFileLocation = rootDirectoryForExternalData.empty();
+    if (this->externalFilesRelativeToFileLocation) {
+        this->rootDirectoryForExternalData = AndreiUtils::getRelativeDirectoryOfPath(fileName);
+    } else {
+        this->rootDirectoryForExternalData = rootDirectoryForExternalData;
+    }
     auto tmpJson = readJsonFile(fileName);
     this->initialize(&tmpJson, false);
 }
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config) :  // NOLINT(misc-no-recursion)
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+        nlohmann::json config, std::string const &rootDirectoryForExternalData) :  // NOLINT(misc-no-recursion)
         ParametersWithExternalConfig() {
+    this->externalFilesRelativeToFileLocation = rootDirectoryForExternalData.empty();
+    if (!this->externalFilesRelativeToFileLocation) {
+        this->rootDirectoryForExternalData = rootDirectoryForExternalData;
+    }
     this->initialize(&config, false);
 }
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json *config) :  // NOLINT(misc-no-recursion)
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+        nlohmann::json *config, std::string const &rootDirectoryForExternalData) :  // NOLINT(misc-no-recursion)
         ParametersWithExternalConfig() {
+    this->externalFilesRelativeToFileLocation = rootDirectoryForExternalData.empty();
+    if (!this->externalFilesRelativeToFileLocation) {
+        this->rootDirectoryForExternalData = rootDirectoryForExternalData;
+    }
     this->initialize(config, true);
 }
 
@@ -76,23 +93,23 @@ bool ParametersWithExternalConfig::deleteKey(std::string const &parameterName) {
 ParametersWithExternalConfig ParametersWithExternalConfig::operator[](std::string const &parameterName) {
     ParametersWithExternalConfig *externalConfig;
     if (mapGetIfContains(this->getExternalData().externalKeyToParametersAssociation, parameterName, externalConfig)) {
-        return {&this->getCreateJsonReference(parameterName), &externalConfig->getExternalData()};
+        return {&this->getCreateJsonReference(parameterName), &externalConfig->getExternalData(), this->getRootDirectoryForExternalDataForConstructorArgument()};
     }
     if (mapGetIfContains(this->getExternalData().externalConfigs, parameterName, externalConfig)) {
-        return {&this->getCreateJsonReference(parameterName), &externalConfig->getExternalData()};
+        return {&this->getCreateJsonReference(parameterName), &externalConfig->getExternalData(), this->getRootDirectoryForExternalDataForConstructorArgument()};
     }
-    return ParametersWithExternalConfig(&this->getCreateJsonReference(parameterName));
+    return ParametersWithExternalConfig(&this->getCreateJsonReference(parameterName), this->getRootDirectoryForExternalDataForConstructorArgument());
 }
 
 ParametersWithExternalConfig ParametersWithExternalConfig::at(string const &parameterName) {
     ParametersWithExternalConfig *externalConfig;
     if (mapGetIfContains(this->getExternalData().externalKeyToParametersAssociation, parameterName, externalConfig)) {
-        return {&this->getJsonReference(parameterName), &externalConfig->getExternalData()};
+        return {&this->getJsonReference(parameterName), &externalConfig->getExternalData(), this->getRootDirectoryForExternalDataForConstructorArgument()};
     }
     if (mapGetIfContains(this->getExternalData().externalConfigs, parameterName, externalConfig)) {
-        return {&this->getJsonReference(parameterName), &externalConfig->getExternalData()};
+        return {&this->getJsonReference(parameterName), &externalConfig->getExternalData(), this->getRootDirectoryForExternalDataForConstructorArgument()};
     }
-    return {&this->getJsonReference(parameterName), nullptr};
+    return {&this->getJsonReference(parameterName), nullptr, this->getRootDirectoryForExternalDataForConstructorArgument()};
 }
 
 void ParametersWithExternalConfig::writeParameters(std::string const &fileName, bool withWriteSubConfigs,
@@ -115,34 +132,50 @@ std::string ParametersWithExternalConfig::toString(  // NOLINT(misc-no-recursion
 
 void ParametersWithExternalConfig::clear() {
     this->Parameters::clear();
-    this->configFileDirectory.clear();
+    this->rootDirectoryForExternalData.clear();
+    this->externalFilesRelativeToFileLocation = true;
     this->externalDataPtr = nullptr;
     this->isExternalDataReference = false;
     this->externalData.clear();
 }
 
 ParametersWithExternalConfig ParametersWithExternalConfig::cloneAsExternal() const {
-    return {this->getJson(), this->configFileDirectory};
+    return {this->getJson(), this->rootDirectoryForExternalData, this->externalFilesRelativeToFileLocation};
 }
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config, std::string configFileDirectory) :
-        ParametersWithExternalConfig() {
-    this->configFileDirectory = std::move(configFileDirectory);
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+    nlohmann::json config, std::string rootDirectoryForExternalData,
+    bool externalFilesRelativeToFileLocation) : ParametersWithExternalConfig() {
+    this->rootDirectoryForExternalData = std::move(rootDirectoryForExternalData);
+    this->externalFilesRelativeToFileLocation = externalFilesRelativeToFileLocation;
     this->initialize(&config, false);
 }
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(  // NOLINT(misc-no-recursion)
-        nlohmann::json *config, std::string configFileDirectory) : ParametersWithExternalConfig() {
-    this->configFileDirectory = std::move(configFileDirectory);
+ParametersWithExternalConfig::ParametersWithExternalConfig( // NOLINT(misc-no-recursion)
+    nlohmann::json *config, std::string rootDirectoryForExternalData,
+    bool externalFilesRelativeToFileLocation) : ParametersWithExternalConfig() {
+    this->rootDirectoryForExternalData = std::move(rootDirectoryForExternalData);
+    this->externalFilesRelativeToFileLocation = externalFilesRelativeToFileLocation;
     this->initialize(config, true);
 }
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json config, ExternalParameterData *externalData) :
-        Parameters(std::move(config)), externalDataPtr(externalData),
-        isExternalDataReference(externalData != nullptr) {}
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+        nlohmann::json config, ExternalParameterData *externalData, std::string rootDirectoryForExternalData) :
+        Parameters(std::move(config)), externalDataPtr(externalData), isExternalDataReference(externalData != nullptr),
+        externalFilesRelativeToFileLocation(rootDirectoryForExternalData.empty()) {
+    if (!this->externalFilesRelativeToFileLocation) {
+        this->rootDirectoryForExternalData = std::move(rootDirectoryForExternalData);
+    }
+}
 
-ParametersWithExternalConfig::ParametersWithExternalConfig(nlohmann::json *config, ExternalParameterData *externalData)
-        : Parameters(config), externalDataPtr(externalData), isExternalDataReference(externalData != nullptr) {}
+ParametersWithExternalConfig::ParametersWithExternalConfig(
+        nlohmann::json *config, ExternalParameterData *externalData, std::string rootDirectoryForExternalData) :
+        Parameters(config), externalDataPtr(externalData), isExternalDataReference(externalData != nullptr),
+        externalFilesRelativeToFileLocation(rootDirectoryForExternalData.empty()) {
+    if (!this->externalFilesRelativeToFileLocation) {
+        this->rootDirectoryForExternalData = std::move(rootDirectoryForExternalData);
+    }
+}
 
 void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setReference) {  // NOLINT(misc-no-recursion)
     ExternalParameterData &external = this->getExternalData();
@@ -151,10 +184,11 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         external.externalFileName = config->at("externalConfig");
         external.originalExternalFileName = external.externalFileName;
         if (!isFilePathAbsolute(external.externalFileName)) {
-            external.externalFileName = this->configFileDirectory + external.externalFileName;
-            external.externalFileName = simplifyRelativePath(external.externalFileName);
+            external.externalFileName = joinToPath({this->rootDirectoryForExternalData, external.externalFileName});
         }
-        auto tmp = ParametersWithExternalConfig(external.externalFileName);
+        cout << "Found external config file: " << external.externalFileName << endl;
+        auto tmp = ParametersWithExternalConfig(external.externalFileName,
+                                                this->getRootDirectoryForExternalDataForConstructorArgument());
         this->parameters = std::move(tmp.parameters);
         ExternalParameterData &tmpExternal = tmp.getExternalData();
         external.externalConfigs = std::move(tmpExternal.externalConfigs);
@@ -177,6 +211,7 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
             this->parameterReference = config;
             this->isReference = (this->parameterReference != nullptr);
         } else {
+            assert(config != nullptr);
             this->parameters = std::move(*config);
         }
 
@@ -186,7 +221,8 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
             bool hasExternalConfigs = false;
             for (auto &jsonData: jsonConfig.items()) {
                 auto &jsonValue = jsonData.value();
-                ParametersWithExternalConfig subConfig(&jsonValue, this->configFileDirectory);
+                // use the private constructor
+                ParametersWithExternalConfig subConfig(&jsonValue, this->rootDirectoryForExternalData, this->externalFilesRelativeToFileLocation);
                 // if the subconfig is external or it has inside its data a nested external config somewhere
                 if (subConfig.isExternalConfig() || !subConfig.getExternalData().externalConfigs.empty()) {
                     assert(subConfig.isReference);
@@ -206,9 +242,9 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                     cout << "Found external file: " << externalFile << endl;
                     string originalExternalFile = externalFile;
                     if (!isFilePathAbsolute(externalFile)) {
-                        externalFile = simplifyRelativePath(this->configFileDirectory + externalFile);
+                        externalFile = joinToPath({this->rootDirectoryForExternalData, externalFile});
                     }
-                    auto tmp = ParametersWithExternalConfig(externalFile);
+                    auto tmp = ParametersWithExternalConfig(externalFile, this->getRootDirectoryForExternalDataForConstructorArgument());
                     if (tmp.isExternalConfig()) {
                         throw runtime_error("External configs are not allowed on the same layer as external data! " +
                                             ("Write the external config file instead of \"" + originalExternalFile) +
@@ -250,7 +286,10 @@ void ParametersWithExternalConfig::processOverwrittenParameter(  // NOLINT(misc-
     ExternalParameterData &external = this->getExternalData();
     if (AndreiUtils::mapGetIfContains(external.externalConfigs, parameterName, overwrittenConfig)) {
         // handle the case when the overwritten parameter contains "externalConfig" data!
-        ParametersWithExternalConfig subConfig(&this->getJsonReference(parameterName), this->configFileDirectory);
+        // use the private constructor
+        ParametersWithExternalConfig subConfig(
+            &this->getJsonReference(parameterName), this->rootDirectoryForExternalData,
+            this->externalFilesRelativeToFileLocation);
         if (subConfig.isExternalConfig() || !subConfig.getExternalData().externalConfigs.empty()) {
             *overwrittenConfig = std::move(subConfig);
         }
@@ -289,7 +328,7 @@ std::string ParametersWithExternalConfig::toStringPrivate(  // NOLINT(misc-no-re
         if (this->isExternalConfig()) {
             ss << "External file " << external.externalFileName << ": ";
         }
-        ss << this->configFileDirectory << ": " << endl;
+        ss << this->rootDirectoryForExternalData << ": " << endl;
     }
     json const &jsonData = this->getJson();
     // cout << "Local Json Data: " << jsonData.dump(4) << endl;
@@ -308,6 +347,7 @@ std::string ParametersWithExternalConfig::toStringPrivate(  // NOLINT(misc-no-re
         }
     } else {
         if (!external.externalConfigs.empty()) {
+            // this should never happen!
             ss << jsonData.dump(4) << endl;
             cout << ss.str() << endl;
             assert(external.externalConfigs.empty());
@@ -424,6 +464,10 @@ ParametersWithExternalConfig::ExternalParameterData &ParametersWithExternalConfi
         return *this->externalDataPtr;
     }
     return this->externalData;
+}
+
+std::string ParametersWithExternalConfig::getRootDirectoryForExternalDataForConstructorArgument() const {
+    return this->externalFilesRelativeToFileLocation ? "" : this->rootDirectoryForExternalData;
 }
 
 ParametersWithExternalConfig::ExternalParameterData::ExternalParameterData() : isExternalConfig(false) {}

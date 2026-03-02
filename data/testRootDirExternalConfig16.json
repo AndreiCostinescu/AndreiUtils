@@ -1,0 +1,5 @@
+{
+    "_external": ["data/testExternalConfig22.json"],
+    "creation_date": "2024-02-01",
+    "external": ["data/testRootDirExternalConfig17.json","data/testExternalConfig18.json","data/testExternalConfig20.json"]
+}

@@ -134,7 +134,7 @@ void testParametersWithExternalConfigs() {
         ParametersWithExternalConfig p(fileName);
         cout << "P" << index << " config: " << p.getJson().dump(4) << endl;
         cout << p.toString("", true) << endl;
-        p.writeParameters(fileName, true);
+        // p.writeParameters(fileName, true);
         cout << "\n\n";
     }
     //*/
@@ -145,14 +145,16 @@ void testParametersWithExternalConfigs() {
     cout << p.toString("", true) << endl;
     p.at("external").at("external").at("external").at("external").at("dependencies").set<string>("name", "modified x13 data");
     cout << p.toString("", true) << endl;
-    p.writeParameters(fileName, true, true);
+    // p.writeParameters(fileName, true, true);
     cout << "\n\n";
     //*/
 
     string fileName = "../data/testExternalConfig5.json";
     ParametersWithExternalConfig p(fileName);
-    p.writeParameters(fileName, true, true);
+    cout << p.toString() << endl;
+    // p.writeParameters(fileName, true, true);
     cout << "\n\n";
+    //*/
 }
 
 void testWriteJsonWithKeepFormatAndNewLines() {
@@ -222,6 +224,22 @@ void testParametersWithExternalConfigsAndExternalData() {
     //*/
 }
 
+void testParametersWithExternalDataWithRootDir() {
+    std::string const fileName = "../data/testExternalConfig5.json";
+    std::string const fileNameRootDir = "../data/testRootDirExternalConfig5.json";
+    ParametersWithExternalConfig p(fileName);
+    std::cout << "Read parameters with external config." << std::endl;
+    ParametersWithExternalConfig pRootDir(fileNameRootDir, "../");
+    std::cout << "Read parameters with external config with root dir." << std::endl;
+    std::cout << p.toString() << std::endl;
+    std::cout << "\n\n";
+    std::cout << pRootDir.toString() << std::endl;
+    std::cout << "\n\n";
+    if (p.toString() != pRootDir.toString()) {
+        std::cout << "Test failed!" << std::endl;
+    }
+}
+
 int main() {
     cout << "Hello World!" << endl;
 
@@ -232,7 +250,8 @@ int main() {
     // testIntervalSerialization();
     // testParametersWithExternalConfigs();
     // testWriteJsonWithKeepFormatAndNewLines();
-    testParametersWithExternalConfigsAndExternalData();
+    // testParametersWithExternalConfigsAndExternalData();
+    testParametersWithExternalDataWithRootDir();
 
     return 0;
 }
