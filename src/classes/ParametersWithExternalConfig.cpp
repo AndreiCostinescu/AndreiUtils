@@ -186,7 +186,7 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
         if (!isFilePathAbsolute(external.externalFileName)) {
             external.externalFileName = joinToPath({this->rootDirectoryForExternalData, external.externalFileName});
         }
-        cout << "Found external config file: " << external.externalFileName << endl;
+        // cout << "Found external config file: " << external.externalFileName << endl;
         auto tmp = ParametersWithExternalConfig(external.externalFileName,
                                                 this->getRootDirectoryForExternalDataForConstructorArgument());
         this->parameters = std::move(tmp.parameters);
@@ -239,7 +239,7 @@ void ParametersWithExternalConfig::initialize(nlohmann::json *config, bool setRe
                 auto externalFiles = jsonConfig.at(
                         ParametersWithExternalConfig::externalDataKey).get<std::vector<std::string>>();
                 for (auto externalFile: externalFiles) {
-                    cout << "Found external file: " << externalFile << endl;
+                    // cout << "Found external file: " << externalFile << endl;
                     string originalExternalFile = externalFile;
                     if (!isFilePathAbsolute(externalFile)) {
                         externalFile = joinToPath({this->rootDirectoryForExternalData, externalFile});
