@@ -9,9 +9,12 @@ using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
 
-double const Symmetry::pi_2(2 * M_PI);
+Symmetry::Symmetry() = default;
 
-Symmetry::Symmetry() : type(), axis(), axisDisplacementFromOrigin(), range() {}
+bool Symmetry::operator==(Symmetry const &other) const {
+    return this->type == other.type && this->axis == other.axis &&
+           this->axisDisplacementFromOrigin == other.axisDisplacementFromOrigin && this->range == other.range;
+}
 
 Posed Symmetry::getSymmetricTransformation(double rangeValue) const {
     rangeValue = AndreiUtils::clamp(rangeValue, this->range.first, this->range.second);
@@ -80,3 +83,5 @@ bool Symmetry::checkIfOrientationFitsSymmetry(Quaterniond const &q, double axisS
     return lessEqual(Symmetry::pi_2 - this->range.second, qAngle) &&
            lessEqual(qAngle, Symmetry::pi_2 - this->range.first);
 }
+
+double const Symmetry::pi_2(2 * M_PI);

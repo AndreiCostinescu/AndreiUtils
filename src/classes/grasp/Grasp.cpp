@@ -9,10 +9,16 @@ using namespace AndreiUtils;
 using namespace std;
 
 Grasp::Grasp(vector<Posed> const &graspPointPoses, bool hasGraspAngleRange, pair<double, double> const &graspAngleRange)
-        : graspPointPoses(graspPointPoses), originalGraspPointPoses(graspPointPoses), graspAngleRange(graspAngleRange),
-          hasGraspAngleRange(hasGraspAngleRange) {}
+    : graspPointPoses(graspPointPoses), originalGraspPointPoses(graspPointPoses), graspAngleRange(graspAngleRange),
+      hasGraspAngleRange(hasGraspAngleRange) {
+}
 
 Grasp::~Grasp() = default;
+
+bool Grasp::operator==(Grasp const &other) const {
+    return this->graspPointPoses == other.graspPointPoses && this->hasGraspAngleRange == other.hasGraspAngleRange && (
+               !this->hasAngleRange() || this->graspAngleRange == other.graspAngleRange);
+}
 
 size_t Grasp::getNrPoints() const {
     return this->graspPointPoses.size();
@@ -56,4 +62,3 @@ void Grasp::updateGraspPointPosesFromRelativeTo() {
         this->graspPointPoses[i] = this->relativeTo * this->originalGraspPointPoses[i];
     }
 }
-

@@ -22,6 +22,8 @@ namespace AndreiUtils {
 
         virtual ~Grasp();
 
+        [[nodiscard]] bool operator==(Grasp const &other) const;
+
         [[nodiscard]] size_t getNrPoints() const;
 
         virtual void update();

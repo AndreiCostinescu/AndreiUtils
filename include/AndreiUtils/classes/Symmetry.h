@@ -12,27 +12,27 @@
 namespace AndreiUtils {
     class Symmetry {
     public:
-        std::string type;
-        Eigen::Vector3d axis, axisDisplacementFromOrigin;
-        std::pair<double, double> range;
-
         Symmetry();
 
-        AndreiUtils::Posed getSymmetricTransformation(double rangeValue) const;
+        [[nodiscard]] bool operator==(Symmetry const &other) const;
 
-        AndreiUtils::Posed getSymmetricTransformation() const;
+        Posed getSymmetricTransformation(double rangeValue) const;
 
-        std::vector<AndreiUtils::Posed> createSymmetricPoses(std::vector<AndreiUtils::Posed> const &poses,
-                                                             double const &rangeValue) const;
+        Posed getSymmetricTransformation() const;
 
-        std::vector<AndreiUtils::Posed> createSymmetricPoses(std::vector<AndreiUtils::Posed> const &poses) const;
+        std::vector<Posed> createSymmetricPoses(std::vector<Posed> const &poses, double const &rangeValue) const;
 
-        AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose, double const &rangeValue) const;
+        std::vector<Posed> createSymmetricPoses(std::vector<Posed> const &poses) const;
 
-        AndreiUtils::Posed createSymmetricPose(AndreiUtils::Posed const &pose) const;
+        Posed createSymmetricPose(Posed const &pose, double const &rangeValue) const;
+
+        Posed createSymmetricPose(Posed const &pose) const;
 
         bool checkIfOrientationFitsSymmetry(Eigen::Quaterniond const &q, double axisSimilarityThreshold) const;
 
+        std::string type;
+        Eigen::Vector3d axis, axisDisplacementFromOrigin;
+        std::pair<double, double> range;
     protected:
         static double const pi_2;
     };
