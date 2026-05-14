@@ -4,6 +4,7 @@
 
 #include <AndreiUtils/traits/is_detected.hpp>
 #include <AndreiUtils/traits/is_numeric.hpp>
+#include <AndreiUtils/traits/is_template_instantiation_of.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <iostream>
 #include <gtest/gtest.h>
@@ -71,6 +72,15 @@ struct tmpStruct {
         return type_name<T>::name();
     }
 };
+
+template<typename T>
+struct OtherTemplateT {
+};
+
+static_assert(AndreiUtils::is_template_instantiation_of_v<type_name<A_>, type_name>);
+static_assert(AndreiUtils::is_template_instantiation_of_v<OtherTemplateT<type_name<A_>>, OtherTemplateT>);
+static_assert(std::negation_v<AndreiUtils::is_template_instantiation_of<type_name<A_>, OtherTemplateT>>);
+static_assert(std::negation_v<AndreiUtils::is_template_instantiation_of<OtherTemplateT<A_>, type_name>>);
 
 template<class T>
 using has_f1 = decltype(std::declval<T &>().purr(std::declval<int>()));
