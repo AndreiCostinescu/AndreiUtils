@@ -34,9 +34,15 @@ namespace AndreiUtils {
             && !std::same_as<std::remove_cvref_t<T>, std::string>
             && !std::same_as<std::remove_cvref_t<T>, std::string_view>;
 
+    class ConstexprStringBase {
+    protected:
+        constexpr ConstexprStringBase() = default;
+    };
+
     // Struct to hold compile-time string and provide string_view
     template<std::size_t N>
-    struct ConstexprString {
+    class ConstexprString : public ConstexprStringBase {
+    public:
         static constexpr std::size_t size = N;
         std::array<char, size + 1> data{};  // +1 for null terminator
 
