@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+# .githooks/run-clang-tidy
+#
+# Runs clang-tidy (using the repository's .clang-tidy checks) against staged
+# .c/.cc/.cpp/.cxx files. clang-tidy needs a compile_commands.json to resolve
+# include paths and compiler flags, so this looks for one in (in order):
+#   $COMPILE_COMMANDS_DIR, build/, cmake-build-debug/, cmake-build-release/
+# If none is found, the check is skipped with a warning rather than blocking
+# the commit — a fresh clone with no configured build shouldn't be unable to
+# commit at all.
+#
+# Findings are printed but do NOT block the commit: clang-tidy does semantic
+# analysis, so it is slower and more sensitive to the exact local build setup
+# than clang-format. To make it a hard gate instead, add
+# `--warnings-as-errors=*` to the clang-tidy invocation below.
+#
+# If clang-tidy is not installed, the check is skipped with a warning rather
+# than blocking the commit.
+#
+# Called by pre-commit — do not invoke directly.
+
+if ! command -v clang-tidy >/dev/null 2>&1; then
+    echo "WARNING: clang-tidy check skipped — clang-tidy not found on PATH."
+    exit 0
+fi
+
+BUILD_DIR="${COMPILE_COMMANDS_DIR:-}"
+if [ -z "$BUILD_DIR" ]; then
+    for candidate in build cmake-build-debug cmake-build-release; do
+        if [ -f "$candidate/compile_commands.json" ]; then
+            BUILD_DIR="$candidate"
+            break
+        fi
+    done
+fi
+
+if [ -z "$BUILD_DIR" ] || [ ! -f "$BUILD_DIR/compile_commands.json" ]; then
+    echo ""
+    echo "WARNING: clang-tidy check skipped — no compile_commands.json found."
+    echo "Configure a build with compile commands exported, e.g.:"
+    echo "    cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    echo "or point at an existing build directory with:"
+    echo "    COMPILE_COMMANDS_DIR=path/to/build git commit ..."
+    echo ""
+    exit 0
+fi
+
+STAGED_SOURCE_FILES=$(git diff --cached --name-only --diff-filter=AM | grep -E '\.(c|cc|cpp|cxx)$')
+
+if [ -z "$STAGED_SOURCE_FILES" ]; then
+    exit 0
+fi
+
+# shellcheck disable=SC2086
+clang-tidy -p "$BUILD_DIR" $STAGED_SOURCE_FILES
+
+exit 0

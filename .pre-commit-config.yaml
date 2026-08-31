@@ -1,0 +1,33 @@
+repos:
+  - repo: local
+    hooks:
+      - id: license-header-check
+        name: Apache 2.0 license header check
+        entry: .githooks/check-license-header
+        language: script
+        stages: [pre-commit]
+        files: '\.(h|hpp|hh|hxx|c|cc|cpp|cxx)$'
+        pass_filenames: false
+
+      - id: clang-format
+        name: clang-format
+        entry: .githooks/run-clang-format
+        language: script
+        stages: [pre-commit]
+        files: '\.(h|hpp|hh|hxx|c|cc|cpp|cxx)$'
+        pass_filenames: false
+
+      - id: clang-tidy
+        name: clang-tidy
+        entry: .githooks/run-clang-tidy
+        language: script
+        stages: [pre-commit]
+        files: '\.(c|cc|cpp|cxx)$'
+        pass_filenames: false
+
+      - id: dco-check
+        name: DCO sign-off check
+        entry: .githooks/commit-msg
+        language: script
+        stages: [commit-msg]
+        always_run: true

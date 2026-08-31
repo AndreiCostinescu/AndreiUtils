@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+# .githooks/run-clang-format
+#
+# Formats staged C/C++ files in place with clang-format, using the
+# repository's .clang-format style. If any file is reformatted, pre-commit
+# aborts the commit so you can review the changes and re-stage them.
+#
+# Called by pre-commit — do not invoke directly.
+
+if ! command -v clang-format >/dev/null 2>&1; then
+    echo "ERROR: clang-format not found on PATH. Install LLVM/clang-format and try again."
+    exit 1
+fi
+
+STAGED_CPP_FILES=$(git diff --cached --name-only --diff-filter=AM | grep -E '\.(h|hpp|hh|hxx|c|cc|cpp|cxx)$')
+
+if [ -z "$STAGED_CPP_FILES" ]; then
+    exit 0
+fi
+
+# shellcheck disable=SC2086
+clang-format -i $STAGED_CPP_FILES
