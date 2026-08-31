@@ -258,13 +258,13 @@ if (USE_EIGEN)
             src/classes/trajectory/TrajectoryBase.cpp src/classes/trajectory/CartesianTrajectory.cpp
             src/classes/trajectory/CartesianTrajectoryFilter.cpp src/classes/trajectory/PoseDecoupledLowPassTrajectoryFilter.cpp
             src/classes/grasp/Grasp.cpp
-            src/classes/Symmetry.cpp src/classes/ParametrizablePoseParameters.cpp
+            src/classes/Symmetry.cpp
             src/enums/EigenLeastSquaresSolver.cpp src/enums/EigenSVDSolver.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_JSON)
     # depends on eigen and json
-    SET(UTILS_EIGEN_JSON src/utilsJsonEigen.cpp)
+    SET(UTILS_EIGEN_JSON src/utilsJsonEigen.cpp src/classes/ParametrizablePoseParameters.cpp)
 endif ()
 
 if (USE_EIGEN AND USE_OPENCV)
@@ -471,11 +471,13 @@ if (${WITH_TESTS})
         endif ()
     endif ()
 
-    set(EXECUTABLE TestAndreiUtilsJson)
-    add_executable(${EXECUTABLE} testJsonFunctions.cpp)
-    target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
-    if (${USE_OPENMP})
-        target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+    if (${USE_JSON})
+        set(EXECUTABLE TestAndreiUtilsJson)
+        add_executable(${EXECUTABLE} testJsonFunctions.cpp)
+        target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+        if (${USE_OPENMP})
+            target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+        endif ()
     endif ()
 
     set(EXECUTABLE TestAndreiUtilsMap)
@@ -502,11 +504,13 @@ if (${WITH_TESTS})
         endif ()
         gtest_discover_tests(${EXECUTABLE})
 
-        set(EXECUTABLE TestAndreiUtilsDualQuaternion)
-        add_executable(${EXECUTABLE} testDualQuaternionFunctions.cpp)
-        target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
-        if (${USE_OPENMP})
-            target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+        if (${USE_JSON})
+            set(EXECUTABLE TestAndreiUtilsDualQuaternion)
+            add_executable(${EXECUTABLE} testDualQuaternionFunctions.cpp)
+            target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
+            if (${USE_OPENMP})
+                target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
+            endif ()
         endif ()
 
         set(EXECUTABLE TestAndreiUtilsSuperCube)
