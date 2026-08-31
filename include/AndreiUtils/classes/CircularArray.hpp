@@ -47,7 +47,7 @@ namespace AndreiUtils {
                 this->resize();
             }
             *this->data[this->endIndex] = element;
-            this->dataLength++;
+            ++this->dataLength;
             this->endIndex = (this->endIndex + 1) % this->dataSize;
         }
 
@@ -56,7 +56,7 @@ namespace AndreiUtils {
                 throw std::runtime_error("Can't pop from an empty circular array!");
             }
             T element = *this->data[this->startIndex];
-            this->dataLength--;
+            --this->dataLength;
             this->startIndex = (this->startIndex + 1) % this->dataSize;
             return element;
         }
@@ -74,17 +74,17 @@ namespace AndreiUtils {
             return *this->getPtr(i);
         }
 
-    private:
+    protected:
         T **createDataContainer(int size, int from = 0) {
             T **newData = new T *[size];
-            for (int i = from; i < size; i++) {
+            for (int i = from; i < size; ++i) {
                 newData[i] = new T;
             }
             return newData;
         }
 
         void deleteDataContainer() {
-            for (int i = 0; i < this->dataSize; i++) {
+            for (int i = 0; i < this->dataSize; ++i) {
                 delete this->data[i];
             }
             delete[] this->data;
@@ -102,7 +102,7 @@ namespace AndreiUtils {
         void resize() {
             int newSize = 2 * (this->dataSize ? this->dataSize : 1);
             T **newData = this->createDataContainer(newSize, this->dataSize);
-            for (int i = 0; i < this->dataLength; i++) {
+            for (int i = 0; i < this->dataLength; ++i) {
                 newData[i] = this->getPtr(i);
             }
             delete[] this->data;
