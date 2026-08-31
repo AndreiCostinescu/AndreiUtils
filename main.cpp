@@ -691,17 +691,17 @@ void testPriorityQueue() {
     queue.add(3, 3);
     queue.add(1, 2);
     queue.add(2, 1);
+    while (!queue.empty()) {
+        auto const min = queue.extractMin();
+        cout << min.first << ": " << min.second << endl;
+    }
+    cout << endl;
     std::priority_queue<Custom, std::vector<Custom>, CustomComparison> q;
     q.push({5, 5});
     q.push({4, 4});
     q.push({3, 3});
     q.push({1, 2});
     q.push({2, 1});
-    while (!queue.empty()) {
-        auto const min = queue.extractMin();
-        cout << min.first << ": " << min.second << endl;
-    }
-    cout << endl;
     while (!q.empty()) {
         auto const &min = q.top();
         cout << min.a << ": " << min.b << endl;
