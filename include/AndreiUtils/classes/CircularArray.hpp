@@ -15,8 +15,8 @@ namespace AndreiUtils {
     template<class T>
     class CircularArray {
     public:
-        explicit CircularArray(int initialSize = 0) :
-                dataSize(initialSize), data(), startIndex(0), endIndex(0), dataLength(0) {
+        explicit CircularArray(int initialSize = 0) : dataSize(initialSize), data(), startIndex(0), endIndex(0),
+                                                      dataLength(0) {
             if (this->dataSize > 0) {
                 this->data = this->createDataContainer(this->dataSize);
             }
