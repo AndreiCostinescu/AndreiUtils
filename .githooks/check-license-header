@@ -43,7 +43,7 @@ if [ "$MISSING" -ne 0 ]; then
     echo "Add the following block at the very top of each file:"
     echo ""
     echo "    /*"
-    echo "     * Copyright $(date +%Y) RecordingLib Authors"
+    echo "     * Copyright $(date +%Y) AndreiUtils Authors"
     echo "     *"
     echo "     * Licensed under the Apache License, Version 2.0 (the \"License\");"
     echo "     * you may not use this file except in compliance with the License."
