@@ -1,0 +1,246 @@
+name: CI
+
+# The feature_set matrix below is derived from reading CMakeLists.txt, not
+# from a blind full factorial of all 7 WITH_* flags (which would be 2^7 = 128
+# combinations and blow past GitHub's 256-job matrix cap once crossed with
+# two compilers). The only flags with actual conditional interactions in
+# CMakeLists.txt are EIGEN / JSON / OPENCV / REALSENSE (they gate four
+# combined library targets: eigen_json, eigen_opencv, eigen_realsense,
+# opencv_realsense), so those four are fully crossed (2^4 = 16 states).
+#
+# OPENMP, PTHREAD and PYTHON don't interact with anything else in
+# CMakeLists.txt (no `if (X AND USE_OPENMP)` etc. exists), so instead of
+# crossing them too (which would only multiply job count without exercising
+# any new code path), each is toggled once against the "everything else on"
+# baseline: eigen-json-opencv-realsense-no-openmp, ...-no-pthread, ...-python.
+#
+# Total: 16 + 3 = 19 feature sets x 2 compilers = 38 jobs.
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: build (${{ matrix.toolchain.name }}, ${{ matrix.feature_set.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - name: gcc
+            cc: gcc
+            cxx: g++
+          - name: clang
+            cc: clang
+            cxx: clang++
+        feature_set:
+          - name: minimal
+            with_eigen: "OFF"
+            with_json: "OFF"
+            with_opencv: "OFF"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: json
+            with_eigen: "OFF"
+            with_json: "ON"
+            with_opencv: "OFF"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: opencv
+            with_eigen: "OFF"
+            with_json: "OFF"
+            with_opencv: "ON"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: json-opencv
+            with_eigen: "OFF"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: realsense
+            with_eigen: "OFF"
+            with_json: "OFF"
+            with_opencv: "OFF"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: json-realsense
+            with_eigen: "OFF"
+            with_json: "ON"
+            with_opencv: "OFF"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: opencv-realsense
+            with_eigen: "OFF"
+            with_json: "OFF"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: json-opencv-realsense
+            with_eigen: "OFF"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen
+            with_eigen: "ON"
+            with_json: "OFF"
+            with_opencv: "OFF"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "OFF"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-opencv
+            with_eigen: "ON"
+            with_json: "OFF"
+            with_opencv: "ON"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json-opencv
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "OFF"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-realsense
+            with_eigen: "ON"
+            with_json: "OFF"
+            with_opencv: "OFF"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json-realsense
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "OFF"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-opencv-realsense
+            with_eigen: "ON"
+            with_json: "OFF"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json-opencv-realsense
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json-opencv-realsense-no-openmp
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "OFF"
+            with_pthread: "ON"
+            with_python: "OFF"
+          - name: eigen-json-opencv-realsense-no-pthread
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "OFF"
+            with_python: "OFF"
+          - name: eigen-json-opencv-realsense-python
+            with_eigen: "ON"
+            with_json: "ON"
+            with_opencv: "ON"
+            with_realsense: "ON"
+            with_openmp: "ON"
+            with_pthread: "ON"
+            with_python: "ON"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install base build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake build-essential libeigen3-dev libgomp1
+
+      # clang doesn't bundle its own OpenMP runtime/headers the way gcc does
+      # (build-essential above provides libstdc++ for clang to link against).
+      - name: Install clang
+        if: matrix.toolchain.name == 'clang'
+        run: sudo apt-get install -y --no-install-recommends clang libomp-dev
+
+      - name: Install OpenCV
+        if: matrix.feature_set.with_opencv == 'ON'
+        run: sudo apt-get install -y --no-install-recommends libopencv-dev
+
+      - name: Install librealsense2
+        if: matrix.feature_set.with_realsense == 'ON'
+        run: |
+          sudo mkdir -p /etc/apt/keyrings
+          curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc \
+            | gpg --dearmor | sudo tee /etc/apt/keyrings/librealsenseai.gpg > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/librealsense.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends librealsense2-dev
+
+      - name: Install Python / pybind11
+        if: matrix.feature_set.with_python == 'ON'
+        run: sudo apt-get install -y --no-install-recommends python3-dev pybind11-dev
+
+      - name: Configure AndreiUtils
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=${{ matrix.toolchain.cc }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.toolchain.cxx }}
+          -DWITH_EIGEN=${{ matrix.feature_set.with_eigen }}
+          -DWITH_JSON=${{ matrix.feature_set.with_json }}
+          -DWITH_OPENCV=${{ matrix.feature_set.with_opencv }}
+          -DWITH_REALSENSE=${{ matrix.feature_set.with_realsense }}
+          -DWITH_OPENMP=${{ matrix.feature_set.with_openmp }}
+          -DWITH_PTHREAD=${{ matrix.feature_set.with_pthread }}
+          -DWITH_PYTHON=${{ matrix.feature_set.with_python }}
+          -DWITH_PCL_OPTIMIZATION_FLAGS=OFF
+          -DWITH_TESTS=ON
+
+      - name: Build AndreiUtils
+        run: cmake --build build -j"$(nproc)"
+
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure

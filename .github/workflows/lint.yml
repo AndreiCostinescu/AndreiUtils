@@ -1,0 +1,57 @@
+name: Lint
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-format and clang-tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang-format clang-tidy
+
+      - name: Check formatting (clang-format)
+        run: |
+          clang-format --dry-run --Werror \
+            $(git ls-files '*.h' '*.hpp' '*.hh' '*.hxx' '*.c' '*.cc' '*.cpp' '*.cxx')
+
+      # Build with every optional module enabled so all source files (core +
+      # eigen + opencv + realsense) are present in compile_commands.json for
+      # clang-tidy.
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install -y --no-install-recommends cmake build-essential libeigen3-dev libgomp1 libopencv-dev
+
+      - name: Install librealsense2
+        run: |
+          sudo mkdir -p /etc/apt/keyrings
+          curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc \
+            | gpg --dearmor | sudo tee /etc/apt/keyrings/librealsenseai.gpg > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/librealsense.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends librealsense2-dev
+
+      - name: Configure AndreiUtils
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DWITH_EIGEN=ON
+          -DWITH_JSON=ON
+          -DWITH_OPENMP=ON
+          -DWITH_PTHREAD=ON
+          -DWITH_OPENCV=ON
+          -DWITH_REALSENSE=ON
+          -DWITH_PCL_OPTIMIZATION_FLAGS=OFF
+          -DWITH_TESTS=ON
+
+      - name: Run clang-tidy
+        run: clang-tidy -p build $(git ls-files '*.c' '*.cc' '*.cpp' '*.cxx')
