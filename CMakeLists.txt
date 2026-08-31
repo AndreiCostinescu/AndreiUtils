@@ -134,10 +134,6 @@ if (USE_EIGEN)
     endif ()
 endif ()
 
-if (USE_JSON)
-    include_directories(json)
-endif ()
-
 if (USE_OPENCV)
     if ("${OPENCV_VERSION}" STREQUAL "")
         find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui calib3d)
@@ -368,6 +364,9 @@ if (USE_JSON)
     # JSON_UTILS
     set(LIBRARY_LINK_TARGETS ${ANDREI_UTILS_JSON_REQUIRED_LIBS} ${LIBRARY_NAME}_core)
     AndreiUtilsAddTarget("${LIBRARY_NAME}_json" JSON_UTILS LIBRARY_LINK_TARGETS)
+    # json.hpp lives in json/AndreiUtils/json.hpp, not include/AndreiUtils, so it needs its own
+    # include path - scoped to this target only, so files outside JSON_UTILS can't silently reach it.
+    target_include_directories("${LIBRARY_NAME}_json" PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/json>)
 endif ()
 
 if (USE_PTHREAD)
@@ -409,6 +408,7 @@ if (USE_EIGEN)
         # EIGEN_JSON_UTILS
         set(LIBRARY_LINK_TARGETS ${LIBRARY_NAME}_eigen ${LIBRARY_NAME}_json)
         AndreiUtilsAddTarget("${LIBRARY_NAME}_eigen_json" EIGEN_JSON_UTILS LIBRARY_LINK_TARGETS PCL_OPTIMIZATION_FLAGS)
+        target_include_directories("${LIBRARY_NAME}_eigen_json" PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/json>)
     endif ()
 
     if (USE_OPENCV)
@@ -447,6 +447,11 @@ set(TARGET_LIBRARY ${UTILS_USE_PROJECT})
 message("The target name is ${TARGET_LIBRARY}")
 
 AndreiUtilsAddTarget("${TARGET_LIBRARY}" UTILS ANDREI_UTILS_REQUIRED_LIBS PCL_OPTIMIZATION_FLAGS)
+if (${USE_JSON})
+    # UTILS includes JSON_UTILS/EIGEN_JSON_UTILS sources when json is enabled; see the comment on
+    # the "${LIBRARY_NAME}_json" target above for why this needs its own include path.
+    target_include_directories("${TARGET_LIBRARY}" PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/json>)
+endif ()
 
 if (${WITH_TESTS})
     enable_testing()
