@@ -561,7 +561,7 @@ if (${WITH_TESTS})
         target_compile_definitions(${EXECUTABLE} PRIVATE WITH_OPENMP)
     endif ()
 
-    if (${USE_OPENCV})
+    if (${USE_OPENCV} AND ${USE_EIGEN})
         set(EXECUTABLE TestAndreiUtilsOpenCV)
         add_executable(${EXECUTABLE} testOpenCVFunctions.cpp)
         target_link_libraries(${EXECUTABLE} ${ANDREI_UTILS_REQUIRED_LIBS})
