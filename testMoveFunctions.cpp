@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
 
 #include <AndreiUtils/classes/MixedDataContainer.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -20,7 +34,7 @@ public:
 
     E(E const &other) : data(other.data), ownsData(false) {}
 
-    E(E &&other) noexcept: data(other.data), ownsData(other.ownsData) {
+    E(E &&other) noexcept : data(other.data), ownsData(other.ownsData) {
         other.ownsData = false;
         other.reset();
     }
@@ -45,9 +59,7 @@ public:
         return *this;
     }
 
-    virtual ~E() {
-        this->reset();
-    }
+    virtual ~E() { this->reset(); }
 
     void reset() {
         this->discardData();
@@ -64,7 +76,7 @@ public:
         }
     }
 
-    T* getData() const { return data; }
+    T *getData() const { return data; }
     bool owns() const { return ownsData; }
     T *data;
     bool ownsData;
@@ -95,29 +107,29 @@ void testMoveSemantics() {
     E<int> a(42);
     printRValueData(std::move(a));
     cout << endl;
-    E<int> b = std::move(a);  // move assignment
+    E<int> b = std::move(a); // move assignment
     printRValueData(std::move(a));
     printRValueData(std::move(b));
     cout << endl;
-    E<int> c(std::move(b));  // move constructor
+    E<int> c(std::move(b)); // move constructor
     printRValueData(std::move(a));
     printRValueData(std::move(b));
     printRValueData(std::move(c));
     cout << endl;
-    E<int> d = c;  // copy assignment
+    E<int> d = c; // copy assignment
     printRValueData(std::move(a));
     printRValueData(std::move(b));
     printRValueData(std::move(c));
     printRValueData(std::move(d));
     cout << endl;
-    E<int> e(c);  // copy constructor from c
+    E<int> e(c); // copy constructor from c
     printRValueData(std::move(a));
     printRValueData(std::move(b));
     printRValueData(std::move(c));
     printRValueData(std::move(d));
     printRValueData(std::move(e));
     cout << endl;
-    E<int> f(d);  // copy constructor from d
+    E<int> f(d); // copy constructor from d
     printRValueData(std::move(a));
     printRValueData(std::move(b));
     printRValueData(std::move(c));
@@ -134,9 +146,7 @@ public:
 
     F(F const &other) = default;
 
-    F(F &&other) noexcept: a(other.a) {
-        other.a = 0;
-    }
+    F(F &&other) noexcept : a(other.a) { other.a = 0; }
 
     F &operator=(F const &other) {
         if (this != &other) {

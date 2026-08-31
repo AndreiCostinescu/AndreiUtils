@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.01.23.
 //
@@ -6,11 +20,7 @@
 #define ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H
 
 namespace AndreiUtils {
-    enum StabilityCriterionOperation {
-        SUM = 0,
-        AVERAGE_OF_SUM,
-        AVERAGE_OF_SUM_OF_SQUARES
-    };
+    enum StabilityCriterionOperation { SUM = 0, AVERAGE_OF_SUM, AVERAGE_OF_SUM_OF_SQUARES };
 }
 
-#endif //ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H
+#endif // ANDREIUTILS_ENUMS_STABILITYCRITERIONOPERATION_H

@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 22.05.24.
 //
@@ -15,7 +29,7 @@ namespace AndreiUtils {
     }
 
     template<typename T1, typename T2, typename Compare = std::less<T1>, typename SetAlloc = std::allocator<T1>,
-            typename MapAlloc = std::allocator<std::pair<T1, T2>>>
+             typename MapAlloc = std::allocator<std::pair<T1, T2>>>
     std::set<T1, Compare, SetAlloc> setFromMapKeys(std::map<T1, T2, Compare, MapAlloc> const &m) {
         return setFromVector(getMapKeys(m));
     }
@@ -63,8 +77,8 @@ namespace AndreiUtils {
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] std::string printSetToString(
-            std::set<T, Compare, Alloc> const &x, std::string const &separator = ", ") {
+    [[nodiscard]] std::string printSetToString(std::set<T, Compare, Alloc> const &x,
+                                               std::string const &separator = ", ") {
         std::stringstream s;
         bool firstPrint = true;
         for (auto const &elem: x) {
@@ -78,9 +92,9 @@ namespace AndreiUtils {
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] std::string printSetToString(
-            std::set<T, Compare, Alloc> const &x, std::function<std::string(T const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string printSetToString(std::set<T, Compare, Alloc> const &x,
+                                               std::function<std::string(T const &)> const &stringConversion,
+                                               std::string const &separator = ", ") {
         std::stringstream s;
         bool firstPrint = true;
         for (auto const &elem: x) {
@@ -94,10 +108,10 @@ namespace AndreiUtils {
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] std::string printSetToString(
-            std::set<T, Compare, Alloc> const &x,
-            std::function<std::string(T const &, size_t const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string
+    printSetToString(std::set<T, Compare, Alloc> const &x,
+                     std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                     std::string const &separator = ", ") {
         std::stringstream s;
         int index = 0;
         for (auto const &elem: x) {
@@ -111,16 +125,16 @@ namespace AndreiUtils {
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] std::set<T, Compare, Alloc> setIntersection(
-            std::set<T, Compare, Alloc> const &s1, std::set<T, Compare, Alloc> const &s2) {
+    [[nodiscard]] std::set<T, Compare, Alloc> setIntersection(std::set<T, Compare, Alloc> const &s1,
+                                                              std::set<T, Compare, Alloc> const &s2) {
         std::set<T, Compare, Alloc> res;
         std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()), Compare());
         return res;
     }
 
     template<class T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    [[nodiscard]] std::set<T, Compare, Alloc> setUnion(
-            std::set<T, Compare, Alloc> const &s1, std::set<T, Compare, Alloc> const &s2) {
+    [[nodiscard]] std::set<T, Compare, Alloc> setUnion(std::set<T, Compare, Alloc> const &s1,
+                                                       std::set<T, Compare, Alloc> const &s2) {
         std::set<T, Compare, Alloc> res;
         std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()), Compare());
         return res;
@@ -147,4 +161,4 @@ namespace AndreiUtils {
         RandomNumberGenerator<int> sampler(0, s.size() - 1);
         return sampleFromSet(s, sampler);
     }
-}
+} // namespace AndreiUtils

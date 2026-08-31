@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.08.21.
 //
@@ -5,8 +19,8 @@
 #include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsString.h>
 #include <cassert>
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 #include <sys/stat.h>
 
 #if defined(_WIN32)
@@ -27,21 +41,21 @@ using namespace std;
 
 string AndreiUtils::getCurrentDirectory(bool withTrailingSeparator) {
     char buff[PATH_MAX], *res;
-    #if defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64)
     res = _getcwd(buff, PATH_MAX);
-    #else
+#else
     res = getcwd(buff, PATH_MAX);
-    #endif
+#endif
     if (res == nullptr) {
         throw std::runtime_error("Can not determine the current directory!");
     }
     string dir(buff);
     if (withTrailingSeparator) {
-        #if defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64)
         dir += "\\";
-        #else
+#else
         dir += "/";
-        #endif
+#endif
     }
     return dir;
 }
@@ -87,15 +101,13 @@ bool AndreiUtils::createNestedDirectory(string const &path, bool fromFilePath) {
     return res;
 }
 
-bool AndreiUtils::deleteFile(string const &fileName) {
-    return remove(fileName.c_str()) == 0;
-}
+bool AndreiUtils::deleteFile(string const &fileName) { return remove(fileName.c_str()) == 0; }
 
 void addFilenameIfExtensionMatches(vector<string> &fileNames, string const &fileName, string const &extension,
                                    string const &folderName) {
-    if (!extension.empty() && (fileName.length() <= extension.length() ||
-                               fileName.compare(fileName.length() - extension.length(), string::npos, extension) ||
-                               (fileName[0] == '.'))) {
+    if (!extension.empty() &&
+        (fileName.length() <= extension.length() ||
+         fileName.compare(fileName.length() - extension.length(), string::npos, extension) || (fileName[0] == '.'))) {
         return;
     }
     string res = folderName;
@@ -136,11 +148,11 @@ vector<string> AndreiUtils::listDirectoryFiles(string const &directoryName, stri
 }
 
 bool AndreiUtils::isFilePathAbsolute(string const &path) {
-    #if defined(_WIN32)
+#if defined(_WIN32)
     return startsWith(path, ":/", 1);
-    #else
+#else
     return startsWith(path, "/");
-    #endif
+#endif
 }
 
 std::string AndreiUtils::getRelativeDirectoryOfPath(string const &path) {
@@ -189,9 +201,7 @@ std::string AndreiUtils::simplifyRelativePath(std::string const &path) {
     return newPath;
 }
 
-bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) {
-    return (in.peek() == EOF);
-}
+bool AndreiUtils::reachedTheEndOfTheFile(ifstream &in) { return (in.peek() == EOF); }
 
 size_t AndreiUtils::getFileSize(ifstream &in) {
     long prevPos = in.tellg();

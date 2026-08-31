@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu on 17.09.21.
 //
 
+#include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsEigenGeometry.hpp>
-#include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsQuaternions.hpp>
 
 using namespace Eigen;
@@ -27,14 +41,13 @@ Matrix3d AndreiUtils::zRotation(double angle) {
     return z;
 }
 
-Vector3d AndreiUtils::sampleDirection() {
-    return sampleUnitVector<double, 3>();
-}
+Vector3d AndreiUtils::sampleDirection() { return sampleUnitVector<double, 3>(); }
 
 Quaterniond AndreiUtils::sampleOrientation() {
-    return Quaterniond(
-            subComponentWise(Vector4d(double01Sampler.sample(), double01Sampler.sample(), double01Sampler.sample(),
-                                      double01Sampler.sample()), 0.5)).normalized();
+    return Quaterniond(subComponentWise(Vector4d(double01Sampler.sample(), double01Sampler.sample(),
+                                                 double01Sampler.sample(), double01Sampler.sample()),
+                                        0.5))
+            .normalized();
 }
 
 Matrix4d AndreiUtils::quaternionConjugateDerivative() {
@@ -46,9 +59,7 @@ Matrix4d AndreiUtils::quaternionConjugateDerivative() {
     return J;
 }
 
-Vector3d AndreiUtils::quaternionLogarithm(Quaterniond const &q) {
-    return q.vec() * q.w();
-}
+Vector3d AndreiUtils::quaternionLogarithm(Quaterniond const &q) { return q.vec() * q.w(); }
 
 Matrix<double, 3, 4> AndreiUtils::quaternionLogarithmDerivative(Quaterniond const &q) {
     Matrix<double, 3, 4> J;
@@ -175,8 +186,8 @@ Quaterniond AndreiUtils::quaternionFromEulerAnglesRotationOrderZYX(Vector3d cons
     return q;
 }
 
-Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(
-        Vector3d const &euler, bool componentOrderXYZ) {
+Matrix<double, 4, 3> AndreiUtils::quaternionDerivativeWithRespectToEulerAnglesRotationOrderZYX(Vector3d const &euler,
+                                                                                               bool componentOrderXYZ) {
     int xIndex = 2 - 2 * componentOrderXYZ;
     int yIndex = 1;
     int zIndex = 2 * componentOrderXYZ;
@@ -213,8 +224,9 @@ Vector3d AndreiUtils::getAngularVelocity(Quaterniond const &q1, Quaterniond cons
 
 Vector3d AndreiUtils::getAngularVelocity(Quaterniond const &deltaQ, double deltaT) {
     AngleAxisd deltaQAA(deltaQ);
-    return AndreiUtils::equal<double>(deltaQAA.angle(), 0, 1e-9) ? Vector3d::Zero() : Vector3d(
-            (deltaQAA.axis() * deltaQAA.angle()) / deltaT);
+    return AndreiUtils::equal<double>(deltaQAA.angle(), 0, 1e-9)
+                   ? Vector3d::Zero()
+                   : Vector3d((deltaQAA.axis() * deltaQAA.angle()) / deltaT);
 }
 
 Quaterniond AndreiUtils::quaternionFromAngularVelocity(Vector3d const &w, double deltaT) {

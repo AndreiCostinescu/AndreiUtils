@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.08.25.
 //
@@ -14,19 +28,15 @@ class Base {
 public:
     static constexpr std::size_t name_size = totalLength<decltype("Base")>();
 
-    static constexpr auto getName() {
-        return concatenate("Base");
-    }
+    static constexpr auto getName() { return concatenate("Base"); }
 };
 
 class Derived : public Base {
 public:
-    static constexpr std::size_t name_size = totalLength<
-        decltype("Derived"), decltype(" "), decltype("from "), decltype(Base::getName())>();
+    static constexpr std::size_t name_size =
+            totalLength<decltype("Derived"), decltype(" "), decltype("from "), decltype(Base::getName())>();
 
-    static constexpr auto getName() {
-        return concatenate("Derived", " ", "from ", Base::getName());
-    }
+    static constexpr auto getName() { return concatenate("Derived", " ", "from ", Base::getName()); }
 };
 
 template<class... Types>
@@ -69,9 +79,8 @@ public:
         if constexpr (RejectTypes::size == 0) {
             return concatenate("Instance<", AcceptTypes::template typesToString<>(), ">");
         } else {
-            return concatenate(
-                    "Instance<", AcceptTypes::template typesToString<>(), ", ",
-                    RejectTypes::template typesToString<true>(), ">");
+            return concatenate("Instance<", AcceptTypes::template typesToString<>(), ", ",
+                               RejectTypes::template typesToString<true>(), ">");
         }
     }
 };
@@ -82,7 +91,7 @@ int main() {
     static_assert(HasDataAndSize<ConstexprString<4>>);
 
     static_assert(concatenate("").size == 0, "Error");
-    static_assert(std::is_array_v<const char [5]>, "Error");
+    static_assert(std::is_array_v<const char[5]>, "Error");
     static_assert(std::is_array_v<std::remove_reference_t<const char (&)[5]>>, "Error");
     static_assert(
             std::is_same_v<char, std::remove_extent_t<std::remove_const_t<std::remove_reference_t<const char (&)[5]>>>>,
@@ -97,7 +106,8 @@ int main() {
     std::cout << ListOfTypes<Derived, Base, Base, Derived>::typesToString<>().view() << std::endl;
     std::cout << ListOfTypes<Derived, Base, Base, Derived>::typesToString<true>().view() << std::endl;
     std::cout << Instance<ListOfTypes<Derived, Base, Base, Derived>>::getName().view() << std::endl;
-    std::cout << Instance<ListOfTypes<Derived, Base, Base, Derived>, ListOfTypes<Derived>>::getName().view() << std::endl;
+    std::cout << Instance<ListOfTypes<Derived, Base, Base, Derived>, ListOfTypes<Derived>>::getName().view()
+              << std::endl;
     std::cout << Instance<ListOfTypes<Base, Base>, ListOfTypes<Derived>>::getName().view() << std::endl;
 
     std::string s{combined};
@@ -112,7 +122,9 @@ int main() {
     std::cout << (x + "Hello ") << std::endl;
     std::cout << x + x << std::endl;
 
-    std::cout << AndreiUtils::concatenate(IntToConstexprString<1234>{}, BoolToConstexprString<false>{}, "Hello World!").view() << std::endl;
+    std::cout << AndreiUtils::concatenate(IntToConstexprString<1234>{}, BoolToConstexprString<false>{}, "Hello World!")
+                         .view()
+              << std::endl;
     std::cout << x + IntToConstexprString<1234>{} << std::endl;
     std::cout << IntToConstexprString<1234>{} + x << std::endl;
     std::cout << IntToConstexprString<1234>{} + IntToConstexprString<2345>{} << std::endl;

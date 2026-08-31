@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 06.09.21.
 //
@@ -6,8 +20,8 @@
 
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigenLeastSquares.h>
-#include <cassert>
 #include <Eigen/Dense>
+#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -21,15 +35,16 @@ namespace AndreiUtils {
         return ss.str();
     }
 
-    template<typename S1, int R1, int C1, int O1, int MR1, int MC1, typename S2, int R2, int C2, int O2, int MR2, int MC2>
+    template<typename S1, int R1, int C1, int O1, int MR1, int MC1, typename S2, int R2, int C2, int O2, int MR2,
+             int MC2>
     bool checkSameSize(Eigen::Matrix<S1, R1, C1, O1, MR1, MC1> const &a,
                        Eigen::Matrix<S2, R2, C2, O2, MR2, MC2> const &b) {
         return a.rows() == b.rows() && a.cols() == b.cols();
     }
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> getMatrixRowsAsVector(
-            Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
+    std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>>
+    getMatrixRowsAsVector(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
         std::vector<Eigen::Matrix<Scalar, Cols, 1, Options, MaxCols, 1>> res(m.rows());
         for (int i = 0; i < m.rows(); i++) {
             res[i] = m.row(i);
@@ -38,8 +53,8 @@ namespace AndreiUtils {
     }
 
     template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> getMatrixColsAsVector(
-            Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
+    std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>>
+    getMatrixColsAsVector(Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> const &m) {
         std::vector<Eigen::Matrix<Scalar, Rows, 1, Options, MaxRows, 1>> res(m.cols());
         for (int i = 0; i < m.cols(); i++) {
             res[i] = m.col(i);
@@ -49,8 +64,8 @@ namespace AndreiUtils {
 
     // https://gist.github.com/javidcf/25066cf85e71105d57b6
     template<class MatT>
-    Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> pseudoinverse(
-            MatT const &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) {
+    Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
+    pseudoinverse(MatT const &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) {
         typedef typename MatT::Scalar Scalar;
         auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
         const auto &singularValues = svd.singularValues();
@@ -68,14 +83,14 @@ namespace AndreiUtils {
     }
 
     template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> addComponentWise(
-            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols>
+    addComponentWise(Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
         return m.array() + v;
     }
 
     template<typename T, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> subComponentWise(
-            Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
+    Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols>
+    subComponentWise(Eigen::Matrix<T, Rows, Cols, Options, MaxRows, MaxCols> const &m, T const &v) {
         return m.array() - v;
     }
 
@@ -105,4 +120,4 @@ namespace AndreiUtils {
         }
         return v;
     }
-}
+} // namespace AndreiUtils

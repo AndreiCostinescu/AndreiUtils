@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20.11.23.
 //
@@ -6,8 +20,8 @@
 #include <AndreiUtils/traits/is_numeric.hpp>
 #include <AndreiUtils/traits/is_template_instantiation_of.hpp>
 #include <AndreiUtils/utils.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -30,16 +44,12 @@ public:
 
 class B_ : virtual public A_ {
 public:
-    bool operator<(B_ const &other) const {
-        return true;
-    }
+    bool operator<(B_ const &other) const { return true; }
 };
 
-class C_ : virtual public A_ {
-};
+class C_ : virtual public A_ {};
 
-class D_ : public B_, public C_ {
-};
+class D_ : public B_, public C_ {};
 
 template<typename T>
 struct type_name {
@@ -68,14 +78,11 @@ struct type_name<D_> {
 
 template<typename T>
 struct tmpStruct {
-    static string tmpF(T const &t) {
-        return type_name<T>::name();
-    }
+    static string tmpF(T const &t) { return type_name<T>::name(); }
 };
 
 template<typename T>
-struct OtherTemplateT {
-};
+struct OtherTemplateT {};
 
 static_assert(AndreiUtils::is_template_instantiation_of_v<type_name<A_>, type_name>);
 static_assert(AndreiUtils::is_template_instantiation_of_v<OtherTemplateT<type_name<A_>>, OtherTemplateT>);

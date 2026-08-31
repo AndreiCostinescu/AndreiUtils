@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.09.22.
 //
@@ -8,18 +22,16 @@
 using namespace AndreiUtils;
 using namespace std;
 
-py::scoped_interpreter *PythonInterface::guard = nullptr;  // NOLINT(cert-err58-cpp)
+py::scoped_interpreter *PythonInterface::guard = nullptr; // NOLINT(cert-err58-cpp)
 
 PythonInterface::PythonInterface() noexcept : functions(), module(), initialized(false) {}
 
 PythonInterface::PythonInterface(string const &moduleName, vector<string> const &toImportFunctionNames) :
-        PythonInterface() {
+    PythonInterface() {
     this->reInitialize(moduleName, toImportFunctionNames);
 }
 
-PythonInterface::~PythonInterface() {
-    this->cleanup();
-}
+PythonInterface::~PythonInterface() { this->cleanup(); }
 
 void PythonInterface::reInitialize(string const &moduleName, vector<string> const &toImportFunctionNames) {
     AndreiUtils::PythonInterface::initInterpreter();
@@ -37,13 +49,9 @@ void PythonInterface::reInitialize(string const &moduleName, vector<string> cons
     }
 }
 
-map<string, py::function> &PythonInterface::getFunctions() {
-    return this->functions;
-}
+map<string, py::function> &PythonInterface::getFunctions() { return this->functions; }
 
-map<string, py::function> const &PythonInterface::getFunctions() const {
-    return this->functions;
-}
+map<string, py::function> const &PythonInterface::getFunctions() const { return this->functions; }
 
 void PythonInterface::cleanup() {
     this->functions.clear();
@@ -51,16 +59,12 @@ void PythonInterface::cleanup() {
     this->initialized = false;
 }
 
-size_t PythonInterface::getFunctionSize() const {
-    return this->functions.size();
-}
+size_t PythonInterface::getFunctionSize() const { return this->functions.size(); }
 
-bool PythonInterface::isInitialized() const {
-    return this->initialized;
-}
+bool PythonInterface::isInitialized() const { return this->initialized; }
 
 void PythonInterface::initInterpreter() {
     if (PythonInterface::guard == nullptr) {
-        PythonInterface::guard = new py::scoped_interpreter;  // intentionally leak memory... to be reclaimed by OS
+        PythonInterface::guard = new py::scoped_interpreter; // intentionally leak memory... to be reclaimed by OS
     }
 }

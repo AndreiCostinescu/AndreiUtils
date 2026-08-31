@@ -1,16 +1,30 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 25.11.22.
 //
 
-#include <AndreiUtils/classes/trajectory/JointTrajectory.hpp>
+#include <AndreiUtils/classes/SlerpInterpolator.hpp>
 #include <AndreiUtils/classes/SlidingWindow.hpp>
+#include <AndreiUtils/classes/trajectory/JointTrajectory.hpp>
 #include <AndreiUtils/traits/median_computer_eigen.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsEigenGeometry.hpp>
-#include <AndreiUtils/classes/SlerpInterpolator.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -96,50 +110,17 @@ TEST(EigenTest, EigenSlidingWindow) {
     SlidingWindow<Eigen::Vector3d> swEigen(11);
 
     std::vector<Eigen::Vector3d> expectedMedians = {
-            {0,   0,    0},
-            {0.5, 0.5,  0.5},
-            {1,   1,    1},
-            {1.5, 2.5,  4.5},
-            {2,   4,    8},
-            {2.5, 6.5,  17.5},
-            {3,   9,    27},
-            {3.5, 12.5, 45.5},
-            {4,   16,   64},
-            {4.5, 20.5, 94.5},
-            {5,   25,   125},
-            {6,   36,   216},
-            {7,   49,   343},
-            {8,   64,   512},
-            {9,   81,   729},
-            {10,  100,  1000},
-            {11,  121,  1331},
-            {12,  144,  1728},
-            {13,  169,  2197},
-            {14,  196,  2744}
-    };
+            {0, 0, 0},        {0.5, 0.5, 0.5}, {1, 1, 1},         {1.5, 2.5, 4.5}, {2, 4, 8},
+            {2.5, 6.5, 17.5}, {3, 9, 27},      {3.5, 12.5, 45.5}, {4, 16, 64},     {4.5, 20.5, 94.5},
+            {5, 25, 125},     {6, 36, 216},    {7, 49, 343},      {8, 64, 512},    {9, 81, 729},
+            {10, 100, 1000},  {11, 121, 1331}, {12, 144, 1728},   {13, 169, 2197}, {14, 196, 2744}};
 
     std::vector<Eigen::Vector3d> expectedAverages = {
-            {0,   0,       0},
-            {0.5, 0.5,     0.5},
-            {1,   1.66667, 3},
-            {1.5, 3.5,     9},
-            {2,   6,       20},
-            {2.5, 9.16667, 37.5},
-            {3,   13,      63},
-            {3.5, 17.5,    98},
-            {4,   22.6667, 144},
-            {4.5, 28.5,    202.5},
-            {5,   35,      275},
-            {6,   46,      396},
-            {7,   59,      553},
-            {8,   74,      752},
-            {9,   91,      999},
-            {10,  110,     1300},
-            {11,  131,     1661},
-            {12,  154,     2088},
-            {13,  179,     2587},
-            {14,  206,     3164}
-    };
+            {0, 0, 0},         {0.5, 0.5, 0.5},      {1, 1.66667, 3}, {1.5, 3.5, 9},
+            {2, 6, 20},        {2.5, 9.16667, 37.5}, {3, 13, 63},     {3.5, 17.5, 98},
+            {4, 22.6667, 144}, {4.5, 28.5, 202.5},   {5, 35, 275},    {6, 46, 396},
+            {7, 59, 553},      {8, 74, 752},         {9, 91, 999},    {10, 110, 1300},
+            {11, 131, 1661},   {12, 154, 2088},      {13, 179, 2587}, {14, 206, 3164}};
 
     for (int i = 0; i < 20; i++) {
         swEigen.addData(
@@ -183,7 +164,6 @@ TEST(EigenTest, MatrixAddSub) {
 
         std::cout << "Sampled Orientation:\n" << orientation << std::endl;
         std::cout << "Sampled Direction:\n" << direction.transpose() << std::endl;
-
     }
 }
 
@@ -208,23 +188,17 @@ TEST(EigenTest, OrientationFromAxis) {
 
     result = getAnyOrientationFromOneAxis(axis1, "x");
     Matrix3d expected1;
-    expected1 << 0, 0, -1,
-            0, 1, 0,
-            1, 0, 0;
+    expected1 << 0, 0, -1, 0, 1, 0, 1, 0, 0;
     ASSERT_EQ(result, expected1);
 
     result = getAnyOrientationFromOneAxis(axis1, "y");
     Matrix3d expected2;
-    expected2 << -1, 0, 0,
-            0, 0, 1,
-            0, 1, 0;
+    expected2 << -1, 0, 0, 0, 0, 1, 0, 1, 0;
     ASSERT_EQ(result, expected2);
 
     result = getAnyOrientationFromOneAxis(axis1, "z");
     Matrix3d expected3;
-    expected3 << 0, -1, 0,
-            1, 0, 0,
-            0, 0, 1;
+    expected3 << 0, -1, 0, 1, 0, 0, 0, 0, 1;
     ASSERT_EQ(result, expected3);
 
 
@@ -232,23 +206,17 @@ TEST(EigenTest, OrientationFromAxis) {
 
     result = getAnyOrientationFromOneAxis(axis2, "x");
     Matrix3d expected4;
-    expected4 << 1, 0, 0,
-            0, 0, -1,
-            0, 1, 0;
+    expected4 << 1, 0, 0, 0, 0, -1, 0, 1, 0;
     ASSERT_EQ(result, expected4);
 
     result = getAnyOrientationFromOneAxis(axis2, "y");
     Matrix3d expected5;
-    expected5 << 0, 1, 0,
-            -1, 0, 0,
-            0, 0, 1;
+    expected5 << 0, 1, 0, -1, 0, 0, 0, 0, 1;
     ASSERT_EQ(result, expected5);
 
     result = getAnyOrientationFromOneAxis(axis2, "z");
     Matrix3d expected6;
-    expected6 << 0, 0, 1,
-            0, -1, 0,
-            1, 0, 0;
+    expected6 << 0, 0, 1, 0, -1, 0, 1, 0, 0;
     ASSERT_EQ(result, expected6);
 }
 

@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.11.20.
 //
@@ -7,57 +21,62 @@
 
 #include <AndreiUtils/traits/InstanceOf.hpp>
 #include <memory>
-#include <type_traits>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 namespace AndreiUtils {
     template<typename TypeCheck, typename InstanceType>
     bool instanceOf(InstanceType const &val) {
         return InstanceOf<TypeCheck, InstanceType,
-                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val);
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val);
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool instanceOf(InstanceType const &val, TypeCheck const *&res) {
-        return InstanceOf<TypeCheck, InstanceType, std::is_polymorphic<
-                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val, res);
+        return InstanceOf<
+                TypeCheck, InstanceType,
+                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val,
+                                                                                                               res);
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::shared_ptr<InstanceType> const &val) {
         return InstanceOf<TypeCheck, InstanceType *,
-                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::shared_ptr<InstanceType> const &val, TypeCheck const *&res) {
-        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
-                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
+        return InstanceOf<TypeCheck, InstanceType *,
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::
+                getIfIsInstance(val.get(), res);
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::unique_ptr<InstanceType> const &val) {
         return InstanceOf<TypeCheck, InstanceType *,
-                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::unique_ptr<InstanceType> const &val, TypeCheck const *&res) {
-        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
-                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
+        return InstanceOf<TypeCheck, InstanceType *,
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::
+                getIfIsInstance(val.get(), res);
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::weak_ptr<InstanceType> const &val) {
         return InstanceOf<TypeCheck, InstanceType *,
-                std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::get(val.get());
     }
 
     template<typename TypeCheck, typename InstanceType>
     bool pointerInstanceOf(std::weak_ptr<InstanceType> const &val, TypeCheck const *&res) {
-        return InstanceOf<TypeCheck, InstanceType *, std::is_polymorphic<
-                typename std::remove_pointer<InstanceType>::type>::value>::getIfIsInstance(val.get(), res);
+        return InstanceOf<TypeCheck, InstanceType *,
+                          std::is_polymorphic<typename std::remove_pointer<InstanceType>::type>::value>::
+                getIfIsInstance(val.get(), res);
     }
 
     template<typename T>
@@ -252,6 +271,6 @@ namespace AndreiUtils {
         }
         return res;
     }
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_UTILS_HPP
+#endif // ANDREIUTILS_UTILS_HPP

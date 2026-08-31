@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu on 05.08.22.
 //
@@ -10,8 +24,10 @@
 namespace AndreiUtils {
     template<typename T>
     struct uniform_distribution_type {
-        using Type = typename std::conditional<std::is_integral<T>::value, std::uniform_int_distribution<T>,
-                typename std::conditional<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, void>::type>::type;
+        using Type = typename std::conditional<
+                std::is_integral<T>::value, std::uniform_int_distribution<T>,
+                typename std::conditional<std::is_floating_point<T>::value, std::uniform_real_distribution<T>,
+                                          void>::type>::type;
     };
 
     // Can not create move or copy constructors because of the rd (random_device) member variable, which prohibits them
@@ -19,25 +35,21 @@ namespace AndreiUtils {
     class RandomNumberGenerator {
     public:
         RandomNumberGenerator(T minValue, T maxValue) :
-                rd(), seed(rd()), engine(seed), distribution(minValue, maxValue) {}
+            rd(), seed(rd()), engine(seed), distribution(minValue, maxValue) {}
 
         RandomNumberGenerator(T minValue, T maxValue, std::random_device::result_type seed) :
-                seed(seed), rd(), engine(seed), distribution(minValue, maxValue) {}
+            seed(seed), rd(), engine(seed), distribution(minValue, maxValue) {}
 
         virtual ~RandomNumberGenerator() = default;
 
-        T sample() {
-            return this->distribution(this->engine);
-        }
+        T sample() { return this->distribution(this->engine); }
 
         void setSeed(std::random_device::result_type newSeed) {
             this->seed = newSeed;
             this->engine.seed(this->seed);
         }
 
-        [[nodiscard]] std::random_device::result_type const &getSeed() const {
-            return this->seed;
-        }
+        [[nodiscard]] std::random_device::result_type const &getSeed() const { return this->seed; }
 
     protected:
         // Class member initialization order https://en.cppreference.com/w/cpp/language/constructor#Initialization_order
@@ -74,4 +86,4 @@ namespace AndreiUtils {
     };
 
     extern RandomNumberGeneratorNormal normal01Sampler;
-}
+} // namespace AndreiUtils

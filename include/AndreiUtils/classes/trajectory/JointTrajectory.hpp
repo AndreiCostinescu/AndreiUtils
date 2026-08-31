@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.08.23.
 //
@@ -14,8 +28,8 @@ namespace AndreiUtils {
     public:
         using JointValues = Eigen::Matrix<double, NrJoints, 1>;
 
-        explicit JointTrajectory(int size = 0) : TrajectoryBase(size), jointValues(),
-                                                 jointValuesData(std::make_shared<std::vector<JointValues>>()) {
+        explicit JointTrajectory(int size = 0) :
+            TrajectoryBase(size), jointValues(), jointValuesData(std::make_shared<std::vector<JointValues>>()) {
             this->jointValues = this->jointValuesData.get();
             if (this->size != 0) {
                 this->jointValues->resize(size);
@@ -23,25 +37,25 @@ namespace AndreiUtils {
         }
 
         JointTrajectory(std::vector<JointValues> const &jointValues, std::vector<double> const &times) :
-                TrajectoryBase(times), jointValuesData(std::make_shared<std::vector<JointValues>>(jointValues)) {
+            TrajectoryBase(times), jointValuesData(std::make_shared<std::vector<JointValues>>(jointValues)) {
             this->jointValues = this->jointValuesData.get();
         }
 
         JointTrajectory(std::vector<JointValues> &&jointValues, std::vector<double> &&times) :
-                TrajectoryBase(std::move(times)),
-                jointValuesData(std::make_shared<std::vector<JointValues>>(std::move(jointValues))) {
+            TrajectoryBase(std::move(times)),
+            jointValuesData(std::make_shared<std::vector<JointValues>>(std::move(jointValues))) {
             this->jointValues = this->jointValuesData.get();
         }
 
         JointTrajectory(std::vector<JointValues> *jointValues, std::vector<double> *times) :
-                TrajectoryBase(times), jointValuesData(), jointValues(jointValues) {}
+            TrajectoryBase(times), jointValuesData(), jointValues(jointValues) {}
 
         JointTrajectory(JointTrajectory const &other) : TrajectoryBase(other), jointValuesData(), jointValues() {
             this->JointTrajectory::updatePointers(other);
         }
 
-        JointTrajectory(JointTrajectory &&other) noexcept:
-                TrajectoryBase(std::move(other)), jointValuesData(), jointValues() {
+        JointTrajectory(JointTrajectory &&other) noexcept :
+            TrajectoryBase(std::move(other)), jointValuesData(), jointValues() {
             this->JointTrajectory::updatePointers(std::move(other));
         }
 
@@ -93,13 +107,9 @@ namespace AndreiUtils {
             this->jointValues->template emplace_back(std::move(newJointValues));
         }
 
-        [[nodiscard]] std::vector<JointValues> const &getJointValues() const {
-            return *this->jointValues;
-        }
+        [[nodiscard]] std::vector<JointValues> const &getJointValues() const { return *this->jointValues; }
 
-        [[nodiscard]] std::vector<JointValues> &getJointValues() {
-            return *this->jointValues;
-        }
+        [[nodiscard]] std::vector<JointValues> &getJointValues() { return *this->jointValues; }
 
     protected:
         void updatePointers(JointTrajectory const &other) {
@@ -115,4 +125,4 @@ namespace AndreiUtils {
         std::shared_ptr<std::vector<JointValues>> jointValuesData;
         std::vector<JointValues> *jointValues;
     };
-}
+} // namespace AndreiUtils

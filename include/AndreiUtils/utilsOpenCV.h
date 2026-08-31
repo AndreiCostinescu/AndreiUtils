@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.11.20.
 //
@@ -44,23 +58,21 @@ namespace AndreiUtils {
                                 const cv::Scalar &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
                                 int lineType = cv::LINE_AA, int lineContentCap = -1);
 
-    void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
-            std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx, double ppy,
-            float distortionCoefficients[5]);
+    void recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
+                                      std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
+                                      double ppy, float distortionCoefficients[5]);
 
-    void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
-            std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx, double ppy,
-            float distortionCoefficients[5]);
+    void recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
+                                      std::vector<cv::Point3f> const &points3d, double fx, double fy, double ppx,
+                                      double ppy, float distortionCoefficients[5]);
 
-    void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
-            std::vector<cv::Point3f> const &points3d, const CameraIntrinsicParameters &intrinsics);
+    void recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,
+                                      std::vector<cv::Point3f> const &points3d,
+                                      const CameraIntrinsicParameters &intrinsics);
 
-    void recoverPoseFrom2dAnd3dPoints(
-            cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
-            std::vector<cv::Point3f> const &points3d, const CameraIntrinsicParameters &intrinsics);
+    void recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Matx33d &rMat, std::vector<cv::Point2f> const &points2d,
+                                      std::vector<cv::Point3f> const &points3d,
+                                      const CameraIntrinsicParameters &intrinsics);
 
     cv::Point2i castFromPointDouble(cv::Point2d const &p);
 
@@ -68,7 +80,7 @@ namespace AndreiUtils {
 
     cv::Mat addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int topWidth, int rightWidth,
                                       int bottomWidth, int leftWidth);
-}
+} // namespace AndreiUtils
 
 namespace cv {
     template<typename T>
@@ -111,6 +123,6 @@ namespace cv {
             }
         }
     }
-}
+} // namespace cv
 
-#endif //ANDREIUTILS_UTILSOPENCV_H
+#endif // ANDREIUTILS_UTILSOPENCV_H

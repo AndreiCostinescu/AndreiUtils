@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 24-May-22.
 //
@@ -17,13 +31,9 @@ UnionFind::UnionFind(size_t n) : parents(n), sizes(n) {
     }
 }
 
-size_t UnionFind::size() const {
-    return this->parents.size();
-}
+size_t UnionFind::size() const { return this->parents.size(); }
 
-const size_t &UnionFind::numberOfDistinctComponents() const {
-    return this->nrDistinctComponents;
-}
+const size_t &UnionFind::numberOfDistinctComponents() const { return this->nrDistinctComponents; }
 
 void UnionFind::add() {
     // the size of the union-find data structure is always in parents.size()
@@ -50,9 +60,7 @@ size_t UnionFind::find(size_t id) {
     return id;
 }
 
-bool UnionFind::find(size_t id1, size_t id2) {
-    return (find(id1) == find(id2));
-}
+bool UnionFind::find(size_t id1, size_t id2) { return (find(id1) == find(id2)); }
 
 bool UnionFind::unite(size_t id1, size_t id2) {
     size_t root1 = find(id1);
@@ -60,22 +68,16 @@ bool UnionFind::unite(size_t id1, size_t id2) {
     return this->uniteImpl(root1, root2);
 }
 
-const vector<size_t> &UnionFind::getParents() const {
-    return this->parents;
-}
+const vector<size_t> &UnionFind::getParents() const { return this->parents; }
 
-const vector<size_t> &UnionFind::getSizes() const {
-    return this->sizes;
-}
+const vector<size_t> &UnionFind::getSizes() const { return this->sizes; }
 
 size_t UnionFind::getComponentSize(size_t id) {
     size_t componentRoot = this->find(id);
     return this->sizes[componentRoot];
 }
 
-void UnionFind::setParentIndex(size_t index, size_t parentIndex) {
-    this->parents[index] = parentIndex;
-}
+void UnionFind::setParentIndex(size_t index, size_t parentIndex) { this->parents[index] = parentIndex; }
 
 bool UnionFind::uniteImpl(size_t root1, size_t root2) {
     if (root1 == root2) {

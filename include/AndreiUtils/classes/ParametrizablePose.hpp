@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20.11.23.
 //
@@ -47,8 +61,8 @@ namespace AndreiUtils {
 
         [[nodiscard]] virtual std::vector<Interval<T>> getDefaultParameterRange() const = 0;
 
-        [[nodiscard]] virtual std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const = 0;
+        [[nodiscard]] virtual std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const = 0;
 
         PoseParameterFunctionType type;
 
@@ -67,23 +81,19 @@ namespace AndreiUtils {
     class NoPoseVariation : public PoseParameterFunction<T> {
     public:
         explicit NoPoseVariation(AndreiUtils::DualQuaternion<T> pose) :
-                PoseParameterFunction<T>(NO_VARIATION), pose(std::move(pose)) {}
+            PoseParameterFunction<T>(NO_VARIATION), pose(std::move(pose)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.empty());
             return this->pose;
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 0;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 0; }
 
-        [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
-            return {};
-        }
+        [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override { return {}; }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (!parameterValues.empty()) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -91,9 +101,7 @@ namespace AndreiUtils {
             return std::make_shared<NoPoseVariation<T>>(*this);
         }
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> const &getPose() const {
-            return this->pose;
-        }
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> const &getPose() const { return this->pose; }
 
     protected:
         AndreiUtils::DualQuaternion<T> pose;
@@ -103,24 +111,22 @@ namespace AndreiUtils {
     class VariableAngleInAxisAngle : public PoseParameterFunction<T> {
     public:
         explicit VariableAngleInAxisAngle(Eigen::Matrix<T, 3, 1> axis) :
-                PoseParameterFunction<T>(ANGLE_AXIS_ANGLE_VARIATION), axis(std::move(axis)) {}
+            PoseParameterFunction<T>(ANGLE_AXIS_ANGLE_VARIATION), axis(std::move(axis)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 1);
-            return AndreiUtils::DualQuaternion<T>(Eigen::Quaternion<T>(
-                    Eigen::AngleAxis<T>(parameterValues[0], this->axis)), this->tZero);
+            return AndreiUtils::DualQuaternion<T>(
+                    Eigen::Quaternion<T>(Eigen::AngleAxis<T>(parameterValues[0], this->axis)), this->tZero);
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 1;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 1; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>(T(-M_PI), T(M_PI))};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 1) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -128,13 +134,11 @@ namespace AndreiUtils {
             if (parameterValues.empty()) {
                 return std::make_shared<VariableAngleInAxisAngle<T>>(*this);
             }
-            T const &angleValue = mapGet(parameterValues, 0);  // should throw an error if key is non-existing
+            T const &angleValue = mapGet(parameterValues, 0); // should throw an error if key is non-existing
             return std::make_shared<NoPoseVariation<T>>(this->get({angleValue}));
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getAxis() const {
-            return this->axis;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getAxis() const { return this->axis; }
 
     protected:
         Eigen::Matrix<T, 3, 1> axis;
@@ -144,24 +148,23 @@ namespace AndreiUtils {
     class VariableDegreeAngleInAxisAngle : public PoseParameterFunction<T> {
     public:
         explicit VariableDegreeAngleInAxisAngle(Eigen::Matrix<T, 3, 1> axis) :
-                PoseParameterFunction<T>(ANGLE_AXIS_ANGLE_DEG_VARIATION), axis(std::move(axis)) {}
+            PoseParameterFunction<T>(ANGLE_AXIS_ANGLE_DEG_VARIATION), axis(std::move(axis)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 1);
-            return AndreiUtils::DualQuaternion<T>(Eigen::Quaternion<T>(
-                    Eigen::AngleAxis<T>(AndreiUtils::deg2Rad(parameterValues[0]), this->axis)), this->tZero);
+            return AndreiUtils::DualQuaternion<T>(
+                    Eigen::Quaternion<T>(Eigen::AngleAxis<T>(AndreiUtils::deg2Rad(parameterValues[0]), this->axis)),
+                    this->tZero);
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 1;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 1; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>(T(-180), T(180))};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 1) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -169,13 +172,11 @@ namespace AndreiUtils {
             if (parameterValues.empty()) {
                 return std::make_shared<VariableDegreeAngleInAxisAngle<T>>(*this);
             }
-            T const &angleValue = mapGet(parameterValues, 0);  // should throw an error if key is non-existing
+            T const &angleValue = mapGet(parameterValues, 0); // should throw an error if key is non-existing
             return std::make_shared<NoPoseVariation<T>>(this->get({angleValue}));
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getAxis() const {
-            return this->axis;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getAxis() const { return this->axis; }
 
     protected:
         Eigen::Matrix<T, 3, 1> axis;
@@ -185,7 +186,7 @@ namespace AndreiUtils {
     class VariableAxisInAxisAngle : public PoseParameterFunction<T> {
     public:
         explicit VariableAxisInAxisAngle(T angle) :
-                PoseParameterFunction<T>(ANGLE_AXIS_AXIS_VARIATION), angle(std::move(angle)) {}
+            PoseParameterFunction<T>(ANGLE_AXIS_AXIS_VARIATION), angle(std::move(angle)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 3);
@@ -194,17 +195,15 @@ namespace AndreiUtils {
                     Eigen::Quaternion<T>(Eigen::AngleAxis<T>(this->angle, axis.normalized())), this->tZero);
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 3;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 3; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             auto axisRestriction = Interval<T>(-1, 1);
             return {axisRestriction, axisRestriction, axisRestriction};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (!(parameterValues.size() == 0 || parameterValues.size() == 3)) {
                 throw std::runtime_error("Passed incorrect amount of parameters (" +
                                          std::to_string(parameterValues.size()) + ") to " +
@@ -217,9 +216,7 @@ namespace AndreiUtils {
                     this->get({mapGet(parameterValues, 0), mapGet(parameterValues, 1), mapGet(parameterValues, 2)}));
         }
 
-        [[nodiscard]] T const &getAngle() const {
-            return this->angle;
-        }
+        [[nodiscard]] T const &getAngle() const { return this->angle; }
 
     protected:
         T angle;
@@ -229,7 +226,7 @@ namespace AndreiUtils {
     class VariableAxisInDegreeAxisAngle : public PoseParameterFunction<T> {
     public:
         explicit VariableAxisInDegreeAxisAngle(T angle) :
-                PoseParameterFunction<T>(DEG_ANGLE_AXIS_AXIS_VARIATION), angle(std::move(angle)) {}
+            PoseParameterFunction<T>(DEG_ANGLE_AXIS_AXIS_VARIATION), angle(std::move(angle)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 3);
@@ -238,17 +235,15 @@ namespace AndreiUtils {
                     Eigen::Quaternion<T>(Eigen::AngleAxis<T>(deg2Rad(this->angle), axis.normalized())), this->tZero);
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 3;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 3; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             auto axisRestriction = Interval<T>(-1, 1);
             return {axisRestriction, axisRestriction, axisRestriction};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (!(parameterValues.size() == 0 || parameterValues.size() == 3)) {
                 throw std::runtime_error("Passed incorrect amount of parameters (" +
                                          std::to_string(parameterValues.size()) + ") to " +
@@ -261,9 +256,7 @@ namespace AndreiUtils {
                     this->get({mapGet(parameterValues, 0), mapGet(parameterValues, 1), mapGet(parameterValues, 2)}));
         }
 
-        [[nodiscard]] T const &getAngle() const {
-            return this->angle;
-        }
+        [[nodiscard]] T const &getAngle() const { return this->angle; }
 
     protected:
         T angle;
@@ -273,24 +266,22 @@ namespace AndreiUtils {
     class VariableXAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableXAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_X_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_X_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 1);
-            return AndreiUtils::DualQuaternion<T>(
-                    this->qIdentity, Eigen::Matrix<T, 3, 1>(parameterValues[0], this->t(1), this->t(2)));
+            return AndreiUtils::DualQuaternion<T>(this->qIdentity,
+                                                  Eigen::Matrix<T, 3, 1>(parameterValues[0], this->t(1), this->t(2)));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 1;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 1; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 1) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -301,9 +292,7 @@ namespace AndreiUtils {
             return std::make_shared<NoPoseVariation<T>>(this->get({mapGet(parameterValues, 0)}));
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -313,24 +302,22 @@ namespace AndreiUtils {
     class VariableYAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableYAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_Y_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_Y_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 1);
-            return AndreiUtils::DualQuaternion<T>(
-                    this->qIdentity, Eigen::Matrix<T, 3, 1>(this->t(0), parameterValues[0], this->t(2)));
+            return AndreiUtils::DualQuaternion<T>(this->qIdentity,
+                                                  Eigen::Matrix<T, 3, 1>(this->t(0), parameterValues[0], this->t(2)));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 1;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 1; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 1) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -341,9 +328,7 @@ namespace AndreiUtils {
             return std::make_shared<NoPoseVariation<T>>(this->get({mapGet(parameterValues, 0)}));
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -353,24 +338,22 @@ namespace AndreiUtils {
     class VariableZAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableZAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_Z_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_Z_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 1);
-            return AndreiUtils::DualQuaternion<T>(
-                    this->qIdentity, Eigen::Matrix<T, 3, 1>(this->t(0), this->t(1), parameterValues[0]));
+            return AndreiUtils::DualQuaternion<T>(this->qIdentity,
+                                                  Eigen::Matrix<T, 3, 1>(this->t(0), this->t(1), parameterValues[0]));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 1;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 1; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 1) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -381,9 +364,7 @@ namespace AndreiUtils {
             return std::make_shared<NoPoseVariation<T>>(this->get({mapGet(parameterValues, 0)}));
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -393,7 +374,7 @@ namespace AndreiUtils {
     class VariableXYAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableXYAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_XY_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_XY_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 2);
@@ -401,16 +382,14 @@ namespace AndreiUtils {
                     this->qIdentity, Eigen::Matrix<T, 3, 1>(parameterValues[0], parameterValues[1], this->t(2)));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 2;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 2; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange(), Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 2) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -434,9 +413,7 @@ namespace AndreiUtils {
             return std::make_shared<VariableXAxisTranslation<T>>(newAxis);
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -446,7 +423,7 @@ namespace AndreiUtils {
     class VariableYZAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableYZAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_YZ_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_YZ_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 2);
@@ -454,16 +431,14 @@ namespace AndreiUtils {
                     this->qIdentity, Eigen::Matrix<T, 3, 1>(this->t(0), parameterValues[0], parameterValues[1]));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 2;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 2; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange(), Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 2) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -487,9 +462,7 @@ namespace AndreiUtils {
             return std::make_shared<VariableYAxisTranslation<T>>(newAxis);
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -499,7 +472,7 @@ namespace AndreiUtils {
     class VariableXZAxisTranslation : public PoseParameterFunction<T> {
     public:
         explicit VariableXZAxisTranslation(Eigen::Matrix<T, 3, 1> t) :
-                PoseParameterFunction<T>(TRANSLATION_XZ_VARIATION), t(std::move(t)) {}
+            PoseParameterFunction<T>(TRANSLATION_XZ_VARIATION), t(std::move(t)) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 2);
@@ -507,16 +480,14 @@ namespace AndreiUtils {
                     this->qIdentity, Eigen::Matrix<T, 3, 1>(parameterValues[0], this->t(1), parameterValues[1]));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 2;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 2; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange(), Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 2) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -540,9 +511,7 @@ namespace AndreiUtils {
             return std::make_shared<VariableXAxisTranslation<T>>(newAxis);
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const {
-            return this->t;
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> const &getTranslation() const { return this->t; }
 
     protected:
         Eigen::Matrix<T, 3, 1> t;
@@ -555,21 +524,19 @@ namespace AndreiUtils {
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> get(std::vector<T> const &parameterValues) const override {
             assert(parameterValues.size() == 3);
-            return AndreiUtils::DualQuaternion<T>(this->qIdentity,
-                                                  Eigen::Matrix<T, 3, 1>(parameterValues[0], parameterValues[1],
-                                                                         parameterValues[2]));
+            return AndreiUtils::DualQuaternion<T>(
+                    this->qIdentity,
+                    Eigen::Matrix<T, 3, 1>(parameterValues[0], parameterValues[1], parameterValues[2]));
         }
 
-        [[nodiscard]] int getNrParameters() const override {
-            return 3;
-        }
+        [[nodiscard]] int getNrParameters() const override { return 3; }
 
         [[nodiscard]] std::vector<Interval<T>> getDefaultParameterRange() const override {
             return {Interval<T>::createFullRange(), Interval<T>::createFullRange(), Interval<T>::createFullRange()};
         }
 
-        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>> setParametersAndGetNewFunction(
-                std::map<int, T> const &parameterValues) const override {
+        [[nodiscard]] std::shared_ptr<PoseParameterFunction<T>>
+        setParametersAndGetNewFunction(std::map<int, T> const &parameterValues) const override {
             if (parameterValues.size() > 2) {
                 throw std::runtime_error("Passed too many arguments to " + std::to_string(this->getNrParameters()) +
                                          "-argument pose-function!");
@@ -620,7 +587,7 @@ namespace AndreiUtils {
 
         struct ParametrizablePoseParameter {
             ParametrizablePoseParameter(std::string name, int fIndex, int pIndex, AndreiUtils::Interval<T> range) :
-                    parameterName(std::move(name)), valueRange(std::move(range)), sampler(valueRange.createSampler()) {
+                parameterName(std::move(name)), valueRange(std::move(range)), sampler(valueRange.createSampler()) {
                 this->functionAndParameterIndex.emplace_back(fIndex, pIndex);
             }
 
@@ -665,8 +632,10 @@ namespace AndreiUtils {
             for (int i = 0; i < poseFunctionParameters.size(); ++i) {
                 std::string const &parameterName = poseFunctionParameters[i];
                 if (parameterName == "r" || parameterName == "d") {
-                    // in serialization, we serialize angles with "r" in radian and with "d" in degrees; might be ambiguous!
-                    throw std::runtime_error("The parameter name \"" + parameterName + "\" is reserved! Choose another name!");
+                    // in serialization, we serialize angles with "r" in radian and with "d" in degrees; might be
+                    // ambiguous!
+                    throw std::runtime_error("The parameter name \"" + parameterName +
+                                             "\" is reserved! Choose another name!");
                 }
                 std::shared_ptr<ParametrizablePoseParameter> poseParameter = nullptr;
                 if (AndreiUtils::mapGetIfContains(this->parameterNameAssignment, parameterName, poseParameter)) {
@@ -676,8 +645,8 @@ namespace AndreiUtils {
                     }
                     poseParameter->functionAndParameterIndex.emplace_back(functionIndex, i);
                 } else {
-                    poseParameter = std::make_shared<ParametrizablePoseParameter>(
-                            parameterName, functionIndex, i, poseFunctionParameterValues[i]);
+                    poseParameter = std::make_shared<ParametrizablePoseParameter>(parameterName, functionIndex, i,
+                                                                                  poseFunctionParameterValues[i]);
                     AndreiUtils::mapEmplace(this->parameterNameAssignment, parameterName, poseParameter);
                 }
                 assert(poseParameter != nullptr);
@@ -685,8 +654,8 @@ namespace AndreiUtils {
             }
         }
 
-        [[nodiscard]] ParametrizablePose setParametersAndGetNewParametrizablePose(
-                std::map<int, std::map<int, T>> const &parameterValues) const {
+        [[nodiscard]] ParametrizablePose
+        setParametersAndGetNewParametrizablePose(std::map<int, std::map<int, T>> const &parameterValues) const {
             ParametrizablePose res;
             for (int functionIndex = 0; functionIndex < this->poseComposition.size(); ++functionIndex) {
                 std::vector<std::string> newParameterNames;
@@ -721,7 +690,7 @@ namespace AndreiUtils {
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> sample() {
             std::map<std::string, T> sampledParameters;
-            for (auto &parameterData : this->parameterNameAssignment) {
+            for (auto &parameterData: this->parameterNameAssignment) {
                 AndreiUtils::mapEmplace(sampledParameters, parameterData.first, parameterData.second->sampler.sample());
             }
             return this->get(sampledParameters);
@@ -729,8 +698,8 @@ namespace AndreiUtils {
 
         // with this method one can set values for every pose-composition-function parameter individually
         // (without the constraint that parameters with the same name need to have the same value!)
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> getSetEveryFunctionParameter(
-                std::map<int, std::vector<T>> const &parameters) const {
+        [[nodiscard]] AndreiUtils::DualQuaternion<T>
+        getSetEveryFunctionParameter(std::map<int, std::vector<T>> const &parameters) const {
             AndreiUtils::DualQuaternion<T> res = AndreiUtils::DualQuaternion<T>::one;
             for (int i = 0; i < this->poseComposition.size(); ++i) {
                 std::vector<T> *poseCompositionParameters;
@@ -751,7 +720,8 @@ namespace AndreiUtils {
                 std::map<int, std::shared_ptr<ParametrizablePoseParameter>> const *functionParameters;
                 if (AndreiUtils::mapGetIfContains(this->parameterAssignment, functionIndex, functionParameters)) {
                     for (auto const &parameterData: *functionParameters) {
-                        // this for-loop already iterates in the correct order of parameters so that poseCompositionParameters will contain the parameters in the correct order
+                        // this for-loop already iterates in the correct order of parameters so that
+                        // poseCompositionParameters will contain the parameters in the correct order
                         poseCompositionParameters.emplace_back(
                                 AndreiUtils::mapGet(parameterValues, parameterData.second->parameterName));
                     }
@@ -761,17 +731,13 @@ namespace AndreiUtils {
             return res;
         }
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> get() const {
-            return this->get({});
-        }
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> get() const { return this->get({}); }
 
         [[nodiscard]] std::map<std::string, std::shared_ptr<ParametrizablePoseParameter>> const &getParameters() const {
             return this->parameterNameAssignment;
         }
 
-        [[nodiscard]] size_t parameterCount() const {
-            return this->parameterNameAssignment.size();
-        }
+        [[nodiscard]] size_t parameterCount() const { return this->parameterNameAssignment.size(); }
 
     protected:
         void clear() {
@@ -788,4 +754,4 @@ namespace AndreiUtils {
 
     using ParametrizablePosef = ParametrizablePose<float>;
     using ParametrizablePosed = ParametrizablePose<double>;
-}
+} // namespace AndreiUtils

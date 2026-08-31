@@ -1,12 +1,26 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
 
-#include <algorithm>
 #include <AndreiUtils/utilsVector.hpp>
 #include <Eigen/Dense>
-#include <random>
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <random>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -26,9 +40,7 @@ void testSortMultipleVectorsBasedOnOneCriterion() {
             z[i] = z[i - 1] + "1";
         }
     }
-    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) {
-        return a < b;
-    });
+    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) { return a < b; });
     printVector(x);
     printVector(y);
     printVector(z);
@@ -134,13 +146,9 @@ class A {
 public:
     static int count;
 
-    A() {
-        cout << "Create new A: " << ++count << endl;
-    }
+    A() { cout << "Create new A: " << ++count << endl; }
 
-    ~A() {
-        cout << "Delete old A: " << --count << endl;
-    }
+    ~A() { cout << "Delete old A: " << --count << endl; }
 };
 
 int A::count = 0;
@@ -169,9 +177,7 @@ TEST(VectorTest, SortBasedOnPermutation) {
         }
     }
 
-    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) {
-        return a < b;
-    });
+    auto permutation = getSortedIndicesOfVector(y, [](const int &a, const int &b) { return a < b; });
 
     for (size_t i = 1; i < permutation.size(); ++i) {
         ASSERT_LE(y[permutation[i - 1]], y[permutation[i]]);
@@ -182,7 +188,6 @@ TEST(VectorTest, SortBasedOnPermutation) {
     for (size_t i = 1; i < permutation.size(); ++i) {
         ASSERT_LE(y[i - 1], y[i]);
     }
-
 }
 
 TEST(VectorTest, AppendFunctions) {
@@ -265,17 +270,15 @@ TEST(VectorTest, RemovingDuplicates) {
     set<int> s(x.begin(), x.end());
     vector<int> v(s.begin(), s.end());
 
-   auto z = removeDuplicates(x);
-    vector<int> expected{1,10,12,13,14};
+    auto z = removeDuplicates(x);
+    vector<int> expected{1, 10, 12, 13, 14};
     ASSERT_EQ(z, expected);
-
 }
 
 TEST(VectorTest, EigenMatrixConversion) {
 
     Eigen::Matrix<double, 2, 3> bb;
-    bb << -0.113, -0.113, -0.003,
-          0.113,  0.113,  0.016;
+    bb << -0.113, -0.113, -0.003, 0.113, 0.113, 0.016;
 
     std::vector<double> expectedVector = {-0.113, 0.113, -0.113, 0.113, -0.003, 0.016};
 

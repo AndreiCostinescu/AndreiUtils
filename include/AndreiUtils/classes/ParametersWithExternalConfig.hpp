@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 18.12.23.
 //
@@ -15,14 +29,14 @@ namespace AndreiUtils {
 
         ParametersWithExternalConfig();
 
-        explicit ParametersWithExternalConfig(
-            std::string const &fileName, std::string const &rootDirectoryForExternalData = "");
+        explicit ParametersWithExternalConfig(std::string const &fileName,
+                                              std::string const &rootDirectoryForExternalData = "");
 
-        explicit ParametersWithExternalConfig(
-            nlohmann::json config, std::string const &rootDirectoryForExternalData = "");
+        explicit ParametersWithExternalConfig(nlohmann::json config,
+                                              std::string const &rootDirectoryForExternalData = "");
 
-        explicit ParametersWithExternalConfig(
-            nlohmann::json *config, std::string const &rootDirectoryForExternalData = "");
+        explicit ParametersWithExternalConfig(nlohmann::json *config,
+                                              std::string const &rootDirectoryForExternalData = "");
 
         void set(nlohmann::json const &data) override;
 
@@ -100,26 +114,26 @@ namespace AndreiUtils {
 
         void processOverwrittenParameter(std::string const &parameterName);
 
-        static void toStringMap(
-            std::stringstream &ss, std::string const &key, nlohmann::json const &value, std::string const &indent,
-            std::map<ParametersWithExternalConfig const *, bool> &processedExternalParameters,
-            ExternalParameterData const &external, bool verbose);
+        static void toStringMap(std::stringstream &ss, std::string const &key, nlohmann::json const &value,
+                                std::string const &indent,
+                                std::map<ParametersWithExternalConfig const *, bool> &processedExternalParameters,
+                                ExternalParameterData const &external, bool verbose);
 
-        [[nodiscard]] std::string toStringPrivate(
-            std::map<std::string, bool> const &collectOnlyTheseKeys = {}, std::string const &indent = "",
-            bool verbose = false) const;
+        [[nodiscard]] std::string toStringPrivate(std::map<std::string, bool> const &collectOnlyTheseKeys = {},
+                                                  std::string const &indent = "", bool verbose = false) const;
 
-        void updateParameters(
-            nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
-            std::map<std::string, bool> const &collectOnlyTheseParameters = {}) const;
+        void updateParameters(nlohmann::json &toWriteParameters, bool recurseSubConfigs, bool keepOrder,
+                              bool keepNewLines,
+                              std::map<std::string, bool> const &collectOnlyTheseParameters = {}) const;
 
         static void collectAndUpdateParametersToWriteForThisFileObjectData(
-            std::string const &datumKey, nlohmann::json const &datumValue, ExternalParameterData const &external,
-            nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines);
+                std::string const &datumKey, nlohmann::json const &datumValue, ExternalParameterData const &external,
+                nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines);
 
-        void collectAndUpdateParametersToWriteForThisFile(
-            nlohmann::json &parametersToWrite, bool recurseSubConfigs, bool keepOrder, bool keepNewLines,
-            std::map<std::string, bool> const &collectOnlyTheseKeys) const;
+        void
+        collectAndUpdateParametersToWriteForThisFile(nlohmann::json &parametersToWrite, bool recurseSubConfigs,
+                                                     bool keepOrder, bool keepNewLines,
+                                                     std::map<std::string, bool> const &collectOnlyTheseKeys) const;
 
         void updateExternalParameters(nlohmann::json *parameterParent);
 
@@ -135,4 +149,4 @@ namespace AndreiUtils {
         ExternalParameterData externalData, *externalDataPtr;
         bool isExternalDataReference, externalFilesRelativeToFileLocation;
     };
-}
+} // namespace AndreiUtils

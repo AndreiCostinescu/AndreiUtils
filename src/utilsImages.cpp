@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20-Oct-21.
 //
 
-#include <AndreiUtils/utilsImages.h>
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsBinarySerialization.hpp>
+#include <AndreiUtils/utilsImages.h>
 #include <cstring>
 #include <functional>
 #include <iostream>
@@ -45,7 +59,7 @@ void AndreiUtils::imageDataRotationInto(uint8_t *dst, uint8_t *data, RotationTyp
             };
             break;
         }
-        default : {
+        default: {
             throw runtime_error("Unknown rotation type " + to_string(rotation));
             break;
         }
@@ -71,19 +85,19 @@ uint8_t *AndreiUtils::imageDataRotation(uint8_t *data, RotationType rotation, St
 
     int nrElements = height * width * channels * getStandardTypeByteAmount(imageType);
     auto *copy = new uint8_t[nrElements];
-    #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
     fastMemCopy(copy, data, nrElements);
-    #else
+#else
     memcpy(copy, data, nrElements);
-    #endif
+#endif
 
     imageDataRotationInto(copy, data, rotation, imageType, height, width, channels);
     return copy;
 }
 
-uint8_t *AndreiUtils::imageDataRotationWithDesiredParameters(
-        uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
-        int channels) {
+uint8_t *AndreiUtils::imageDataRotationWithDesiredParameters(uint8_t *data, RotationType applyRotation,
+                                                             StandardTypes imageType, int desiredHeight,
+                                                             int desiredWidth, int channels) {
     return imageDataRotation(data, applyRotation, imageType,
                              (applyRotation == LEFT_90 || applyRotation == RIGHT_90) ? desiredWidth : desiredHeight,
                              (applyRotation == LEFT_90 || applyRotation == RIGHT_90) ? desiredHeight : desiredWidth,
@@ -105,9 +119,7 @@ bool AndreiUtils::readImageHeader(ifstream &in, int &height, int &width, Standar
     }
 }
 
-bool AndreiUtils::skipImageData(std::ifstream &in, int nrBytes) {
-    return skip<std::uint8_t>(in, nrBytes);
-}
+bool AndreiUtils::skipImageData(std::ifstream &in, int nrBytes) { return skip<std::uint8_t>(in, nrBytes); }
 
 bool AndreiUtils::readImageData(ifstream &in, uint8_t *image, int nrBytes) {
     try {
@@ -119,8 +131,8 @@ bool AndreiUtils::readImageData(ifstream &in, uint8_t *image, int nrBytes) {
     }
 }
 
-bool readImageBinaryPrivate(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
-                            int &channels, int const *nrBytes = nullptr) {
+bool readImageBinaryPrivate(ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type, int &channels,
+                            int const *nrBytes = nullptr) {
     if (!readImageHeader(in, height, width, type, channels) || reachedTheEndOfTheFile(in)) {
         return false;
     }
@@ -199,8 +211,8 @@ bool AndreiUtils::readDepthImageBinary(ifstream &in, double *depth, int &height,
     return readDepthImageBinaryPrivate(in, depth, height, width, StandardTypes::TYPE_UINT_16, &nrBytes);
 }
 
-bool readDepthImageBinaryConvertPrivate(ifstream &in, double *&depth, int &height, int &width,
-                                        double conversionFactor, int const *nrBytes = nullptr) {
+bool readDepthImageBinaryConvertPrivate(ifstream &in, double *&depth, int &height, int &width, double conversionFactor,
+                                        int const *nrBytes = nullptr) {
     int channels;
     StandardTypes type;
 
@@ -227,15 +239,14 @@ bool readDepthImageBinaryConvertPrivate(ifstream &in, double *&depth, int &heigh
         // don't return now because tmpData will not be deleted
         delete[] depth;
         depth = new double[nrElements];
-        #ifdef WITH_OPENMP
-        fastSrcOp<uint16_t, double>(depth, tmpData, nrElements, [&conversionFactor](uint16_t const &x) {
-            return double(x) / conversionFactor;
-        });
-        #else
+#ifdef WITH_OPENMP
+        fastSrcOp<uint16_t, double>(depth, tmpData, nrElements,
+                                    [&conversionFactor](uint16_t const &x) { return double(x) / conversionFactor; });
+#else
         for (int i = 0; i < nrElements; i++) {
             depth[i] = tmpData[i] / conversionFactor;
         }
-        #endif
+#endif
     }
 
     delete[] tmpData;
@@ -278,14 +289,14 @@ void AndreiUtils::writeDepthImageBinaryConvert(ofstream &out, const double *dept
                                                double conversionFactor) {
     size_t nrElements = height * width;
     auto *tmpData = new uint16_t[nrElements];
-    #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
     fastSrcOp<double, uint16_t>(tmpData, depth, nrElements,
                                 [conversionFactor](const double &x) { return (uint16_t) (x * conversionFactor); });
-    #else
+#else
     for (size_t i = 0; i < nrElements; i++) {
         tmpData[i] = uint16_t(depth[i] * conversionFactor);
     }
-    #endif
+#endif
     writeImageBinary(out, (uint8_t *) tmpData, height, width, StandardTypes::TYPE_UINT_16, 1);
     delete[] tmpData;
 }
@@ -297,14 +308,17 @@ void AndreiUtils::swapColorImageChannels(uint8_t *image, int nrElements, int cha
             channelSwap.second < 0) {
             continue;
         }
-        #ifdef WITH_OPENMP
-        fastForLoop<uint8_t>(image, nrElements, [&channelSwap](uint8_t *const image, size_t i, size_t) {
-            swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
-        }, channels);
-        #else
+#ifdef WITH_OPENMP
+        fastForLoop<uint8_t>(
+                image, nrElements,
+                [&channelSwap](uint8_t *const image, size_t i, size_t) {
+                    swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
+                },
+                channels);
+#else
         for (size_t i = 0; i < nrElements; i += channels) {
             swapData(image[i + channelSwap.first], image[i + channelSwap.second]);
         }
-        #endif
+#endif
     }
 }

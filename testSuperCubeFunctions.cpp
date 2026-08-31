@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
 
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
-#include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/classes/SuperCube.hpp>
+#include <AndreiUtils/classes/Timer.hpp>
 #include <AndreiUtils/utilsJsonEigen.hpp>
 #include <iomanip>
 
@@ -29,13 +43,9 @@ public:
         return v;
     }
 
-    void saveBinary(std::ofstream &bin) const override {
-        ;
-    }
+    void saveBinary(std::ofstream &bin) const override { ; }
 
-    void readBinary(std::ifstream &bin) override {
-        ;
-    }
+    void readBinary(std::ifstream &bin) override { ; }
 
     void update(TmpClass const &tmp) {
         cout << "Called update on data: " << this->v.transpose() << " with update " << tmp.v.transpose() << endl;
@@ -50,7 +60,7 @@ namespace nlohmann {
 
         static void from_json(const nlohmann::json &j, TmpClass &v) {}
     };
-}
+} // namespace nlohmann
 
 class TSDFData : public AndreiUtils::SuperCubeData<3> {
 public:
@@ -60,11 +70,9 @@ public:
     TSDFData() : p(0, 0, 0), sdf(1.0), weight(0.0), weightLimit(64) {}
 
     TSDFData(Eigen::Vector3d p, double const &sdf, double const &weight = 1.0, double const &weightLimit = 64.0) :
-            p(std::move(p)), sdf(sdf), weight(weight), weightLimit(weightLimit) {}
+        p(std::move(p)), sdf(sdf), weight(weight), weightLimit(weightLimit) {}
 
-    [[nodiscard]] IndexType getIndex() const override {
-        return this->p;
-    }
+    [[nodiscard]] IndexType getIndex() const override { return this->p; }
 
     void saveBinary(std::ofstream &bin) const override {
         serialize(bin, this->p.data(), 3);
@@ -89,9 +97,9 @@ void representSphere(SuperCube<TSDFData, 3, 10, 3> &s, double const &radius, dou
     // return;
     Timer t;
     double time, maxTime = 0;
-    for (double x = -radius; x < radius; x += 0.005) {  // NOLINT(cert-flp30-c)
-        for (double y = -radius; y < radius; y += 0.005) {  // NOLINT(cert-flp30-c)
-            for (double z = -radius; z < radius; z += 0.005) {  // NOLINT(cert-flp30-c)
+    for (double x = -radius; x < radius; x += 0.005) { // NOLINT(cert-flp30-c)
+        for (double y = -radius; y < radius; y += 0.005) { // NOLINT(cert-flp30-c)
+            for (double z = -radius; z < radius; z += 0.005) { // NOLINT(cert-flp30-c)
                 double sdf = Eigen::Vector3d(x, y, z).norm() - sdfSub;
                 t.start();
                 s.setData({{x, y, z}, sdf});
@@ -108,8 +116,8 @@ void representSphere(SuperCube<TSDFData, 3, 10, 3> &s, double const &radius, dou
 
 template<typename T, int Dim, int Div, int Depth>
 void printSuperCubeData(string const &preText, int index, SuperCube<T, Dim, Div, Depth> const &s) {
-    cout << "At " << preText << " = " << index << ": " << s.getNrCubes() << "; " << s.getVolume().transpose()
-         << "; " << s.getSubCubeVolume().transpose() << "; " << s.getCubeMinCorner().transpose() << "; "
+    cout << "At " << preText << " = " << index << ": " << s.getNrCubes() << "; " << s.getVolume().transpose() << "; "
+         << s.getSubCubeVolume().transpose() << "; " << s.getCubeMinCorner().transpose() << "; "
          << s.getCubeMaxCorner().transpose() << endl;
 }
 

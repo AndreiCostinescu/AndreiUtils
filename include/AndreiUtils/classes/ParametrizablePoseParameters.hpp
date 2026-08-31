@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 08.12.23.
 //
@@ -19,14 +33,7 @@ namespace AndreiUtils {
     };
 
     namespace PoseParameterType {
-        enum PoseParameterTypeEnum {
-            EMPTY,
-            VALUE,
-            TRANSLATION,
-            ORIENTATION,
-            POSE,
-            EXTERNAL_POSE
-        };
+        enum PoseParameterTypeEnum { EMPTY, VALUE, TRANSLATION, ORIENTATION, POSE, EXTERNAL_POSE };
     }
 
     namespace OperationType {
@@ -66,10 +73,10 @@ namespace AndreiUtils {
 
         OperationTypeEnum convertStringToOperationType(std::string const &operationTypeEnum);
 
-        PoseParameterType::PoseParameterTypeEnum operationTypePropagation(
-                OperationTypeEnum const &operation,
-                std::vector<PoseParameterType::PoseParameterTypeEnum> const &inputTypes);
-    }
+        PoseParameterType::PoseParameterTypeEnum
+        operationTypePropagation(OperationTypeEnum const &operation,
+                                 std::vector<PoseParameterType::PoseParameterTypeEnum> const &inputTypes);
+    } // namespace OperationType
 
     template<typename T>
     class PoseParameter {
@@ -77,22 +84,19 @@ namespace AndreiUtils {
         PoseParameter() : parameterType(PoseParameterType::EMPTY) {}
 
         explicit PoseParameter(T val) :
-                val(std::make_shared<T>(std::move(val))), parameterType(PoseParameterType::VALUE) {}
+            val(std::make_shared<T>(std::move(val))), parameterType(PoseParameterType::VALUE) {}
 
         explicit PoseParameter(Eigen::Matrix<T, 3, 1> t) :
-                t(std::make_shared<Eigen::Matrix<T, 3, 1>>(std::move(t))),
-                parameterType(PoseParameterType::TRANSLATION) {}
+            t(std::make_shared<Eigen::Matrix<T, 3, 1>>(std::move(t))), parameterType(PoseParameterType::TRANSLATION) {}
 
         explicit PoseParameter(Eigen::Quaternion<T> q) :
-                q(std::make_shared<Eigen::Quaternion<T>>(std::move(q))),
-                parameterType(PoseParameterType::ORIENTATION) {}
+            q(std::make_shared<Eigen::Quaternion<T>>(std::move(q))), parameterType(PoseParameterType::ORIENTATION) {}
 
         explicit PoseParameter(AndreiUtils::DualQuaternion<T> p) :
-                p(std::make_shared<AndreiUtils::DualQuaternion<T>>(std::move(p))),
-                parameterType(PoseParameterType::POSE) {}
+            p(std::make_shared<AndreiUtils::DualQuaternion<T>>(std::move(p))), parameterType(PoseParameterType::POSE) {}
 
         explicit PoseParameter(std::shared_ptr<ExternalPoseInterface<T>> ref) :
-                externalPose(std::move(ref)), parameterType(PoseParameterType::EXTERNAL_POSE) {}
+            externalPose(std::move(ref)), parameterType(PoseParameterType::EXTERNAL_POSE) {}
 
         [[nodiscard]] AndreiUtils::DualQuaternion<T> getPoseFromPoseData() const {
             if (this->parameterType == PoseParameterType::POSE) {
@@ -100,32 +104,28 @@ namespace AndreiUtils {
             } else if (this->parameterType == PoseParameterType::EXTERNAL_POSE) {
                 return this->externalPose->getPose();
             }
-            throw std::runtime_error(
-                    "Can't retrieve pose from this parameter type: " + std::to_string(this->parameterType));
+            throw std::runtime_error("Can't retrieve pose from this parameter type: " +
+                                     std::to_string(this->parameterType));
         }
 
         // value functions
 
-        [[nodiscard]] T getValue() const {
-            return this->getValue(nullptr, "");
-        }
+        [[nodiscard]] T getValue() const { return this->getValue(nullptr, ""); }
 
-        [[nodiscard]] PoseParameter<T> getValueParameter() const {
-            return this->getValueParameter(nullptr, "");
-        }
+        [[nodiscard]] PoseParameter<T> getValueParameter() const { return this->getValueParameter(nullptr, ""); }
 
-        [[nodiscard]] T getValue(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] T getValue(std::map<std::string, PoseParameter<T>> &cache,
+                                 std::string const &parameterName) const {
             return this->getValue(&cache, parameterName);
         }
 
-        [[nodiscard]] PoseParameter<T> getValueParameter(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] PoseParameter<T> getValueParameter(std::map<std::string, PoseParameter<T>> &cache,
+                                                         std::string const &parameterName) const {
             return this->getValueParameter(&cache, parameterName);
         }
 
-        [[nodiscard]] T getValue(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] T getValue(std::map<std::string, PoseParameter<T>> *cache,
+                                 std::string const &parameterName) const {
             PoseParameter<T> *cachedParameter;
             std::string cacheEntry = parameterName + " -> v";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
@@ -133,8 +133,8 @@ namespace AndreiUtils {
                 return *cachedParameter->val;
             }
             if (this->parameterType != PoseParameterType::VALUE) {
-                throw std::runtime_error(
-                        "Can not return value from a " + std::to_string(this->parameterType) + " parameter type!");
+                throw std::runtime_error("Can not return value from a " + std::to_string(this->parameterType) +
+                                         " parameter type!");
             }
             if (cache != nullptr) {
                 mapEmplace(*cache, cacheEntry, *this->val);
@@ -142,23 +142,21 @@ namespace AndreiUtils {
             return *this->val;
         }
 
-        [[nodiscard]] PoseParameter<T> getValueParameter(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] PoseParameter<T> getValueParameter(std::map<std::string, PoseParameter<T>> *cache,
+                                                         std::string const &parameterName) const {
             return PoseParameter<T>(this->getValue(cache, parameterName));
         }
 
         // translation functions
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation() const {
-            return this->getTranslation(nullptr, "");
-        }
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation() const { return this->getTranslation(nullptr, ""); }
 
         [[nodiscard]] PoseParameter<T> getTranslationParameter() const {
             return this->getTranslationParameter(nullptr, "");
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation(std::map<std::string, PoseParameter<T>> &cache,
+                                                            std::string const &parameterName) const {
             return this->getTranslation(&cache, parameterName);
         }
 
@@ -167,8 +165,8 @@ namespace AndreiUtils {
             return this->getTranslationParameter(&cache, parameterName);
         }
 
-        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] Eigen::Matrix<T, 3, 1> getTranslation(std::map<std::string, PoseParameter<T>> *cache,
+                                                            std::string const &parameterName) const {
             PoseParameter<T> *cachedParameter;
             std::string cacheEntry = parameterName + " -> t";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
@@ -204,16 +202,14 @@ namespace AndreiUtils {
 
         // orientation functions
 
-        [[nodiscard]] Eigen::Quaternion<T> getOrientation() const {
-            return this->getOrientation(nullptr, "");
-        }
+        [[nodiscard]] Eigen::Quaternion<T> getOrientation() const { return this->getOrientation(nullptr, ""); }
 
         [[nodiscard]] PoseParameter<T> getOrientationParameter() const {
             return this->getOrientationParameter(nullptr, "");
         }
 
-        [[nodiscard]] Eigen::Quaternion<T> getOrientation(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] Eigen::Quaternion<T> getOrientation(std::map<std::string, PoseParameter<T>> &cache,
+                                                          std::string const &parameterName) const {
             return this->getOrientation(&cache, parameterName);
         }
 
@@ -222,8 +218,8 @@ namespace AndreiUtils {
             return this->getOrientationParameter(&cache, parameterName);
         }
 
-        [[nodiscard]] Eigen::Quaternion<T> getOrientation(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] Eigen::Quaternion<T> getOrientation(std::map<std::string, PoseParameter<T>> *cache,
+                                                          std::string const &parameterName) const {
             PoseParameter<T> *cachedParameter;
             std::string cacheEntry = parameterName + " -> q";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
@@ -259,26 +255,22 @@ namespace AndreiUtils {
 
         // pose functions
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose() const {
-            return this->getPose(nullptr, "");
-        }
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose() const { return this->getPose(nullptr, ""); }
 
-        [[nodiscard]] PoseParameter<T> getPoseParameter() const {
-            return this->getPoseParameter(nullptr, "");
-        }
+        [[nodiscard]] PoseParameter<T> getPoseParameter() const { return this->getPoseParameter(nullptr, ""); }
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose(std::map<std::string, PoseParameter<T>> &cache,
+                                                             std::string const &parameterName) const {
             return this->getPose(&cache, parameterName);
         }
 
-        [[nodiscard]] PoseParameter<T> getPoseParameter(
-                std::map<std::string, PoseParameter<T>> &cache, std::string const &parameterName) const {
+        [[nodiscard]] PoseParameter<T> getPoseParameter(std::map<std::string, PoseParameter<T>> &cache,
+                                                        std::string const &parameterName) const {
             return this->getPoseParameter(&cache, parameterName);
         }
 
-        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] AndreiUtils::DualQuaternion<T> getPose(std::map<std::string, PoseParameter<T>> *cache,
+                                                             std::string const &parameterName) const {
             PoseParameter<T> *cachedParameter;
             std::string cacheEntry = parameterName + " -> p";
             if (cache != nullptr && mapGetIfContains(*cache, cacheEntry, cachedParameter)) {
@@ -287,8 +279,8 @@ namespace AndreiUtils {
             }
             if (this->parameterType != PoseParameterType::POSE &&
                 this->parameterType != PoseParameterType::EXTERNAL_POSE) {
-                throw std::runtime_error(
-                        "Can not return pose from a " + std::to_string(this->parameterType) + " parameter type!");
+                throw std::runtime_error("Can not return pose from a " + std::to_string(this->parameterType) +
+                                         " parameter type!");
             }
 
             auto pose = this->getPoseFromPoseData();
@@ -298,18 +290,14 @@ namespace AndreiUtils {
             return pose;
         }
 
-        [[nodiscard]] PoseParameter<T> getPoseParameter(
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &parameterName) const {
+        [[nodiscard]] PoseParameter<T> getPoseParameter(std::map<std::string, PoseParameter<T>> *cache,
+                                                        std::string const &parameterName) const {
             return PoseParameter<T>(this->getPose(cache, parameterName));
         }
 
-        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum getParameterType() const {
-            return this->parameterType;
-        }
+        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum getParameterType() const { return this->parameterType; }
 
-        [[nodiscard]] bool isValue() const {
-            return this->parameterType == PoseParameterType::VALUE;
-        }
+        [[nodiscard]] bool isValue() const { return this->parameterType == PoseParameterType::VALUE; }
 
     protected:
         PoseParameterType::PoseParameterTypeEnum parameterType;
@@ -323,9 +311,10 @@ namespace AndreiUtils {
     template<typename T>
     class ParameterOperation {
         using OperationType = OperationType::OperationTypeEnum;
+
     public:
-        static PoseParameterType::PoseParameterTypeEnum operationTypePropagation(
-                OperationType const &operation, std::vector<PoseParameter<T>> const &inputs) {
+        static PoseParameterType::PoseParameterTypeEnum
+        operationTypePropagation(OperationType const &operation, std::vector<PoseParameter<T>> const &inputs) {
             std::vector<PoseParameterType::PoseParameterTypeEnum> inputTypes(inputs.size());
             for (size_t i = 0; i < inputs.size(); ++i) {
                 inputTypes[i] = inputs[i].getParameterType();
@@ -333,18 +322,17 @@ namespace AndreiUtils {
             return AndreiUtils::OperationType::operationTypePropagation(operation, inputTypes);
         }
 
-        PoseParameter<T> performOperations(
-                std::vector<PoseParameter<T>> const &inputs) const {
+        PoseParameter<T> performOperations(std::vector<PoseParameter<T>> const &inputs) const {
             return this->performOperations(inputs, nullptr);
         }
 
-        PoseParameter<T> performOperations(
-                std::vector<PoseParameter<T>> const &inputs, std::map<std::string, PoseParameter<T>> &cache) const {
+        PoseParameter<T> performOperations(std::vector<PoseParameter<T>> const &inputs,
+                                           std::map<std::string, PoseParameter<T>> &cache) const {
             return this->performOperations(inputs, &cache);
         }
 
-        PoseParameter<T> performOperations(
-                std::vector<PoseParameter<T>> const &inputs, std::map<std::string, PoseParameter<T>> *cache) const {
+        PoseParameter<T> performOperations(std::vector<PoseParameter<T>> const &inputs,
+                                           std::map<std::string, PoseParameter<T>> *cache) const {
             if (this->operations.empty()) {
                 return {};
             }
@@ -372,24 +360,24 @@ namespace AndreiUtils {
                                                      std::to_string(parameterIndex) + " but the result size is " +
                                                      std::to_string(results.size()));
                         }
-                        operationInputs.emplace_back(*(results.end() + parameterIndex));  // parameterIndex <= -1
+                        operationInputs.emplace_back(*(results.end() + parameterIndex)); // parameterIndex <= -1
                         operationInputNames.emplace_back(*(resultNames.end() + parameterIndex));
                     }
                     parameterCachePrepend += "(" + operationInputNames.back() + ")";
                 }
-                resultNames.emplace_back(
-                        parameterCachePrepend + " -> " +
-                        AndreiUtils::OperationType::convertOperationTypeToString(opData.first));
-                results.emplace_back(ParameterOperation::doOperation(
-                        opData.first, operationInputs, cache, resultNames.back(), operationInputNames));
+                resultNames.emplace_back(parameterCachePrepend + " -> " +
+                                         AndreiUtils::OperationType::convertOperationTypeToString(opData.first));
+                results.emplace_back(ParameterOperation::doOperation(opData.first, operationInputs, cache,
+                                                                     resultNames.back(), operationInputNames));
             }
             return results.back();
         }
 
-        static PoseParameter<T> doOperation(
-                OperationType const &operationType, std::vector<PoseParameter<T>> const &inputs,
-                std::map<std::string, PoseParameter<T>> *cache, std::string const &operationCacheEntry,
-                std::vector<std::string> inputNames) {
+        static PoseParameter<T> doOperation(OperationType const &operationType,
+                                            std::vector<PoseParameter<T>> const &inputs,
+                                            std::map<std::string, PoseParameter<T>> *cache,
+                                            std::string const &operationCacheEntry,
+                                            std::vector<std::string> inputNames) {
             PoseParameter<T> *cachedParameter;
             if (cache != nullptr && mapGetIfContains(*cache, operationCacheEntry, cachedParameter)) {
                 return *cachedParameter;
@@ -400,7 +388,7 @@ namespace AndreiUtils {
                 auto const &inputParam = inputs[0];
                 auto const &inputParamName = inputNames[0];
 
-                return inputParam.getValueParameter(cache, inputParamName);  // caching is done inside this function! ;)
+                return inputParam.getValueParameter(cache, inputParamName); // caching is done inside this function! ;)
             }
             if (operationType > OperationType::RESERVED_TRANSLATION_ENTRY_START &&
                 operationType < OperationType::RESERVED_TRANSLATION_ENTRY_END) {
@@ -411,7 +399,7 @@ namespace AndreiUtils {
                 auto t = inputParam.getTranslation(cache, inputParamName);
                 auto res = ParameterOperation::translationEntryGetter(t, operationType);
                 if (cache != nullptr) {
-                    return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                    return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                 }
                 return PoseParameter<T>(res);
             }
@@ -429,14 +417,14 @@ namespace AndreiUtils {
                     operationType < OperationType::RESERVED_ORIENTATION_AXIS_END) {
                     auto res = ParameterOperation::orientationAxisGetter(q, operationType);
                     if (cache != nullptr) {
-                        return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                        return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                     }
                     return PoseParameter<T>(res);
                 }
 
                 auto res = ParameterOperation::orientationEntryGetter(q, operationType);
                 if (cache != nullptr) {
-                    return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                    return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                 }
                 return PoseParameter<T>(res);
             }
@@ -453,7 +441,7 @@ namespace AndreiUtils {
                     auto t2 = inputParam2.getTranslation(cache, inputParam2Name);
                     Eigen::Matrix<T, 3, 1> res = t2 - t1;
                     if (cache != nullptr) {
-                        return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                        return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                     }
                     return PoseParameter<T>(res);
                 }
@@ -463,7 +451,7 @@ namespace AndreiUtils {
                     auto q2 = inputParam2.getOrientation(cache, inputParam2Name);
                     Eigen::Quaternion<T> res = q1.inverse() * q2;
                     if (cache != nullptr) {
-                        return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                        return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                     }
                     return PoseParameter<T>(res);
                 }
@@ -473,7 +461,7 @@ namespace AndreiUtils {
                 auto p2 = inputParam2.getPose(cache, inputParam2Name);
                 AndreiUtils::Posed res = p1.inverse() * p2;
                 if (cache != nullptr) {
-                    return mapEmplace(*cache, operationCacheEntry, res)->second;  // cache result!
+                    return mapEmplace(*cache, operationCacheEntry, res)->second; // cache result!
                 }
                 return PoseParameter<T>(res);
             }
@@ -493,8 +481,8 @@ namespace AndreiUtils {
             }
         }
 
-        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum propagateOperationType(
-                std::vector<PoseParameter<T>> inputParameters) const {
+        [[nodiscard]] PoseParameterType::PoseParameterTypeEnum
+        propagateOperationType(std::vector<PoseParameter<T>> inputParameters) const {
             std::vector<PoseParameterType::PoseParameterTypeEnum> results;
             for (auto const &opData: this->operations) {
                 std::vector<PoseParameterType::PoseParameterTypeEnum> inputTypes;
@@ -512,7 +500,7 @@ namespace AndreiUtils {
                                                      std::to_string(parameterIndex) + " but the result size is " +
                                                      std::to_string(results.size()));
                         }
-                        inputTypes.emplace_back(*(results.end() + parameterIndex));  // parameterIndex <= -1
+                        inputTypes.emplace_back(*(results.end() + parameterIndex)); // parameterIndex <= -1
                     }
                 }
                 results.emplace_back(AndreiUtils::OperationType::operationTypePropagation(opData.first, inputTypes));
@@ -537,29 +525,36 @@ namespace AndreiUtils {
             this->operations.emplace_back(operation, parameterIndices);
         }
 
-        [[nodiscard]] static T translationEntryGetter(
-                Eigen::Matrix<T, 3, 1> const &t, OperationType const &operationType) {
+        [[nodiscard]] static T translationEntryGetter(Eigen::Matrix<T, 3, 1> const &t,
+                                                      OperationType const &operationType) {
             assert(operationType > OperationType::RESERVED_TRANSLATION_ENTRY_START &&
                    operationType < OperationType::RESERVED_TRANSLATION_ENTRY_END);
-            return operationType == OperationType::TRANSLATION_X ? t.x() :
-                   (operationType == OperationType::TRANSLATION_Y ? t.y() :
-                    (operationType == OperationType::TRANSLATION_Z ? t.z() : t.norm()));
+            return operationType == OperationType::TRANSLATION_X
+                           ? t.x()
+                           : (operationType == OperationType::TRANSLATION_Y
+                                      ? t.y()
+                                      : (operationType == OperationType::TRANSLATION_Z ? t.z() : t.norm()));
         }
 
-        [[nodiscard]] static T orientationEntryGetter(
-                Eigen::Quaternion<T> const &q, OperationType const &operationType) {
+        [[nodiscard]] static T orientationEntryGetter(Eigen::Quaternion<T> const &q,
+                                                      OperationType const &operationType) {
             assert(operationType > OperationType::RESERVED_ORIENTATION_ENTRY_START &&
                    operationType < OperationType::RESERVED_ORIENTATION_ENTRY_END);
-            return operationType == OperationType::ORIENTATION_W ? q.w() :
-                   (operationType == OperationType::ORIENTATION_X ? q.x() :
-                    (operationType == OperationType::ORIENTATION_Y ? q.y() :
-                     (operationType == OperationType::ORIENTATION_Z ? q.z() :
-                      (operationType == OperationType::ORIENTATION_NORM ?
-                       q.norm() : Eigen::AngleAxis<T>(q).angle()))));
+            return operationType == OperationType::ORIENTATION_W
+                           ? q.w()
+                           : (operationType == OperationType::ORIENTATION_X
+                                      ? q.x()
+                                      : (operationType == OperationType::ORIENTATION_Y
+                                                 ? q.y()
+                                                 : (operationType == OperationType::ORIENTATION_Z
+                                                            ? q.z()
+                                                            : (operationType == OperationType::ORIENTATION_NORM
+                                                                       ? q.norm()
+                                                                       : Eigen::AngleAxis<T>(q).angle()))));
         }
 
-        [[nodiscard]] static Eigen::Matrix<T, 3, 1> orientationAxisGetter(
-                Eigen::Quaternion<T> const &q, OperationType const &operationType) {
+        [[nodiscard]] static Eigen::Matrix<T, 3, 1> orientationAxisGetter(Eigen::Quaternion<T> const &q,
+                                                                          OperationType const &operationType) {
             assert(operationType > OperationType::RESERVED_ORIENTATION_AXIS_START &&
                    operationType < OperationType::RESERVED_ORIENTATION_AXIS_END);
             if (operationType == OperationType::ORIENTATION_AXIS_X) {
@@ -578,18 +573,19 @@ namespace AndreiUtils {
     template<typename T>
     class PoseParameters {
         using PoseParameterType = PoseParameterType::PoseParameterTypeEnum;
-        using ExternalPoseCreator = std::function<bool(nlohmann::json const &,
-                                                       std::shared_ptr<ExternalPoseInterface<T>> &)>;
+        using ExternalPoseCreator =
+                std::function<bool(nlohmann::json const &, std::shared_ptr<ExternalPoseInterface<T>> &)>;
+
     public:
         PoseParameters() = default;
 
         explicit PoseParameters(nlohmann::json const &parametersConfig) : PoseParameters(parametersConfig, {}) {}
 
         PoseParameters(nlohmann::json const &parametersConfig, ExternalPoseCreator externalPoseCreator) :
-                outputTransformation() {
+            outputTransformation() {
             if (parametersConfig.contains("parameterData")) {
-                auto parameterOperations = parametersConfig.at(
-                        "parameterData").get<std::map<std::string, nlohmann::json>>();
+                auto parameterOperations =
+                        parametersConfig.at("parameterData").get<std::map<std::string, nlohmann::json>>();
                 for (auto const &parameterOp: parameterOperations) {
                     mapEmplace(this->outputTransformation, parameterOp.first, parameterOp.second);
                 }
@@ -643,9 +639,9 @@ namespace AndreiUtils {
             for (auto const &parameterOp: this->outputTransformation) {
                 PoseParameterType resultType = parameterOp.second.propagateOperationType(this->inputParameters);
                 if (resultType != PoseParameterType::VALUE) {
-                    throw std::runtime_error(
-                            "Operation sequence for " + parameterOp.first + " is mis-formed; " +
-                            "end-result of the sequence is not a VALUE, but a " + std::to_string(resultType));
+                    throw std::runtime_error("Operation sequence for " + parameterOp.first + " is mis-formed; " +
+                                             "end-result of the sequence is not a VALUE, but a " +
+                                             std::to_string(resultType));
                 }
             }
         }
@@ -662,7 +658,8 @@ namespace AndreiUtils {
                 T parameterValue = result.getValue();
                 /*
                 cout << "Param " << paramData.first << " from "
-                     << ParameterOperation::getCacheEntryString(paramData.second.operation) << ": " << parameterValue << endl;
+                     << ParameterOperation::getCacheEntryString(paramData.second.operation) << ": " << parameterValue <<
+                endl;
                 //*/
                 mapEmplace(parameterAssignment, paramData.first, parameterValue);
             }
@@ -676,5 +673,4 @@ namespace AndreiUtils {
 
     using ParametrizablePosefParameters = PoseParameters<float>;
     using ParametrizablePosedParameters = PoseParameters<double>;
-}
-
+} // namespace AndreiUtils

@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 22.03.23.
 //
 
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace std;
 
@@ -58,8 +72,8 @@ public:
 
     void printData(bool passOn) const override {
         if (passOn) {
-            this->A0::printData(false);  // NOLINT(bugprone-parent-virtual-call)
-            this->A::printData(false);  // NOLINT(bugprone-parent-virtual-call)
+            this->A0::printData(false); // NOLINT(bugprone-parent-virtual-call)
+            this->A::printData(false); // NOLINT(bugprone-parent-virtual-call)
             this->B::printData(false);
             this->C::printData(false);
         }
@@ -69,56 +83,40 @@ public:
 
 class TestBase {
 public:
-    explicit TestBase(std::string name) : name(std::move(name)) {
-        cout << "In Base-constructor" << endl;
-    }
+    explicit TestBase(std::string name) : name(std::move(name)) { cout << "In Base-constructor" << endl; }
 
     std::string name;
 };
 
-class TestA : public TestBase{
+class TestA : public TestBase {
 public:
-    explicit TestA(int x) : TestBase("A"), x(x) {
-        cout << "In A-constructor" << endl;
-    }
+    explicit TestA(int x) : TestBase("A"), x(x) { cout << "In A-constructor" << endl; }
 
-    TestA(std::string name, int x) : TestBase(std::move(name)), x(x) {
-        cout << "In A-constructor2" << endl;
-    }
+    TestA(std::string name, int x) : TestBase(std::move(name)), x(x) { cout << "In A-constructor2" << endl; }
 
-    void printName() const {
-        cout << "This is class TestA: with name \"" << this->name << "\"" << endl;
-    }
+    void printName() const { cout << "This is class TestA: with name \"" << this->name << "\"" << endl; }
 
     int x = 0;
 };
 
 class TestB : public virtual TestA {
 public:
-    explicit TestB(int x) : TestA(x + 1) {
-        cout << "In B-constructor" << endl;
-    }
+    explicit TestB(int x) : TestA(x + 1) { cout << "In B-constructor" << endl; }
 };
 
 class TestC : public virtual TestA {
 public:
-    explicit TestC(int x) : TestA(x + 2) {
-        cout << "In C-constructor" << endl;
-    }
+    explicit TestC(int x) : TestA(x + 2) { cout << "In C-constructor" << endl; }
 };
 
 class TestD : public TestC {
 public:
-    explicit TestD(std::string name) : TestA(std::move(name), 4), TestC(4) {
-        cout << "In D-constructor" << endl;
-    }
+    explicit TestD(std::string name) : TestA(std::move(name), 4), TestC(4) { cout << "In D-constructor" << endl; }
 };
 
 class TestE : public TestB, TestD {
 public:
-    TestE() : TestD("E"), TestB(5), TestA(5) {
-        cout << "In E-constructor" << endl;
-    }
+    TestE() : TestD("E"), TestB(5), TestA(5) { cout << "In E-constructor" << endl; }
 };
 
 TEST(ClassTest, TestVirtualInheritance) {
@@ -141,17 +139,16 @@ TEST(ClassTest, TestConstructorAndPrintData) {
 
     std::string output = outputBuffer.str();
 
-    std::string expected_output =
-            "In constructor of A0\n"
-            "In constructor of A\n"
-            "In constructor of B: 10\n"
-            "In constructor of C: 10\n"
-            "In constructor of D\n"
-            "Data of A0: 10\n"
-            "Data of A: 10\n"
-            "Data of B: 10\n"
-            "Data of C: 10\n"
-            "Data of D: 10\n";
+    std::string expected_output = "In constructor of A0\n"
+                                  "In constructor of A\n"
+                                  "In constructor of B: 10\n"
+                                  "In constructor of C: 10\n"
+                                  "In constructor of D\n"
+                                  "Data of A0: 10\n"
+                                  "Data of A: 10\n"
+                                  "Data of B: 10\n"
+                                  "Data of C: 10\n"
+                                  "Data of D: 10\n";
 
     EXPECT_EQ(output, expected_output);
 }

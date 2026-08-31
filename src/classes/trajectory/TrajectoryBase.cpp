@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.08.23.
 //
@@ -16,25 +30,24 @@ TrajectoryBase::TrajectoryBase(int size) : size(size), times(), timesData(make_s
     }
 }
 
-TrajectoryBase::TrajectoryBase(vector<double> const &times) : timesData(make_shared<vector<double>>(times)),
-                                                              size(times.size()) {
+TrajectoryBase::TrajectoryBase(vector<double> const &times) :
+    timesData(make_shared<vector<double>>(times)), size(times.size()) {
     this->times = this->timesData.get();
 }
 
 TrajectoryBase::TrajectoryBase(vector<double> &&times) :
-        timesData(make_shared<vector<double>>(std::move(times))), size() {
+    timesData(make_shared<vector<double>>(std::move(times))), size() {
     this->times = this->timesData.get();
     this->size = this->times->size();
 }
 
-TrajectoryBase::TrajectoryBase(std::vector<double> *times) :
-        timesData(), times(times), size(times->size()) {}
+TrajectoryBase::TrajectoryBase(std::vector<double> *times) : timesData(), times(times), size(times->size()) {}
 
 TrajectoryBase::TrajectoryBase(TrajectoryBase const &other) : timesData(), size(other.size), times() {
     TrajectoryBase::updatePointers(other);
 }
 
-TrajectoryBase::TrajectoryBase(TrajectoryBase &&other) noexcept: timesData(), size(std::move(other.size)), times() {
+TrajectoryBase::TrajectoryBase(TrajectoryBase &&other) noexcept : timesData(), size(std::move(other.size)), times() {
     TrajectoryBase::updatePointers(std::move(other));
 }
 
@@ -56,25 +69,15 @@ TrajectoryBase &TrajectoryBase::operator=(TrajectoryBase &&other) noexcept {
     return *this;
 }
 
-std::shared_ptr<TrajectoryBase> TrajectoryBase::clone() const {
-    return make_shared<TrajectoryBase>(*this);
-}
+std::shared_ptr<TrajectoryBase> TrajectoryBase::clone() const { return make_shared<TrajectoryBase>(*this); }
 
-void TrajectoryBase::reserveNewSize(size_t newSize) {
-    this->times->reserve(newSize);
-}
+void TrajectoryBase::reserveNewSize(size_t newSize) { this->times->reserve(newSize); }
 
-std::vector<double> const &TrajectoryBase::getTimes() const {
-    return *this->times;
-}
+std::vector<double> const &TrajectoryBase::getTimes() const { return *this->times; }
 
-std::vector<double> &TrajectoryBase::getTimes() {
-    return *this->times;
-}
+std::vector<double> &TrajectoryBase::getTimes() { return *this->times; }
 
-size_t const &TrajectoryBase::getSize() const {
-    return this->size;
-}
+size_t const &TrajectoryBase::getSize() const { return this->size; }
 
 void TrajectoryBase::addNewData(vector<double> const &newTimes) {
     if (this->size + newTimes.size() > this->times->size()) {

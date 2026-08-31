@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 25.11.22.
 //
 
 #include <AndreiUtils/utilsJsonEigen.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace Eigen;
@@ -117,7 +131,7 @@ TEST(EigenJsonTest, testEigenFromVectorDeserialization) {
 
     auto x2 = j.get<Eigen::Matrix<double, 3, 2>>();
     Eigen::Matrix<double, 3, 2> expected2;
-    expected2 << 0, 0.5, 1 ,1.5, 2, 2.5;
+    expected2 << 0, 0.5, 1, 1.5, 2, 2.5;
     EXPECT_EQ(x2, expected2);
 
     auto x3 = j.get<Eigen::Matrix<int, 2, 3>>();
@@ -127,7 +141,7 @@ TEST(EigenJsonTest, testEigenFromVectorDeserialization) {
 
     auto x4 = j.get<Eigen::Matrix<int, 3, 2>>();
     Eigen::Matrix<int, 3, 2> expected4;
-    expected4 << 0,0, 1, 1, 2, 2;
+    expected4 << 0, 0, 1, 1, 2, 2;
     EXPECT_EQ(x4, expected4);
 
     auto x5 = j.get<Eigen::MatrixXd>();
@@ -147,7 +161,7 @@ TEST(EigenJsonTest, testEigenFromVectorDeserialization) {
 
     auto x8 = j.get<Eigen::Matrix<double, -1, 3>>();
     Eigen::Matrix<double, 2, 3> expected8;
-    expected8 << 0, 1, 2,0.5 ,1.5 ,2.5;
+    expected8 << 0, 1, 2, 0.5, 1.5, 2.5;
     EXPECT_EQ(x8, expected8);
 
     auto x9 = j.get<Eigen::Matrix<double, 3, -1>>();
@@ -169,5 +183,3 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
-

@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu (andrei.costinescu@tum.de) on 11.05.2021.
 //
@@ -15,16 +29,14 @@ namespace AndreiUtils {
     template<class T>
     class CircularArray {
     public:
-        explicit CircularArray(int initialSize = 0) : dataSize(initialSize), data(), startIndex(0), endIndex(0),
-                                                      dataLength(0) {
+        explicit CircularArray(int initialSize = 0) :
+            dataSize(initialSize), data(), startIndex(0), endIndex(0), dataLength(0) {
             if (this->dataSize > 0) {
                 this->data = this->createDataContainer(this->dataSize);
             }
         }
 
-        ~CircularArray() {
-            this->deleteDataContainer();
-        }
+        ~CircularArray() { this->deleteDataContainer(); }
 
         void reserve(int size) {
             if (size > this->dataSize) {
@@ -34,13 +46,9 @@ namespace AndreiUtils {
             }
         }
 
-        [[nodiscard]] bool empty() const {
-            return this->dataLength == 0;
-        }
+        [[nodiscard]] bool empty() const { return this->dataLength == 0; }
 
-        [[nodiscard]] int size() const {
-            return this->dataLength;
-        }
+        [[nodiscard]] int size() const { return this->dataLength; }
 
         void pushBack(T element) {
             if (this->dataLength >= this->dataSize) {
@@ -61,13 +69,9 @@ namespace AndreiUtils {
             return element;
         }
 
-        [[nodiscard]] T get(int i) const {
-            return *this->getPtr(i);
-        }
+        [[nodiscard]] T get(int i) const { return *this->getPtr(i); }
 
-        [[nodiscard]] T operator[](int i) const {
-            return this->get(i);
-        }
+        [[nodiscard]] T operator[](int i) const { return this->get(i); }
 
         T &operator()(int &i) {
             i %= this->dataSize;
@@ -115,6 +119,6 @@ namespace AndreiUtils {
         T **data;
         int dataSize, startIndex, endIndex, dataLength;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_CLASSES_CIRCULARARRAY_HPP
+#endif // ANDREIUTILS_CLASSES_CIRCULARARRAY_HPP

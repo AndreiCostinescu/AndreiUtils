@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20.11.23.
 //
@@ -16,9 +30,7 @@ namespace AndreiUtils {
     template<class T>
     class Interval<T, typename std::enable_if<AndreiUtils::is_numeric<T>::value>::type> {
     public:
-        [[nodiscard]] static Interval<T> createEmpty() {
-            return Interval<T>();
-        }
+        [[nodiscard]] static Interval<T> createEmpty() { return Interval<T>(); }
 
         [[nodiscard]] static Interval<T> createOnlyUpperBound(T maxValue) {
             return Interval<T>(std::numeric_limits<T>::min(), std::move(maxValue), true, false);
@@ -45,12 +57,13 @@ namespace AndreiUtils {
 
         explicit Interval(T minValue, T maxValue) : Interval(std::move(minValue), std::move(maxValue), false, false) {}
 
-        Interval(Interval const &other) : empty(other.empty), minValue(other.minValue), maxValue(other.maxValue),
-                                          infLower(other.infLower), infUpper(other.infUpper) {}
+        Interval(Interval const &other) :
+            empty(other.empty), minValue(other.minValue), maxValue(other.maxValue), infLower(other.infLower),
+            infUpper(other.infUpper) {}
 
-        Interval(Interval &&other) noexcept: empty(other.empty), minValue(std::move(other.minValue)),
-                                             maxValue(std::move(other.maxValue)), infLower(other.infLower),
-                                             infUpper(other.infUpper) {}
+        Interval(Interval &&other) noexcept :
+            empty(other.empty), minValue(std::move(other.minValue)), maxValue(std::move(other.maxValue)),
+            infLower(other.infLower), infUpper(other.infUpper) {}
 
         virtual ~Interval() = default;
 
@@ -93,9 +106,7 @@ namespace AndreiUtils {
                    AndreiUtils::equal(this->maxValue, other.maxValue);
         }
 
-        bool operator!=(Interval const &other) noexcept {
-            return !this->operator==(other);
-        }
+        bool operator!=(Interval const &other) noexcept { return !this->operator==(other); }
 
         [[nodiscard]] RandomNumberGenerator<T> createSampler() const {
             if (this->empty) {
@@ -130,17 +141,11 @@ namespace AndreiUtils {
                             AndreiUtils::fastMin(this->maxValue, other.maxValue));
         }
 
-        [[nodiscard]] bool isEmpty() const {
-            return this->empty;
-        }
+        [[nodiscard]] bool isEmpty() const { return this->empty; }
 
-        [[nodiscard]] bool hasInfLowerBound() const {
-            return this->infLower;
-        }
+        [[nodiscard]] bool hasInfLowerBound() const { return this->infLower; }
 
-        [[nodiscard]] bool hasInfUpperBound() const {
-            return this->infUpper;
-        }
+        [[nodiscard]] bool hasInfUpperBound() const { return this->infUpper; }
 
         // no T const & as return type because of the inf-return
         [[nodiscard]] T getMin() const {
@@ -175,21 +180,23 @@ namespace AndreiUtils {
         }
 
         [[nodiscard]] std::string toString() const {
-            return (this->isEmpty() ? "[]" : "[" + std::to_string(this->getMin()) + ", " +
-                                             std::to_string(this->getMax()) + "]");
+            return (this->isEmpty()
+                            ? "[]"
+                            : "[" + std::to_string(this->getMin()) + ", " + std::to_string(this->getMax()) + "]");
         }
 
     protected:
         Interval(T minValue, T maxValue, bool infLower, bool infUpper) :
-                empty(AndreiUtils::greater<T>(this->minValue, this->maxValue)), minValue(std::move(minValue)),
-                maxValue(std::move(maxValue)), infLower(infLower), infUpper(infUpper) {}
+            empty(AndreiUtils::greater<T>(this->minValue, this->maxValue)), minValue(std::move(minValue)),
+            maxValue(std::move(maxValue)), infLower(infLower), infUpper(infUpper) {}
 
         double minValue, maxValue;
-        bool empty;  // empty is initialized after min- and maxValue; thus the constructor will assign the correct value to the empty field
+        bool empty; // empty is initialized after min- and maxValue; thus the constructor will assign the correct value
+                    // to the empty field
         bool infLower, infUpper;
     };
 
     using IntervalF = Interval<float>;
     using IntervalD = Interval<double>;
     using IntervalI = Interval<int>;
-}
+} // namespace AndreiUtils

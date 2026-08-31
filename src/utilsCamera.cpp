@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 31-Mar-22.
 //
 
-#include <AndreiUtils/utilsCamera.h>
 #include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsCamera.h>
 #include <cassert>
 #include <cfloat>
 #include <cmath>
@@ -13,7 +27,7 @@ using namespace std;
 
 // from librealsense
 void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], CameraIntrinsicParameters const &intrinsics,
-                                          float const(&pixel)[2], float const &depth) {
+                                          float const (&pixel)[2], float const &depth) {
     // Cannot de-project from a forward-distorted image
     assert(intrinsics.distortionModel != ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY);
 
@@ -40,11 +54,11 @@ void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], CameraIntrinsicPara
         float f, df;
         // some sort of newton method
         for (int i = 0; i < 4; i++) {
-            f = theta * (1 +
-                         theta2 * (intrinsics.distortionCoefficients[0] +
-                                   theta2 * (intrinsics.distortionCoefficients[1] +
-                                             theta2 * (intrinsics.distortionCoefficients[2] +
-                                                       theta2 * intrinsics.distortionCoefficients[3])))) - rd;
+            f = theta * (1 + theta2 * (intrinsics.distortionCoefficients[0] +
+                                       theta2 * (intrinsics.distortionCoefficients[1] +
+                                                 theta2 * (intrinsics.distortionCoefficients[2] +
+                                                           theta2 * intrinsics.distortionCoefficients[3])))) -
+                rd;
             if (abs(f) < FLT_EPSILON) {
                 break;
             }
@@ -76,7 +90,7 @@ void AndreiUtils::fromImagePixelTo3dPoint(float (&point)[3], CameraIntrinsicPara
 
 // from librealsense
 void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], CameraIntrinsicParameters const &intrinsics,
-                                          double const(&pixel)[2], double const &depth) {
+                                          double const (&pixel)[2], double const &depth) {
     // Cannot de-project from a forward-distorted image
     assert(intrinsics.distortionModel != ImageDistortionModel::DISTORTION_MODIFIED_BROWN_CONRADY);
 
@@ -103,11 +117,11 @@ void AndreiUtils::fromImagePixelTo3dPoint(double (&point)[3], CameraIntrinsicPar
         double f, df;
         // some sort of newton method
         for (int i = 0; i < 4; i++) {
-            f = theta * (1 +
-                         theta2 * (intrinsics.distortionCoefficients[0] +
-                                   theta2 * (intrinsics.distortionCoefficients[1] +
-                                             theta2 * (intrinsics.distortionCoefficients[2] +
-                                                       theta2 * intrinsics.distortionCoefficients[3])))) - rd;
+            f = theta * (1 + theta2 * (intrinsics.distortionCoefficients[0] +
+                                       theta2 * (intrinsics.distortionCoefficients[1] +
+                                                 theta2 * (intrinsics.distortionCoefficients[2] +
+                                                           theta2 * intrinsics.distortionCoefficients[3])))) -
+                rd;
             if (abs(f) < DBL_EPSILON) {
                 break;
             }
@@ -263,10 +277,9 @@ void AndreiUtils::from3dPointToImagePixel(double (&pixel)[2], CameraIntrinsicPar
     pixel[1] = y * intrinsics.fy + intrinsics.ppy;
 }
 
-void AndreiUtils::point3dFromPixel(
-        std::function<float(int, int)> const &getDepth, ImageParameters const &size,
-        CameraIntrinsicParameters const &intrinsics, float x, float y, float (&point)[3], int windowSize,
-        bool forceWindowUsage, float farthestAllowedDepth) {
+void AndreiUtils::point3dFromPixel(std::function<float(int, int)> const &getDepth, ImageParameters const &size,
+                                   CameraIntrinsicParameters const &intrinsics, float x, float y, float (&point)[3],
+                                   int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
     int width = size.w, height = size.h;
     int int_x = int(x), int_y = int(y);
     float position[2] = {x, y};
@@ -303,10 +316,9 @@ void AndreiUtils::point3dFromPixel(
     fromImagePixelTo3dPoint(point, intrinsics, position, avgDepth);
 }
 
-void AndreiUtils::point3dFromPixel(
-        std::function<double(int, int)> const &getDepth, ImageParameters const &size,
-        CameraIntrinsicParameters const &intrinsics, double x, double y, double (&point)[3], int windowSize,
-        bool forceWindowUsage, double farthestAllowedDepth) {
+void AndreiUtils::point3dFromPixel(std::function<double(int, int)> const &getDepth, ImageParameters const &size,
+                                   CameraIntrinsicParameters const &intrinsics, double x, double y, double (&point)[3],
+                                   int windowSize, bool forceWindowUsage, double farthestAllowedDepth) {
     int width = size.w, height = size.h;
     int int_x = int(x), int_y = int(y);
     double position[2] = {x, y};

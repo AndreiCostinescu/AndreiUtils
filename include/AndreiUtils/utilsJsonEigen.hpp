@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.08.21.
 //
@@ -7,9 +21,9 @@
 #include <AndreiUtils/classes/ParametrizablePose.hpp>
 #include <AndreiUtils/classes/SuperCube.hpp>
 #include <AndreiUtils/classes/Symmetry.h>
+#include <AndreiUtils/classes/grasp/Grasp.h>
 #include <AndreiUtils/classes/motion/MotionDeviceCaptureParameters.h>
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
-#include <AndreiUtils/classes/grasp/Grasp.h>
 #include <AndreiUtils/utilsGeometry.h>
 #include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
@@ -20,9 +34,7 @@
 namespace nlohmann {
     template<class T>
     struct adl_serializer<Eigen::Matrix<T, 2, 1>> {
-        static void to_json(nlohmann::json &j, const Eigen::Matrix<T, 2, 1> &v) {
-            j = std::vector<double>{v(0), v(1)};
-        }
+        static void to_json(nlohmann::json &j, const Eigen::Matrix<T, 2, 1> &v) { j = std::vector<double>{v(0), v(1)}; }
 
         static void from_json(const nlohmann::json &j, Eigen::Matrix<T, 2, 1> &v) {
             std::vector<double> _v = j.get<std::vector<double>>();
@@ -96,9 +108,9 @@ namespace nlohmann {
                     size_t nrVectorElements = vectorData.size();
                     if (Rows != -1 && Cols != -1) {
                         if (Rows * Cols != nrVectorElements) {
-                            throw std::runtime_error(
-                                    "Unable to deserialize json array data into an Eigen Matrix (" +
-                                    std::to_string(Rows) + " x " + std::to_string(Cols) + "): " + j.dump());
+                            throw std::runtime_error("Unable to deserialize json array data into an Eigen Matrix (" +
+                                                     std::to_string(Rows) + " x " + std::to_string(Cols) +
+                                                     "): " + j.dump());
                         }
                         for (Eigen::Index iIndex = 0; iIndex < Rows; ++iIndex) {
                             for (Eigen::Index jIndex = 0; jIndex < Cols; ++jIndex) {
@@ -199,8 +211,8 @@ namespace nlohmann {
         static void from_json(nlohmann::json const &j, Eigen::Quaternion<T> &q) {
             auto coefficients = j.get<std::vector<T>>();
             if (coefficients.size() != 4) {
-                throw std::runtime_error(
-                        "Coefficients' size is not 4 (is " + std::to_string(coefficients.size()) + ")!");
+                throw std::runtime_error("Coefficients' size is not 4 (is " + std::to_string(coefficients.size()) +
+                                         ")!");
             }
             q.w() = coefficients[0];
             q.x() = coefficients[1];
@@ -211,9 +223,7 @@ namespace nlohmann {
 
     template<class T>
     struct adl_serializer<AndreiUtils::DualQuaternion<T>> {
-        static void to_json(nlohmann::json &j, AndreiUtils::DualQuaternion<T> const &q) {
-            j = q.coefficients();
-        }
+        static void to_json(nlohmann::json &j, AndreiUtils::DualQuaternion<T> const &q) { j = q.coefficients(); }
 
         static void from_json(nlohmann::json const &j, AndreiUtils::DualQuaternion<T> &q) {
             if (!j.is_array()) {
@@ -230,8 +240,9 @@ namespace nlohmann {
                 return;
             } else if (j.size() == 3 || (j.size() == 4 && j[0].is_string())) {
                 if (j[0].is_number()) {
-                    q = AndreiUtils::DualQuaternion<T>(AndreiUtils::qIdentity<T>(), Eigen::Matrix<T, 3, 1>(
-                            j[0].get<T>(), j[1].get<T>(), j[2].get<T>()));
+                    q = AndreiUtils::DualQuaternion<T>(
+                            AndreiUtils::qIdentity<T>(),
+                            Eigen::Matrix<T, 3, 1>(j[0].get<T>(), j[1].get<T>(), j[2].get<T>()));
                     return;
                 } else if (j[0].is_string()) {
                     double angle;
@@ -294,20 +305,22 @@ namespace nlohmann {
                         auto res = std::dynamic_pointer_cast<AndreiUtils::VariableAngleInAxisAngle<T>>(poseFunction);
                         std::vector<nlohmann::json> variationRes;
                         variationRes.emplace_back("r");
-                        std::string parameterName = AndreiUtils::mapGet(
-                                AndreiUtils::mapGet(q.parameterAssignment, functionIndex), 0)->parameterName;
+                        std::string parameterName =
+                                AndreiUtils::mapGet(AndreiUtils::mapGet(q.parameterAssignment, functionIndex), 0)
+                                        ->parameterName;
                         variationRes.emplace_back(parameterName);
                         variationRes.emplace_back(res->getAxis());
                         poseComposition.emplace_back(variationRes);
                         break;
                     }
                     case AndreiUtils::PoseParameterFunctionType::ANGLE_AXIS_ANGLE_DEG_VARIATION: {
-                        auto res = std::dynamic_pointer_cast<AndreiUtils::VariableDegreeAngleInAxisAngle<T>>(
-                                poseFunction);
+                        auto res =
+                                std::dynamic_pointer_cast<AndreiUtils::VariableDegreeAngleInAxisAngle<T>>(poseFunction);
                         std::vector<nlohmann::json> variationRes;
                         variationRes.emplace_back("d");
-                        std::string parameterName = AndreiUtils::mapGet(
-                                AndreiUtils::mapGet(q.parameterAssignment, functionIndex), 0)->parameterName;
+                        std::string parameterName =
+                                AndreiUtils::mapGet(AndreiUtils::mapGet(q.parameterAssignment, functionIndex), 0)
+                                        ->parameterName;
                         variationRes.emplace_back(parameterName);
                         variationRes.emplace_back(res->getAxis());
                         poseComposition.emplace_back(variationRes);
@@ -328,8 +341,8 @@ namespace nlohmann {
                         break;
                     }
                     case AndreiUtils::PoseParameterFunctionType::DEG_ANGLE_AXIS_AXIS_VARIATION: {
-                        auto res = std::dynamic_pointer_cast<AndreiUtils::VariableAxisInDegreeAxisAngle<T>>(
-                                poseFunction);
+                        auto res =
+                                std::dynamic_pointer_cast<AndreiUtils::VariableAxisInDegreeAxisAngle<T>>(poseFunction);
                         std::vector<nlohmann::json> variationRes;
                         variationRes.emplace_back("d");
                         variationRes.emplace_back(res->getAngle());
@@ -439,7 +452,7 @@ namespace nlohmann {
         }
 
         static void from_json(nlohmann::json const &j, AndreiUtils::ParametrizablePose<T> &q) {
-            q.clear();  // <- clear previous data in the parametrizable pose
+            q.clear(); // <- clear previous data in the parametrizable pose
             AndreiUtils::DualQuaternion<T> resPose;
             if (AndreiUtils::canConvertJsonTo<AndreiUtils::DualQuaternion<T>>(j, resPose)) {
                 q.addComposition(std::make_shared<AndreiUtils::NoPoseVariation<T>>(resPose));
@@ -476,9 +489,10 @@ namespace nlohmann {
                                 param2 = axisParameterNames[1];
                                 param3 = axisParameterNames[2];
                                 q.addComposition(std::make_shared<AndreiUtils::VariableAxisInAxisAngle<T>>(angle),
-                                                 {param1, param2, param3}, {AndreiUtils::mapGet(parameters, param1),
-                                                                            AndreiUtils::mapGet(parameters, param2),
-                                                                            AndreiUtils::mapGet(parameters, param3)});
+                                                 {param1, param2, param3},
+                                                 {AndreiUtils::mapGet(parameters, param1),
+                                                  AndreiUtils::mapGet(parameters, param2),
+                                                  AndreiUtils::mapGet(parameters, param3)});
                             }
                         } else if (firstArgument == "d") {
                             // ANGLE_AXIS_ANGLE_DEG_VARIATION or DEG_ANGLE_AXIS_AXIS_VARIATION
@@ -495,9 +509,10 @@ namespace nlohmann {
                                 param2 = axisParameterNames[1];
                                 param3 = axisParameterNames[2];
                                 q.addComposition(std::make_shared<AndreiUtils::VariableAxisInDegreeAxisAngle<T>>(angle),
-                                                 {param1, param2, param3}, {AndreiUtils::mapGet(parameters, param1),
-                                                                            AndreiUtils::mapGet(parameters, param2),
-                                                                            AndreiUtils::mapGet(parameters, param3)});
+                                                 {param1, param2, param3},
+                                                 {AndreiUtils::mapGet(parameters, param1),
+                                                  AndreiUtils::mapGet(parameters, param2),
+                                                  AndreiUtils::mapGet(parameters, param3)});
                             }
                         } else {
                             // only translation and the first argument is a parameter
@@ -514,8 +529,9 @@ namespace nlohmann {
                                 } else {
                                     axis.z() = poseFunction[2].get<T>();
                                     q.addComposition(std::make_shared<AndreiUtils::VariableXYAxisTranslation<T>>(axis),
-                                                     {param1, param2}, {AndreiUtils::mapGet(parameters, param1),
-                                                                        AndreiUtils::mapGet(parameters, param2)});
+                                                     {param1, param2},
+                                                     {AndreiUtils::mapGet(parameters, param1),
+                                                      AndreiUtils::mapGet(parameters, param2)});
                                 }
                             } else {
                                 axis.y() = poseFunction[1].get<T>();
@@ -540,8 +556,9 @@ namespace nlohmann {
                             if (poseFunction[2].is_string()) {
                                 param3 = poseFunction[2].get<std::string>();
                                 q.addComposition(std::make_shared<AndreiUtils::VariableYZAxisTranslation<T>>(axis),
-                                                 {param2, param3}, {AndreiUtils::mapGet(parameters, param2),
-                                                                    AndreiUtils::mapGet(parameters, param3)});
+                                                 {param2, param3},
+                                                 {AndreiUtils::mapGet(parameters, param2),
+                                                  AndreiUtils::mapGet(parameters, param3)});
                             } else {
                                 axis.z() = poseFunction[2].get<T>();
                                 q.addComposition(std::make_shared<AndreiUtils::VariableYAxisTranslation<T>>(axis),
@@ -549,10 +566,10 @@ namespace nlohmann {
                             }
                         } else {
                             axis.y() = poseFunction[1].get<T>();
-                            assert(poseFunction[2].is_string());  // otherwise it should have been serialized as a pose!
+                            assert(poseFunction[2].is_string()); // otherwise it should have been serialized as a pose!
                             param3 = poseFunction[2].get<std::string>();
-                            q.addComposition(std::make_shared<AndreiUtils::VariableZAxisTranslation<T>>(axis),
-                                             {param3}, {AndreiUtils::mapGet(parameters, param3)});
+                            q.addComposition(std::make_shared<AndreiUtils::VariableZAxisTranslation<T>>(axis), {param3},
+                                             {AndreiUtils::mapGet(parameters, param3)});
                         }
                     }
                 } else {
@@ -581,13 +598,9 @@ namespace nlohmann {
     struct adl_serializer<AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, 0>> {
         using T = AndreiUtils::SuperCube<Type, SpatialDimension, SpatialDivision, 0>;
 
-        static void to_json(nlohmann::json &j, T const &data) {
-            j = data.data;
-        }
+        static void to_json(nlohmann::json &j, T const &data) { j = data.data; }
 
-        static void from_json(nlohmann::json const &j, T &data) {
-            data.data = j.get<typename T::Data>();
-        }
+        static void from_json(nlohmann::json const &j, T &data) { data.data = j.get<typename T::Data>(); }
     };
 
     template<>
@@ -632,4 +645,4 @@ namespace nlohmann {
         static void from_json(nlohmann::json const &j, AndreiUtils::GraspWithAngleRange &d);
     };
     //*/
-}
+} // namespace nlohmann

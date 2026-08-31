@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.12.20.
 //
@@ -21,14 +35,14 @@ namespace AndreiUtils {
         struct Iterator {
         public:
             using iterator_category = std::forward_iterator_tag;
-            using difference_type = std::ptrdiff_t;  // not ok...
+            using difference_type = std::ptrdiff_t; // not ok...
             using value_type = T;
             using pointer = value_type *;
             using reference = value_type &;
 
             explicit Iterator(std::vector<value_type> *data, unsigned dataSize, unsigned dataIndex, unsigned index) :
-                    container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
-                    containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
+                container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
+                containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
                 // this->index = fastMin(this->index, this->containerDataSize + 1);
                 if (this->containerSize == 0) {
                     this->containerStartIndex = 0;
@@ -56,7 +70,7 @@ namespace AndreiUtils {
             }
 
             // Postfix increment
-            Iterator operator++(int) {  // NOLINT(cert-dcl21-cpp)
+            Iterator operator++(int) { // NOLINT(cert-dcl21-cpp)
                 Iterator tmp = *this;
                 ++(*this);
                 return tmp;
@@ -82,9 +96,7 @@ namespace AndreiUtils {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify"
 
-            friend bool operator!=(const Iterator &a, const Iterator &b) {
-                return !(a == b);
-            };
+            friend bool operator!=(const Iterator &a, const Iterator &b) { return !(a == b); };
 
 #pragma clang diagnostic pop
 
@@ -96,15 +108,15 @@ namespace AndreiUtils {
         struct ConstIterator {
         public:
             using iterator_category = std::forward_iterator_tag;
-            using difference_type = std::ptrdiff_t;  // not ok...
+            using difference_type = std::ptrdiff_t; // not ok...
             using value_type = T;
             using pointer = const value_type *;
             using reference = const value_type &;
 
             explicit ConstIterator(const std::vector<value_type> *data, unsigned dataSize, unsigned dataIndex,
                                    unsigned index) :
-                    container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
-                    containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
+                container(data), containerDataSize(dataSize), index(index), containerIndex(dataIndex),
+                containerSize(data != nullptr ? data->size() : 0), containerStartIndex() {
                 if (this->containerSize == 0) {
                     this->containerStartIndex = 0;
                 } else {
@@ -126,7 +138,7 @@ namespace AndreiUtils {
             }
 
             // Postfix increment
-            ConstIterator operator++(int) {  // NOLINT(cert-dcl21-cpp)
+            ConstIterator operator++(int) { // NOLINT(cert-dcl21-cpp)
                 ConstIterator tmp = *this;
                 ++(*this);
                 return tmp;
@@ -140,9 +152,7 @@ namespace AndreiUtils {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify"
 
-            friend bool operator!=(const ConstIterator &a, const ConstIterator &b) {
-                return !(a == b);
-            };
+            friend bool operator!=(const ConstIterator &a, const ConstIterator &b) { return !(a == b); };
 
 #pragma clang diagnostic pop
 
@@ -168,21 +178,13 @@ namespace AndreiUtils {
             }
         }
 
-        [[nodiscard]] bool empty() const {
-            return this->dataSize == 0;
-        }
+        [[nodiscard]] bool empty() const { return this->dataSize == 0; }
 
-        [[nodiscard]] bool full() const {
-            return this->dataSize == this->size;
-        }
+        [[nodiscard]] bool full() const { return this->dataSize == this->size; }
 
-        [[nodiscard]] unsigned getSize() const {
-            return this->size;
-        }
+        [[nodiscard]] unsigned getSize() const { return this->size; }
 
-        [[nodiscard]] unsigned getDataSize() const {
-            return this->dataSize;
-        }
+        [[nodiscard]] unsigned getDataSize() const { return this->dataSize; }
 
         void addData(T &&newData) {
             assert(this->size > 0);
@@ -234,29 +236,17 @@ namespace AndreiUtils {
             return res;
         }
 
-        T getMedian() const {
-            return median_computer<T>::medianComputer(this->getDataInCorrectOrder());
-        }
+        T getMedian() const { return median_computer<T>::medianComputer(this->getDataInCorrectOrder()); }
 
-        T getAverage() const {
-            return AndreiUtils::average(this->getDataInCorrectOrder());
-        }
+        T getAverage() const { return AndreiUtils::average(this->getDataInCorrectOrder()); }
 
-        T &getLatest() {
-            return this->data[this->latestIndex()];
-        }
+        T &getLatest() { return this->data[this->latestIndex()]; }
 
-        T const &getLatest() const {
-            return this->data[this->latestIndex()];
-        }
+        T const &getLatest() const { return this->data[this->latestIndex()]; }
 
-        T &getEarliest() {
-            return this->data[this->earliestIndex()];
-        }
+        T &getEarliest() { return this->data[this->earliestIndex()]; }
 
-        T const &getEarliest() const {
-            return this->data[this->earliestIndex()];
-        }
+        T const &getEarliest() const { return this->data[this->earliestIndex()]; }
 
         T &getValueAtIndexFromRight(size_t const &_index) {
             if (_index >= this->dataSize) {
@@ -290,13 +280,9 @@ namespace AndreiUtils {
             return this->data[i];
         }
 
-        std::vector<T> &getData() {
-            return this->data;
-        }
+        std::vector<T> &getData() { return this->data; }
 
-        std::vector<T> const &getData() const {
-            return this->data;
-        }
+        std::vector<T> const &getData() const { return this->data; }
 
         Iterator begin() { return Iterator(&this->data, this->dataSize, this->index, 0); }
 
@@ -311,9 +297,9 @@ namespace AndreiUtils {
             return isSequenceStable(this->getData(), stabilityThreshold, criterion, verbose);
         }
 
-        [[nodiscard]] bool isWindowStable(
-                std::function<double(T const &, T const &)> const &op, double stabilityThreshold = 1e-9,
-                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(std::function<double(T const &, T const &)> const &op,
+                                          double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                                          bool verbose = false) const {
             return isSequenceStable(this->getData(), op, stabilityThreshold, criterion, verbose);
         }
 
@@ -425,37 +411,27 @@ namespace AndreiUtils {
             return this->data;
         }
 
-        void setLatestValid(bool valid) {
-            this->validData[this->latestIndex()] = valid ? 1 : 0;
-        }
+        void setLatestValid(bool valid) { this->validData[this->latestIndex()] = valid ? 1 : 0; }
 
-        [[nodiscard]] bool getLatestValid() const {
-            return (this->validData[this->latestIndex()] != 0);
-        }
+        [[nodiscard]] bool getLatestValid() const { return (this->validData[this->latestIndex()] != 0); }
 
-        void getEarliestValid(bool valid) {
-            this->validData[this->earliestIndex()] = valid ? 1 : 0;
-        }
+        void getEarliestValid(bool valid) { this->validData[this->earliestIndex()] = valid ? 1 : 0; }
 
-        [[nodiscard]] bool getEarliestValid() const {
-            return (this->validData[this->earliestIndex()] != 0);
-        }
+        [[nodiscard]] bool getEarliestValid() const { return (this->validData[this->earliestIndex()] != 0); }
 
-        std::vector<uint8_t> &getValidFlags() {
-            return this->validData;
-        }
+        std::vector<uint8_t> &getValidFlags() { return this->validData; }
 
-        [[nodiscard]] bool isWindowStable(
-                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
-                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(InvalidValuesHandlingMode invalidValuesHandlingMode,
+                                          double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                                          bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), stabilityThreshold,
                                     criterion, verbose);
         }
 
-        [[nodiscard]] bool isWindowStable(
-                std::function<double(const T &, const T &)> const &op,
-                InvalidValuesHandlingMode invalidValuesHandlingMode, double stabilityThreshold = 1e-9,
-                StabilityCriterionOperation criterion = SUM, bool verbose = false) const {
+        [[nodiscard]] bool isWindowStable(std::function<double(const T &, const T &)> const &op,
+                                          InvalidValuesHandlingMode invalidValuesHandlingMode,
+                                          double stabilityThreshold = 1e-9, StabilityCriterionOperation criterion = SUM,
+                                          bool verbose = false) const {
             return isSequenceStable(this->getDataInCorrectOrder(invalidValuesHandlingMode), op, stabilityThreshold,
                                     criterion, verbose);
         }
@@ -479,8 +455,8 @@ namespace AndreiUtils {
             return a;
         }
 
-        [[nodiscard]] std::vector<uint8_t> getValidDataInCorrectOrder(
-                InvalidValuesHandlingMode invalidValuesHandlingMode) const {
+        [[nodiscard]] std::vector<uint8_t>
+        getValidDataInCorrectOrder(InvalidValuesHandlingMode invalidValuesHandlingMode) const {
             std::vector<uint8_t> a(this->dataSize);
             int nrValidValues = 0, nrInvalidValues = 0, dataIndex;
             for (unsigned int i = this->dataSize; i >= 1; i--) {
@@ -506,4 +482,4 @@ namespace AndreiUtils {
 
         std::vector<uint8_t> validData;
     };
-}
+} // namespace AndreiUtils

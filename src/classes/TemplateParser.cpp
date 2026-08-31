@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 31.01.26.
 //
@@ -13,8 +27,10 @@ std::string TemplateType::toString() const {
     if (!this->isTemplate()) {
         return this->baseType;
     }
-    return this->baseType + "<" + AndreiUtils::printVectorToString<TemplateType>(
-            this->templateArgs, [](auto const &elem) { return elem.toString(); }) + ">";
+    return this->baseType + "<" +
+           AndreiUtils::printVectorToString<TemplateType>(this->templateArgs,
+                                                          [](auto const &elem) { return elem.toString(); }) +
+           ">";
 }
 
 bool TemplateType::isTemplate() const { return this->typeDefinedWithTemplateChars; }
@@ -34,17 +50,16 @@ TemplateType TemplateParser::parse(std::string const &typeStr, std::string const
 
     parser.skipWhitespace();
     if (parser.pos < parser.input.length()) {
-        throw std::runtime_error(
-                "Unexpected characters at position " + std::to_string(parser.pos) + ": '" +
-                parser.input.substr(parser.pos) + "'");
+        throw std::runtime_error("Unexpected characters at position " + std::to_string(parser.pos) + ": '" +
+                                 parser.input.substr(parser.pos) + "'");
     }
 
     return result;
 }
 
 TemplateParser::TemplateParser(std::string str, char const &startTemplateCharacter, char const &endTemplateCharacter) :
-        input(std::move(str)), pos(0), startTemplateCharacter(startTemplateCharacter),
-        endTemplateCharacter(endTemplateCharacter) {}
+    input(std::move(str)), pos(0), startTemplateCharacter(startTemplateCharacter),
+    endTemplateCharacter(endTemplateCharacter) {}
 
 TemplateType TemplateParser::parseType() {
     TemplateType result;
@@ -60,7 +75,7 @@ TemplateType TemplateParser::parseType() {
             baseName << consume();
         } else if (std::isspace(c)) {
             // Handle spaces in type names (e.g., "unsigned int")
-            this->skipWhitespace();  // consumes multiple spaces
+            this->skipWhitespace(); // consumes multiple spaces
 
             // Check if next character is part of the type name or a delimiter
             if (this->pos < this->input.length()) {
@@ -125,9 +140,9 @@ std::vector<TemplateType> TemplateParser::parseTemplateArgs() {
         } else if (c == this->endTemplateCharacter) {
             break;
         } else {
-            throw std::runtime_error(
-                    "Expected ',' or '" + std::string(1, this->endTemplateCharacter) + "' at position " +
-                    std::to_string(this->pos) + ", got '" + std::string(1, c) + "'");
+            throw std::runtime_error("Expected ',' or '" + std::string(1, this->endTemplateCharacter) +
+                                     "' at position " + std::to_string(this->pos) + ", got '" + std::string(1, c) +
+                                     "'");
         }
     }
 
@@ -135,7 +150,7 @@ std::vector<TemplateType> TemplateParser::parseTemplateArgs() {
         // Reached end without closing endTemplateCharacter
         throw std::runtime_error("Unclosed template argument list");
     }
-    this->consume();  // move past the endTemplateCharacter
+    this->consume(); // move past the endTemplateCharacter
 
     return args;
 }
@@ -168,6 +183,4 @@ bool TemplateParser::expect(char const c) {
     return false;
 }
 
-bool TemplateParser::isValidCharacterOfName(char const c) const {
-    return std::isalnum(c) || c == '_' || c == ':';
-}
+bool TemplateParser::isValidCharacterOfName(char const c) const { return std::isalnum(c) || c == '_' || c == ':'; }

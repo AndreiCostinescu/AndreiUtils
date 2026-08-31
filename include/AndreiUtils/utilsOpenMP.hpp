@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 22-Oct-21.
 //
@@ -12,17 +26,17 @@
 namespace AndreiUtils {
     template<class T>
     void fastMemCopy(T *const dst, T const *const src, std::size_t size) {
-        // memcpy(dst, src, sizeof(T) * size);
-        // dst and src are predetermined shared in gcc 7?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(dst, src, size) default(none)
-        #else
-        #pragma omp parallel for shared(size) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size) default(none)
-        #endif
+// memcpy(dst, src, sizeof(T) * size);
+// dst and src are predetermined shared in gcc 7?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(dst, src, size) default(none)
+#else
+#pragma omp parallel for shared(size) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size) default(none)
+#endif
         for (std::size_t i = 0; i < size; i++) {
             dst[i] = src[i];
         }
@@ -37,16 +51,16 @@ namespace AndreiUtils {
 
     template<class T>
     void fastATimesSrcPlusB(T *const dst, T const *const src, std::size_t size, T a, T b) {
-        // dst and src are predetermined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(dst, src, size, a, b) default(none)
-        #else
-        #pragma omp parallel for shared(size, a, b) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, a, b) default(none)
-        #endif
+// dst and src are predetermined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(dst, src, size, a, b) default(none)
+#else
+#pragma omp parallel for shared(size, a, b) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, a, b) default(none)
+#endif
         for (std::size_t i = 0; i < size; i++) {
             dst[i] = a * src[i] + b;
         }
@@ -54,16 +68,16 @@ namespace AndreiUtils {
 
     template<class T>
     void fastSrcOp(T *const dst, T const *const src, std::size_t size, std::function<T(T const &)> const &op) {
-        // dst and src are predetermined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(dst, src, size, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, op) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, op) default(none)
-        #endif
+// dst and src are predetermined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(dst, src, size, op) default(none)
+#else
+#pragma omp parallel for shared(size, op) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i++) {
             dst[i] = op(src[i]);
         }
@@ -72,16 +86,16 @@ namespace AndreiUtils {
     template<class Tin, class Tout>
     void fastSrcOp(Tout *const dst, Tin const *const src, std::size_t size,
                    std::function<Tout(Tin const &)> const &op) {
-        // dst and src are predetermined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(dst, src, size, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, op) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, op) default(none)
-        #endif
+// dst and src are predetermined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(dst, src, size, op) default(none)
+#else
+#pragma omp parallel for shared(size, op) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i++) {
             dst[i] = op(src[i]);
         }
@@ -90,16 +104,16 @@ namespace AndreiUtils {
     template<class T>
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(T *const, std::size_t, std::size_t)> const &op, std::size_t increment = 1) {
-        // array is predetermined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
+// array is predetermined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(array, size, increment, op) default(none)
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i += increment) {
             op(array, i, increment);
         }
@@ -109,16 +123,16 @@ namespace AndreiUtils {
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(T *const, std::size_t, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
-        // array is predefined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
+// array is predefined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(array, size, increment, op) default(none)
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i += increment) {
             op(array, size, i, increment);
         }
@@ -127,16 +141,16 @@ namespace AndreiUtils {
     template<class T>
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(int, T *const, std::size_t, std::size_t)> const op, std::size_t increment = 1) {
-        // array is predefined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, increment) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
+// array is predefined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(array, size, increment, op) default(none)
+#else
+#pragma omp parallel for shared(size, increment) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i += increment) {
             op(getOMPActiveThreadNumber(), array, i, increment);
         }
@@ -146,16 +160,16 @@ namespace AndreiUtils {
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(int, T *const, std::size_t, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
-        // array is predefined shared?!
-        #ifdef __GNUG__
-        #if __GNUG__ > 8
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
-        #else
-        #pragma omp parallel for shared(size, increment, op) default(none)
-        #endif
+// array is predefined shared?!
+#ifdef __GNUG__
+#if __GNUG__ > 8
+#pragma omp parallel for shared(array, size, increment, op) default(none)
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
+#else
+#pragma omp parallel for shared(size, increment, op) default(none)
+#endif
         for (std::size_t i = 0; i < size; i += increment) {
             op(getOMPActiveThreadNumber(), array, size, i, increment);
         }
@@ -165,7 +179,7 @@ namespace AndreiUtils {
     void fastForLoop(std::vector<T> &array, std::function<void(std::vector<T> &, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
         std::size_t size = array.size();
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
+#pragma omp parallel for shared(array, size, increment, op) default(none)
         for (std::size_t i = 0; i < size; i += increment) {
             op(array, i, increment);
         }
@@ -176,7 +190,7 @@ namespace AndreiUtils {
                      std::function<void(std::vector<T> const &, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
         std::size_t size = array.size();
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
+#pragma omp parallel for shared(array, size, increment, op) default(none)
         for (std::size_t i = 0; i < size; i += increment) {
             op(array, i, increment);
         }
@@ -187,7 +201,7 @@ namespace AndreiUtils {
                      std::function<void(int, std::vector<T> &, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
         std::size_t size = array.size();
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
+#pragma omp parallel for shared(array, size, increment, op) default(none)
         for (std::size_t i = 0; i < size; i += increment) {
             op(getOMPActiveThreadNumber(), array, i, increment);
         }
@@ -198,11 +212,11 @@ namespace AndreiUtils {
                      std::function<void(int, std::vector<T> const &, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
         std::size_t size = array.size();
-        #pragma omp parallel for shared(array, size, increment, op) default(none)
+#pragma omp parallel for shared(array, size, increment, op) default(none)
         for (std::size_t i = 0; i < size; i += increment) {
             op(getOMPActiveThreadNumber(), array, i, increment);
         }
     }
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_UTILSOPENMP_HPP
+#endif // ANDREIUTILS_UTILSOPENMP_HPP

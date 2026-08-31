@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 21.10.22.
 //
@@ -162,8 +176,8 @@ namespace AndreiUtils {
             } else if (format[i] == 'z') {
                 q = qzRotation(angles[i]) * q;
             } else {
-                throw std::runtime_error(
-                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
+                throw std::runtime_error(std::string("Unknown axis format ") + format[i] +
+                                         " for angle: " + std::to_string(i) + "!");
             }
         }
         return q;
@@ -207,8 +221,8 @@ namespace AndreiUtils {
             } else if (format[i] == 'z') {
                 indices[2 - i] = 2;
             } else {
-                throw std::runtime_error(
-                        std::string("Unknown axis format ") + format[i] + " for angle: " + std::to_string(i) + "!");
+                throw std::runtime_error(std::string("Unknown axis format ") + format[i] +
+                                         " for angle: " + std::to_string(i) + "!");
             }
         }
         auto e = q.toRotationMatrix().eulerAngles(indices[0], indices[1], indices[2]);
@@ -229,18 +243,18 @@ namespace AndreiUtils {
 
         if (test > 0.4999 * unit) {
             // 0.4999f OR 0.5f - EPSILON: Singularity at North Pole
-            euler.x() = 0;                                                                // Roll
-            euler.y() = M_PI * 0.5f;                                                      // Pitch
-            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
+            euler.x() = 0; // Roll
+            euler.y() = M_PI * 0.5f; // Pitch
+            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz); // Yaw
         } else if (test < -0.4999f * unit) {
             // -0.4999f OR -0.5f + EPSILON: Singularity at South Pole
-            euler.x() = 0;                                                                // Roll
-            euler.y() = -M_PI * 0.5f;                                                     // Pitch
-            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz);  // Yaw
+            euler.x() = 0; // Roll
+            euler.y() = -M_PI * 0.5f; // Pitch
+            euler.z() = atan2(2 * q.w() * q.z() + 2 * q.x() * q.y(), sqw - sqx + sqy - sqz); // Yaw
         } else {
-            euler.x() = atan2(2 * q.x() * q.w() - 2 * q.y() * q.z(), sqw - sqx - sqy + sqz);  // Roll
-            euler.y() = asin(2 * test / unit);                                         // Pitch
-            euler.z() = atan2(2 * q.z() * q.w() - 2 * q.x() * q.y(), sqw + sqx - sqy - sqz);  // Yaw
+            euler.x() = atan2(2 * q.x() * q.w() - 2 * q.y() * q.z(), sqw - sqx - sqy + sqz); // Roll
+            euler.y() = asin(2 * test / unit); // Pitch
+            euler.z() = atan2(2 * q.z() * q.w() - 2 * q.x() * q.y(), sqw + sqx - sqy - sqz); // Yaw
         }
 
         // return (float)(180 / M_PI) * euler;  // convert to degrees
@@ -257,7 +271,7 @@ namespace AndreiUtils {
         }
         return qExp(qDivScalar(averageRotation, (double) sequenceQuaternions.size()));
     }
-}
+} // namespace AndreiUtils
 
 namespace std {
     template<class T>
@@ -271,6 +285,6 @@ namespace std {
         is >> q.w() >> q.x() >> q.y() >> q.z();
         return is;
     }
-}
+} // namespace std
 
-#endif //ANDREIUTILS_UTILSQUATERNIONS_HPP
+#endif // ANDREIUTILS_UTILSQUATERNIONS_HPP

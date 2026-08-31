@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.08.21.
 //
 
+#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsString.h>
 #include <algorithm>
-#include <AndreiUtils/utils.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -42,9 +56,7 @@ std::string AndreiUtils::operator*(string const &s, long long i) {
     return res;
 }
 
-std::string AndreiUtils::repeat(char const *s, long long i) {
-    return string(s) * i;
-}
+std::string AndreiUtils::repeat(char const *s, long long i) { return string(s) * i; }
 
 vector<string> AndreiUtils::splitString(string const &message, string const &splitter) {
     // cout << "Message length: " << message.size() << endl;
@@ -65,7 +77,8 @@ vector<string> AndreiUtils::splitString(string const &message, string const &spl
 }
 
 std::string AndreiUtils::joinStrings(vector<string> const &strings, string const &joiner) {
-    if (strings.empty()) return "";
+    if (strings.empty())
+        return "";
     string res = strings[0];
     for (int i = 1; i < strings.size(); ++i) {
         res += joiner + strings[i];
@@ -157,9 +170,7 @@ string AndreiUtils::toUpperString(string const &s) {
     return res;
 }
 
-std::string AndreiUtils::capitalize(std::string const &s) {
-    return makeStartUpperCase(s);
-}
+std::string AndreiUtils::capitalize(std::string const &s) { return makeStartUpperCase(s); }
 
 std::string AndreiUtils::makeStartUpperCase(std::string const &s) {
     auto res = s;
@@ -179,9 +190,7 @@ std::string AndreiUtils::makeStartLowerCase(std::string const &s) {
     return res;
 }
 
-bool AndreiUtils::contains(string const &who, string const &what) {
-    return (who.find(what) != string::npos);
-}
+bool AndreiUtils::contains(string const &who, string const &what) { return (who.find(what) != string::npos); }
 
 bool AndreiUtils::startsWith(string const &str, string const &startQuery, size_t strSkipFirstCharactersAmount) {
     return (str.rfind(startQuery, strSkipFirstCharactersAmount) == strSkipFirstCharactersAmount);
@@ -233,10 +242,10 @@ string AndreiUtils::trim(string const &str, string const &whitespace) {
     auto const strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {
         return "";
-    }  // no content
+    } // no content
 
     // this is never std::string::npos because otherwise the find_first_not_of would have been std::string::npos
-    auto const strEnd = str.find_last_not_of(whitespace);  // returns the last position in the string!
+    auto const strEnd = str.find_last_not_of(whitespace); // returns the last position in the string!
     return str.substr(strBegin, strEnd - strBegin + 1);
 }
 
@@ -244,7 +253,7 @@ string AndreiUtils::trimEnd(string const &str, string const &whitespace) {
     auto const strEnd = str.find_last_not_of(whitespace);
     if (strEnd == std::string::npos) {
         return "";
-    }  // no content
+    } // no content
     return str.substr(0, strEnd + 1);
 }
 
@@ -252,13 +261,11 @@ string AndreiUtils::trimStart(string const &str, string const &whitespace) {
     auto const strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos) {
         return "";
-    }  // no content
+    } // no content
     return str.substr(strBegin);
 }
 
-string AndreiUtils::strip(string const &str, string const &whiteSpace) {
-    return AndreiUtils::trim(str, whiteSpace);
-}
+string AndreiUtils::strip(string const &str, string const &whiteSpace) { return AndreiUtils::trim(str, whiteSpace); }
 
 string AndreiUtils::stripEnd(string const &str, string const &whiteSpace) {
     return AndreiUtils::trimEnd(str, whiteSpace);
@@ -296,7 +303,7 @@ string AndreiUtils::replace(string const &s, string const &oldString, string con
     string result = s;
     while ((startIndex = result.find(oldString, startIndex)) != std::string::npos) {
         result.replace(startIndex, oldString.length(), newString);
-        startIndex += newString.length();  // Handles case where 'newString' is a substring of 'oldString'
+        startIndex += newString.length(); // Handles case where 'newString' is a substring of 'oldString'
     }
     return result;
 }
@@ -407,9 +414,7 @@ bool AndreiUtils::isStringAFloatingPointValue(const std::string &str, double &va
     return success;
 }
 
-bool AndreiUtils::isInputStringStreamAtEnd(std::istringstream &ss) {
-    return ss.eof() || (ss >> std::ws).eof();
-}
+bool AndreiUtils::isInputStringStreamAtEnd(std::istringstream &ss) { return ss.eof() || (ss >> std::ws).eof(); }
 
 std::string AndreiUtils::surroundWithIfNotAlready(std::string const &toSurround, std::string const &surroundingString) {
     std::string result = toSurround;

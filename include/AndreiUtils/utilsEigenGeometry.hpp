@@ -1,15 +1,29 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 11.07.24.
 //
 
 #pragma once
 
+#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsEigen.hpp>
-#include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/utilsEigenLeastSquares.h>
-#include <cassert>
 #include <Eigen/Dense>
+#include <cassert>
 #include <iostream>
 
 namespace AndreiUtils {
@@ -44,11 +58,11 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    bool checkInsideTriangles(
-            Eigen::Matrix<T, 3, 1> const &p0, Eigen::Matrix<T, 3, -1> const &surfaceMatrix,
-            Eigen::Matrix<T, -1, 3> const &otherShiftedPoints, Eigen::Index const &surfacePointCount,
-            Eigen::Index const &otherPointCount, Eigen::Matrix<T, 3, -1> *otherSurfaceMatrix = nullptr,
-            Eigen::Matrix<T, 3, 1> *otherProjectedP0 = nullptr, bool verbose = false) {
+    bool checkInsideTriangles(Eigen::Matrix<T, 3, 1> const &p0, Eigen::Matrix<T, 3, -1> const &surfaceMatrix,
+                              Eigen::Matrix<T, -1, 3> const &otherShiftedPoints, Eigen::Index const &surfacePointCount,
+                              Eigen::Index const &otherPointCount,
+                              Eigen::Matrix<T, 3, -1> *otherSurfaceMatrix = nullptr,
+                              Eigen::Matrix<T, 3, 1> *otherProjectedP0 = nullptr, bool verbose = false) {
         bool withSettingOtherData = otherSurfaceMatrix != nullptr && otherProjectedP0 != nullptr;
         Eigen::Matrix3d leastSquaresMatrixA;
         leastSquaresMatrixA.col(2) = surfaceMatrix.col(surfacePointCount - 1);
@@ -58,7 +72,8 @@ namespace AndreiUtils {
             coefficients = AndreiUtils::leastSquares(leastSquaresMatrixA, otherShiftedPoints.transpose());
             if (verbose) {
                 std::cout << "Coefficient matrix at surfaceVectorPairIndex " << surfaceVectorPairIndex << " ="
-                          << std::endl << coefficients << std::endl;
+                          << std::endl
+                          << coefficients << std::endl;
             }
             for (int otherPointIndex = 0; otherPointIndex < otherPointCount; ++otherPointIndex) {
                 if (inRange<double>(coefficients(0, otherPointIndex), 0, 1) &&
@@ -142,10 +157,10 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    void getOrientationFromTwoAxes(
-            Eigen::Matrix<T, 3, 1> axis1, Eigen::Matrix<T, 3, 1> axis2, Eigen::Matrix<T, 3, 1> &xAxis,
-            Eigen::Matrix<T, 3, 1> &yAxis, Eigen::Matrix<T, 3, 1> &zAxis, std::string const &whichAxis1 = "z",
-            std::string const &whichAxis2 = "x") {
+    void getOrientationFromTwoAxes(Eigen::Matrix<T, 3, 1> axis1, Eigen::Matrix<T, 3, 1> axis2,
+                                   Eigen::Matrix<T, 3, 1> &xAxis, Eigen::Matrix<T, 3, 1> &yAxis,
+                                   Eigen::Matrix<T, 3, 1> &zAxis, std::string const &whichAxis1 = "z",
+                                   std::string const &whichAxis2 = "x") {
         if (whichAxis1 != "x" && whichAxis1 != "y" && whichAxis1 != "z") {
             throw std::runtime_error("Unknown axis1 type to process!");
         }
@@ -197,18 +212,18 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    Eigen::Matrix<T, 3, 3> getOrientationFromTwoAxes(
-            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
-            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+    Eigen::Matrix<T, 3, 3>
+    getOrientationFromTwoAxes(Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+                              std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
         Eigen::Matrix<T, 3, 1> x, y, z;
         getOrientationFromTwoAxes(axis1, axis2, x, y, z, whichAxis1, whichAxis2);
         return getOrientationFromAxes(x, y, z);
     }
 
     template<typename T>
-    Eigen::Quaternion<T> getOrientationQuaternionFromTwoAxes(
-            Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
-            std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
+    Eigen::Quaternion<T>
+    getOrientationQuaternionFromTwoAxes(Eigen::Matrix<T, 3, 1> const &axis1, Eigen::Matrix<T, 3, 1> const &axis2,
+                                        std::string const &whichAxis1 = "z", std::string const &whichAxis2 = "x") {
         return Eigen::Quaternion<T>(getOrientationFromTwoAxes(axis1, axis2, whichAxis1, whichAxis2));
     }
 
@@ -222,14 +237,14 @@ namespace AndreiUtils {
     }
 
     template<typename T, int N>
-    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(
-            Eigen::Matrix<T, N, 1> const &mean, T const &standardDeviation) {
+    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(Eigen::Matrix<T, N, 1> const &mean,
+                                                            T const &standardDeviation) {
         return normal01Sampler.sample() * sampleUnitVector<T, N>() * standardDeviation + mean;
     }
 
     template<typename T, int N>
-    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(
-            Eigen::Matrix<T, N, 1> const &mean, Eigen::Matrix<T, N, 1> const &standardDeviation) {
+    [[nodiscard]] Eigen::Matrix<T, N, 1> sampleVectorNormal(Eigen::Matrix<T, N, 1> const &mean,
+                                                            Eigen::Matrix<T, N, 1> const &standardDeviation) {
         return (normal01Sampler.sample() * sampleUnitVector<T, N>()).cwiseProduct(standardDeviation) + mean;
     }
 
@@ -243,4 +258,4 @@ namespace AndreiUtils {
         }
         return maxCoefficient < tolerance;
     }
-}
+} // namespace AndreiUtils

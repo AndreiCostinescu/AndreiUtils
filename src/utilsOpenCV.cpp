@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.11.20.
 //
@@ -18,7 +32,7 @@ bool AndreiUtils::matEqual(Mat const &m1, Mat const &m2) {
     if (m1.size != m2.size) {
         return false;
     }
-    return cv::sum(m1 != m2) == cv::Scalar(0,0,0,0);
+    return cv::sum(m1 != m2) == cv::Scalar(0, 0, 0, 0);
 }
 
 size_t AndreiUtils::matByteSize(const Mat &mat) {
@@ -73,10 +87,10 @@ void AndreiUtils::matWriteBinary(ofstream *fs, const Mat &mat) {
     // Header
     int type = mat.type();
     int channels = mat.channels();
-    fs->write((char *) &mat.rows, sizeof(int));    // rows
-    fs->write((char *) &mat.cols, sizeof(int));    // cols
-    fs->write((char *) &type, sizeof(int));        // type
-    fs->write((char *) &channels, sizeof(int));    // channels
+    fs->write((char *) &mat.rows, sizeof(int)); // rows
+    fs->write((char *) &mat.cols, sizeof(int)); // cols
+    fs->write((char *) &type, sizeof(int)); // type
+    fs->write((char *) &channels, sizeof(int)); // channels
 
     // Data
     if (mat.isContinuous()) {
@@ -95,19 +109,19 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     if (fs->peek() == EOF) {
         return false;
     }
-    fs->read((char *) &rows, sizeof(int));         // rows
+    fs->read((char *) &rows, sizeof(int)); // rows
     if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
-    fs->read((char *) &cols, sizeof(int));         // cols
+    fs->read((char *) &cols, sizeof(int)); // cols
     if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
-    fs->read((char *) &type, sizeof(int));         // type
+    fs->read((char *) &type, sizeof(int)); // type
     if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
-    fs->read((char *) &channels, sizeof(int));     // channels
+    fs->read((char *) &channels, sizeof(int)); // channels
     if (fs->fail() || fs->peek() == EOF) {
         return false;
     }
@@ -145,7 +159,7 @@ void AndreiUtils::displayImage(const Mat *const image, const char *title, bool v
 }
 
 void AndreiUtils::displayImages(const vector<Mat> &images, const vector<string> &titles) {
-    assert (images.size() >= titles.size());
+    assert(images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
         displayImage(images[i], titles[i].c_str());
     }
@@ -153,7 +167,7 @@ void AndreiUtils::displayImages(const vector<Mat> &images, const vector<string> 
 }
 
 void AndreiUtils::displayImages(const vector<const Mat *> &images, const vector<string> &titles) {
-    assert (images.size() >= titles.size());
+    assert(images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
         displayImage(images[i], titles[i].c_str());
     }
@@ -164,17 +178,13 @@ void AndreiUtils::convertDepthToMillimetersUInt16(Mat const *depthMat, Mat &outp
     depthMat->convertTo(output, CV_16U, 1000);
 }
 
-void AndreiUtils::convertDepthToMillimetersUInt16(Mat *depthMat) {
-    depthMat->convertTo(*depthMat, CV_16U, 1000);
-}
+void AndreiUtils::convertDepthToMillimetersUInt16(Mat *depthMat) { depthMat->convertTo(*depthMat, CV_16U, 1000); }
 
 void AndreiUtils::convertDepthToMetersDouble64(Mat const *depthMat, Mat &output) {
     depthMat->convertTo(output, CV_64F, 0.001);
 }
 
-void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) {
-    depthMat->convertTo(*depthMat, CV_64F, 0.001);
-}
+void AndreiUtils::convertDepthToMetersDouble64(Mat *depthMat) { depthMat->convertTo(*depthMat, CV_64F, 0.001); }
 
 void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point topLeftCorner, float fontSize,
                                          Scalar const &textColor, int fontFace, int lineType, int lineContentCap) {
@@ -215,9 +225,9 @@ void AndreiUtils::displayTextOnOpenCVMat(Mat &image, string const &text, Point t
     }
 }
 
-void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]) {
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d,
+                                               const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+                                               double ppy, float distortionCoefficients[5]) {
     cv::Matx33d cameraMatrix(fx, 0, ppx, 0, fy, ppy, 0, 0, 1);
     cv::Vec<float, 5> distortionParameters;
     if (distortionCoefficients != nullptr) {
@@ -229,31 +239,29 @@ void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
     cv::Rodrigues(rVec, r);
 }
 
-void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]) {
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d,
+                                               const vector<cv::Point3f> &points3d, double fx, double fy, double ppx,
+                                               double ppy, float distortionCoefficients[5]) {
     cv::Mat rVec;
     recoverPoseFrom2dAnd3dPoints(tVec, rVec, points2d, points3d, fx, fy, ppx, ppy, distortionCoefficients);
     cv::Rodrigues(rVec, rMat);
 }
 
-void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Mat &rVec, const vector<cv::Point2f> &points2d,
+                                               const vector<cv::Point3f> &points3d,
+                                               const CameraIntrinsicParameters &intrinsics) {
     recoverPoseFrom2dAnd3dPoints(tVec, rVec, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                  intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
-void AndreiUtils::recoverPoseFrom2dAnd3dPoints(
-        cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d, const vector<cv::Point3f> &points3d,
-        const CameraIntrinsicParameters &intrinsics) {
+void AndreiUtils::recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Matx33d &rMat, const vector<cv::Point2f> &points2d,
+                                               const vector<cv::Point3f> &points3d,
+                                               const CameraIntrinsicParameters &intrinsics) {
     recoverPoseFrom2dAnd3dPoints(tVec, rMat, points2d, points3d, intrinsics.fx, intrinsics.fy, intrinsics.ppx,
                                  intrinsics.ppy, intrinsics.distortionCoefficients);
 }
 
-Point2i AndreiUtils::castFromPointDouble(Point2d const &p) {
-    return {int(p.x), int(p.y)};
-}
+Point2i AndreiUtils::castFromPointDouble(Point2d const &p) { return {int(p.x), int(p.y)}; }
 
 cv::Mat AndreiUtils::addColorBorderAroundImage(cv::Mat const &img, cv::Scalar const &borderColor, int borderWidth) {
     cv::Mat res;

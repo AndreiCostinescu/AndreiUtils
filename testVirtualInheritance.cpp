@@ -1,11 +1,25 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20.11.23.
 //
 
 #include <AndreiUtils/json.hpp>
 #include <AndreiUtils/utils.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -23,9 +37,7 @@ public:
     json defaultData;
 
 protected:
-    Concept() : name(), defaultData() {
-        cout << "Called default constructor of Concept" << endl;
-    }
+    Concept() : name(), defaultData() { cout << "Called default constructor of Concept" << endl; }
 };
 
 class PhysicalEntity : public virtual Concept {
@@ -37,23 +49,20 @@ public:
     ~PhysicalEntity() override = default;
 
 protected:
-    PhysicalEntity() : Concept() {
-        cout << "Called default constructor of PhysicalEntity" << endl;
-    }
+    PhysicalEntity() : Concept() { cout << "Called default constructor of PhysicalEntity" << endl; }
 };
 
 class Agent : public virtual PhysicalEntity {
 public:
-    explicit Agent(string name, json defaultData = {}) : Concept(std::move(name), std::move(defaultData)), PhysicalEntity("", {}) {
+    explicit Agent(string name, json defaultData = {}) :
+        Concept(std::move(name), std::move(defaultData)), PhysicalEntity("", {}) {
         cout << "Called proper constructor of Agent: " << this->name << endl;
     }
 
     ~Agent() override = default;
 
 protected:
-    Agent() : PhysicalEntity() {
-        cout << "Called default constructor of Agent" << endl;
-    }
+    Agent() : PhysicalEntity() { cout << "Called default constructor of Agent" << endl; }
 };
 
 class Human : public virtual Agent {
@@ -63,8 +72,8 @@ public:
     }
 
     explicit Human(string name, string humanName, json defaultData = {}) :
-            Concept(std::move(name), std::move(defaultData)), Agent(std::move(name), std::move(defaultData)),
-            humanName(std::move(humanName)) {
+        Concept(std::move(name), std::move(defaultData)), Agent(std::move(name), std::move(defaultData)),
+        humanName(std::move(humanName)) {
         cout << "Called proper constructor of Human" << endl;
     }
 
@@ -73,15 +82,12 @@ public:
     std::string humanName;
 
 protected:
-    Human() : Agent() {
-        cout << "Called default constructor of Agent" << endl;
-    }
+    Human() : Agent() { cout << "Called default constructor of Agent" << endl; }
 };
 
 void testInheritance() {
     json j;
-    j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand",  "Left"},
-                                                                 {"RightHand", "Right"}};
+    j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand", "Left"}, {"RightHand", "Right"}};
     auto human = make_shared<Human>("Human", j);
     cout << human->defaultData.dump(4) << endl;
     auto human2 = make_shared<Human>("Human", "Andrei", j);
@@ -90,8 +96,7 @@ void testInheritance() {
 
 TEST(VirtualInheritanceTest, TestInheritance) {
     json j;
-    j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand",  "Left"},
-                                                                 {"RightHand", "Right"}};
+    j["data"]["properties"] = std::map<std::string, std::string>{{"LeftHand", "Left"}, {"RightHand", "Right"}};
 
     auto human = std::make_shared<Human>("Human", j);
     cout << human->defaultData.dump(4) << endl;
@@ -111,5 +116,4 @@ int main(int argc, char **argv) {
     // testInheritance();
 
     return RUN_ALL_TESTS();
-
 }

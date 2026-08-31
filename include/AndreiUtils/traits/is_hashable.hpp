@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 24-May-22.
 //
@@ -5,7 +19,7 @@
 #ifndef ANDREIUTILS_IS_HASHABLE_HPP
 #define ANDREIUTILS_IS_HASHABLE_HPP
 
-#include<type_traits>
+#include <type_traits>
 
 template<class...>
 using void_t = void;
@@ -47,8 +61,10 @@ using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
 template<class Default, template<class...> class Op, class... Args>
 using detected_or = detail::detector<Default, void, Op, Args...>;
 
-template <typename T>
-auto has_foo(T& t) -> decltype(t.foo(), bool()) { return true; }
+template<typename T>
+auto has_foo(T &t) -> decltype(t.foo(), bool()) {
+    return true;
+}
 
 bool has_foo(...) { return false; }
 
@@ -57,4 +73,4 @@ namespace AndreiUtils {
     using is_hashable = std::is_default_constructible<std::hash<T>>;
 }
 
-#endif //ANDREIUTILS_IS_HASHABLE_HPP
+#endif // ANDREIUTILS_IS_HASHABLE_HPP

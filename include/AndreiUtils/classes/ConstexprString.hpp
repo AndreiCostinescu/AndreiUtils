@@ -1,38 +1,48 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.08.25.
 //
 
 #pragma once
 
-#include <algorithm>
 #include <AndreiUtils/traits/stringify.hpp>
+#include <algorithm>
 #include <array>
-#include <string_view>
-#include <string>
-#include <cstddef>
 #include <concepts>
+#include <cstddef>
+#include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace AndreiUtils {
     template<typename T>
     concept HasDataAndSize =
             // 1) Require that T::size is a constant expression convertible to std::size_t
-            requires
-            {
-                typename std::integral_constant<std::size_t, std::remove_cvref_t<T>::size>;
-            }
+            requires { typename std::integral_constant<std::size_t, std::remove_cvref_t<T>::size>; }
             // 2) Require that there's a non-static member `data` whose type is std::array<char, T::size>
-            && requires(std::remove_cvref_t<T> &u)
-            {
+            &&
+            requires(std::remove_cvref_t<T> &u) {
                 requires std::same_as<decltype((u.data)), std::array<char, std::remove_cvref_t<T>::size + 1> &>;
             }
             // 3) Allow for const types
-            && requires(std::remove_cvref_t<T> const &cu)
-            {
+            &&
+            requires(std::remove_cvref_t<T> const &cu) {
                 requires std::same_as<decltype((cu.data)), std::array<char, std::remove_cvref_t<T>::size + 1> const &>;
-            }
-            && !std::same_as<std::remove_cvref_t<T>, std::string>
-            && !std::same_as<std::remove_cvref_t<T>, std::string_view>;
+            } && !std::same_as<std::remove_cvref_t<T>, std::string> &&
+            !std::same_as<std::remove_cvref_t<T>, std::string_view>;
 
     class ConstexprStringBase {
     protected:
@@ -44,21 +54,19 @@ namespace AndreiUtils {
     class ConstexprString : public ConstexprStringBase {
     public:
         static constexpr std::size_t size = N;
-        std::array<char, size + 1> data{};  // +1 for null terminator
+        std::array<char, size + 1> data{}; // +1 for null terminator
 
         constexpr ConstexprString() = default;
 
         template<typename... Args>
-        explicit constexpr ConstexprString(Args const &... args) {
+        explicit constexpr ConstexprString(Args const &...args) {
             std::size_t pos = 0;
             (appendToData(args, pos), ...);
             this->data[N] = '\0';
         }
 
         // don't make this explicit
-        operator std::string() const {
-            return std::string(this->view());
-        }
+        operator std::string() const { return std::string(this->view()); }
 
         [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
@@ -123,9 +131,7 @@ namespace AndreiUtils {
         }
 
         // don't make this explicit
-        operator std::string() const {
-            return std::string(this->view());
-        }
+        operator std::string() const { return std::string(this->view()); }
 
         [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
@@ -166,9 +172,7 @@ namespace AndreiUtils {
         }
 
         // don't make this explicit
-        operator std::string() const {
-            return std::string(this->view());
-        }
+        operator std::string() const { return std::string(this->view()); }
 
         [[nodiscard]] constexpr std::string_view view() const { return std::string_view(this->data.data(), size); }
 
@@ -189,11 +193,15 @@ namespace AndreiUtils {
     }
 
     template<typename... Args>
-    constexpr std::size_t totalLength() { return (0 + ... + argLength<Args>()); }
+    constexpr std::size_t totalLength() {
+        return (0 + ... + argLength<Args>());
+    }
 
     // Function to concatenate compile-time strings
     template<typename... Args>
-    constexpr auto concatenate(Args const &... args) { return ConstexprString<totalLength<Args...>()>{args...}; }
+    constexpr auto concatenate(Args const &...args) {
+        return ConstexprString<totalLength<Args...>()>{args...};
+    }
 
     // std::string + ConstexprString-like
     template<HasDataAndSize T>
@@ -215,23 +223,17 @@ namespace AndreiUtils {
 
     template<std::size_t N>
     struct stringify<ConstexprString<N>> {
-        static std::string to_string(ConstexprString<N> const &datum) {
-            return std::string(datum);
-        }
+        static std::string to_string(ConstexprString<N> const &datum) { return std::string(datum); }
     };
 
     template<auto N>
     struct stringify<IntToConstexprString<N>> {
-        static std::string to_string(IntToConstexprString<N> const &datum) {
-            return std::string(datum);
-        }
+        static std::string to_string(IntToConstexprString<N> const &datum) { return std::string(datum); }
     };
 
     template<bool B>
     struct stringify<BoolToConstexprString<B>> {
-        static std::string to_string(BoolToConstexprString<B> const &datum) {
-            return std::string(datum);
-        }
+        static std::string to_string(BoolToConstexprString<B> const &datum) { return std::string(datum); }
     };
 
     template<HasDataAndSize T>
@@ -263,4 +265,4 @@ namespace AndreiUtils {
     constexpr bool operator!=(T1 const &lhs, T2 const &rhs) {
         return !operator==(lhs, rhs);
     }
-}
+} // namespace AndreiUtils

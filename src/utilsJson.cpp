@@ -1,10 +1,24 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.08.2021.
 //
 
+#include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsJson.h>
 #include <AndreiUtils/utilsJson.hpp>
-#include <AndreiUtils/utilsFiles.h>
 #include <AndreiUtils/utilsMap.hpp>
 #include <AndreiUtils/utilsString.h>
 #include <iostream>
@@ -13,9 +27,7 @@ using namespace AndreiUtils;
 using namespace nlohmann;
 using namespace std;
 
-json AndreiUtils::setJsonFromString(std::string const &jsonContent) {
-    return json::parse(jsonContent);
-}
+json AndreiUtils::setJsonFromString(std::string const &jsonContent) { return json::parse(jsonContent); }
 
 json AndreiUtils::readJsonFile(string const &path) {
     ifstream fin(path);
@@ -51,7 +63,7 @@ bool skipWhiteSpaces(vector<string> const &lineByLineContent, int &lineIndex, in
     return true;
 }
 
-bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
+bool skipToNextEntryInThisLevelOfJsonContent( // NOLINT(misc-no-recursion)
         vector<string> const &lineByLineContent, int &lineIndex, int &characterIndex, int *emptyLinesCounter = nullptr,
         nlohmann::json *skippedData = nullptr) {
     if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, emptyLinesCounter)) {
@@ -65,9 +77,9 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         if (lineByLineContent[lineIndex][characterIndex] != ']') {
             while (true) {
                 data.emplace_back();
-                if (!skipToNextEntryInThisLevelOfJsonContent(
-                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
-                        skippedData != nullptr ? &data.back() : nullptr)) {
+                if (!skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex,
+                                                             emptyLinesCounter,
+                                                             skippedData != nullptr ? &data.back() : nullptr)) {
                     return false;
                 }
                 if (lineByLineContent[lineIndex][characterIndex] == ']') {
@@ -90,8 +102,8 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
             while (true) {
                 std::string key;
                 nlohmann::json keyData;
-                if (!skipToNextEntryInThisLevelOfJsonContent(
-                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter, &keyData)) {
+                if (!skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex,
+                                                             emptyLinesCounter, &keyData)) {
                     return false;
                 }
                 assert(keyData.is_string());
@@ -99,8 +111,8 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
                 assert(lineByLineContent[lineIndex][characterIndex] == ':');
                 ++characterIndex;
                 if (!skipToNextEntryInThisLevelOfJsonContent(
-                        lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
-                        skippedData != nullptr ? &(mapEmplace(data, key)->second) : nullptr)) {
+                            lineByLineContent, lineIndex, characterIndex, emptyLinesCounter,
+                            skippedData != nullptr ? &(mapEmplace(data, key)->second) : nullptr)) {
                     return false;
                 }
                 if (lineByLineContent[lineIndex][characterIndex] == '}') {
@@ -154,8 +166,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, emptyLinesCounter);
         return true;
-    } else if (c == 't' &&
-               lineByLineContent[lineIndex][characterIndex + 1] == 'r' &&
+    } else if (c == 't' && lineByLineContent[lineIndex][characterIndex + 1] == 'r' &&
                lineByLineContent[lineIndex][characterIndex + 2] == 'u' &&
                lineByLineContent[lineIndex][characterIndex + 3] == 'e') {
         characterIndex += 4;
@@ -164,8 +175,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, emptyLinesCounter);
         return true;
-    } else if (c == 'f' &&
-               lineByLineContent[lineIndex][characterIndex + 1] == 'a' &&
+    } else if (c == 'f' && lineByLineContent[lineIndex][characterIndex + 1] == 'a' &&
                lineByLineContent[lineIndex][characterIndex + 2] == 'l' &&
                lineByLineContent[lineIndex][characterIndex + 3] == 's' &&
                lineByLineContent[lineIndex][characterIndex + 4] == 'e') {
@@ -175,8 +185,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
         }
         skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, emptyLinesCounter);
         return true;
-    } else if (c == 'n' &&
-               lineByLineContent[lineIndex][characterIndex + 1] == 'u' &&
+    } else if (c == 'n' && lineByLineContent[lineIndex][characterIndex + 1] == 'u' &&
                lineByLineContent[lineIndex][characterIndex + 2] == 'l' &&
                lineByLineContent[lineIndex][characterIndex + 3] == 'l') {
         characterIndex += 4;
@@ -190,7 +199,7 @@ bool skipToNextEntryInThisLevelOfJsonContent(  // NOLINT(misc-no-recursion)
     return false;
 }
 
-bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
+bool collectStringJsonContentKeepOrder( // NOLINT(misc-no-recursion)
         stringstream &stringContent, json const &content, json const &originalContent,
         vector<string> const &lineByLineContent, int &lineIndex, int &characterIndex, int const &indentLevel = 0,
         bool keepNewLines = true, int *upperNewLinesCounter = nullptr, bool verbose = false) {
@@ -226,7 +235,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                                                            upperNewLinesCounter);
         }
 
-        ++characterIndex;  // move past '[' character
+        ++characterIndex; // move past '[' character
         if (contentArray.empty()) {
             int betweenBracesNewLinesCounter = 0;
             if (!skipWhiteSpaces(lineByLineContent, lineIndex, characterIndex, &betweenBracesNewLinesCounter)) {
@@ -267,12 +276,13 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                 } else {
                     addSpace = true;
                 }
-                ++characterIndex;  // skip comma ',' character between array values
+                ++characterIndex; // skip comma ',' character between array values
             }
             stringstream subArrayValueContent;
-            if (!collectStringJsonContentKeepOrder(
-                    subArrayValueContent, contentArray[index], originalContentArray[index], lineByLineContent, lineIndex,
-                    characterIndex, indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
+            if (!collectStringJsonContentKeepOrder(subArrayValueContent, contentArray[index],
+                                                   originalContentArray[index], lineByLineContent, lineIndex,
+                                                   characterIndex, indentLevel + 1, keepNewLines,
+                                                   &valuePostDataNewLinesCounter, verbose)) {
                 return false;
             }
             if (addSpace && !startsWith(subArrayValueContent.str(), "\n")) {
@@ -344,14 +354,14 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
             if (verbose) {
                 cout << "KeyPreData: " << keyPreDataNewLinesCounter << endl;
             }
-            skipToNextEntryInThisLevelOfJsonContent(
-                    lineByLineContent, lineIndex, characterIndex, &keyPostDataNewLinesCounter, &keyDatum);
+            skipToNextEntryInThisLevelOfJsonContent(lineByLineContent, lineIndex, characterIndex,
+                                                    &keyPostDataNewLinesCounter, &keyDatum);
             if (verbose) {
                 cout << "KeyPostData: " << keyPostDataNewLinesCounter << endl;
             }
             assert(keyDatum.is_string());
             assert(lineByLineContent[lineIndex][characterIndex] == ':');
-            ++characterIndex;  // skips the colon ':' character
+            ++characterIndex; // skips the colon ':' character
             string key = keyDatum.get<string>();
             definedKeys[key] = true;
 
@@ -385,9 +395,9 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
                 }
                 commonEntries << ": ";
                 nlohmann::json const &originalCommonDatum = mapGet(originalContentMap, key);
-                if (!collectStringJsonContentKeepOrder(
-                        commonEntries, *commonDatum, originalCommonDatum, lineByLineContent, lineIndex, characterIndex,
-                        indentLevel + 1, keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
+                if (!collectStringJsonContentKeepOrder(commonEntries, *commonDatum, originalCommonDatum,
+                                                       lineByLineContent, lineIndex, characterIndex, indentLevel + 1,
+                                                       keepNewLines, &valuePostDataNewLinesCounter, verbose)) {
                     return false;
                 }
                 if (verbose) {
@@ -495,7 +505,7 @@ bool collectStringJsonContentKeepOrder(  // NOLINT(misc-no-recursion)
     return true;
 }
 
-void AndreiUtils::writeJsonFileKeepOrder(  // NOLINT(misc-no-recursion)
+void AndreiUtils::writeJsonFileKeepOrder( // NOLINT(misc-no-recursion)
         string const &path, json const &content, bool keepNewLines, std::string const &originalContentFilePath) {
     if (originalContentFilePath.empty() || !fileExists(originalContentFilePath)) {
         writeJsonFile(path, content);
@@ -542,7 +552,7 @@ void AndreiUtils::collectStringJsonContent(std::stringstream &stringContent, nlo
     stringContent << collectStringJsonContent(content);
 }
 
-void AndreiUtils::writeJsonFile(  // NOLINT(misc-no-recursion)
+void AndreiUtils::writeJsonFile( // NOLINT(misc-no-recursion)
         string const &path, json const &content, std::string const &originalFilePath, bool keepEmptyLines) {
     if (!originalFilePath.empty()) {
         writeJsonFileKeepOrder(path, content, keepEmptyLines, originalFilePath);
@@ -597,14 +607,14 @@ void adl_serializer<AndreiUtils::ImageCaptureParameters>::from_json(json const &
     data.size = j.at("size").get<AndreiUtils::ImageParameters>();
 }
 
-void adl_serializer<ImageCaptureParametersWithIntrinsics>::to_json(
-        json &j, ImageCaptureParametersWithIntrinsics const &data) {
+void adl_serializer<ImageCaptureParametersWithIntrinsics>::to_json(json &j,
+                                                                   ImageCaptureParametersWithIntrinsics const &data) {
     j = (AndreiUtils::ImageCaptureParameters) data;
     j["intrinsics"] = data.intrinsics;
 }
 
-void adl_serializer<ImageCaptureParametersWithIntrinsics>::from_json(
-        json const &j, ImageCaptureParametersWithIntrinsics &data) {
+void adl_serializer<ImageCaptureParametersWithIntrinsics>::from_json(json const &j,
+                                                                     ImageCaptureParametersWithIntrinsics &data) {
     data.ImageCaptureParameters::setFromOther(j.get<AndreiUtils::ImageCaptureParameters>());
     data.intrinsics = j.at("intrinsics").get<AndreiUtils::CameraIntrinsicParameters>();
 }

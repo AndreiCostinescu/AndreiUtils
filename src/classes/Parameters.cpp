@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 18.12.23.
 //
@@ -17,11 +31,11 @@ using json = nlohmann::json;
 
 Parameters::Parameters() : parameters(), parameterReference(nullptr), isReference(false) {}
 
-Parameters::Parameters(nlohmann::json config) : parameters(std::move(config)), parameterReference(nullptr),
-                                                isReference(false) {}
+Parameters::Parameters(nlohmann::json config) :
+    parameters(std::move(config)), parameterReference(nullptr), isReference(false) {}
 
-Parameters::Parameters(nlohmann::json *config) : parameterReference(config), parameters(),
-                                                 isReference(config != nullptr) {}
+Parameters::Parameters(nlohmann::json *config) :
+    parameterReference(config), parameters(), isReference(config != nullptr) {}
 
 Parameters::Parameters(Parameters const &other) = default;
 
@@ -62,9 +76,7 @@ bool Parameters::operator==(Parameters const &other) const {
     return (*this->parameterReference) == (*other.parameterReference);
 }
 
-bool Parameters::operator!=(Parameters const &other) const {
-    return !(*this == other);
-}
+bool Parameters::operator!=(Parameters const &other) const { return !(*this == other); }
 
 bool Parameters::empty() const {
     return this->isReference ? (this->parameterReference == nullptr || this->parameterReference->empty())
@@ -72,9 +84,9 @@ bool Parameters::empty() const {
 }
 
 bool Parameters::has(string const &parameterName) const {
-    return this->isReference ? (this->parameterReference != nullptr &&
-                                this->parameterReference->contains(parameterName))
-                             : this->parameters.contains(parameterName);
+    return this->isReference
+                   ? (this->parameterReference != nullptr && this->parameterReference->contains(parameterName))
+                   : this->parameters.contains(parameterName);
 }
 
 void Parameters::set(nlohmann::json const &data) {
@@ -113,9 +125,7 @@ Parameters Parameters::operator[](std::string const &parameterName) {
     return Parameters(&this->getCreateJsonReference(parameterName));
 }
 
-Parameters Parameters::at(string const &parameterName) {
-    return Parameters(&this->getJsonReference(parameterName));
-}
+Parameters Parameters::at(string const &parameterName) { return Parameters(&this->getJsonReference(parameterName)); }
 
 nlohmann::json const &Parameters::getCreateJson(string const &parameterName) {
     if (this->isReference) {
@@ -183,6 +193,4 @@ void Parameters::clear() {
     this->parameters.clear();
 }
 
-Parameters Parameters::clone() const {
-    return Parameters(this->getJson());
-}
+Parameters Parameters::clone() const { return Parameters(this->getJson()); }

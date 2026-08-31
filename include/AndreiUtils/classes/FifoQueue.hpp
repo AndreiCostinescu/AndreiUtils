@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu (andrei.costinescu@tum.de) on 26.03.2021.
 //
@@ -5,8 +19,8 @@
 #ifndef ANDREIUTILS_CLASSES_FIFOQUEUE_HPP
 #define ANDREIUTILS_CLASSES_FIFOQUEUE_HPP
 
-#include <cstring>  // for memcpy
-#include <stdexcept>  // for runtime_error
+#include <cstring> // for memcpy
+#include <stdexcept> // for runtime_error
 
 namespace AndreiUtils {
     template<class T>
@@ -16,41 +30,33 @@ namespace AndreiUtils {
         public:
             explicit FifoQueueIterator(const FifoQueue<T> *data, size_t index = 0) : data(data), index(index) {}
 
-            T &operator*() const {
-                return (*(this->data))[this->index];
-            }
+            T &operator*() const { return (*(this->data))[this->index]; }
 
             FifoQueueIterator &operator++() {
                 ++this->index;
                 return *this;
             }
 
-            const FifoQueueIterator operator++(int inc) {  // // NOLINT(readability-const-return-type)
+            const FifoQueueIterator operator++(int inc) { // // NOLINT(readability-const-return-type)
                 this->index += inc;
                 return FifoQueueIterator(*this);
             }
 
-            bool operator==(const FifoQueueIterator &rhs) const {
-                return this->index == rhs.index;
-            }
+            bool operator==(const FifoQueueIterator &rhs) const { return this->index == rhs.index; }
 
-            bool operator!=(const FifoQueueIterator &rhs) const {
-                return this->index != rhs.index;
-            }
+            bool operator!=(const FifoQueueIterator &rhs) const { return this->index != rhs.index; }
 
         private:
             size_t index;
             const FifoQueue<T> *data;
         };
 
-        explicit FifoQueue(unsigned int size, bool fixSize = false)
-                : data(nullptr), size(0), contentSize(0), contentStart(0), contentEnd(0), fixSize(fixSize) {
+        explicit FifoQueue(unsigned int size, bool fixSize = false) :
+            data(nullptr), size(0), contentSize(0), contentStart(0), contentEnd(0), fixSize(fixSize) {
             this->resize(size);
         }
 
-        virtual ~FifoQueue() {
-            this->reset();
-        }
+        virtual ~FifoQueue() { this->reset(); }
 
         void reset() {
             delete[] this->data;
@@ -61,13 +67,9 @@ namespace AndreiUtils {
             this->contentEnd = 0;
         }
 
-        FifoQueue::FifoQueueIterator begin() const {
-            return FifoQueue::FifoQueueIterator(this, 0);
-        }
+        FifoQueue::FifoQueueIterator begin() const { return FifoQueue::FifoQueueIterator(this, 0); }
 
-        FifoQueue::FifoQueueIterator end() const {
-            return FifoQueue::FifoQueueIterator(this, this->contentSize);
-        }
+        FifoQueue::FifoQueueIterator end() const { return FifoQueue::FifoQueueIterator(this, this->contentSize); }
 
         T pop() {
             if (this->contentSize == 0) {
@@ -86,7 +88,7 @@ namespace AndreiUtils {
                     throw std::runtime_error("FifoQueue is created with fixed size and the queue is full... "
                                              "Can't push element");
                 } else {
-                    this->resize(2 * this->size);  // think of dynamic arrays and make */ 2
+                    this->resize(2 * this->size); // think of dynamic arrays and make */ 2
                 }
             }
             this->data[this->contentEnd] = elem;
@@ -94,9 +96,7 @@ namespace AndreiUtils {
             this->contentSize++;
         }
 
-        [[nodiscard]] int getContentSize() const {
-            return this->contentSize;
-        }
+        [[nodiscard]] int getContentSize() const { return this->contentSize; }
 
         [[nodiscard]] T &getFirst() const {
             if (this->contentSize == 0) {
@@ -105,13 +105,9 @@ namespace AndreiUtils {
             return this->data[this->contentStart];
         }
 
-        [[nodiscard]] bool isFull() const {
-            return this->size == this->contentSize;
-        }
+        [[nodiscard]] bool isFull() const { return this->size == this->contentSize; }
 
-        [[nodiscard]] bool empty() const {
-            return this->contentSize == 0;
-        }
+        [[nodiscard]] bool empty() const { return this->contentSize == 0; }
 
         T &operator[](unsigned int index) const {
             if (index >= this->contentSize) {
@@ -146,13 +142,13 @@ namespace AndreiUtils {
             }
             this->size = newSize;
             this->contentStart = 0;
-            this->contentEnd = this->contentSize % this->size;  // but this should always be contentSize...
+            this->contentEnd = this->contentSize % this->size; // but this should always be contentSize...
         }
 
         T *data;
         unsigned int size, contentSize, contentStart, contentEnd;
         bool fixSize;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_CLASSES_FIFOQUEUE_HPP
+#endif // ANDREIUTILS_CLASSES_FIFOQUEUE_HPP

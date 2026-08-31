@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu on 23.06.22.
 //
@@ -11,9 +25,10 @@
 #include <utility>
 
 namespace AndreiUtils {
-    template<typename NodeId=int>
+    template<typename NodeId = int>
     class Node {
         using NodeDataPtr = std::shared_ptr<NodeData>;
+
     public:
         Node() : id(), data(nullptr) {}
 
@@ -42,7 +57,7 @@ namespace AndreiUtils {
 
         Node(Node const &other) : id(other.id), data(other.data) {}
 
-        Node(Node &&other) noexcept: id(std::move(other.id)), data(std::move(other.data)) {}
+        Node(Node &&other) noexcept : id(std::move(other.id)), data(std::move(other.data)) {}
 
         Node &operator=(Node const &other) {
             if (&other != this) {
@@ -60,25 +75,15 @@ namespace AndreiUtils {
             return *this;
         }
 
-        virtual ~Node() {
-            this->data.reset();
-        }
+        virtual ~Node() { this->data.reset(); }
 
-        inline NodeId &getId() {
-            return this->id;
-        }
+        inline NodeId &getId() { return this->id; }
 
-        inline NodeId const &getId() const {
-            return this->id;
-        }
+        inline NodeId const &getId() const { return this->id; }
 
-        inline NodeDataPtr &getData() {
-            return this->data;
-        }
+        inline NodeDataPtr &getData() { return this->data; }
 
-        inline NodeDataPtr const &getData() const {
-            return this->data;
-        }
+        inline NodeDataPtr const &getData() const { return this->data; }
 
         template<class T>
         T *getDataPtr() const {
@@ -95,7 +100,7 @@ namespace AndreiUtils {
         }
 
         void setData(NodeDataPtr _data) {
-            this->data = std::move(_data);  // this resets the pointer internally
+            this->data = std::move(_data); // this resets the pointer internally
         }
 
         // this only accepts r-values as the _data parameter
@@ -114,6 +119,6 @@ namespace AndreiUtils {
         NodeId id;
         NodeDataPtr data;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_NODE_HPP
+#endif // ANDREIUTILS_NODE_HPP

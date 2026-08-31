@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 24.03.2021.
 //
 
-#include <AndreiUtils/classes/Buffer.h>
 #include <AndreiUtils/NetworkData.h>
+#include <AndreiUtils/classes/Buffer.h>
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -12,14 +26,12 @@ using namespace AndreiUtils;
 using namespace std;
 
 Buffer::Buffer(uint64_t bufferSize) :
-        buffer(nullptr), bufferSize(0), bufferContentSize(0), referenceBuffer(nullptr), constReferenceBuffer(nullptr),
-        bufferType(BufferType::BUFFER_LOCAL) {
+    buffer(nullptr), bufferSize(0), bufferContentSize(0), referenceBuffer(nullptr), constReferenceBuffer(nullptr),
+    bufferType(BufferType::BUFFER_LOCAL) {
     this->prepareBuffer(bufferSize);
 }
 
-Buffer::~Buffer() {
-    this->reset();
-}
+Buffer::~Buffer() { this->reset(); }
 
 void Buffer::reset() {
     delete[] this->buffer;
@@ -34,7 +46,7 @@ void Buffer::reset() {
 Buffer *Buffer::copy() const {
     auto *copy = new Buffer(this->bufferSize);
 
-    assert (copy->bufferSize == this->bufferSize);
+    assert(copy->bufferSize == this->bufferSize);
     memcpy(copy->buffer, this->buffer, this->bufferSize);
 
     copy->bufferContentSize = this->bufferContentSize;
@@ -134,9 +146,7 @@ double Buffer::getDouble(int position) {
     return NetworkData::networkBytesToDouble(this->buffer, position);
 }
 
-bool Buffer::empty() const {
-    return this->bufferContentSize == 0;
-}
+bool Buffer::empty() const { return this->bufferContentSize == 0; }
 
 char *&Buffer::getBufferReference() {
     switch (this->bufferType) {
@@ -196,13 +206,9 @@ const char *Buffer::getConstBuffer() {
     return result;
 }
 
-uint64_t Buffer::getBufferSize() const {
-    return this->bufferSize;
-}
+uint64_t Buffer::getBufferSize() const { return this->bufferSize; }
 
-uint64_t Buffer::getBufferContentSize() const {
-    return this->bufferContentSize;
-}
+uint64_t Buffer::getBufferContentSize() const { return this->bufferContentSize; }
 
 void Buffer::setBufferContentSize(uint64_t _bufferContentSize) {
     this->prepareBuffer(_bufferContentSize);
@@ -234,13 +240,13 @@ void Buffer::checkBufferContentSize(uint64_t size, bool modifySize) {
             this->prepareBuffer(size);
             this->bufferContentSize = size;
         } else {
-            cerr << "Size of " << size << " is greater than the current buffer content size "
-                 << this->bufferContentSize << "! The next assertion will fail..." << endl;
+            cerr << "Size of " << size << " is greater than the current buffer content size " << this->bufferContentSize
+                 << "! The next assertion will fail..." << endl;
         }
     }
     if (size > this->bufferContentSize) {
         cout << "Requested size = " << size << " vs. this->bufferContentSize = " << this->bufferContentSize << endl;
-        assert (!modifySize);
+        assert(!modifySize);
     }
-    assert (size <= this->bufferContentSize);
+    assert(size <= this->bufferContentSize);
 }

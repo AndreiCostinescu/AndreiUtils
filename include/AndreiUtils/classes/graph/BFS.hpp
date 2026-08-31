@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 28.06.22.
 //
@@ -12,15 +26,14 @@
 #include <list>
 
 namespace AndreiUtils {
-    template<typename NodeId=int, typename EdgeId=std::string>
+    template<typename NodeId = int, typename EdgeId = std::string>
     class BFS {
         using NodeT = Node<NodeId>;
         using EdgeT = Edge<EdgeId, NodeId>;
         using GraphT = Graph<NodeId, EdgeId>;
+
     public:
-        explicit BFS(GraphT const &graph) : graph(graph), traversalIndex(0) {
-            this->initialize();
-        }
+        explicit BFS(GraphT const &graph) : graph(graph), traversalIndex(0) { this->initialize(); }
 
         std::map<NodeId, std::map<NodeId, int>> bfs() {
             // compute distance from roots to each node that the root reaches
@@ -71,18 +84,16 @@ namespace AndreiUtils {
             return val;
         }
 
-        std::vector<NodeId> getGraphRoots() const {
-            return getMapKeys(this->roots);
-        }
+        std::vector<NodeId> getGraphRoots() const { return getMapKeys(this->roots); }
 
         std::vector<NodeId> getTraversal() const {
             // Starting and Ending iterators
             auto start = this->traversal.begin();
             auto end = this->traversal.begin() + this->traversalIndex;
 
-            std::vector<int> result(this->traversalIndex);  // To store the sliced vector
-            copy(start, end, result.begin());  // Copy vector using copy function()
-            return result;  // Return the final sliced vector
+            std::vector<int> result(this->traversalIndex); // To store the sliced vector
+            copy(start, end, result.begin()); // Copy vector using copy function()
+            return result; // Return the final sliced vector
         }
 
     protected:
@@ -151,13 +162,13 @@ namespace AndreiUtils {
         }
 
         GraphT const &graph;
-        std::map<NodeId, bool> roots;  // nodes that form a root in the BFS-tree
+        std::map<NodeId, bool> roots; // nodes that form a root in the BFS-tree
         std::map<NodeId, bool> visited;
         std::vector<NodeId> traversal;
         std::map<NodeId, int> distances;
         std::map<NodeId, NodeId> parents;
         int traversalIndex;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_BFS_HPP
+#endif // ANDREIUTILS_BFS_HPP

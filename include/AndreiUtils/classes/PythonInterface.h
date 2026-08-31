@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 26.09.22.
 //
@@ -5,7 +19,7 @@
 #pragma once
 
 #include <AndreiUtils/utilsMap.hpp>
-#include <pybind11/embed.h>  // everything needed for embedding
+#include <pybind11/embed.h> // everything needed for embedding
 // #include <pybind11/eigen.h>  // everything needed for Eigen conversions
 // #include <pybind11/stl.h>    // everything needed for std:: types conversions
 
@@ -45,8 +59,8 @@ namespace AndreiUtils {
         static void initInterpreter();
 
         // Intentionally leak memory because third-party packages (e.g. numpy) use global variables...
-        // The destruction order of global variables is not guaranteed in C++ and py::objects call PY_DECREF upon destruction
-        // However, if the global/static interpreter is destroyed before those global objects
+        // The destruction order of global variables is not guaranteed in C++ and py::objects call PY_DECREF upon
+        // destruction However, if the global/static interpreter is destroyed before those global objects
         //  (because destruction order is not guaranteed in c++!),
         //  them calling PY_DECREF causes segmentation faults because the interpreter was already destroyed!
         // This is the cause for errors at the end of the program!
@@ -56,4 +70,4 @@ namespace AndreiUtils {
         py::module module;
         bool initialized;
     };
-}
+} // namespace AndreiUtils

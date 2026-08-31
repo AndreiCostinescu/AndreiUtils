@@ -1,11 +1,25 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 24.11.23.
 //
 
 #include <AndreiUtils/utilsBinarySerialization.hpp>
 #include <AndreiUtils/utilsVector.hpp>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace AndreiUtils;
 using namespace std;
@@ -51,26 +65,32 @@ void testSerializeString() {
 
 void testSerializeComplex() {
     vector<map<pair<int, double>, string>> toSerialize, deserialized;
-    toSerialize.emplace_back(map<pair<int, double>, string>{{{1, 1.5},  "firstInterval"},
-                                                            {{2, 2.89}, "secondInterval"},
-                                                            {{3, 3.4},  "thirdInterval"}});
+    toSerialize.emplace_back(map<pair<int, double>, string>{
+            {{1, 1.5}, "firstInterval"}, {{2, 2.89}, "secondInterval"}, {{3, 3.4}, "thirdInterval"}});
     toSerialize.emplace_back(map<pair<int, double>, string>{{{4, 4.21}, "firstInterval"},
-                                                            {{5, 5.2},  "secondInterval"},
+                                                            {{5, 5.2}, "secondInterval"},
                                                             {{5, 5.63}, "thirdInterval"},
-                                                            {{6, 6.4},  "fourthInterval"}});
+                                                            {{6, 6.4}, "fourthInterval"}});
     toSerialize.emplace_back();
     toSerialize.emplace_back(map<pair<int, double>, string>{{{7, 7.111}, "firstInterval"}});
-    toSerialize.emplace_back(map<pair<int, double>, string>{{{8,  8.86},   "firstInterval"},
-                                                            {{9,  9.9999}, "secondInterval"},
-                                                            {{10, 10.36},  "thirdInterval"},
-                                                            {{11, 11.81},  "fourthInterval"}});
+    toSerialize.emplace_back(map<pair<int, double>, string>{{{8, 8.86}, "firstInterval"},
+                                                            {{9, 9.9999}, "secondInterval"},
+                                                            {{10, 10.36}, "thirdInterval"},
+                                                            {{11, 11.81}, "fourthInterval"}});
     toSerialize.emplace_back();
-    cout << "To serialize data: " << printVectorToString<map<pair<int, double>, string>>(
-            toSerialize, [](map<pair<int, double>, string> const &m) {
-                return "{" + printMapToStringConvertKey<pair<int, double>>(m, [](pair<int, double> const &key) {
-                    return "[" + to_string(key.first) + ", " + to_string(key.second) + "]";
-                }) + "}";
-            }) << endl;
+    cout << "To serialize data: "
+         << printVectorToString<map<pair<int, double>, string>>(
+                    toSerialize,
+                    [](map<pair<int, double>, string> const &m) {
+                        return "{" +
+                               printMapToStringConvertKey<pair<int, double>>(
+                                       m,
+                                       [](pair<int, double> const &key) {
+                                           return "[" + to_string(key.first) + ", " + to_string(key.second) + "]";
+                                       }) +
+                               "}";
+                    })
+         << endl;
 
     ofstream fout("tmp.bin", std::ios::binary);
     serialize(fout, toSerialize);
@@ -78,12 +98,19 @@ void testSerializeComplex() {
 
     ifstream fin("tmp.bin", std::ios::binary);
     AndreiUtils::deserializeIn(fin, deserialized);
-    cout << "Deserialized data: " << printVectorToString<map<pair<int, double>, string>>(
-            deserialized, [](map<pair<int, double>, string> const &m) {
-                return "{" + printMapToStringConvertKey<pair<int, double>>(m, [](pair<int, double> const &key) {
-                    return "[" + to_string(key.first) + ", " + to_string(key.second) + "]";
-                }) + "}";
-            }) << endl;
+    cout << "Deserialized data: "
+         << printVectorToString<map<pair<int, double>, string>>(
+                    deserialized,
+                    [](map<pair<int, double>, string> const &m) {
+                        return "{" +
+                               printMapToStringConvertKey<pair<int, double>>(
+                                       m,
+                                       [](pair<int, double> const &key) {
+                                           return "[" + to_string(key.first) + ", " + to_string(key.second) + "]";
+                                       }) +
+                               "}";
+                    })
+         << endl;
 }
 
 TEST(SerializeTest, TestSerializeInt) {
@@ -133,19 +160,18 @@ TEST(SerializeTest, SerializeStringTest) {
 
 TEST(SerializeTest, SerializeComplex) {
     vector<map<pair<int, double>, string>> toSerialize, deserialized;
-    toSerialize.emplace_back(map<pair<int, double>, string>{{{1, 1.5},  "firstInterval"},
-                                                            {{2, 2.89}, "secondInterval"},
-                                                            {{3, 3.4},  "thirdInterval"}});
+    toSerialize.emplace_back(map<pair<int, double>, string>{
+            {{1, 1.5}, "firstInterval"}, {{2, 2.89}, "secondInterval"}, {{3, 3.4}, "thirdInterval"}});
     toSerialize.emplace_back(map<pair<int, double>, string>{{{4, 4.21}, "firstInterval"},
-                                                            {{5, 5.2},  "secondInterval"},
+                                                            {{5, 5.2}, "secondInterval"},
                                                             {{5, 5.63}, "thirdInterval"},
-                                                            {{6, 6.4},  "fourthInterval"}});
+                                                            {{6, 6.4}, "fourthInterval"}});
     toSerialize.emplace_back();
     toSerialize.emplace_back(map<pair<int, double>, string>{{{7, 7.111}, "firstInterval"}});
-    toSerialize.emplace_back(map<pair<int, double>, string>{{{8,  8.86},   "firstInterval"},
-                                                            {{9,  9.9999}, "secondInterval"},
-                                                            {{10, 10.36},  "thirdInterval"},
-                                                            {{11, 11.81},  "fourthInterval"}});
+    toSerialize.emplace_back(map<pair<int, double>, string>{{{8, 8.86}, "firstInterval"},
+                                                            {{9, 9.9999}, "secondInterval"},
+                                                            {{10, 10.36}, "thirdInterval"},
+                                                            {{11, 11.81}, "fourthInterval"}});
     toSerialize.emplace_back();
 
     ofstream fout("tmp.bin", std::ios::binary);
@@ -155,7 +181,7 @@ TEST(SerializeTest, SerializeComplex) {
     ifstream fin("tmp.bin", std::ios::binary);
     AndreiUtils::deserializeIn(fin, deserialized);
 
-    ASSERT_EQ(toSerialize.size(), deserialized.size()) ;
+    ASSERT_EQ(toSerialize.size(), deserialized.size());
 
     for (size_t i = 0; i < toSerialize.size(); ++i) {
         EXPECT_EQ(toSerialize[i], deserialized[i]);

@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.08.21.
 //
@@ -7,30 +21,30 @@
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
 #include <AndreiUtils/utilsOpenCV.h>
-#include <complex>
 #include <Eigen/Dense>
+#include <complex>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
 namespace AndreiUtils {
     template<typename Scalar, int Rows, int Cols,
-            int Options = Eigen::AutoAlign |
-                          #if EIGEN_GNUC_AT(3, 4)
-                          // workaround a bug in at least gcc 3.4.6
-                      // the innermost ?: ternary operator is misparsed. We write it slightly
-                      // differently and this makes gcc 3.4.6 happy, but it's ugly.
-                      // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
-                      // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
-                      ((Rows==1 && Cols!=1) ? Eigen::RowMajor
-                      : !(Cols==1 && Rows!=1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
-                      : Eigen::ColMajor ),
-                          #else
-                          ((Rows == 1 && Cols != 1) ? Eigen::RowMajor :
-                           ((Cols == 1 && Rows != 1) ? Eigen::ColMajor :
-                            EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
+             int Options = Eigen::AutoAlign |
+#if EIGEN_GNUC_AT(3, 4)
+                           // workaround a bug in at least gcc 3.4.6
+                           // the innermost ?: ternary operator is misparsed. We write it slightly
+                           // differently and this makes gcc 3.4.6 happy, but it's ugly.
+                           // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
+                           // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
+                           ((Rows == 1 && Cols != 1)    ? Eigen::RowMajor
+                            : !(Cols == 1 && Rows != 1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
+                                                        : Eigen::ColMajor),
+#else
+                           ((Rows == 1 && Cols != 1)
+                                    ? Eigen::RowMajor
+                                    : ((Cols == 1 && Rows != 1) ? Eigen::ColMajor
+                                                                : EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
 #endif
-            int MaxRows = Rows,
-            int MaxCols = Cols>
+             int MaxRows = Rows, int MaxCols = Cols>
     class EigenMatrixOpenCVSerializer {
     public:
         static Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> getMatrix(cv::FileNode const &node) {
@@ -55,11 +69,11 @@ namespace AndreiUtils {
             }
         }
 
-        EigenMatrixOpenCVSerializer() : matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(),
-                                        options(), maxRows(), maxCols() {}
+        EigenMatrixOpenCVSerializer() :
+            matrix(nullptr), type(), rows(), cols(), currentRows(), currentCols(), options(), maxRows(), maxCols() {}
 
         explicit EigenMatrixOpenCVSerializer(const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &m) :
-                EigenMatrixOpenCVSerializer() {
+            EigenMatrixOpenCVSerializer() {
             this->matrix = &m;
             this->type = EigenMatrixOpenCVSerializer::getStringFromType();
             this->rows = Rows;
@@ -149,8 +163,8 @@ namespace AndreiUtils {
                 }
             }
             if (setItems != 9) {
-                throw std::runtime_error(
-                        "Poorly formatted xml data for EigenMatrixOpenCVSerializer: " + std::string(node));
+                throw std::runtime_error("Poorly formatted xml data for EigenMatrixOpenCVSerializer: " +
+                                         std::string(node));
             }
             if (Rows != -1) {
                 if (this->rows != -1 && Rows != this->rows) {
@@ -251,83 +265,86 @@ namespace AndreiUtils {
     void read(cv::FileNode const &node, Eigen::Array3f &x,
               Eigen::Array3f const &default_value = Eigen::Array3f::Zero());
 
-    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
-            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(std::vector<cv::Point2f> const &eigenPoints2d,
+                                                    std::vector<cv::Point3f> const &eigenPoints3d, double fx, double fy,
+                                                    double ppx, double ppy, float distortionCoefficients[5]);
 
-    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
-            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(std::vector<Eigen::Vector2f> const &eigenPoints2d,
+                                                    std::vector<Eigen::Vector3f> const &eigenPoints3d, double fx,
+                                                    double fy, double ppx, double ppy, float distortionCoefficients[5]);
 
-    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
-            const CameraIntrinsicParameters &intrinsics);
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(std::vector<cv::Point2f> const &eigenPoints2d,
+                                                    std::vector<cv::Point3f> const &eigenPoints3d,
+                                                    const CameraIntrinsicParameters &intrinsics);
 
-    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(
-            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
-            const CameraIntrinsicParameters &intrinsics);
+    Eigen::Matrix4d recoverMatPoseFrom2dAnd3dPoints(std::vector<Eigen::Vector2f> const &eigenPoints2d,
+                                                    std::vector<Eigen::Vector3f> const &eigenPoints3d,
+                                                    const CameraIntrinsicParameters &intrinsics);
 
-    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
-            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(std::vector<cv::Point2f> const &eigenPoints2d,
+                                                        std::vector<cv::Point3f> const &eigenPoints3d, double fx,
+                                                        double fy, double ppx, double ppy,
+                                                        float distortionCoefficients[5]);
 
-    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
-            double fx, double fy, double ppx, double ppy, float distortionCoefficients[5]);
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(std::vector<Eigen::Vector2f> const &eigenPoints2d,
+                                                        std::vector<Eigen::Vector3f> const &eigenPoints3d, double fx,
+                                                        double fy, double ppx, double ppy,
+                                                        float distortionCoefficients[5]);
 
-    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            std::vector<cv::Point2f> const &eigenPoints2d, std::vector<cv::Point3f> const &eigenPoints3d,
-            const CameraIntrinsicParameters &intrinsics);
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(std::vector<cv::Point2f> const &eigenPoints2d,
+                                                        std::vector<cv::Point3f> const &eigenPoints3d,
+                                                        const CameraIntrinsicParameters &intrinsics);
 
-    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(
-            std::vector<Eigen::Vector2f> const &eigenPoints2d, std::vector<Eigen::Vector3f> const &eigenPoints3d,
-            const CameraIntrinsicParameters &intrinsics);
-}
+    DualQuaternion<double> recoverPoseFrom2dAnd3dPoints(std::vector<Eigen::Vector2f> const &eigenPoints2d,
+                                                        std::vector<Eigen::Vector3f> const &eigenPoints3d,
+                                                        const CameraIntrinsicParameters &intrinsics);
+} // namespace AndreiUtils
 
 namespace cv {
     template<typename Scalar, int Rows, int Cols,
-            int Options = Eigen::AutoAlign |
-                          #if EIGEN_GNUC_AT(3, 4)
-                          // workaround a bug in at least gcc 3.4.6
-                          // the innermost ?: ternary operator is misparsed. We write it slightly
-                          // differently and this makes gcc 3.4.6 happy, but it's ugly.
-                          // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
-                          // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
-                          ((Rows==1 && Cols!=1) ? Eigen::RowMajor
-                          : !(Cols==1 && Rows!=1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
-                          : Eigen::ColMajor ),
-                          #else
-                          ((Rows == 1 && Cols != 1) ? Eigen::RowMajor :
-                           ((Cols == 1 && Rows != 1) ? Eigen::ColMajor :
-                            EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
-            #endif
-            int MaxRows = Rows,
-            int MaxCols = Cols>
+             int Options = Eigen::AutoAlign |
+#if EIGEN_GNUC_AT(3, 4)
+                           // workaround a bug in at least gcc 3.4.6
+                           // the innermost ?: ternary operator is misparsed. We write it slightly
+                           // differently and this makes gcc 3.4.6 happy, but it's ugly.
+                           // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
+                           // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
+                           ((Rows == 1 && Cols != 1)    ? Eigen::RowMajor
+                            : !(Cols == 1 && Rows != 1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
+                                                        : Eigen::ColMajor),
+#else
+                           ((Rows == 1 && Cols != 1)
+                                    ? Eigen::RowMajor
+                                    : ((Cols == 1 && Rows != 1) ? Eigen::ColMajor
+                                                                : EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
+#endif
+             int MaxRows = Rows, int MaxCols = Cols>
     void write(cv::FileStorage &fs, std::string const &name,
                const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x) {
         AndreiUtils::EigenMatrixOpenCVSerializer<Scalar, Rows, Cols, Options, MaxRows, MaxCols>(x).writeParameters(fs);
     }
 
     template<typename Scalar, int Rows, int Cols,
-            int Options = Eigen::AutoAlign |
-                          #if EIGEN_GNUC_AT(3, 4)
-                          // workaround a bug in at least gcc 3.4.6
-                          // the innermost ?: ternary operator is misparsed. We write it slightly
-                          // differently and this makes gcc 3.4.6 happy, but it's ugly.
-                          // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
-                          // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
-                          ((Rows==1 && Cols!=1) ? Eigen::RowMajor
-                          : !(Cols==1 && Rows!=1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
-                          : Eigen::ColMajor ),
-                          #else
-                          ((Rows == 1 && Cols != 1) ? Eigen::RowMajor :
-                           ((Cols == 1 && Rows != 1) ? Eigen::ColMajor :
-                            EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
-            #endif
-            int MaxRows = Rows,
-            int MaxCols = Cols>
+             int Options = Eigen::AutoAlign |
+#if EIGEN_GNUC_AT(3, 4)
+                           // workaround a bug in at least gcc 3.4.6
+                           // the innermost ?: ternary operator is misparsed. We write it slightly
+                           // differently and this makes gcc 3.4.6 happy, but it's ugly.
+                           // The error would only show up with EIGEN_DEFAULT_TO_ROW_MAJOR is defined
+                           // (when EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION is RowMajor)
+                           ((Rows == 1 && Cols != 1)    ? Eigen::RowMajor
+                            : !(Cols == 1 && Rows != 1) ? EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION
+                                                        : Eigen::ColMajor),
+#else
+                           ((Rows == 1 && Cols != 1)
+                                    ? Eigen::RowMajor
+                                    : ((Cols == 1 && Rows != 1) ? Eigen::ColMajor
+                                                                : EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION)),
+#endif
+             int MaxRows = Rows, int MaxCols = Cols>
     void read(cv::FileNode const &node, Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &x,
-              const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &default_value = Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>()) {
+              const Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> &default_value =
+                      Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>()) {
         if (node.empty()) {
             x = default_value;
         } else {
@@ -335,6 +352,6 @@ namespace cv {
                     node);
         }
     }
-}
+} // namespace cv
 
-#endif //ANDREIUTILS_UTILSEIGENOPENCV_H
+#endif // ANDREIUTILS_UTILSEIGENOPENCV_H

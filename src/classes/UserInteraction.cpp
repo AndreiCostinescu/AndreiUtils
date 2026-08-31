@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.10.23.
 //
@@ -26,8 +40,8 @@ int UserInteraction::getIndexSupervision(string const &prompt, int minIndex, int
     return UserInteraction::getIndexSupervisionWithScenario(prompt, minIndex, maxIndex, f);
 }
 
-vector<int> UserInteraction::getMultipleIndexSupervision(
-        string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) {
+vector<int> UserInteraction::getMultipleIndexSupervision(string const &prompt, int minIndex, int maxIndex,
+                                                         bool allowEmptyResponse, function<vector<int>()> const &f) {
     return UserInteraction::getMultipleIndexSupervisionWithScenario(prompt, minIndex, maxIndex, allowEmptyResponse, f);
 }
 
@@ -36,21 +50,20 @@ std::string UserInteraction::getStringSupervision(string const &prompt, bool all
 }
 
 UserInteraction::UserInteraction(bool clearAfterEachResponse, bool addNewLineAfterEachResponse) :
-        clearAfterEachResponse(clearAfterEachResponse), addNewLineAfterEachResponse(addNewLineAfterEachResponse) {}
+    clearAfterEachResponse(clearAfterEachResponse), addNewLineAfterEachResponse(addNewLineAfterEachResponse) {}
 
 UserInteraction::UserInteraction(std::string const &scenario) :
-        clearAfterEachResponse(false), addNewLineAfterEachResponse(false) {
+    clearAfterEachResponse(false), addNewLineAfterEachResponse(false) {
     this->setScenario(scenario);
 }
 
 UserInteraction::UserInteraction(UserInteraction const &other) :
-        ss(other.ss.str()), scenario(other.scenario), clearAfterEachResponse(other.clearAfterEachResponse),
-        addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
+    ss(other.ss.str()), scenario(other.scenario), clearAfterEachResponse(other.clearAfterEachResponse),
+    addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
 
-UserInteraction::UserInteraction(UserInteraction &&other) noexcept:
-        ss(std::move(other.ss)), scenario(std::move(other.scenario)),
-        clearAfterEachResponse(other.clearAfterEachResponse),
-        addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
+UserInteraction::UserInteraction(UserInteraction &&other) noexcept :
+    ss(std::move(other.ss)), scenario(std::move(other.scenario)), clearAfterEachResponse(other.clearAfterEachResponse),
+    addNewLineAfterEachResponse(other.addNewLineAfterEachResponse) {}
 
 UserInteraction::~UserInteraction() {
     this->clear();
@@ -85,9 +98,7 @@ UserInteraction &UserInteraction::clear() {
     return *this;
 }
 
-UserInteraction &UserInteraction::operator()() {
-    return this->clear();
-}
+UserInteraction &UserInteraction::operator()() { return this->clear(); }
 
 void UserInteraction::setScenario(string const &scenarioFile) {
     if (!scenarioFile.empty()) {
@@ -118,14 +129,14 @@ int UserInteraction::getIndexResponse(int minIndex, int maxIndex, function<int()
         scenarioResponse.clear();
         this->scenario->close();
     }
-    auto res = UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f,
-                                                                scenarioResponse);
+    auto res =
+            UserInteraction::getIndexSupervisionWithScenario(this->ss.str(), minIndex, maxIndex, f, scenarioResponse);
     this->postResponse();
     return res;
 }
 
-vector<int> UserInteraction::getMultipleIndexResponse(
-        int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f) {
+vector<int> UserInteraction::getMultipleIndexResponse(int minIndex, int maxIndex, bool allowEmptyResponse,
+                                                      function<vector<int>()> const &f) {
     string scenarioResponse;
     if (this->useScenario() && !getline(*this->scenario, scenarioResponse)) {
         scenarioResponse.clear();
@@ -153,17 +164,15 @@ void UserInteraction::tell() {
     this->postResponse();
 }
 
-bool UserInteraction::useScenario() const {
-    return this->scenario != nullptr && this->scenario->is_open();
-}
+bool UserInteraction::useScenario() const { return this->scenario != nullptr && this->scenario->is_open(); }
 
-bool UserInteraction::getBooleanSupervisionWithScenario(
-        string const &prompt, bool expectBooleanValues, function<UserResponse()> const &f,
-        string const &scenarioResponse) {
+bool UserInteraction::getBooleanSupervisionWithScenario(string const &prompt, bool expectBooleanValues,
+                                                        function<UserResponse()> const &f,
+                                                        string const &scenarioResponse) {
     UserResponse res;
     while (true) {
-        cout << prompt << ((endsWith(prompt, "\n") && !endsWith(prompt, " ")) ? "" : " ")
-             << "Type " << (expectBooleanValues ? "'true' or 'false'" : "'yes' or 'no'") << ": ";
+        cout << prompt << ((endsWith(prompt, "\n") && !endsWith(prompt, " ")) ? "" : " ") << "Type "
+             << (expectBooleanValues ? "'true' or 'false'" : "'yes' or 'no'") << ": ";
         if (f) {
             res = f();
         } else {
@@ -191,12 +200,11 @@ bool UserInteraction::getBooleanSupervisionWithScenario(
     return res == UserResponse_OK;
 }
 
-int UserInteraction::getIndexSupervisionWithScenario(
-        string const &prompt, int minIndex, int maxIndex, function<int()> const &f, string const &scenarioResponse) {
+int UserInteraction::getIndexSupervisionWithScenario(string const &prompt, int minIndex, int maxIndex,
+                                                     function<int()> const &f, string const &scenarioResponse) {
     if (!(minIndex < 0 && maxIndex < 0) && maxIndex < minIndex) {
-        throw std::runtime_error(
-                "In function UserInteraction::getIndexSupervision the maxIndex (" + to_string(maxIndex) +
-                ") is lower than the minIndex (" + to_string(minIndex) + ")!");
+        throw std::runtime_error("In function UserInteraction::getIndexSupervision the maxIndex (" +
+                                 to_string(maxIndex) + ") is lower than the minIndex (" + to_string(minIndex) + ")!");
     }
     int res;
     while (true) {
@@ -230,17 +238,17 @@ int UserInteraction::getIndexSupervisionWithScenario(
     return res;
 }
 
-vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(
-        string const &prompt, int minIndex, int maxIndex, bool allowEmptyResponse, function<vector<int>()> const &f,
-        string const &scenarioResponse) {
+vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(string const &prompt, int minIndex, int maxIndex,
+                                                                     bool allowEmptyResponse,
+                                                                     function<vector<int>()> const &f,
+                                                                     string const &scenarioResponse) {
     if (!(minIndex < 0 && maxIndex < 0) && maxIndex < minIndex) {
-        throw std::runtime_error(
-                "In function UserInteraction::getMultipleIndexSupervision the maxIndex (" + to_string(maxIndex) +
-                ") is lower than the minIndex (" + to_string(minIndex) + ")!");
+        throw std::runtime_error("In function UserInteraction::getMultipleIndexSupervision the maxIndex (" +
+                                 to_string(maxIndex) + ") is lower than the minIndex (" + to_string(minIndex) + ")!");
     }
     vector<int> res;
     while (true) {
-        res.clear();  // reset content from previous loop iterations
+        res.clear(); // reset content from previous loop iterations
         cout << prompt << "\nIf multiple answers, separate multiple indices by a comma ',' character: ";
         if (f) {
             res = f();
@@ -295,8 +303,9 @@ vector<int> UserInteraction::getMultipleIndexSupervisionWithScenario(
     return res;
 }
 
-std::string UserInteraction::getStringSupervisionWithScenario(
-        string const &prompt, bool allowEmpty, function<string()> const &f, string const &scenarioResponse) {
+std::string UserInteraction::getStringSupervisionWithScenario(string const &prompt, bool allowEmpty,
+                                                              function<string()> const &f,
+                                                              string const &scenarioResponse) {
     string res;
     while (true) {
         cout << prompt;

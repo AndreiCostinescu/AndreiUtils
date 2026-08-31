@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 20-Oct-21.
 //
@@ -19,9 +33,8 @@ namespace AndreiUtils {
     uint8_t *imageDataRotation(uint8_t *data, RotationType rotation, StandardTypes imageType, int height, int width,
                                int channels = 1);
 
-    uint8_t *imageDataRotationWithDesiredParameters(
-            uint8_t *data, RotationType applyRotation, StandardTypes imageType, int desiredHeight, int desiredWidth,
-            int channels = 1);
+    uint8_t *imageDataRotationWithDesiredParameters(uint8_t *data, RotationType applyRotation, StandardTypes imageType,
+                                                    int desiredHeight, int desiredWidth, int channels = 1);
 
     bool readImageHeader(std::ifstream &in, int &height, int &width, StandardTypes &type, int &channels);
 
@@ -32,8 +45,8 @@ namespace AndreiUtils {
     bool readImageBinary(std::ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type,
                          int &channels);
 
-    bool readImageBinary(std::ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type,
-                         int &channels, int nrBytes);
+    bool readImageBinary(std::ifstream &in, uint8_t *image, int &height, int &width, StandardTypes &type, int &channels,
+                         int nrBytes);
 
     bool readColorImageBinary(std::ifstream &in, uint8_t *&image, int &height, int &width, StandardTypes &type);
 
@@ -68,6 +81,6 @@ namespace AndreiUtils {
 
     void swapColorImageChannels(uint8_t *image, int nrElements, int channels,
                                 const std::vector<std::pair<int, int>> &channelSwaps);
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_UTILSIMAGES_H
+#endif // ANDREIUTILS_UTILSIMAGES_H

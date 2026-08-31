@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
@@ -5,9 +19,9 @@
 #include <AndreiUtils/classes/Pointer.hpp>
 #include <AndreiUtils/utils.hpp>
 #include <cassert>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-#include <gtest/gtest.h>
 
 using namespace std;
 
@@ -15,13 +29,11 @@ class A {
 public:
     explicit A(string name = "") : name(std::move(name)) {}
 
-    virtual ~A() {
-        cout << "In A's destructor for " << this->name << "!" << endl;
-    }
+    virtual ~A() { cout << "In A's destructor for " << this->name << "!" << endl; }
 
     A(A const &other) = default;
 
-    A(A &&other) noexcept: name(std::move(other.name)) {}
+    A(A &&other) noexcept : name(std::move(other.name)) {}
 
     A &operator=(A const &other) {
         if (this != &other) {
@@ -37,16 +49,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] virtual std::string details() const {
-        return "An A of name " + this->name;
-    }
+    [[nodiscard]] virtual std::string details() const { return "An A of name " + this->name; }
 
     string name;
 };
 
-void print(A const *a) {
-    cout << a->name << endl;
-}
+void print(A const *a) { cout << a->name << endl; }
 
 void testFirstExample() {
     std::unique_ptr<A>(new A("1"));
@@ -143,13 +151,11 @@ class B : public A {
 public:
     B() : A("B") {}
 
-    ~B() override {
-        cout << "Destroying " << this->name << " with x = " << this->x << endl;
-    }
+    ~B() override { cout << "Destroying " << this->name << " with x = " << this->x << endl; }
 
     B(B const &other) = default;
 
-    B(B &&other) noexcept: A(std::move(other)), x(other.x++) {}
+    B(B &&other) noexcept : A(std::move(other)), x(other.x++) {}
 
     B &operator=(B const &other) {
         if (this != &other) {
@@ -257,7 +263,7 @@ public:
 
     Test(Test const &other) : name(other.name) { cout << "Copy Constructor for " << this->name << "!" << endl; }
 
-    Test(Test &&other) noexcept: name(std::move(other.name)) {
+    Test(Test &&other) noexcept : name(std::move(other.name)) {
         cout << "Move Constructor for " << this->name << "!" << endl;
     }
 
@@ -512,9 +518,7 @@ TEST(SmartPointers, MyPointerSmartPtrAssignment) {
 
 void testF(AndreiUtils::Pointer<A>) {}
 
-TEST(SmartPointers, FunctionWithMyPointerPassSmartPtr) {
-    testF(std::make_shared<B>());
-}
+TEST(SmartPointers, FunctionWithMyPointerPassSmartPtr) { testF(std::make_shared<B>()); }
 
 TEST(SmartPointers, SubClassPointer) {
     B b;

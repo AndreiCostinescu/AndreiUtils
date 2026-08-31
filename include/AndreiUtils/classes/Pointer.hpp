@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 18-Apr-24.
 //
@@ -23,106 +37,114 @@ namespace AndreiUtils {
         Pointer();
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(std::nullptr_t);  // NOLINT(*-explicit-constructor)
+        Pointer(std::nullptr_t); // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         explicit Pointer(Type &datum);
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         explicit Pointer(Type const &datum);
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         explicit Pointer(Type &&datum);
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(T *datum);  // NOLINT(google-explicit-constructor)
+        Pointer(T *datum); // NOLINT(google-explicit-constructor)
 
         // no marking as explicit because we want the conversion from pointer to Pointer
-        Pointer(std::remove_const_t<T> *datum) requires std::is_const_v<T>;  // NOLINT(google-explicit-constructor)
+        Pointer(std::remove_const_t<T> *datum)
+            requires std::is_const_v<T>; // NOLINT(google-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
-        Pointer(SmartPtrType datum);  // NOLINT(google-explicit-constructor)
+        Pointer(SmartPtrType datum); // NOLINT(google-explicit-constructor)
 
         // no marking as explicit because we want the conversion from SmartPtrType to Pointer
-        template<typename SubT> requires StrictSubType<T, SubT>
-        Pointer(std::shared_ptr<SubT> datum);  // NOLINT(google-explicit-constructor)
+        template<typename SubT>
+            requires StrictSubType<T, SubT>
+        Pointer(std::shared_ptr<SubT> datum); // NOLINT(google-explicit-constructor)
 
-        Pointer(Pointer const &other);   // NOLINT(*-explicit-constructor)
+        Pointer(Pointer const &other); // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer &&other) noexcept;   // NOLINT(*-explicit-constructor)
+        Pointer(Pointer &&other) noexcept; // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer<std::remove_const_t<T>> const &other) requires std::is_const_v<T>;   // NOLINT(*-explicit-constructor)
+        Pointer(Pointer<std::remove_const_t<T>> const &other)
+            requires std::is_const_v<T>; // NOLINT(*-explicit-constructor)
 
-        Pointer(Pointer<std::remove_const_t<T>> &&other) noexcept requires std::is_const_v<T>;   // NOLINT(*-explicit-constructor)
+        Pointer(Pointer<std::remove_const_t<T>> &&other) noexcept
+            requires std::is_const_v<T>; // NOLINT(*-explicit-constructor)
 
         // differentiation between StrictSubType is needed because of the protected (isRegular, ptr, smart)
         // members of Pointer<Type> which must be accessible from the constructor or Pointer<T>
         // (but they would not be accessible without this differentiation because of their protected status)
 
         template<typename Type>
-        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
-        Pointer(Pointer<Type> const &other);   // NOLINT(*-explicit-constructor)
+            requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
+        Pointer(Pointer<Type> const &other); // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
-        Pointer(Pointer<Type> &&other) noexcept;   // NOLINT(*-explicit-constructor)
+            requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
+        Pointer(Pointer<Type> &&other) noexcept; // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
-        Pointer(Pointer<Type> const &other);  // NOLINT(*-explicit-constructor)
+            requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
+        Pointer(Pointer<Type> const &other); // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
-        Pointer(Pointer<Type> &&other) noexcept;  // NOLINT(*-explicit-constructor)
+            requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
+        Pointer(Pointer<Type> &&other) noexcept; // NOLINT(*-explicit-constructor)
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         Pointer &operator=(Type &other);
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         Pointer &operator=(Type const &other);
 
         template<typename Type>
-        requires SubType<T, Type>
+            requires SubType<T, Type>
         Pointer &operator=(Type &&other);
 
         Pointer &operator=(std::nullptr_t);
 
         Pointer &operator=(T *other);
 
-        Pointer &operator=(std::remove_const_t<T> *other) requires std::is_const_v<T>;
+        Pointer &operator=(std::remove_const_t<T> *other)
+            requires std::is_const_v<T>;
 
         Pointer &operator=(SmartPtrType other);
 
-        template<typename SubT> requires StrictSubType<T, SubT>
+        template<typename SubT>
+            requires StrictSubType<T, SubT>
         Pointer &operator=(std::shared_ptr<SubT> other);
 
         Pointer &operator=(Pointer const &other);
 
         Pointer &operator=(Pointer &&other) noexcept;
 
-        Pointer &operator=(Pointer<std::remove_const_t<T>> const &other) requires std::is_const_v<T>;
+        Pointer &operator=(Pointer<std::remove_const_t<T>> const &other)
+            requires std::is_const_v<T>;
 
-        Pointer &operator=(Pointer<std::remove_const_t<T>> &&other) noexcept requires std::is_const_v<T>;
+        Pointer &operator=(Pointer<std::remove_const_t<T>> &&other) noexcept
+            requires std::is_const_v<T>;
 
         template<typename Type>
-        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
+            requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer &operator=(Pointer<Type> const &other);
 
         template<typename Type>
-        requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
+            requires StrictSubType<T, Type> && TypesWithSameConst<T, Type>
         Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         template<typename Type>
-        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
+            requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer &operator=(Pointer<Type> const &other);
 
         template<typename Type>
-        requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
+            requires StrictSubType<T, Type> && FirstConstSecondNot<T, Type>
         Pointer &operator=(Pointer<Type> &&other) noexcept;
 
         [[nodiscard]] bool operator<(Pointer<std::remove_const_t<T>> const &other) const;
@@ -149,20 +171,24 @@ namespace AndreiUtils {
 
         void reset();
 
-        Pointer<T const> constCast() const noexcept requires NotConst<T>;
+        Pointer<T const> constCast() const noexcept
+            requires NotConst<T>;
 
-        Pointer<T const> constCastMove() && noexcept requires NotConst<T>;
+        Pointer<T const> constCastMove() && noexcept
+            requires NotConst<T>;
 
-        Pointer<std::remove_const_t<T>> constCast() const noexcept requires std::is_const_v<T>;
+        Pointer<std::remove_const_t<T>> constCast() const noexcept
+            requires std::is_const_v<T>;
 
-        Pointer<std::remove_const_t<T>> constCastMove() && noexcept requires std::is_const_v<T>;
+        Pointer<std::remove_const_t<T>> constCastMove() && noexcept
+            requires std::is_const_v<T>;
 
         template<typename ParentCastT>
-        requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
+            requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
         Pointer<ParentCastT> cast() const noexcept;
 
         template<typename ParentCastT>
-        requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
+            requires SubType<ParentCastT, T> && TypesWithSameConst<ParentCastT, T>
         Pointer<ParentCastT> castMove() && noexcept;
 
         template<typename CastT>
@@ -194,10 +220,14 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool operator==(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept { return !ptr; }
+    inline bool operator==(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept {
+        return !ptr;
+    }
 
     template<typename T>
-    inline bool operator==(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept { return !ptr; }
+    inline bool operator==(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept {
+        return !ptr;
+    }
 
     template<typename T1, typename T2>
     inline bool operator!=(AndreiUtils::Pointer<T1> const &ptr1, AndreiUtils::Pointer<T2> const &ptr2) noexcept {
@@ -205,10 +235,14 @@ namespace AndreiUtils {
     }
 
     template<typename T>
-    inline bool operator!=(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept { return (bool) ptr; }
+    inline bool operator!=(AndreiUtils::Pointer<T> const &ptr, std::nullptr_t) noexcept {
+        return (bool) ptr;
+    }
 
     template<typename T>
-    inline bool operator!=(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept { return (bool) ptr; }
+    inline bool operator!=(std::nullptr_t, AndreiUtils::Pointer<T> const &ptr) noexcept {
+        return (bool) ptr;
+    }
 
     template<typename CastT, typename T>
     Pointer<CastT> static_pointer_cast(Pointer<T> const &p) {
@@ -239,8 +273,8 @@ namespace AndreiUtils {
     bool pointerInstanceOf(Pointer<InstanceType> const &val, TypeCheck const *&res) {
         return val.template isInstanceOf<TypeCheck>(res);
     }
-}
+} // namespace AndreiUtils
 
 #include <AndreiUtils/classes/Pointer.tpp>
 
-#endif  // ANDREI_UTILS_POINTER_HPP
+#endif // ANDREI_UTILS_POINTER_HPP

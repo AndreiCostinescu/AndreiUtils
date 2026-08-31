@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
@@ -101,9 +115,9 @@ void testAccessTimeInMapVsVector() {
     time = t.measure(TimeUnit::SECOND);
     cout << "Initialization took " << time << endl;
 
-    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
-                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
-                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7), static_cast<int64_t>(1e8),
+    vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1),  static_cast<int64_t>(1e2),
+                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4),  static_cast<int64_t>(1e5),
+                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7),  static_cast<int64_t>(1e8),
                                static_cast<int64_t>(1e9), static_cast<int64_t>(1e10), static_cast<int64_t>(1e11)};
     bool res;
     for (const auto &q: queries) {
@@ -125,7 +139,7 @@ void testAccessTimeInMapVsVector() {
 }
 
 void testSerializeDeserializeTimestamp() {
-    #if __cplusplus >= 202002L
+#if __cplusplus >= 202002L
 
     cout << "With C++20 suppport!" << endl;
     auto t = now();
@@ -138,7 +152,7 @@ void testSerializeDeserializeTimestamp() {
     auto s2 = convertChronoToStringWithSubseconds(t2);
     cout << s2 << endl;
 
-    #elif __cplusplus >= 201703L
+#elif __cplusplus >= 201703L
 
     cout << "With C++17 support!" << endl;
     auto t = now();
@@ -166,7 +180,7 @@ void testSerializeDeserializeTimestamp() {
     s = convertChronoToStringWithSubseconds(t);
     cout << s << endl;
 
-    #endif
+#endif
 }
 
 TEST(TimeTesting, AccessTimeInMapVsVector) {
@@ -183,11 +197,11 @@ TEST(TimeTesting, AccessTimeInMapVsVector) {
     }
 
     vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1), static_cast<int64_t>(1e2),
-                                    static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
-                                    static_cast<int64_t>(1e6), static_cast<int64_t>(1e7)};
+                               static_cast<int64_t>(1e3), static_cast<int64_t>(1e4), static_cast<int64_t>(1e5),
+                               static_cast<int64_t>(1e6), static_cast<int64_t>(1e7)};
     bool res;
 
-    for (const auto& q : queries) {
+    for (const auto &q: queries) {
 
         t.start();
         res = vectorContains(v, q);

@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.08.21.
 //
 
-#include <AndreiUtils/utilsTime.h>
 #include <AndreiUtils/utilsString.h>
+#include <AndreiUtils/utilsTime.h>
 #include <cassert>
 #include <iomanip>
 #include <sstream>
@@ -16,21 +30,13 @@ typedef ratio<3600 * 24> daysRatio;
 typedef ratio<3600> hoursRatio;
 typedef ratio<60> minutesRatio;
 
-AndreiUtils::HighResTimePoint AndreiUtils::nowHighResClock() {
-    return AndreiUtils::HighResClock::now();
-}
+AndreiUtils::HighResTimePoint AndreiUtils::nowHighResClock() { return AndreiUtils::HighResClock::now(); }
 
-AndreiUtils::SteadyTimePoint AndreiUtils::nowSteadyClock() {
-    return AndreiUtils::SteadyClock::now();
-}
+AndreiUtils::SteadyTimePoint AndreiUtils::nowSteadyClock() { return AndreiUtils::SteadyClock::now(); }
 
-AndreiUtils::SystemTimePoint AndreiUtils::nowSystemClock() {
-    return AndreiUtils::SystemClock::now();
-}
+AndreiUtils::SystemTimePoint AndreiUtils::nowSystemClock() { return AndreiUtils::SystemClock::now(); }
 
-AndreiUtils::SystemTimePoint AndreiUtils::now() {
-    return nowSystemClock();
-}
+AndreiUtils::SystemTimePoint AndreiUtils::now() { return nowSystemClock(); }
 
 string AndreiUtils::convertChronoToString(SystemTimePoint const &time, string const &format) {
     time_t timeStruct;
@@ -45,12 +51,12 @@ SystemTimePoint AndreiUtils::convertStringToChrono(string const &time, string co
     tm tm = {};
     stringstream ss(time);
     ss >> get_time(&tm, format.c_str());
-    // return system_clock::from_time_t(mktime(&tm));
-    #if defined(WIN32) || defined(WIN64)
+// return system_clock::from_time_t(mktime(&tm));
+#if defined(WIN32) || defined(WIN64)
     return system_clock::from_time_t(_mkgmtime(&tm));
-    #else
+#else
     return system_clock::from_time_t(timegm(&tm));
-    #endif
+#endif
 }
 
 string AndreiUtils::convertChronoToStringWithSubsecondsCustomJoin(SystemTimePoint const &time, string const &joiner) {
@@ -79,7 +85,7 @@ string AndreiUtils::convertChronoToStringWithSubseconds(SystemTimePoint const &t
         }
         auto d = time.time_since_epoch();
         auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
-        d -= seconds;  // now we are in the subsecond time interval
+        d -= seconds; // now we are in the subsecond time interval
         auto fullNanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(d).count();
         subsecondRes = AndreiUtils::replace(subsecondRes, "%ns",
                                             AndreiUtils::padLeftUntil(to_string(fullNanoseconds), "0", 9));
@@ -97,31 +103,32 @@ string AndreiUtils::convertChronoToStringWithSubseconds(SystemTimePoint const &t
     return res + joiner + subsecondRes;
 }
 
-SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(
-        string const &time, string const &format, string const &subsecondFormat, string const &joiner) {
+SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(string const &time, string const &format,
+                                                                 string const &subsecondFormat, string const &joiner) {
     if (joiner.empty()) {
         string message = "The subsecond joiner part is empty... Can not reconstruct subsecond part."
-                         "Will reconstruct only using format = " + format;
+                         "Will reconstruct only using format = " +
+                         format;
         AndreiUtils::myWarning(message);
         return convertStringToChrono(time, format);
     }
     auto timeSplits = AndreiUtils::splitString(time, joiner);
     if (timeSplits.size() > 2) {
-        AndreiUtils::myWarning("Joiner string \"" + joiner + "\" is contained multiple times in the time \"" +
-                               time + "\". Will only use the first two components and try to reconstruct this way...");
+        AndreiUtils::myWarning("Joiner string \"" + joiner + "\" is contained multiple times in the time \"" + time +
+                               "\". Will only use the first two components and try to reconstruct this way...");
     }
     auto res = convertStringToChrono(timeSplits[0], format);
     string timeString = timeSplits[1];
     size_t subsecondFormatSize = subsecondFormat.size(), timeSize = timeString.size();
     // the -3 is because all subsecond formats are at least 3 characters in length
-    for (int formatIndex = 0, timeIndex = 0;
-         formatIndex < subsecondFormatSize - 2 && timeIndex < timeSize; formatIndex++, timeIndex++) {
+    for (int formatIndex = 0, timeIndex = 0; formatIndex < subsecondFormatSize - 2 && timeIndex < timeSize;
+         formatIndex++, timeIndex++) {
         if (subsecondFormat[formatIndex] == timeString[timeIndex] && subsecondFormat[formatIndex] != '%') {
             continue;
         } else if (subsecondFormat[formatIndex] != '%') {
             break;
         }
-        assert (subsecondFormat[formatIndex] == '%');
+        assert(subsecondFormat[formatIndex] == '%');
         // until now all indices [formatIndex, formatIndex + 1, formatIndex + 2] are safe to access
         if (subsecondFormat[formatIndex + 1] == '%') {
             if (timeString[timeIndex] == '%') {
@@ -138,12 +145,12 @@ SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(
                 timeIndex + 2 < timeSize) {
                 // part microseconds: expecting at three characters more in timeString string
                 res += std::chrono::microseconds(stoi(timeString.substr(timeIndex, 3)));
-                timeIndex += 2;  // 3 - 1 because there's the timeIndex++ performed in the for-loop
+                timeIndex += 2; // 3 - 1 because there's the timeIndex++ performed in the for-loop
             } else if (subsecondFormat[formatIndex + 2] == 'n' && subsecondFormat[formatIndex + 3] == 's' &&
                        timeIndex + 2 < timeSize) {
                 // part nanoseconds: expecting at three characters more in timeString string
                 res += std::chrono::nanoseconds(stoi(timeString.substr(timeIndex, 3)));
-                timeIndex += 2;  // 3 - 1 because there's the timeIndex++ performed in the for-loop
+                timeIndex += 2; // 3 - 1 because there's the timeIndex++ performed in the for-loop
             } else {
                 AndreiUtils::myWarning("Unknown formatter for subsecond values in " + subsecondFormat);
                 break;
@@ -153,19 +160,19 @@ SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(
                    timeIndex + 2 < timeSize) {
             // milliseconds: expecting at three characters more in timeString string
             res += std::chrono::milliseconds(stoi(timeString.substr(timeIndex, 3)));
-            timeIndex += 2;  // 3 - 1 because there's the timeIndex++ performed in the for-loop
+            timeIndex += 2; // 3 - 1 because there's the timeIndex++ performed in the for-loop
             formatIndex += 2;
         } else if (subsecondFormat[formatIndex + 1] == 'u' && subsecondFormat[formatIndex + 2] == 's' &&
                    timeIndex + 5 < timeSize) {
             // microseconds: expecting at six characters more in timeString string
             res += std::chrono::microseconds(stoi(timeString.substr(timeIndex, 6)));
-            timeIndex += 5;  // 6 - 1 because there's the timeIndex++ performed in the for-loop
+            timeIndex += 5; // 6 - 1 because there's the timeIndex++ performed in the for-loop
             formatIndex += 2;
         } else if (subsecondFormat[formatIndex + 1] == 'n' && subsecondFormat[formatIndex + 2] == 's' &&
                    timeIndex + 8 < timeSize) {
             // nanoseconds: expecting at nine characters more in timeString string
             res += std::chrono::nanoseconds(stoi(timeString.substr(timeIndex, 9)));
-            timeIndex += 8;  // 9 - 1 because there's the timeIndex++ performed in the for-loop
+            timeIndex += 8; // 9 - 1 because there's the timeIndex++ performed in the for-loop
             formatIndex += 2;
         } else {
             AndreiUtils::myWarning("Unknown formatter for subsecond values in " + subsecondFormat);
@@ -205,7 +212,7 @@ chrono::duration<double> convertDurationFromTimeUnit(double t, TimeUnit timeUnit
             return chrono::duration<double, nano>(t);
             break;
         }
-        default : {
+        default: {
             throw runtime_error("Unknown TimeUnit " + to_string(timeUnit));
         }
     }
@@ -247,9 +254,7 @@ double AndreiUtils::getTimeDiff(SystemTimePoint const &t1, SystemTimePoint const
     return chrono::duration<double>(t1 - t2).count() * getMultiplicationFactorRelativeToSeconds(timeUnit);
 }
 
-double AndreiUtils::getTime(double t, string const &timeUnit) {
-    return getTime(t, convertStringToTimeUnit(timeUnit));
-}
+double AndreiUtils::getTime(double t, string const &timeUnit) { return getTime(t, convertStringToTimeUnit(timeUnit)); }
 
 double AndreiUtils::getTime(double t, TimeUnit timeUnit) {
     return t * getMultiplicationFactorRelativeToSeconds(timeUnit);

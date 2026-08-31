@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.08.21.
 //
@@ -25,9 +39,7 @@ bool NetworkData::isBigEndian() {
     return NetworkData::bigEndian == 1;
 }
 
-bool NetworkData::isLittleEndian() {
-    return !isBigEndian();
-}
+bool NetworkData::isLittleEndian() { return !isBigEndian(); }
 
 void NetworkData::shortToNetworkBytes(char *buffer, int start, short value) {
     short x = htons(value);
@@ -46,10 +58,9 @@ void NetworkData::intToNetworkBytes(char *buffer, int start, int value) {
 }
 
 int NetworkData::networkBytesToInt(const char *buffer, int start) {
-    auto a = static_cast<int>(static_cast<unsigned char>(buffer[start]) << 24 |
-                              static_cast<unsigned char>(buffer[start + 1]) << 16 |
-                              static_cast<unsigned char>(buffer[start + 2]) << 8 |
-                              static_cast<unsigned char>(buffer[start + 3]));
+    auto a = static_cast<int>(
+            static_cast<unsigned char>(buffer[start]) << 24 | static_cast<unsigned char>(buffer[start + 1]) << 16 |
+            static_cast<unsigned char>(buffer[start + 2]) << 8 | static_cast<unsigned char>(buffer[start + 3]));
     return a;
 }
 

@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 27.10.22.
 //
@@ -5,9 +19,9 @@
 #ifndef ANDREIUTILS_SUPERCUBE_HPP
 #define ANDREIUTILS_SUPERCUBE_HPP
 
+#include <AndreiUtils/utils.hpp>
 #include <AndreiUtils/utilsBinarySerialization.hpp>
 #include <AndreiUtils/utilsMap.hpp>
-#include <AndreiUtils/utils.hpp>
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
@@ -47,8 +61,8 @@ namespace AndreiUtils {
         SuperCubeDataNotInstantiatedException() : std::runtime_error("SuperCube data is not yet instantiated!") {}
 
         SuperCubeDataNotInstantiatedException(int depth, int index) :
-                std::runtime_error("SuperCube data at depth " + std::to_string(depth) + " and " +
-                                   std::to_string(index) + " is not yet instantiated!") {}
+            std::runtime_error("SuperCube data at depth " + std::to_string(depth) + " and " + std::to_string(index) +
+                               " is not yet instantiated!") {}
     };
 
     template<typename T, int SpatialDimensions, int SpatialDivision, int Depth>
@@ -65,8 +79,8 @@ namespace AndreiUtils {
         using DimensionIndex = Eigen::Matrix<int, SpatialDimensions, 1>;
 
         SuperCubeInterface(int const &parentIndex, DataIndex const &minCorner, DataIndex const &maxCorner) :
-                parentIndex(parentIndex), maxCorner(maxCorner), minCorner(minCorner), volume(maxCorner - minCorner),
-                nrCubes(pow(SuperCubeInterface::division, SuperCubeInterface::dimensions)) {
+            parentIndex(parentIndex), maxCorner(maxCorner), minCorner(minCorner), volume(maxCorner - minCorner),
+            nrCubes(pow(SuperCubeInterface::division, SuperCubeInterface::dimensions)) {
             for (int i = 0; i < SuperCubeInterface::dimensions; i++) {
                 this->size[i] = SpatialDivision;
             }
@@ -81,8 +95,8 @@ namespace AndreiUtils {
 
         SuperCubeInterface(int const &parentIndex, DataIndex const &minCorner, DataIndex const &maxCorner,
                            DimensionIndex const &nrCubesPerDimension) :
-                parentIndex(parentIndex), maxCorner(maxCorner), minCorner(minCorner), volume(maxCorner - minCorner),
-                size(nrCubesPerDimension), nrCubes(1) {
+            parentIndex(parentIndex), maxCorner(maxCorner), minCorner(minCorner), volume(maxCorner - minCorner),
+            size(nrCubesPerDimension), nrCubes(1) {
             for (int i = 0; i < SuperCubeInterface::dimensions; i++) {
                 this->nrCubes *= this->size[i];
             }
@@ -107,13 +121,9 @@ namespace AndreiUtils {
 
         virtual void setData(DataIndex const &dataIndex, Data const &newData, bool verbose, std::string output) = 0;
 
-        Data &getData() {
-            return this->data;
-        }
+        Data &getData() { return this->data; }
 
-        Data const &getData() const {
-            return this->data;
-        }
+        Data const &getData() const { return this->data; }
 
         virtual Data const &getData(DataIndex const &dataIndex) const = 0;
 
@@ -137,36 +147,24 @@ namespace AndreiUtils {
 
         virtual void readBinary(std::ifstream &bin) = 0;
 
-        int const &getNrCubes() const {
-            return this->nrCubes;
-        }
+        int const &getNrCubes() const { return this->nrCubes; }
 
-        DataIndex const &getVolume() const {
-            return this->volume;
-        }
+        DataIndex const &getVolume() const { return this->volume; }
 
-        DataIndex const &getSubCubeVolume() const {
-            return this->subCubeVolume;
-        }
+        DataIndex const &getSubCubeVolume() const { return this->subCubeVolume; }
 
-        DataIndex const &getCubeMinCorner() const {
-            return this->minCorner;
-        }
+        DataIndex const &getCubeMinCorner() const { return this->minCorner; }
 
-        DataIndex const &getCubeMaxCorner() const {
-            return this->maxCorner;
-        }
+        DataIndex const &getCubeMaxCorner() const { return this->maxCorner; }
 
-        DimensionIndex const &getSubCubeDivision() const {
-            return this->size;
-        }
+        DimensionIndex const &getSubCubeDivision() const { return this->size; }
 
     protected:
         static int const dimensions = SpatialDimensions, division = SpatialDivision, depth = Depth;
-        DataIndex minCorner, maxCorner;  // min = inclusive, max = exclusive
-        DataIndex volume;  // = max - min
-        DataIndex subCubeVolume;  // = volume / size
-        DimensionIndex size;  // each dimension from 0 until size[dim] - 1
+        DataIndex minCorner, maxCorner; // min = inclusive, max = exclusive
+        DataIndex volume; // = max - min
+        DataIndex subCubeVolume; // = volume / size
+        DimensionIndex size; // each dimension from 0 until size[dim] - 1
         int nrCubes, parentIndex;
         Data data;
 
@@ -174,9 +172,7 @@ namespace AndreiUtils {
             this->subCubeVolume = (this->volume.cwiseQuotient(this->size.template cast<double>()));
         }
 
-        DataIndex getCubeMidPoint() const {
-            return average(this->minCorner, this->maxCorner);
-        }
+        DataIndex getCubeMidPoint() const { return average(this->minCorner, this->maxCorner); }
 
         bool isIndexInsideCube(DataIndex const &dataIndex) const {
             for (int i = 0; i < SuperCubeInterface::dimensions; i++) {
@@ -198,8 +194,8 @@ namespace AndreiUtils {
             std::cout << tmp.transpose() << std::endl;
             std::cout << (this->minCorner + tmp).transpose() << std::endl;
             //*/
-            return this->minCorner + (dimensionIndex.template cast<double>().
-                    template cwiseProduct(this->subCubeVolume)).matrix();
+            return this->minCorner +
+                   (dimensionIndex.template cast<double>().template cwiseProduct(this->subCubeVolume)).matrix();
         }
 
         DataIndex getSubCubeMinCorner(DataIndex const &dataIndex) const {
@@ -214,8 +210,8 @@ namespace AndreiUtils {
             DimensionIndex dimIndex;
             for (int i = SuperCubeInterface::dimensions - 1; i >= 0; i--) {
                 if (dataIndex[i] < this->minCorner[i] || dataIndex[i] >= this->maxCorner[i]) {
-                    std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose() << ", max = "
-                              << this->maxCorner.transpose() << std::endl;
+                    std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose()
+                              << ", max = " << this->maxCorner.transpose() << std::endl;
                     throw SuperCubeOutOfRangeException();
                 }
 
@@ -239,8 +235,8 @@ namespace AndreiUtils {
             try {
                 return this->cubeIndexFromLocalIndex(this->convertDataToIndex(dataIndex));
             } catch (SuperCubeOutOfRangeException &e) {
-                std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose() << ", max = "
-                          << this->maxCorner.transpose() << std::endl;
+                std::cout << dataIndex.transpose() << ", min = " << this->minCorner.transpose()
+                          << ", max = " << this->maxCorner.transpose() << std::endl;
                 throw e;
             }
         }
@@ -258,8 +254,8 @@ namespace AndreiUtils {
             int cubeIndex = 0, powMultiplier = 1;
             for (int i = SuperCubeInterface::dimensions - 1; i >= 0; i--) {
                 if (localIndex[i] < 0 || localIndex[i] >= this->size[i]) {
-                    std::cout << localIndex.transpose() << ", min = " << DataIndex::Zero().transpose() << ", max = "
-                              << this->size.transpose() << std::endl;
+                    std::cout << localIndex.transpose() << ", min = " << DataIndex::Zero().transpose()
+                              << ", max = " << this->size.transpose() << std::endl;
                     throw SuperCubeOutOfRangeException();
                 }
                 cubeIndex += powMultiplier * localIndex[i];
@@ -275,23 +271,24 @@ namespace AndreiUtils {
         using Base::cubeIndexFromData;
         using TopCube = SuperCube<T, SpatialDimension, SpatialDivision, Depth + 1>;
         using TopCubeInterface = SuperCubeInterface<T, SpatialDimension, SpatialDivision, Depth + 1>;
+
     public:
         using SubCube = SuperCube<T, SpatialDimension, SpatialDivision, Depth - 1>;
         using DataIndex = typename Base::DataIndex;
         using DimensionIndex = typename Base::DimensionIndex;
         using Data = typename Base::Data;
-        using Base::setData;
-        using Base::saveBinary;
         using Base::readBinary;
+        using Base::saveBinary;
+        using Base::setData;
         friend nlohmann::adl_serializer<SuperCube<T, SpatialDimension, SpatialDivision, Depth>, void>;
         friend TopCube;
 
         explicit SuperCube(DataIndex const &minCorner, DataIndex const &maxCorner) :
-                Base(0, minCorner, maxCorner), parent(nullptr) {}
+            Base(0, minCorner, maxCorner), parent(nullptr) {}
 
         explicit SuperCube(DimensionIndex const &nrCubesPerDimension, DataIndex const &minCorner,
                            DataIndex const &maxCorner) :
-                Base(0, minCorner, maxCorner, nrCubesPerDimension), parent(nullptr) {}
+            Base(0, minCorner, maxCorner, nrCubesPerDimension), parent(nullptr) {}
 
         void setData(DataIndex const &dataIndex, Data const &newData, bool verbose, std::string output) override {
             int i = this->cubeIndexFromData(dataIndex);
@@ -308,8 +305,8 @@ namespace AndreiUtils {
                 // std::cout << "Adding new sub cube..." << std::endl;
                 DataIndex subCubeMinCorner = this->getSubCubeMinCorner(dataIndex);
                 // std::cout << "subCubeMinCorner = " << subCubeMinCorner.transpose() << std::endl;
-                storedData = &this->subCubes.set(
-                        i, {*this, i, subCubeMinCorner, subCubeMinCorner + this->subCubeVolume});
+                storedData =
+                        &this->subCubes.set(i, {*this, i, subCubeMinCorner, subCubeMinCorner + this->subCubeVolume});
             }
             storedData->setData(dataIndex, newData, verbose, output);
         }
@@ -353,23 +350,21 @@ namespace AndreiUtils {
         }
 
         Data const &getData(DimensionIndex const &localIndex) const override {
-            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
-                    template cwiseProduct(this->volume);
+            DataIndex i =
+                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
             return this->getData(std::move(i));
         }
 
         Data &getData(DimensionIndex const &localIndex) override {
-            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
-                    template cwiseProduct(this->volume);
+            DataIndex i =
+                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
             return this->getData(std::move(i));
         }
 
-        std::map<int, SubCube> const &getAllData() const {
-            return this->subCubes.subCubes;
-        }
+        std::map<int, SubCube> const &getAllData() const { return this->subCubes.subCubes; }
 
         void saveBinary(std::ofstream &bin) const override {
-            serialize(bin, (int) this->subCubes.subCubes.size());  // has to be an int: max value = 1e6
+            serialize(bin, (int) this->subCubes.subCubes.size()); // has to be an int: max value = 1e6
             for (auto const &mapData: this->getAllData()) {
                 serialize(bin, mapData.first);
                 mapData.second.saveBinary(bin);
@@ -385,17 +380,18 @@ namespace AndreiUtils {
                     int index;
                     deserializeIn(bin, index);
                     DataIndex subCubeMinCorner = this->getSubCubeMinCorner(index);
-                    this->subCubes.set(index, {*this, i, subCubeMinCorner,
-                                               subCubeMinCorner + this->subCubeVolume}).readBinary(bin);
+                    this->subCubes.set(index, {*this, i, subCubeMinCorner, subCubeMinCorner + this->subCubeVolume})
+                            .readBinary(bin);
                 }
             } catch (std::runtime_error &e) {
-                throw std::runtime_error("Binary file is corrupted...");;
+                throw std::runtime_error("Binary file is corrupted...");
+                ;
             }
         }
 
     protected:
         SuperCube(TopCube &parent, int const &parentIndex, DataIndex const &minCorner, DataIndex const &maxCorner) :
-                Base(parentIndex, minCorner, maxCorner), parent(&parent) {}
+            Base(parentIndex, minCorner, maxCorner), parent(&parent) {}
 
         class SuperCubeSubCubeContainer {
         public:
@@ -418,19 +414,16 @@ namespace AndreiUtils {
 
             SubCube &set(int const &subCubeIndex, SubCube &&subCube) {
                 // return subCube;
-                // return this->subCubes.insert(std::make_pair(subCubeIndex, std::forward<SubCube>(subCube))).first->second;
-                // auto x = this->subCubes.insert(std::make_pair(subCubeIndex, std::forward<SubCube>(subCube)));
-                // return x.first->second;
+                // return this->subCubes.insert(std::make_pair(subCubeIndex,
+                // std::forward<SubCube>(subCube))).first->second; auto x =
+                // this->subCubes.insert(std::make_pair(subCubeIndex, std::forward<SubCube>(subCube))); return
+                // x.first->second;
                 return mapAdd(this->subCubes, subCubeIndex, std::move(subCube))->second;
             }
 
-            SubCube const &getAtIndex(int const &subCubeIndex) const {
-                return mapGet(this->subCubes, subCubeIndex);
-            }
+            SubCube const &getAtIndex(int const &subCubeIndex) const { return mapGet(this->subCubes, subCubeIndex); }
 
-            SubCube &getAtIndex(int const &subCubeIndex) {
-                return mapGet(this->subCubes, subCubeIndex);
-            }
+            SubCube &getAtIndex(int const &subCubeIndex) { return mapGet(this->subCubes, subCubeIndex); }
 
             bool getIfContains(int const &subCubeIndex, SubCube *&storedData) {
                 return mapGetIfContains(this->subCubes, subCubeIndex, storedData);
@@ -450,18 +443,19 @@ namespace AndreiUtils {
 
     template<typename T, int SpatialDimension, int SpatialDivision>
     class SuperCube<T, SpatialDimension, SpatialDivision, 0>
-            : public SuperCubeInterface<T, SpatialDimension, SpatialDivision, 0> {
+        : public SuperCubeInterface<T, SpatialDimension, SpatialDivision, 0> {
         using Base = SuperCubeInterface<T, SpatialDimension, SpatialDivision, 0>;
         using Base::cubeIndexFromData;
         using TopCube = SuperCube<T, SpatialDimension, SpatialDivision, 1>;
         using TopCubeInterface = SuperCubeInterface<T, SpatialDimension, SpatialDivision, 1>;
+
     public:
         using DataIndex = typename Base::DataIndex;
         using DimensionIndex = typename Base::DimensionIndex;
         using Data = typename Base::Data;
-        using Base::setData;
-        using Base::saveBinary;
         using Base::readBinary;
+        using Base::saveBinary;
+        using Base::setData;
         friend nlohmann::adl_serializer<SuperCube<T, SpatialDimension, SpatialDivision, 0>, void>;
         friend TopCube;
 
@@ -501,8 +495,8 @@ namespace AndreiUtils {
             if (this->parent == nullptr) {
                 throw SuperCubeOutOfRangeException();
             }
-            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
-                    template cwiseProduct(this->volume);
+            DataIndex i =
+                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
             // std::cout << "Parent volume: " << this->parent->getVolume().transpose() << std::endl;
             return this->parent->getData(std::move(i));
         }
@@ -514,33 +508,30 @@ namespace AndreiUtils {
             if (this->parent == nullptr) {
                 throw SuperCubeOutOfRangeException();
             }
-            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().
-                    template cwiseProduct(this->volume);
+            DataIndex i =
+                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
             return this->parent->getData(std::move(i));
         }
 
-        std::map<int, Data> getAllData() const {
-            return {{0, this->data}};
-        }
+        std::map<int, Data> getAllData() const { return {{0, this->data}}; }
 
-        void saveBinary(std::ofstream &bin) const override {
-            this->data.saveBinary(bin);
-        }
+        void saveBinary(std::ofstream &bin) const override { this->data.saveBinary(bin); }
 
         void readBinary(std::ifstream &bin) override {
             try {
                 this->data.readBinary(bin);
             } catch (std::runtime_error &e) {
-                throw std::runtime_error("Binary file is corrupted...");;
+                throw std::runtime_error("Binary file is corrupted...");
+                ;
             }
         }
 
     protected:
         SuperCube(TopCube &parent, int const &parentIndex, DataIndex const &minCorner, DataIndex const &maxCorner) :
-                Base(parentIndex, minCorner, maxCorner, DimensionIndex::Ones()), parent(&parent) {}
+            Base(parentIndex, minCorner, maxCorner, DimensionIndex::Ones()), parent(&parent) {}
 
         TopCubeInterface *parent;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_SUPERCUBE_HPP
+#endif // ANDREIUTILS_SUPERCUBE_HPP

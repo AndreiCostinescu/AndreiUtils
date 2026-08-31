@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.11.20.
 //
 
-#include <AndreiUtils/utilsRealsense.h>
 #include <AndreiUtils/utils.hpp>
+#include <AndreiUtils/utilsRealsense.h>
 #include <AndreiUtils/utilsString.h>
 #include <cassert>
 #include <cstring>
@@ -69,22 +83,22 @@ void AndreiUtils::frameToBytes(rs2::frame const &f, uint8_t **data, int &h, int 
     }
     if (copyData) {
         size_t nrBytes = w * h * c * elementSize;
-        #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
         fastMemCopy(*data, (const uint8_t *) f.get_data(), nrBytes);
-        #else
+#else
         memcpy(*data, (const uint8_t *) f.get_data(), nrBytes);
-        #endif
+#endif
         if (f.get_profile().format() == RS2_FORMAT_BGR8) {
-            // Switch BGR to RGB format
-            #ifdef WITH_OPENMP
-            fastForLoop<uint8_t>(*data, nrBytes, [](uint8_t *const array, size_t i, size_t increment) {
-                swapData(array[i], array[i + 2]);
-            }, 3);
-            #else
+// Switch BGR to RGB format
+#ifdef WITH_OPENMP
+            fastForLoop<uint8_t>(
+                    *data, nrBytes,
+                    [](uint8_t *const array, size_t i, size_t increment) { swapData(array[i], array[i + 2]); }, 3);
+#else
             for (size_t i = 0; i < nrBytes; i += 3) {
                 swapData(data[i], data[i + 2]);
             }
-            #endif
+#endif
         }
     } else {
         *data = (uint8_t *) f.get_data();
@@ -107,16 +121,16 @@ void AndreiUtils::depthFrameToMeters(rs2::depth_frame const &f, double *&data, s
     auto *tmpData = new uint16_t[dataElements];
     int dataType;
     frameToBytes(f, (uint8_t **) &tmpData, dataType, dataElements * sizeof(uint16_t));
-    assert (dataType == convertFrameTypeToDataType(2, 1));
+    assert(dataType == convertFrameTypeToDataType(2, 1));
     if (data != nullptr) {
-        #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
         fastSrcOp<uint16_t, double>(data, (uint16_t *) tmpData, dataElements,
                                     [&](const uint16_t &x) { return (double) x * f.get_units(); });
-        #else
+#else
         for (size_t i = 0; i < dataElements; i++) {
             data[i] = double(tmpData[i]) * f.get_units();
         }
-        #endif
+#endif
     }
     delete[] tmpData;
 }
@@ -124,17 +138,17 @@ void AndreiUtils::depthFrameToMeters(rs2::depth_frame const &f, double *&data, s
 void AndreiUtils::depthFrameToMilliMeters(rs2::depth_frame const &f, uint16_t *&data, size_t const dataElements) {
     int dataType;
     frameToBytes(f, (uint8_t **) &data, dataType, dataElements * sizeof(uint16_t));
-    assert (dataType == convertFrameTypeToDataType(2, 1));
+    assert(dataType == convertFrameTypeToDataType(2, 1));
     if (data != nullptr) {
-        #ifdef WITH_OPENMP
+#ifdef WITH_OPENMP
         fastSrcOp<uint16_t, uint16_t>(data, data, dataElements, [&](const uint16_t &x) {
             return (uint16_t) ((double) x * f.get_units() * 1000);
         });
-        #else
+#else
         for (size_t i = 0; i < dataElements; i++) {
             data[i] = uint16_t(double(data[i]) * f.get_units() * 1000);
         }
-        #endif
+#endif
     }
 }
 
@@ -151,9 +165,10 @@ void AndreiUtils::fromImagePixelTo3dPoint(rs2_intrinsics const &intrinsics, floa
     fromImagePixelTo3dPoint(intrinsics, position, depth, point);
 }
 
-void AndreiUtils::getRealsenseDepthPointFromImagePixel(
-        function<float(int, int)> const &getDepth, rs2_intrinsics const &intrinsics, float x, float y,
-        float (&point)[3], int windowSize, bool forceWindowUsage, float farthestAllowedDepth) {
+void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)> const &getDepth,
+                                                       rs2_intrinsics const &intrinsics, float x, float y,
+                                                       float (&point)[3], int windowSize, bool forceWindowUsage,
+                                                       float farthestAllowedDepth) {
     int width = intrinsics.width, height = intrinsics.height;
     int int_x = int(x), int_y = int(y);
     float position[2] = {x, y};
@@ -190,13 +205,14 @@ void AndreiUtils::getRealsenseDepthPointFromImagePixel(
     fromImagePixelTo3dPoint(intrinsics, position, avgDepth, point);
 }
 
-void AndreiUtils::getRealsenseDepthPointFromImagePixel(
-        function<float(int, int)> const &getDepth, ImageParameters const &size,
-        CameraIntrinsicParameters const &intrinsics, float x, float y, float (&point)[3], int windowSize,
-        bool forceWindowUsage, float farthestAllowedDepth) {
-    return getRealsenseDepthPointFromImagePixel(
-            getDepth, convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics), x, y, point, windowSize,
-            forceWindowUsage, farthestAllowedDepth);
+void AndreiUtils::getRealsenseDepthPointFromImagePixel(function<float(int, int)> const &getDepth,
+                                                       ImageParameters const &size,
+                                                       CameraIntrinsicParameters const &intrinsics, float x, float y,
+                                                       float (&point)[3], int windowSize, bool forceWindowUsage,
+                                                       float farthestAllowedDepth) {
+    return getRealsenseDepthPointFromImagePixel(getDepth,
+                                                convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics),
+                                                x, y, point, windowSize, forceWindowUsage, farthestAllowedDepth);
 }
 
 void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *intrinsics, float point[3],
@@ -205,8 +221,9 @@ void AndreiUtils::getImagePixelFromRealsenseDepthPoint(rs2_intrinsics const *int
     rs2_project_point_to_pixel(pixel, intrinsics, point);
 }
 
-void AndreiUtils::getImagePixelFromRealsenseDepthPoint(
-        ImageParameters const &size, CameraIntrinsicParameters const &intrinsics, float point[3], float (&pixel)[2]) {
+void AndreiUtils::getImagePixelFromRealsenseDepthPoint(ImageParameters const &size,
+                                                       CameraIntrinsicParameters const &intrinsics, float point[3],
+                                                       float (&pixel)[2]) {
     rs2_intrinsics i = convertCameraIntrinsicParametersToRealsenseIntrinsics(size, intrinsics);
     getImagePixelFromRealsenseDepthPoint(&i, point, pixel);
 }
@@ -237,8 +254,8 @@ void AndreiUtils::convertRealsenseIntrinsicsToCameraIntrinsicParameters(
                                        rsIntrinsics.coeffs);
 }
 
-AndreiUtils::ImageDistortionModel AndreiUtils::convertRealsenseDistortionToImageDistortionModel(
-        rs2_distortion const &distortion) {
+AndreiUtils::ImageDistortionModel
+AndreiUtils::convertRealsenseDistortionToImageDistortionModel(rs2_distortion const &distortion) {
     switch (distortion) {
         case RS2_DISTORTION_NONE: {
             return ImageDistortionModel::DISTORTION_NONE;
@@ -313,7 +330,7 @@ rs2_option AndreiUtils::getRealsenseOptionFromString(std::string const &option) 
     if (optionLower == "gamma") {
         return RS2_OPTION_GAMMA;
     }
-     if (optionLower == "hue") {
+    if (optionLower == "hue") {
         return RS2_OPTION_HUE;
     }
     if (optionLower == "saturation") {
@@ -349,7 +366,7 @@ rs2_option AndreiUtils::getRealsenseOptionFromString(std::string const &option) 
     if (optionLower == "emitter enabled") {
         return RS2_OPTION_EMITTER_ENABLED;
     }
-     if (optionLower == "frames queue size") {
+    if (optionLower == "frames queue size") {
         return RS2_OPTION_FRAMES_QUEUE_SIZE;
     }
     if (optionLower == "total frame drops") {
@@ -379,7 +396,7 @@ rs2_option AndreiUtils::getRealsenseOptionFromString(std::string const &option) 
     if (optionLower == "enable motion correction") {
         return RS2_OPTION_ENABLE_MOTION_CORRECTION;
     }
-     if (optionLower == "auto exposure priority") {
+    if (optionLower == "auto exposure priority") {
         return RS2_OPTION_AUTO_EXPOSURE_PRIORITY;
     }
     if (optionLower == "color scheme") {
@@ -575,14 +592,13 @@ rs2_option AndreiUtils::getRealsenseOptionFromString(std::string const &option) 
         return RS2_OPTION_EMITTER_FREQUENCY;
     }
     if (optionLower == "auto exposure mode") {
-        #if RS2_API_VERSION >= 25400
+#if RS2_API_VERSION >= 25400
         return RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE;
-        #else
+#else
         throw std::runtime_error(
-                std::string(
-                        "The \"auto exposure mode\" option does not exist in the librealsense version ") +
+                std::string("The \"auto exposure mode\" option does not exist in the librealsense version ") +
                 RS2_API_VERSION_STR);
-        #endif
+#endif
     }
     if (optionLower == "count") {
         return RS2_OPTION_COUNT;

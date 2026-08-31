@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.08.23.
 //
@@ -9,7 +23,8 @@ using namespace AndreiUtils;
 using namespace Eigen;
 using namespace std;
 
-CartesianTrajectory::CartesianTrajectory(int size) : TrajectoryBase(size), poses(), posesData(make_shared<vector<Posed>>()) {
+CartesianTrajectory::CartesianTrajectory(int size) :
+    TrajectoryBase(size), poses(), posesData(make_shared<vector<Posed>>()) {
     this->poses = this->posesData.get();
     if (this->size != 0) {
         this->poses->resize(size);
@@ -17,24 +32,25 @@ CartesianTrajectory::CartesianTrajectory(int size) : TrajectoryBase(size), poses
 }
 
 CartesianTrajectory::CartesianTrajectory(vector<Posed> const &poses, vector<double> const &times) :
-        TrajectoryBase(times), posesData(make_shared<vector<Posed>>(poses)) {
+    TrajectoryBase(times), posesData(make_shared<vector<Posed>>(poses)) {
     this->poses = this->posesData.get();
 }
 
 CartesianTrajectory::CartesianTrajectory(vector<Posed> &&poses, vector<double> &&times) :
-        TrajectoryBase(std::move(times)), posesData(make_shared<vector<Posed>>(std::move(poses))) {
+    TrajectoryBase(std::move(times)), posesData(make_shared<vector<Posed>>(std::move(poses))) {
     this->poses = this->posesData.get();
 }
 
 CartesianTrajectory::CartesianTrajectory(std::vector<Posed> *poses, std::vector<double> *times) :
-        TrajectoryBase(times), posesData(), poses(poses) {}
+    TrajectoryBase(times), posesData(), poses(poses) {}
 
-CartesianTrajectory::CartesianTrajectory(CartesianTrajectory const &other) : TrajectoryBase(other), posesData(), poses() {
+CartesianTrajectory::CartesianTrajectory(CartesianTrajectory const &other) :
+    TrajectoryBase(other), posesData(), poses() {
     CartesianTrajectory::updatePointers(other);
 }
 
-CartesianTrajectory::CartesianTrajectory(CartesianTrajectory &&other) noexcept:
-        TrajectoryBase(std::move(other)), posesData(), poses() {
+CartesianTrajectory::CartesianTrajectory(CartesianTrajectory &&other) noexcept :
+    TrajectoryBase(std::move(other)), posesData(), poses() {
     CartesianTrajectory::updatePointers(std::move(other));
 }
 
@@ -56,9 +72,7 @@ CartesianTrajectory &CartesianTrajectory::operator=(CartesianTrajectory &&other)
     return *this;
 }
 
-std::shared_ptr<TrajectoryBase> CartesianTrajectory::clone() const {
-    return make_shared<CartesianTrajectory>(*this);
-}
+std::shared_ptr<TrajectoryBase> CartesianTrajectory::clone() const { return make_shared<CartesianTrajectory>(*this); }
 
 void CartesianTrajectory::reserveNewSize(size_t newSize) {
     TrajectoryBase::reserveNewSize(newSize);
@@ -85,13 +99,9 @@ void CartesianTrajectory::addNewDatum(Posed &&newPose, double &&newTime) {
     this->poses->emplace_back(std::move(newPose));
 }
 
-std::vector<Posed> const &CartesianTrajectory::getPoses() const {
-    return *this->poses;
-}
+std::vector<Posed> const &CartesianTrajectory::getPoses() const { return *this->poses; }
 
-std::vector<Posed> &CartesianTrajectory::getPoses() {
-    return *this->poses;
-}
+std::vector<Posed> &CartesianTrajectory::getPoses() { return *this->poses; }
 
 void CartesianTrajectory::updatePointers(CartesianTrajectory const &other) {
     this->posesData = make_shared<vector<Posed>>(*other.poses);

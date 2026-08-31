@@ -1,17 +1,31 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
 
 #include <AndreiUtils/classes/DualQuaternion.hpp>
-#include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/classes/ParametrizablePose.hpp>
 #include <AndreiUtils/classes/ParametrizablePoseParameters.hpp>
-#include <AndreiUtils/classes/PoseInterpolator.hpp>
 #include <AndreiUtils/classes/PoseDecoupledInterpolator.hpp>
+#include <AndreiUtils/classes/PoseInterpolator.hpp>
+#include <AndreiUtils/classes/QuaternionLowPassFilter.hpp>
 #include <AndreiUtils/utilsEigenGeometry.h>
 #include <AndreiUtils/utilsEigenGeometry.hpp>
-#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsGeometry.h>
+#include <AndreiUtils/utilsJsonEigen.hpp>
 #include <AndreiUtils/utilsVector.hpp>
 #include <iomanip>
 #include <iostream>
@@ -199,10 +213,10 @@ void testNormalization() {
 }
 
 void testTranslationDelta() {
-    vector<double> tmpData = {-0.0009003758676818849, 0.04833426661985106, -0.9988211726304295, 0.0,
-                              0.9997362675189353, 0.022541214719883684, 0.00018959817640538056, 0.0,
-                              0.022524240269260587, -0.9985768060327067, -0.048342745617214196, 0.0,
-                              0.3305606906144228, 0.12850723493527194, 0.2173939959466131, 1.0};
+    vector<double> tmpData = {-0.0009003758676818849, 0.04833426661985106,  -0.9988211726304295,    0.0,
+                              0.9997362675189353,     0.022541214719883684, 0.00018959817640538056, 0.0,
+                              0.022524240269260587,   -0.9985768060327067,  -0.048342745617214196,  0.0,
+                              0.3305606906144228,     0.12850723493527194,  0.2173939959466131,     1.0};
     Vector3d referenceT(0.3305606906144228, 0.12850723493527194, 0.2173939959466131);
     Matrix4d T;
     for (int i = 0; i < 4; i++) {
@@ -255,7 +269,7 @@ void testNormalizationInterpolation() {
 
 void testSameTranslationNegatedQuaternion() {
     Quaterniond q1(AngleAxisd(deg2Rad(180.), Vector3d(0, 1, -1).normalized()));
-    Vector3d t1(-0.035, 0.017, 0.26);  // prev y = 0.025
+    Vector3d t1(-0.035, 0.017, 0.26); // prev y = 0.025
     Posed p(q1, t1);
     cout << p.getTranslation().transpose() << endl;
     cout << (-p).getTranslation().transpose() << endl;
@@ -269,11 +283,11 @@ void playgroundGraspCupFromTop() {
     Quaterniond tmp(AngleAxisd(deg2Rad(180.), Vector3d(0, 1, -1).normalized()));
     Quaterniond q1(tmp * qxRotation(-0.70)); // previously -0.65
     // Vector3d t1(-0.0225, 0.022, 0.26);  // prev y = 0.025
-    Vector3d t1(-0.035, 0.017, 0.26);  // prev y = 0.025
+    Vector3d t1(-0.035, 0.017, 0.26); // prev y = 0.025
     cout << "ApproachPose: " << printVectorToString(Posed(q1, t1).coefficients()) << endl;
 
     Quaterniond &q2 = q1;
-    Vector3d t2(-0.035, 0.015, 0.17);  // previously x=-0.0225, y=0.028/0.024
+    Vector3d t2(-0.035, 0.015, 0.17); // previously x=-0.0225, y=0.028/0.024
     cout << "GraspPose: " << printVectorToString(Posed(q2, t2).coefficients()) << endl;
 
     Quaterniond q3 = q1 * qxRotation(0.08);
@@ -289,14 +303,14 @@ void playgroundGraspCupFromTop() {
 void playgroundGraspCupFromSide() {
     AngleAxisd startRot(deg2Rad(120.), Vector3d(1, 1, -1).normalized());
     auto qX = qxRotation(1.32);
-    auto qY = qyRotation(0.03);  // prev: -0.0375
-    auto qZ = qzRotation(0.3);  // prev: -0.0025
+    auto qY = qyRotation(0.03); // prev: -0.0375
+    auto qZ = qzRotation(0.3); // prev: -0.0025
     Quaterniond q1(startRot * qX * qY * qZ);
     Vector3d t1(0.03, 0.0475, 0.20);
     cout << "ApproachPose: " << printVectorToString(Posed(q1, t1).coefficients()) << endl;
 
     Quaterniond &q2 = q1;
-    Vector3d t2(0.05, 0.0265, 0.060);  // prev: y = 0.0275, z = 0.052 // 0.062 works as well
+    Vector3d t2(0.05, 0.0265, 0.060); // prev: y = 0.0275, z = 0.052 // 0.062 works as well
     cout << "GraspPose: " << printVectorToString(Posed(q2, t2).coefficients()) << endl;
 
     Quaterniond &q3 = q1;
@@ -331,7 +345,8 @@ void play() {
 
 void testSerialization() {
     cout << setprecision(17);
-    string poseDump = "[0.9994731121272746,0.007874354028401642,-0.016603684480707176,-0.027057915770959524,-0.000606757222358723,-0.11026175043235034,-0.07062328795051839,-0.011163860530449116]";
+    string poseDump = "[0.9994731121272746,0.007874354028401642,-0.016603684480707176,-0.027057915770959524,-0."
+                      "000606757222358723,-0.11026175043235034,-0.07062328795051839,-0.011163860530449116]";
     cout << poseDump << endl;
     nlohmann::json jsonPose = nlohmann::json::parse(poseDump), rewriteJsonPose;
     cout << jsonPose.dump(4) << endl;
@@ -360,28 +375,26 @@ void testParametrizablePose() {
     ParametrizablePosed poseSpace;
     IntervalD p1Range(-1, 1);
     poseSpace.addComposition(make_shared<NoPoseVariation<double>>(Posed::one));
-    poseSpace.addComposition(make_shared<VariableAngleInAxisAngle<double>>(xAxis3d<double>()),
-                             {"p1"}, {p1Range});
-    poseSpace.addComposition(make_shared<VariableDegreeAngleInAxisAngle<double>>(zAxis3d<double>()),
-                             {"p1"}, {p1Range});
-    poseSpace.addComposition(make_shared<VariableAxisInAxisAngle<double>>(M_PI_4),
-                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
-    poseSpace.addComposition(make_shared<VariableAxisInDegreeAxisAngle<double>>(60),
-                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
-    poseSpace.addComposition(make_shared<VariableXAxisTranslation<double>>(Eigen::Vector3d::Ones() * 3),
-                             {"p1"}, {p1Range});
-    poseSpace.addComposition(make_shared<VariableYAxisTranslation<double>>(Eigen::Vector3d::Ones() * 2),
-                             {"p1"}, {p1Range});
-    poseSpace.addComposition(make_shared<VariableZAxisTranslation<double>>(Eigen::Vector3d::Ones() * -1),
-                             {"p1"}, {p1Range});
-    poseSpace.addComposition(make_shared<VariableXYAxisTranslation<double>>(Eigen::Vector3d::Ones() * -4),
-                             {"p1", "p1"}, {p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableAngleInAxisAngle<double>>(xAxis3d<double>()), {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableDegreeAngleInAxisAngle<double>>(zAxis3d<double>()), {"p1"}, {p1Range});
+    poseSpace.addComposition(make_shared<VariableAxisInAxisAngle<double>>(M_PI_4), {"p1", "p1", "p1"},
+                             {p1Range, p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableAxisInDegreeAxisAngle<double>>(60), {"p1", "p1", "p1"},
+                             {p1Range, p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableXAxisTranslation<double>>(Eigen::Vector3d::Ones() * 3), {"p1"},
+                             {p1Range});
+    poseSpace.addComposition(make_shared<VariableYAxisTranslation<double>>(Eigen::Vector3d::Ones() * 2), {"p1"},
+                             {p1Range});
+    poseSpace.addComposition(make_shared<VariableZAxisTranslation<double>>(Eigen::Vector3d::Ones() * -1), {"p1"},
+                             {p1Range});
+    poseSpace.addComposition(make_shared<VariableXYAxisTranslation<double>>(Eigen::Vector3d::Ones() * -4), {"p1", "p1"},
+                             {p1Range, p1Range});
     poseSpace.addComposition(make_shared<VariableYZAxisTranslation<double>>(Eigen::Vector3d::Ones() * -12),
                              {"p1", "p1"}, {p1Range, p1Range});
-    poseSpace.addComposition(make_shared<VariableXZAxisTranslation<double>>(Eigen::Vector3d::Ones() * 42),
-                             {"p1", "p1"}, {p1Range, p1Range});
-    poseSpace.addComposition(make_shared<VariableTranslation<double>>(),
-                             {"p1", "p1", "p1"}, {p1Range, p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableXZAxisTranslation<double>>(Eigen::Vector3d::Ones() * 42), {"p1", "p1"},
+                             {p1Range, p1Range});
+    poseSpace.addComposition(make_shared<VariableTranslation<double>>(), {"p1", "p1", "p1"},
+                             {p1Range, p1Range, p1Range});
     cout << poseSpace.sample().toString() << endl;
     printMapConvertValue<std::string, std::shared_ptr<ParametrizablePosed::ParametrizablePoseParameter>>(
             poseSpace.getParameters(),

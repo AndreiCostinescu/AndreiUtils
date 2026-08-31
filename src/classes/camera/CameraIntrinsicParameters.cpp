@@ -1,15 +1,30 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <AndreiUtils/classes/camera/CameraIntrinsicParameters.h>
 
 using namespace AndreiUtils;
 using namespace std;
 
 CameraIntrinsicParameters::CameraIntrinsicParameters() :
-        fx(), fy(), ppx(), ppy(), distortionModel(ImageDistortionModel::DISTORTION_NONE),
-        distortionCoefficients(nullptr), nrDistortionCoefficients(0) {}
+    fx(), fy(), ppx(), ppy(), distortionModel(ImageDistortionModel::DISTORTION_NONE), distortionCoefficients(nullptr),
+    nrDistortionCoefficients(0) {}
 
-CameraIntrinsicParameters::CameraIntrinsicParameters(
-        double fx, double fy, double ppx, double ppy, ImageDistortionModel distortionModel,
-        const float *distortionCoefficients) : fx(fx), fy(fy), ppx(ppx), ppy(ppy), distortionModel(distortionModel) {
+CameraIntrinsicParameters::CameraIntrinsicParameters(double fx, double fy, double ppx, double ppy,
+                                                     ImageDistortionModel distortionModel,
+                                                     const float *distortionCoefficients) :
+    fx(fx), fy(fy), ppx(ppx), ppy(ppy), distortionModel(distortionModel) {
     this->nrDistortionCoefficients = getNumberOfDistortionCoefficients(distortionModel);
     this->distortionCoefficients = new float[this->nrDistortionCoefficients];
     for (int i = 0; i < this->nrDistortionCoefficients; i++) {
@@ -18,13 +33,11 @@ CameraIntrinsicParameters::CameraIntrinsicParameters(
 }
 
 CameraIntrinsicParameters::CameraIntrinsicParameters(const CameraIntrinsicParameters &other) :
-        CameraIntrinsicParameters() {
+    CameraIntrinsicParameters() {
     this->copyDataFromOther(other);
 }
 
-CameraIntrinsicParameters::~CameraIntrinsicParameters() {
-    delete[] this->distortionCoefficients;
-}
+CameraIntrinsicParameters::~CameraIntrinsicParameters() { delete[] this->distortionCoefficients; }
 
 CameraIntrinsicParameters &CameraIntrinsicParameters::operator=(const CameraIntrinsicParameters &other) {
     if (&other == this) {
@@ -36,8 +49,8 @@ CameraIntrinsicParameters &CameraIntrinsicParameters::operator=(const CameraIntr
 
 string CameraIntrinsicParameters::toString() const {
     string s;
-    s += "(fx, fy, ppx, ppy) = (" + to_string(fx) + ", " + to_string(fy) + ", " +
-         to_string(ppx) + ", " + to_string(ppy) + ")\n";
+    s += "(fx, fy, ppx, ppy) = (" + to_string(fx) + ", " + to_string(fy) + ", " + to_string(ppx) + ", " +
+         to_string(ppy) + ")\n";
     s += "distortion model = " + convertImageDistortionModelToString(this->distortionModel) + "\n";
     s += "distortion coefficients = {";
     for (int i = 0; this->distortionCoefficients == nullptr || i < this->nrDistortionCoefficients; i++) {

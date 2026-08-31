@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.08.23.
 //
@@ -18,9 +32,7 @@ CartesianTrajectory CartesianTrajectoryFilter::filter(CartesianTrajectory const 
     return filtered;
 }
 
-void CartesianTrajectoryFilter::filterInPlace(CartesianTrajectory &trajectory) {
-    this->filterInPlace(&trajectory);
-}
+void CartesianTrajectoryFilter::filterInPlace(CartesianTrajectory &trajectory) { this->filterInPlace(&trajectory); }
 
 std::shared_ptr<CartesianTrajectory> CartesianTrajectoryFilter::filter(CartesianTrajectory const *trajectory) {
     shared_ptr<CartesianTrajectory> filtered = dynamic_pointer_cast<CartesianTrajectory>(trajectory->clone());
@@ -28,7 +40,8 @@ std::shared_ptr<CartesianTrajectory> CartesianTrajectoryFilter::filter(Cartesian
     return filtered;
 }
 
-std::shared_ptr<CartesianTrajectory> CartesianTrajectoryFilter::filter(shared_ptr<CartesianTrajectory> const &trajectory) {
+std::shared_ptr<CartesianTrajectory>
+CartesianTrajectoryFilter::filter(shared_ptr<CartesianTrajectory> const &trajectory) {
     shared_ptr<CartesianTrajectory> filtered = dynamic_pointer_cast<CartesianTrajectory>(trajectory->clone());
     this->filterInPlace(filtered.get());
     return filtered;

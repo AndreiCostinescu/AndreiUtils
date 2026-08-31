@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 05.07.24.
 //
@@ -8,16 +22,15 @@
 
 using namespace std;
 
-int AndreiUtils::maximalMatchingUnweightedUndirected(
-        std::vector<std::vector<int>> const &adjacency, int const nrVerticesU, int const nrVerticesV,
-        bool const verbose) {
+int AndreiUtils::maximalMatchingUnweightedUndirected(std::vector<std::vector<int>> const &adjacency,
+                                                     int const nrVerticesU, int const nrVerticesV, bool const verbose) {
     std::vector<int> matchResult;
     return maximalMatchingUnweightedUndirected(adjacency, nrVerticesU, nrVerticesV, matchResult, verbose);
 }
 
-int AndreiUtils::maximalMatchingUnweightedUndirected(
-        std::vector<std::vector<int>> const &adjacency, int const nrVerticesU, int const nrVerticesV,
-        std::vector<int> &matchResult, bool const verbose) {
+int AndreiUtils::maximalMatchingUnweightedUndirected(std::vector<std::vector<int>> const &adjacency,
+                                                     int const nrVerticesU, int const nrVerticesV,
+                                                     std::vector<int> &matchResult, bool const verbose) {
     assert(adjacency.size() == nrVerticesU);
     // there is no node-index with this index in U because there are nrVerticesU vertices (starting from 0)
     int INF = -1;
@@ -143,26 +156,24 @@ int AndreiUtils::maximalMatchingUnweightedUndirected(
     return result;
 }
 
-double AndreiUtils::maximalMatchingMinWeightUndirected(
-        std::vector<std::vector<double>> const &weights, int const nrVerticesU, int const nrVerticesV,
-        bool const verbose) {
+double AndreiUtils::maximalMatchingMinWeightUndirected(std::vector<std::vector<double>> const &weights,
+                                                       int const nrVerticesU, int const nrVerticesV,
+                                                       bool const verbose) {
     std::vector<int> matchResult;
     return maximalMatchingMinWeightUndirected(weights, nrVerticesU, nrVerticesV, matchResult, verbose);
 }
 
-double AndreiUtils::maximalMatchingMinWeightUndirected(
-        std::vector<std::vector<double>> const &weights, int const nrVerticesU, int const nrVerticesV,
-        vector<int> &matchResult, bool const verbose) {
+double AndreiUtils::maximalMatchingMinWeightUndirected(std::vector<std::vector<double>> const &weights,
+                                                       int const nrVerticesU, int const nrVerticesV,
+                                                       vector<int> &matchResult, bool const verbose) {
     if (weights.size() != nrVerticesU) {
-        throw std::runtime_error(
-                "Weights vector does not have the size of " + std::to_string(nrVerticesU) + " but instead " +
-                std::to_string(weights.size()));
+        throw std::runtime_error("Weights vector does not have the size of " + std::to_string(nrVerticesU) +
+                                 " but instead " + std::to_string(weights.size()));
     }
     for (auto const &w: weights) {
         if (w.size() != nrVerticesV) {
-            throw std::runtime_error(
-                    "Weight sub-vector does not have the size of " + std::to_string(nrVerticesV) + " but instead " +
-                    std::to_string(w.size()));
+            throw std::runtime_error("Weight sub-vector does not have the size of " + std::to_string(nrVerticesV) +
+                                     " but instead " + std::to_string(w.size()));
         }
     }
     if (nrVerticesU > nrVerticesV) {
@@ -173,8 +184,8 @@ double AndreiUtils::maximalMatchingMinWeightUndirected(
                 weightsSwitched[j][i] = weights[i][j];
             }
         }
-        auto const res = maximalMatchingMinWeightUndirected(
-                weightsSwitched, nrVerticesV, nrVerticesU, matchResultSwitch, verbose);
+        auto const res = maximalMatchingMinWeightUndirected(weightsSwitched, nrVerticesV, nrVerticesU,
+                                                            matchResultSwitch, verbose);
         assert(matchResultSwitch.size() == nrVerticesV);
         // switch the match result indices
         matchResult = std::vector<int>(nrVerticesU, -1);

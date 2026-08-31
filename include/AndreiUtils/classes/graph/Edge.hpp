@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei Costinescu on 23.06.22.
 //
@@ -11,24 +25,25 @@
 #include <string>
 
 namespace AndreiUtils {
-    template<typename EdgeId=std::string, typename NodeId=int>
+    template<typename EdgeId = std::string, typename NodeId = int>
     class Edge {
         using NodeT = Node<NodeId>;
         using NodeTPtr = std::shared_ptr<Node<NodeId>>;
         using EdgeDataPtr = std::shared_ptr<EdgeData>;
         using EdgeIdFunction = std::function<EdgeId(NodeT const &, NodeT const &)>;
+
     public:
         Edge() : id(), n1(nullptr), n2(nullptr), data(nullptr) {}
 
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2) :
-                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {}
+            id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {}
 
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, EdgeDataPtr data) :
-                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(std::move(data)) {}
+            id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(std::move(data)) {}
 
         template<class T>
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, std::shared_ptr<T> data) :
-                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
+            id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
             this->data = std::move(data);
@@ -37,7 +52,7 @@ namespace AndreiUtils {
         // this only accepts r-values as data parameter
         template<class T>
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, T &&data) :
-                id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
+            id(std::move(id)), n1(std::move(n1)), n2(std::move(n2)), data(nullptr) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
             this->data = std::make_shared<T>(std::move(data));
@@ -48,15 +63,15 @@ namespace AndreiUtils {
         Edge(EdgeId id, NodeTPtr n1, NodeTPtr n2, T &data) = delete;
 
         Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes) :
-                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {}
+            id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {}
 
         Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes, EdgeDataPtr data) :
-                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(std::move(data)) {}
+            id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(std::move(data)) {}
 
         // the constructor only accepts r-values as data parameter
         template<class T>
         Edge(NodeTPtr const &n1, NodeTPtr const &n2, EdgeIdFunction const &createIdFromNodes, T &&data) :
-                id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {
+            id(createIdFromNodes(*n1, *n2)), n1(n1), n2(n2), data(nullptr) {
             static_assert(std::is_base_of<EdgeData, T>::value,
                           "The template parameter T is not a derived class of AndreiUtils::EdgeData");
             this->data = std::make_shared<T>(std::move(data));
@@ -68,8 +83,8 @@ namespace AndreiUtils {
 
         Edge(Edge const &other) : id(other.id), n1(other.n1), n2(other.n2), data(other.data) {}
 
-        Edge(Edge &&other) noexcept: id(std::move(other.id)), n1(std::move(other.n1)), n2(std::move(other.n2)),
-                                     data(std::move(other.data)) {}
+        Edge(Edge &&other) noexcept :
+            id(std::move(other.id)), n1(std::move(other.n1)), n2(std::move(other.n2)), data(std::move(other.data)) {}
 
         Edge &operator=(Edge const &other) {
             if (&other != this) {
@@ -91,41 +106,23 @@ namespace AndreiUtils {
             return *this;
         }
 
-        virtual ~Edge() {
-            this->data.reset();
-        }
+        virtual ~Edge() { this->data.reset(); }
 
-        inline EdgeId &getId() {
-            return this->id;
-        }
+        inline EdgeId &getId() { return this->id; }
 
-        inline EdgeId const &getId() const {
-            return this->id;
-        }
+        inline EdgeId const &getId() const { return this->id; }
 
-        inline NodeTPtr &getN1() {
-            return this->n1;
-        }
+        inline NodeTPtr &getN1() { return this->n1; }
 
-        inline NodeTPtr const &getN1() const {
-            return this->n1;
-        }
+        inline NodeTPtr const &getN1() const { return this->n1; }
 
-        inline NodeTPtr &getN2() {
-            return this->n2;
-        }
+        inline NodeTPtr &getN2() { return this->n2; }
 
-        inline NodeTPtr const &getN2() const {
-            return this->n2;
-        }
+        inline NodeTPtr const &getN2() const { return this->n2; }
 
-        inline EdgeDataPtr &getData() {
-            return this->data;
-        }
+        inline EdgeDataPtr &getData() { return this->data; }
 
-        inline EdgeDataPtr const &getData() const {
-            return this->data;
-        }
+        inline EdgeDataPtr const &getData() const { return this->data; }
 
         template<class T>
         T *getDataPtr() const {
@@ -141,9 +138,7 @@ namespace AndreiUtils {
             return std::dynamic_pointer_cast<T>(this->data);
         }
 
-        void setData(EdgeDataPtr _data) {
-            this->data = std::move(_data);
-        }
+        void setData(EdgeDataPtr _data) { this->data = std::move(_data); }
 
         // the function only accepts r-values as _data parameter
         template<class T>
@@ -173,6 +168,6 @@ namespace AndreiUtils {
         std::shared_ptr<NodeT> n1, n2;
         std::shared_ptr<EdgeData> data;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_EDGE_HPP
+#endif // ANDREIUTILS_EDGE_HPP

@@ -1,20 +1,34 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 24.03.22.
 //
 
 #pragma once
 
-#include <algorithm>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
 #include <AndreiUtils/enums/StabilityCriterionOperation.h>
 #include <AndreiUtils/utils.hpp>
+#include <algorithm>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <numeric>
 #include <set>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace AndreiUtils {
@@ -118,8 +132,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorContains(
-            std::vector<T> const &container, T const &key, std::size_t *const &position = nullptr) {
+    [[nodiscard]] bool vectorContains(std::vector<T> const &container, T const &key,
+                                      std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -131,8 +145,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorContains(
-            std::vector<T *> const &container, T *&key, std::size_t *const &position = nullptr) {
+    [[nodiscard]] bool vectorContains(std::vector<T *> const &container, T *&key,
+                                      std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -144,8 +158,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorContains(
-            std::vector<T *> const &container, T *const &key, std::size_t *const &position = nullptr) {
+    [[nodiscard]] bool vectorContains(std::vector<T *> const &container, T *const &key,
+                                      std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -157,8 +171,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool vectorContains(
-            std::vector<T *> const &container, T const *&key, std::size_t *const &position = nullptr) {
+    [[nodiscard]] bool vectorContains(std::vector<T *> const &container, T const *&key,
+                                      std::size_t *const &position = nullptr) {
         auto iter = std::find(container.begin(), container.end(), key);
         if (iter == container.end()) {
             return false;
@@ -194,8 +208,7 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorRemoveFirstValueMatch(
-            std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, std::function<bool(T const &)> const &predicate) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (predicate(*i)) {
                 container.erase(i);
@@ -206,8 +219,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorRemoveFirstValueMatch(
-            std::vector<T> &container, std::function<bool(T const &)> const &predicate, T &removedData) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container, std::function<bool(T const &)> const &predicate,
+                                     T &removedData) {
         for (auto i = container.begin(); i != container.end(); ++i) {
             if (predicate(*i)) {
                 removedData = std::move(*i);
@@ -219,8 +232,8 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorRemoveFirstValueMatch(
-            std::vector<T> &container, std::function<bool(T const &, int const &)> const &predicateWithIndex) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container,
+                                     std::function<bool(T const &, int const &)> const &predicateWithIndex) {
         int index = 0;
         for (auto i = container.begin(); i != container.end(); ++i, ++index) {
             if (predicateWithIndex(*i, index)) {
@@ -232,9 +245,9 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    bool vectorRemoveFirstValueMatch(
-            std::vector<T> &container, std::function<bool(T const &, int const &)> const &predicateWithIndex,
-            T &removedData) {
+    bool vectorRemoveFirstValueMatch(std::vector<T> &container,
+                                     std::function<bool(T const &, int const &)> const &predicateWithIndex,
+                                     T &removedData) {
         int index = 0;
         for (auto i = container.begin(); i != container.end(); ++i, ++index) {
             if (predicateWithIndex(*i, index)) {
@@ -350,9 +363,9 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x,
+                                                  std::function<bool(T const &)> const &elementFilter,
+                                                  std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
             if (elementFilter && elementFilter(x[i])) {
@@ -372,9 +385,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<bool(T const &)> const &elementFilter,
-            std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x,
+                                                  std::function<bool(T const &)> const &elementFilter,
+                                                  std::function<std::string(T const &)> const &stringConversion,
+                                                  std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
             if (elementFilter && elementFilter(x[i])) {
@@ -389,17 +403,17 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<std::string(T const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(std::vector<T> const &x,
+                                                  std::function<std::string(T const &)> const &stringConversion,
+                                                  std::string const &separator = ", ") {
         return printVectorToString(x, std::function<bool(T const &)>{}, stringConversion, separator);
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<bool(T const &, size_t const &)> const &elementFilter,
-            std::function<std::string(T const &, size_t const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string
+    printVectorToString(std::vector<T> const &x, std::function<bool(T const &, size_t const &)> const &elementFilter,
+                        std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                        std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < x.size(); i++) {
             if (elementFilter && elementFilter(x[i], i)) {
@@ -414,9 +428,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            std::vector<T> const &x, std::function<std::string(T const &, size_t const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string
+    printVectorToString(std::vector<T> const &x,
+                        std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                        std::string const &separator = ", ") {
         return printVectorToString(x, std::function<bool(T const &, size_t const &)>{}, stringConversion, separator);
     }
 
@@ -493,9 +508,9 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<bool(T const &)> const &elementFilter,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(T const *x, int size,
+                                                  std::function<bool(T const &)> const &elementFilter,
+                                                  std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
             if (elementFilter && elementFilter(x[i])) {
@@ -515,9 +530,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<bool(T const &)> const &elementFilter,
-            std::function<std::string(T const &)> const &stringConversion, std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(T const *x, int size,
+                                                  std::function<bool(T const &)> const &elementFilter,
+                                                  std::function<std::string(T const &)> const &stringConversion,
+                                                  std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
             if (elementFilter && elementFilter(x[i])) {
@@ -532,17 +548,17 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<std::string(T const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string printVectorToString(T const *x, int size,
+                                                  std::function<std::string(T const &)> const &stringConversion,
+                                                  std::string const &separator = ", ") {
         return printVectorToString(x, size, std::function<bool(T const &)>{}, stringConversion, separator);
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<bool(T const &, size_t const &)> const &elementFilter,
-            std::function<std::string(T const &, size_t const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string
+    printVectorToString(T const *x, int size, std::function<bool(T const &, size_t const &)> const &elementFilter,
+                        std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                        std::string const &separator = ", ") {
         std::stringstream s;
         for (size_t i = 0; i < size; i++) {
             if (elementFilter && elementFilter(x[i], i)) {
@@ -557,9 +573,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::string printVectorToString(
-            T const *x, int size, std::function<std::string(T const &, size_t const &)> const &stringConversion,
-            std::string const &separator = ", ") {
+    [[nodiscard]] std::string
+    printVectorToString(T const *x, int size,
+                        std::function<std::string(T const &, size_t const &)> const &stringConversion,
+                        std::string const &separator = ", ") {
         return printVectorToString(x, size, std::function<bool(T const &, size_t const &)>{}, stringConversion,
                                    separator);
     }
@@ -614,7 +631,7 @@ namespace AndreiUtils {
 
     template<typename T1, typename... TArgs>
     void sortMultipleVectorsBasedOnPermutation(std::vector<std::size_t> const &permutationIndices, std::vector<T1> &v1,
-                                               TArgs &... v2) {
+                                               TArgs &...v2) {
         permuteVectorInPlace(v1, permutationIndices);
         sortMultipleVectorsBasedOnPermutation(permutationIndices, v2...);
     }
@@ -625,15 +642,16 @@ namespace AndreiUtils {
     }
 
     template<typename T1, typename Compare, typename... TArgs>
-    void sortVectorsBasedOnFirst(std::vector<T1> &v1, Compare const &compare, TArgs &... v2) {
+    void sortVectorsBasedOnFirst(std::vector<T1> &v1, Compare const &compare, TArgs &...v2) {
         auto permutationIndices = getSortedIndicesOfVector(v1, compare);
         sortMultipleVectorsBasedOnPermutation(permutationIndices, v1, v2...);
     }
 
     template<class T>
-    [[nodiscard]] bool isSequenceStable(
-            std::vector<T> const &sequence, T const &avg, std::function<double(T const &, T const &)> const &op,
-            double stabilityThreshold = 0.5, StabilityCriterionOperation criterion = SUM, bool verbose = false) {
+    [[nodiscard]] bool isSequenceStable(std::vector<T> const &sequence, T const &avg,
+                                        std::function<double(T const &, T const &)> const &op,
+                                        double stabilityThreshold = 0.5, StabilityCriterionOperation criterion = SUM,
+                                        bool verbose = false) {
         double stabilityCoefficient = 0.;
         for (const auto &element: sequence) {
             switch (criterion) {
@@ -675,8 +693,9 @@ namespace AndreiUtils {
     template<class T>
     [[nodiscard]] bool isSequenceStable(std::vector<T> const &sequence, T const &avg, double stabilityThreshold = 0.5,
                                         StabilityCriterionOperation criterion = SUM, bool verbose = false) {
-        return isSequenceStable(sequence, avg, [](T const &t1, T const &t2) { return std::abs(t1 - t2); },
-                                stabilityThreshold, criterion, verbose);
+        return isSequenceStable(
+                sequence, avg, [](T const &t1, T const &t2) { return std::abs(t1 - t2); }, stabilityThreshold,
+                criterion, verbose);
     }
 
     template<class T>
@@ -689,9 +708,10 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] bool isSequenceStable(
-            std::vector<T> const &sequence, std::function<double(T const &, T const &)> const &op,
-            double stabilityThreshold = 0.5, StabilityCriterionOperation criterion = SUM, bool verbose = false) {
+    [[nodiscard]] bool isSequenceStable(std::vector<T> const &sequence,
+                                        std::function<double(T const &, T const &)> const &op,
+                                        double stabilityThreshold = 0.5, StabilityCriterionOperation criterion = SUM,
+                                        bool verbose = false) {
         if (sequence.empty()) {
             return true;
         }
@@ -711,16 +731,16 @@ namespace AndreiUtils {
     }
 
     template<class T>
-    [[nodiscard]] std::vector<T> vectorAppend(
-            std::vector<T> const &container, std::vector<T> const &valuesToBeAppended) {
+    [[nodiscard]] std::vector<T> vectorAppend(std::vector<T> const &container,
+                                              std::vector<T> const &valuesToBeAppended) {
         auto res = container;
         res.insert(res.end(), valuesToBeAppended.begin(), valuesToBeAppended.end());
         return res;
     }
 
     template<class T>
-    [[nodiscard]] std::vector<T> vectorAppend(
-            std::vector<T> const &container, T const *valuesToBeAppended, size_t const &size) {
+    [[nodiscard]] std::vector<T> vectorAppend(std::vector<T> const &container, T const *valuesToBeAppended,
+                                              size_t const &size) {
         std::vector<T> res = container;
         size_t containerSize = container.size();
         res.resize(containerSize + size);
@@ -889,8 +909,8 @@ namespace AndreiUtils {
     }
 
     template<typename OpResT, typename T>
-    std::vector<OpResT>
-    vectorOp(std::vector<T> const &v, std::function<void(std::vector<OpResT> &, T const &)> const &op) {
+    std::vector<OpResT> vectorOp(std::vector<T> const &v,
+                                 std::function<void(std::vector<OpResT> &, T const &)> const &op) {
         std::vector<OpResT> res;
         for (auto const &elem: v) {
             op(res, elem);
@@ -899,8 +919,7 @@ namespace AndreiUtils {
     }
 
     template<typename OpResT, typename T>
-    std::vector<OpResT>
-    vectorOp(std::vector<T> &v, std::function<void(std::vector<OpResT> &, T &)> const &op) {
+    std::vector<OpResT> vectorOp(std::vector<T> &v, std::function<void(std::vector<OpResT> &, T &)> const &op) {
         std::vector<OpResT> res;
         for (auto &elem: v) {
             op(res, elem);
@@ -925,4 +944,4 @@ namespace AndreiUtils {
         }
         return res;
     }
-}
+} // namespace AndreiUtils

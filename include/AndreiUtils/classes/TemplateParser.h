@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 31.01.26.
 //
@@ -14,9 +28,9 @@
 namespace AndreiUtils {
     // Represents a parsed template type
     struct TemplateType {
-        std::string baseType;                    // The base type name (e.g., "std::vector")
-        std::vector<TemplateType> templateArgs;  // Template arguments (can be nested)
-        bool typeDefinedWithTemplateChars;       // Helps disambiguate between "Type" and "Type<>"
+        std::string baseType; // The base type name (e.g., "std::vector")
+        std::vector<TemplateType> templateArgs; // Template arguments (can be nested)
+        bool typeDefinedWithTemplateChars; // Helps disambiguate between "Type" and "Type<>"
 
         // Convert back to string representation
         [[nodiscard]] std::string toString() const;
@@ -52,8 +66,8 @@ namespace AndreiUtils {
 
         std::string input;
         size_t pos;
-        char startTemplateCharacter, endTemplateCharacter;  // default '<' and '>'
+        char startTemplateCharacter, endTemplateCharacter; // default '<' and '>'
     };
-} // AndreiUtils
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_TEMPLATEPARSER_H
+#endif // ANDREIUTILS_TEMPLATEPARSER_H

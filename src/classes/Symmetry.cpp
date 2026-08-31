@@ -1,9 +1,23 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 13.10.22.
 //
 
-#include <AndreiUtils/classes/Symmetry.h>
 #include <AndreiUtils/classes/RandomNumberGenerator.hpp>
+#include <AndreiUtils/classes/Symmetry.h>
 
 using namespace AndreiUtils;
 
@@ -19,8 +33,8 @@ Posed Symmetry::getSymmetricTransformation(double rangeValue) const {
     Posed randomPose;
     if (this->type == "rotation") {
         // TODO: what about the axisDisplacement?!
-        randomPose = Posed(Eigen::Quaterniond(Eigen::AngleAxis<double>(rangeValue, this->axis)),
-                           Eigen::Vector3d::Zero());
+        randomPose =
+                Posed(Eigen::Quaterniond(Eigen::AngleAxis<double>(rangeValue, this->axis)), Eigen::Vector3d::Zero());
     } else {
         // TODO: what about the axisDisplacement?!
         randomPose = Posed(qIdentity<double>(), rangeValue * this->axis);
@@ -55,13 +69,11 @@ Posed Symmetry::createSymmetricPose(Posed const &pose, double const &rangeValue)
     return this->getSymmetricTransformation(rangeValue) * pose;
 }
 
-Posed Symmetry::createSymmetricPose(Posed const &pose) const {
-    return this->getSymmetricTransformation() * pose;
-}
+Posed Symmetry::createSymmetricPose(Posed const &pose) const { return this->getSymmetricTransformation() * pose; }
 
 bool Symmetry::checkIfOrientationFitsSymmetry(Eigen::Quaterniond const &q, double axisSimilarityThreshold) const {
     Eigen::AngleAxisd qAxisAngle(q);
-    double &qAngle = qAxisAngle.angle();  // <- this is always in [0, pi]
+    double &qAngle = qAxisAngle.angle(); // <- this is always in [0, pi]
     if (AndreiUtils::equal<double>(qAngle, 0)) {
         return true;
     }

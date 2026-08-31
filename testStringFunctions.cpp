@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 29.11.23.
 //
@@ -6,8 +20,8 @@
 #include <AndreiUtils/traits/stringify.hpp>
 #include <AndreiUtils/utilsString.h>
 #include <algorithm>
-#include <iostream>
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace std;
 
@@ -116,9 +130,7 @@ TEST(StringUtilsTest, EndsWithInteger) {
 }
 
 TEST(StringUtilsTest, AllOf) {
-    auto isStringSizeOdd = [](std::string const &s) {
-        return s.size() % 2 == 1;
-    };
+    auto isStringSizeOdd = [](std::string const &s) { return s.size() % 2 == 1; };
 
     vector<std::string> v(0, "s");
     auto res = std::all_of(v.begin(), v.end(), isStringSizeOdd);
@@ -167,7 +179,7 @@ TEST(StringUtilsTest, ComplexTypes) {
     string expected = "(1.200000 + i * 4.500000, false, [1, 2, 3, 4, 5])";
 
     EXPECT_EQ(AndreiUtils::toString(v), expected);
-    EXPECT_EQ(AndreiUtils::toString(v), expected);  // check two times!
+    EXPECT_EQ(AndreiUtils::toString(v), expected); // check two times!
 }
 
 TEST(StringUtilsTest, StringTrim) {
@@ -187,9 +199,7 @@ TEST(StringUtilsTest, StringTrim) {
     EXPECT_EQ(firstPos, 1);
     firstPos = s.find_first_not_of('e');
     EXPECT_EQ(firstPos, 0);
-    EXPECT_THROW({
-                     auto _ = s.substr(s.find_first_not_of("Help"));
-                 }, std::exception);
+    EXPECT_THROW({ auto _ = s.substr(s.find_first_not_of("Help")); }, std::exception);
 }
 
 TEST(StringUtilsTest, StringTemplateParser) {
@@ -209,24 +219,27 @@ TEST(StringUtilsTest, StringTemplateParser) {
             " A < 1 <>>: B<>",
     };
     std::vector<std::pair<std::string, std::string>> testCases = {
-            {"int",                                                     "int"},
-            {"std::vector<int>",                                        "std::vector<int>"},
-            {"std::map<std::string, int>",                              "std::map<std::string, int>"},
-            {"std::vector<std::vector<int>>",                           "std::vector<std::vector<int>>"},
-            {"std::map<std::string, std::vector<int>>",                 "std::map<std::string, std::vector<int>>"},
-            {"std::unordered_map<std::string, std::pair<int, double>>", "std::unordered_map<std::string, std::pair<int, double>>"},
-            {"    this is a   long __   type declaration   ",           "this is a long __ type declaration"},
-            {"MyClass<T1, T2<T3, T4<T5>>>",                             "MyClass<T1, T2<T3, T4<T5>>>"},
-            {"unsigned int",                                            "unsigned int"},
-            {"std::vector< int >",                                      "std::vector<int>"},
-            {"std::vector< unsigned int >",                             "std::vector<unsigned int>"},
-            {"std::map< std::string , std::vector< unsigned int > >",   "std::map<std::string, std::vector<unsigned int>>"},
-            {"std::map< std::string , std::vector< unsigned int > > ",  "std::map<std::string, std::vector<unsigned int>>"},
-            {" A< B < 1 , 3,  5 , 2 > , C< 42 > >  ",                   "A<B<1, 3, 5, 2>, C<42>>"},
-            {" A< B <  >, C< 42 > >  ",                                 "A<B<>, C<42>>"},
-            {" A< 1 < > > ",                                            "A<1<>>"},
-            {"A<1<>>",                                                  "A<1<>>"},
-            {"A<1<:>>",                                                 "A<1<:>>"},  // should this be accepted as valid???
+            {"int", "int"},
+            {"std::vector<int>", "std::vector<int>"},
+            {"std::map<std::string, int>", "std::map<std::string, int>"},
+            {"std::vector<std::vector<int>>", "std::vector<std::vector<int>>"},
+            {"std::map<std::string, std::vector<int>>", "std::map<std::string, std::vector<int>>"},
+            {"std::unordered_map<std::string, std::pair<int, double>>",
+             "std::unordered_map<std::string, std::pair<int, double>>"},
+            {"    this is a   long __   type declaration   ", "this is a long __ type declaration"},
+            {"MyClass<T1, T2<T3, T4<T5>>>", "MyClass<T1, T2<T3, T4<T5>>>"},
+            {"unsigned int", "unsigned int"},
+            {"std::vector< int >", "std::vector<int>"},
+            {"std::vector< unsigned int >", "std::vector<unsigned int>"},
+            {"std::map< std::string , std::vector< unsigned int > >",
+             "std::map<std::string, std::vector<unsigned int>>"},
+            {"std::map< std::string , std::vector< unsigned int > > ",
+             "std::map<std::string, std::vector<unsigned int>>"},
+            {" A< B < 1 , 3,  5 , 2 > , C< 42 > >  ", "A<B<1, 3, 5, 2>, C<42>>"},
+            {" A< B <  >, C< 42 > >  ", "A<B<>, C<42>>"},
+            {" A< 1 < > > ", "A<1<>>"},
+            {"A<1<>>", "A<1<>>"},
+            {"A<1<:>>", "A<1<:>>"}, // should this be accepted as valid???
     };
 
     for (auto const &test: testCases) {
@@ -252,25 +265,27 @@ TEST(StringUtilsTest, StringTemplateParser) {
         }
     }
     for (auto const &failureTest: failureCases) {
-        EXPECT_THROW({
-                         std::cout << "Expecting failure for: \"" << failureTest << "\"\n";
-                         AndreiUtils::TemplateParser::parse(failureTest);
-                     }, std::exception);
+        EXPECT_THROW(
+                {
+                    std::cout << "Expecting failure for: \"" << failureTest << "\"\n";
+                    AndreiUtils::TemplateParser::parse(failureTest);
+                },
+                std::exception);
     }
 }
 
 TEST(StringUtilsTest, TestCapitalizeAndLowercase) {
     // Test cases
     std::vector<std::tuple<std::string, std::string, std::string>> testCases = {
-        {"int", "int", "Int"},
-        {"s", "s", "S"},
-        {"Tmp", "tmp", "Tmp"},
-        {"TMP", "tMP", "TMP"},
-        {"", "", ""},
-        {"A<1<:>>", "a<1<:>>", "A<1<:>>"},
-        {"123", "123", "123"},
-        {"::Hello", "::Hello", "::Hello"},
-        {"::hello", "::hello", "::hello"},
+            {"int", "int", "Int"},
+            {"s", "s", "S"},
+            {"Tmp", "tmp", "Tmp"},
+            {"TMP", "tMP", "TMP"},
+            {"", "", ""},
+            {"A<1<:>>", "a<1<:>>", "A<1<:>>"},
+            {"123", "123", "123"},
+            {"::Hello", "::Hello", "::Hello"},
+            {"::hello", "::hello", "::hello"},
     };
 
     for (auto const &test: testCases) {

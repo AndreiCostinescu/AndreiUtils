@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 03.11.22.
 //
@@ -10,12 +24,7 @@ using namespace std;
 
 void testMapKeys() {
     map<string, int> x{
-            {"72", 1},
-            {"60", 2},
-            {"48", 3},
-            {"36", 4},
-            {"24", 5},
-            {"12", 6},
+            {"72", 1}, {"60", 2}, {"48", 3}, {"36", 4}, {"24", 5}, {"12", 6},
     };
     printVector(getMapKeys(x));
 }
@@ -151,9 +160,7 @@ public:
     double a, b;
     int c;
 
-    MapEmplaceTestClass() : a(), b(), c() {
-        cout << "Empty constructor..." << endl;
-    }
+    MapEmplaceTestClass() : a(), b(), c() { cout << "Empty constructor..." << endl; }
 
     MapEmplaceTestClass(double a, double b, int c) : a(a), b(b), c(c) {}
 
@@ -161,7 +168,7 @@ public:
         cout << "Copy constructor..." << endl;
     }
 
-    MapEmplaceTestClass(MapEmplaceTestClass &&other) noexcept: a(other.a), b(other.b), c(other.c) {
+    MapEmplaceTestClass(MapEmplaceTestClass &&other) noexcept : a(other.a), b(other.b), c(other.c) {
         cout << "Move constructor..." << endl;
     }
 
@@ -292,8 +299,7 @@ void testMapEmplaceMoveCopy2() {
 void testSingleElementFunctions() {
     int key, value;
     try {
-        std::map<int, int> m = {{1, 42},
-                                {4, 1}};
+        std::map<int, int> m = {{1, 42}, {4, 1}};
         getSingleElement(m, key, value);
     } catch (std::runtime_error &e) {
         assert(std::string(e.what()) == "Map does not have only one element (2)!");
@@ -311,8 +317,7 @@ void testSingleElementFunctions() {
 }
 
 void testMapAddIfNotContains() {
-    map<int, string> x = {{1, "1"},
-                          {0, "2"}};
+    map<int, string> x = {{1, "1"}, {0, "2"}};
     printMap(x);
     string *newElemAddr = mapAddIfNotContains<int, string>(x, 2, "0");
     if (newElemAddr != &mapGet(x, 2)) {
@@ -326,7 +331,7 @@ class OnlyMovableData {
 public:
     OnlyMovableData() : i(0), s("Hello World!") {}
 
-    OnlyMovableData(OnlyMovableData &&other) noexcept: i(std::move(other.i) + 1), s(std::move(other.s)) {
+    OnlyMovableData(OnlyMovableData &&other) noexcept : i(std::move(other.i) + 1), s(std::move(other.s)) {
         cout << "Move constructor!" << endl;
     }
 
@@ -339,13 +344,9 @@ public:
         return *this;
     }
 
-    bool operator==(OnlyMovableData const &other) const {
-        return this->i == other.i;
-    }
+    bool operator==(OnlyMovableData const &other) const { return this->i == other.i; }
 
-    bool operator<(OnlyMovableData const &other) const {
-        return this->i < other.i;
-    }
+    bool operator<(OnlyMovableData const &other) const { return this->i < other.i; }
 
     int i;
     std::string s;
@@ -369,8 +370,7 @@ void testMapEmplaceKeyPointer() {
 }
 
 void testMapEmplaceForwardKey() {
-    map<int, string> x = {{1, "1"},
-                          {0, "2"}};
+    map<int, string> x = {{1, "1"}, {0, "2"}};
     printMap(x);
     try {
         mapEmplace(x, std::move(1), "3");
@@ -379,8 +379,7 @@ void testMapEmplaceForwardKey() {
     }
     printMap(x);
 
-    map<string, int> y = {{"1", 1},
-                          {"0", 2}};
+    map<string, int> y = {{"1", 1}, {"0", 2}};
     std::string s("1");
     try {
         mapEmplace<string>(y, std::move(s), 3);
@@ -395,20 +394,17 @@ void testMapEmplaceForwardKey() {
     datum.i = 42;
     mapEmplace(m, std::move(datum), 42);
     cout << stringify<OnlyMovableData>::to_string(datum) << endl;
-    printMapConvertKey<OnlyMovableData>(m, [](OnlyMovableData const &d) {
-        return stringify<OnlyMovableData>::to_string(d);
-    });
+    printMapConvertKey<OnlyMovableData>(
+            m, [](OnlyMovableData const &d) { return stringify<OnlyMovableData>::to_string(d); });
     OnlyMovableData other;
     // other = datum;
     // OnlyMovableData other2 = datum;
 }
 
 void testMapOp() {
-    map<int, string> x = {{1, "1"},
-                          {0, "2"}};
-    auto res = mapOp<std::string, int, int, std::string>(x, [](int const &key, std::string const &val) {
-        return std::make_pair(val, key);
-    });
+    map<int, string> x = {{1, "1"}, {0, "2"}};
+    auto res = mapOp<std::string, int, int, std::string>(
+            x, [](int const &key, std::string const &val) { return std::make_pair(val, key); });
     AndreiUtils::printMap(res);
 }
 

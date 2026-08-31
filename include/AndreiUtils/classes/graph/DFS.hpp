@@ -1,3 +1,17 @@
+// Copyright 2026 AndreiUtils Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //
 // Created by Andrei on 23.06.22.
 //
@@ -11,53 +25,36 @@
 #include <cassert>
 
 namespace AndreiUtils {
-    template<typename NodeId=int, typename EdgeId=std::string>
+    template<typename NodeId = int, typename EdgeId = std::string>
     class DFS {
         using NodeT = Node<NodeId>;
         using NodeTPtr = std::shared_ptr<NodeT>;
         using EdgeT = Edge<EdgeId, NodeId>;
         using EdgeTPtr = std::shared_ptr<EdgeT>;
         using GraphT = Graph<NodeId, EdgeId>;
+
     public:
         explicit DFS(GraphT const &_graph, bool recursive = true) : graph(_graph), traversedNodes(0), finishedNodes(0) {
             this->initialize(recursive);
         }
 
-        std::vector<NodeId> getGraphRoots() const {
-            return getMapKeys(this->roots);
-        }
+        std::vector<NodeId> getGraphRoots() const { return getMapKeys(this->roots); }
 
-        std::vector<EdgeId> getTreeEdges() const {
-            return getMapKeys(this->treeEdges);
-        }
+        std::vector<EdgeId> getTreeEdges() const { return getMapKeys(this->treeEdges); }
 
-        std::vector<EdgeId> getForwardEdges() const {
-            return getMapKeys(this->forwardEdges);
-        }
+        std::vector<EdgeId> getForwardEdges() const { return getMapKeys(this->forwardEdges); }
 
-        std::vector<EdgeId> getBackwardEdges() const {
-            return getMapKeys(this->backwardEdges);
-        }
+        std::vector<EdgeId> getBackwardEdges() const { return getMapKeys(this->backwardEdges); }
 
-        std::vector<EdgeId> getCrossEdges() const {
-            return getMapKeys(this->crossEdges);
-        }
+        std::vector<EdgeId> getCrossEdges() const { return getMapKeys(this->crossEdges); }
 
-        std::map<NodeId, int> const &getStartNums() const {
-            return this->startNum;
-        }
+        std::map<NodeId, int> const &getStartNums() const { return this->startNum; }
 
-        std::map<NodeId, int> &getStartNums() {
-            return this->startNum;
-        }
+        std::map<NodeId, int> &getStartNums() { return this->startNum; }
 
-        std::map<NodeId, int> const &getFinishNums() const {
-            return this->endNum;
-        }
+        std::map<NodeId, int> const &getFinishNums() const { return this->endNum; }
 
-        std::map<NodeId, int> &getFinishNums() {
-            return this->endNum;
-        }
+        std::map<NodeId, int> &getFinishNums() { return this->endNum; }
 
         bool getTopologicalSort(std::vector<NodeId> &container) const {
             if (!this->backwardEdges.empty()) {
@@ -107,7 +104,7 @@ namespace AndreiUtils {
                 for (auto const &neighbor: *neighbors) {
                     auto neighborId = neighbor.first->getId();
                     auto &edges = this->graph.getEdges(std::make_pair(nId, neighborId));
-                    assert (edges.size() >= 1);
+                    assert(edges.size() >= 1);
                     if (this->edgeClassification(edges, neighborId, nId)) {
                         this->traverseDfsRecursive(neighborId);
                     }
@@ -173,7 +170,7 @@ namespace AndreiUtils {
                             iterNeighborNode = std::get<2>(neighborData)[i]->getId();
 
                             auto &edges = this->graph.getEdges(std::make_pair(iterNode, iterNeighborNode));
-                            assert (edges.size() >= 1);
+                            assert(edges.size() >= 1);
                             if (this->edgeClassification(edges, iterNeighborNode, iterNode)) {
                                 found = true;
                                 iterNode = iterNeighborNode;
@@ -198,8 +195,7 @@ namespace AndreiUtils {
             }
         }
 
-        bool edgeClassification(std::map<EdgeTPtr, bool> const &edges, NodeId const &neighborId,
-                                NodeId const &nodeId) {
+        bool edgeClassification(std::map<EdgeTPtr, bool> const &edges, NodeId const &neighborId, NodeId const &nodeId) {
             bool foundTreeEdge = false;
             int edgeIndex = 0;
             for (auto const &edge: edges) {
@@ -243,13 +239,13 @@ namespace AndreiUtils {
         }
 
         GraphT const &graph;
-        std::map<NodeId, bool> roots;  // nodes that form a root in the DFS-tree
+        std::map<NodeId, bool> roots; // nodes that form a root in the DFS-tree
         std::map<EdgeId, bool> crossEdges, treeEdges, forwardEdges, backwardEdges;
         std::map<NodeId, int> startNum, endNum;
         std::map<NodeId, bool> visited;
         std::vector<NodeId> traversal;
         int traversedNodes, finishedNodes;
     };
-}
+} // namespace AndreiUtils
 
-#endif //ANDREIUTILS_DFS_HPP
+#endif // ANDREIUTILS_DFS_HPP
