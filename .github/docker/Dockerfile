@@ -12,7 +12,7 @@
 # changes. See the "CI Docker image" section in README.md for how to build
 # and test a change to this file from a branch before merging it.
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
