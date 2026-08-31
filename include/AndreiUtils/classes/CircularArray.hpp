@@ -54,7 +54,7 @@ namespace AndreiUtils {
             if (this->dataLength >= this->dataSize) {
                 this->resize();
             }
-            *this->data[this->endIndex] = element;
+            *this->data[this->endIndex] = std::move(element);
             ++this->dataLength;
             this->endIndex = (this->endIndex + 1) % this->dataSize;
         }
@@ -63,15 +63,15 @@ namespace AndreiUtils {
             if (this->dataLength <= 0) {
                 throw std::runtime_error("Can't pop from an empty circular array!");
             }
-            T element = *this->data[this->startIndex];
+            T element = std::move(*this->data[this->startIndex]);
             --this->dataLength;
             this->startIndex = (this->startIndex + 1) % this->dataSize;
             return element;
         }
 
-        [[nodiscard]] T get(int i) const { return *this->getPtr(i); }
+        [[nodiscard]] T const &get(int i) const { return *this->getPtr(i); }
 
-        [[nodiscard]] T operator[](int i) const { return this->get(i); }
+        [[nodiscard]] T const &operator[](int i) const { return this->get(i); }
 
         T &operator()(int &i) {
             i %= this->dataSize;
