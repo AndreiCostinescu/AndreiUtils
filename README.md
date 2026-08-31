@@ -116,22 +116,23 @@ itself.
 
 **When you change `.github/docker/Dockerfile`:**
 - Pushing to `main` with Dockerfile changes rebuilds and publishes `:latest` (and a `:<sha>` tag)
-  automatically via [`.github/workflows/docker-image.yml`](.github/workflows/docker-image.yml). A pull
-  request that touches the Dockerfile only *builds* it (to catch a broken image), without pushing.
-- Because of that, a PR that changes the Dockerfile still runs `ci.yml`/`lint.yml` against the *old*
-  `:latest` image until it's merged - the new dependencies aren't available yet. To test a Dockerfile
-  change before merging, manually run the "CI image" workflow from your branch: **Actions → CI image →
-  Run workflow**, pick your branch. That builds and pushes `:latest` from your branch immediately, so
-  the next `ci.yml`/`lint.yml` run (e.g. by re-running the PR's checks) picks it up. Remember to
-  re-run the "CI image" workflow from `main` afterwards (or just merge your PR) so `:latest` doesn't
-  stay pointed at an unmerged branch.
+  automatically via [`.github/workflows/docker-image.yml`](.github/workflows/docker-image.yml). 
+- A pull request that touches the Dockerfile builds the new image (to catch Dockerfile
+  breakage), but does not publish or use it for the other CI jobs.
+- Because of that, a PR that changes the Dockerfile still runs `ci.yml`/`lint.yml` against the
+  existing `:latest` image until the PR is merged. The newly built PR image is only checked for
+  whether it builds successfully. To test a Dockerfile change before merging, manually run the 
+  "CI image" workflow from your branch: **Actions → CI image → Run workflow**, pick your branch. 
+  That builds and pushes `:latest` from your branch immediately, so the next `ci.yml`/`lint.yml` run
+  (e.g. by re-running the PR's checks) picks it up. Remember to re-run the "CI image" workflow from 
+  `main` afterwards (or just merge your PR) so `:latest` doesn't stay pointed at an unmerged branch.
 - First time only: the pushed package defaults to private, which `ci.yml`/`lint.yml` can't pull with
   just `permissions: packages: read`. Go to the package page (Repo → Packages → `andreiutils-ci` →
   Package settings) and set visibility to Public, or link it to the repository and grant it access.
 
 **To build/test the image locally** without touching CI at all:
 ```
-docker build -f .github/docker/Dockerfile -t andreiutils-ci .
+docker build -f .github/docker/Dockerfile -t andreiutils-ci .github/docker
 docker run --rm -it -v "$PWD":/workspace -w /workspace andreiutils-ci bash
 # inside the container:
 cmake -S . -B build -DWITH_EIGEN=ON -DWITH_JSON=ON -DWITH_OPENCV=ON -DWITH_REALSENSE=ON -DWITH_TESTS=ON

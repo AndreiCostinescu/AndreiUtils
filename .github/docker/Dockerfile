@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # CI image for AndreiUtils.
 #
 # Bakes in every optional dependency the matrix in .github/workflows/ci.yml
