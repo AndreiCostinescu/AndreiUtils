@@ -102,5 +102,42 @@ There's no need for including the include directories of ```AndreiUtils``` expli
 
 Some components include others: e.g. by requesting the "opencv_realsense" component, one is using the "core", "opencv", and "realsense" components as well.
 
+## CI Docker Image
+`ci.yml` and `lint.yml` build the full `WITH_*` option matrix (~38 jobs) plus a lint job. Rather than
+have every one of those jobs run `apt-get install` for Eigen/OpenCV/librealsense/pybind11/etc.
+(GitHub-hosted matrix jobs are separate, throwaway VMs, so they can't share an apt cache with each
+other within the same run), they all run inside a single prebuilt container image
+([`.github/docker/Dockerfile`](.github/docker/Dockerfile)) that already has every dependency
+installed, published as `ghcr.io/andreicostinescu/andreiutils-ci:latest`.
+
+**You don't need to do anything to use it** - `ci.yml`/`lint.yml` reference the `:latest` tag
+directly, and it's rebuilt automatically. You only need the steps below if you're changing the image
+itself.
+
+**When you change `.github/docker/Dockerfile`:**
+- Pushing to `main` with Dockerfile changes rebuilds and publishes `:latest` (and a `:<sha>` tag)
+  automatically via [`.github/workflows/docker-image.yml`](.github/workflows/docker-image.yml). A pull
+  request that touches the Dockerfile only *builds* it (to catch a broken image), without pushing.
+- Because of that, a PR that changes the Dockerfile still runs `ci.yml`/`lint.yml` against the *old*
+  `:latest` image until it's merged - the new dependencies aren't available yet. To test a Dockerfile
+  change before merging, manually run the "CI image" workflow from your branch: **Actions → CI image →
+  Run workflow**, pick your branch. That builds and pushes `:latest` from your branch immediately, so
+  the next `ci.yml`/`lint.yml` run (e.g. by re-running the PR's checks) picks it up. Remember to
+  re-run the "CI image" workflow from `main` afterwards (or just merge your PR) so `:latest` doesn't
+  stay pointed at an unmerged branch.
+- First time only: the pushed package defaults to private, which `ci.yml`/`lint.yml` can't pull with
+  just `permissions: packages: read`. Go to the package page (Repo → Packages → `andreiutils-ci` →
+  Package settings) and set visibility to Public, or link it to the repository and grant it access.
+
+**To build/test the image locally** without touching CI at all:
+```
+docker build -f .github/docker/Dockerfile -t andreiutils-ci .
+docker run --rm -it -v "$PWD":/workspace -w /workspace andreiutils-ci bash
+# inside the container:
+cmake -S . -B build -DWITH_EIGEN=ON -DWITH_JSON=ON -DWITH_OPENCV=ON -DWITH_REALSENSE=ON -DWITH_TESTS=ON
+cmake --build build -j
+ctest --test-dir build --output-on-failure
+```
+
 ## License
 Licensed under the Apache License, Version 2.0 - see [LICENSE](LICENSE) for the full text.

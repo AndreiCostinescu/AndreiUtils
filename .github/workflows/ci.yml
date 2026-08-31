@@ -25,6 +25,14 @@ jobs:
   build:
     name: build (${{ matrix.toolchain.name }}, ${{ matrix.feature_set.name }})
     runs-on: ubuntu-latest
+    # Prebuilt image with every optional dependency (gcc, clang, Eigen,
+    # OpenCV, librealsense2, Python/pybind11) already installed - see
+    # .github/docker/Dockerfile and the "CI Docker image" section in
+    # README.md. Keeps all matrix jobs from each re-running apt-get.
+    container:
+      image: ghcr.io/andreicostinescu/andreiutils-ci:latest
+    permissions:
+      packages: read
     strategy:
       fail-fast: false
       matrix:
@@ -191,36 +199,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install base build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends cmake build-essential libeigen3-dev libgomp1
-
-      # clang doesn't bundle its own OpenMP runtime/headers the way gcc does
-      # (build-essential above provides libstdc++ for clang to link against).
-      - name: Install clang
-        if: matrix.toolchain.name == 'clang'
-        run: sudo apt-get install -y --no-install-recommends clang libomp-dev
-
-      - name: Install OpenCV
-        if: matrix.feature_set.with_opencv == 'ON'
-        run: sudo apt-get install -y --no-install-recommends libopencv-dev
-
-      - name: Install librealsense2
-        if: matrix.feature_set.with_realsense == 'ON'
-        run: |
-          sudo mkdir -p /etc/apt/keyrings
-          curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc \
-            | gpg --dearmor | sudo tee /etc/apt/keyrings/librealsenseai.gpg > /dev/null
-          echo "deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo $(lsb_release -cs) main" \
-            | sudo tee /etc/apt/sources.list.d/librealsense.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends librealsense2-dev
-
-      - name: Install Python / pybind11
-        if: matrix.feature_set.with_python == 'ON'
-        run: sudo apt-get install -y --no-install-recommends python3-dev pybind11-dev
 
       - name: Configure AndreiUtils
         run: >

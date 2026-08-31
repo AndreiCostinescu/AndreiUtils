@@ -8,14 +8,16 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    # Prebuilt image with cmake/clang-format/clang-tidy and every optional
+    # dependency already installed - see .github/docker/Dockerfile and the
+    # "CI Docker image" section in README.md.
+    container:
+      image: ghcr.io/andreicostinescu/andreiutils-ci:latest
+    permissions:
+      packages: read
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install clang-format and clang-tidy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang-format clang-tidy
 
       - name: Check formatting (clang-format)
         run: |
@@ -25,20 +27,6 @@ jobs:
       # Build with every optional module enabled so all source files (core +
       # eigen + opencv + realsense) are present in compile_commands.json for
       # clang-tidy.
-      - name: Install build dependencies
-        run: |
-          sudo apt-get install -y --no-install-recommends cmake build-essential libeigen3-dev libgomp1 libopencv-dev
-
-      - name: Install librealsense2
-        run: |
-          sudo mkdir -p /etc/apt/keyrings
-          curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc \
-            | gpg --dearmor | sudo tee /etc/apt/keyrings/librealsenseai.gpg > /dev/null
-          echo "deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo $(lsb_release -cs) main" \
-            | sudo tee /etc/apt/sources.list.d/librealsense.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends librealsense2-dev
-
       - name: Configure AndreiUtils
         run: >
           cmake -S . -B build
