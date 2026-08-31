@@ -29,13 +29,11 @@ namespace AndreiUtils {
     template<class T>
     void fastMemCopy(T *const dst, T const *const src, std::size_t size) {
 // memcpy(dst, src, sizeof(T) * size);
-// dst and src are predetermined shared in gcc 7?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// dst and src are predetermined shared in gcc <= 8 (and must not be listed explicitly there),
+// but gcc > 8 and clang require them to be listed explicitly under default(none). Clang
+// self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(dst, src, size) default(none)
-#else
-#pragma omp parallel for shared(size) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size) default(none)
 #endif
@@ -53,13 +51,11 @@ namespace AndreiUtils {
 
     template<class T>
     void fastATimesSrcPlusB(T *const dst, T const *const src, std::size_t size, T a, T b) {
-// dst and src are predetermined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// dst and src are predetermined shared in gcc <= 8 (and must not be listed explicitly there),
+// but gcc > 8 and clang require them to be listed explicitly under default(none). Clang
+// self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(dst, src, size, a, b) default(none)
-#else
-#pragma omp parallel for shared(size, a, b) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, a, b) default(none)
 #endif
@@ -70,13 +66,11 @@ namespace AndreiUtils {
 
     template<class T>
     void fastSrcOp(T *const dst, T const *const src, std::size_t size, std::function<T(T const &)> const &op) {
-// dst and src are predetermined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// dst and src are predetermined shared in gcc <= 8 (and must not be listed explicitly there),
+// but gcc > 8 and clang require them to be listed explicitly under default(none). Clang
+// self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(dst, src, size, op) default(none)
-#else
-#pragma omp parallel for shared(size, op) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, op) default(none)
 #endif
@@ -88,13 +82,11 @@ namespace AndreiUtils {
     template<class Tin, class Tout>
     void fastSrcOp(Tout *const dst, Tin const *const src, std::size_t size,
                    std::function<Tout(Tin const &)> const &op) {
-// dst and src are predetermined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// dst and src are predetermined shared in gcc <= 8 (and must not be listed explicitly there),
+// but gcc > 8 and clang require them to be listed explicitly under default(none). Clang
+// self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(dst, src, size, op) default(none)
-#else
-#pragma omp parallel for shared(size, op) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, op) default(none)
 #endif
@@ -106,13 +98,11 @@ namespace AndreiUtils {
     template<class T>
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(T *const, std::size_t, std::size_t)> const &op, std::size_t increment = 1) {
-// array is predetermined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// array (and op) are predetermined shared in gcc <= 8 (and must not be listed explicitly
+// there), but gcc > 8 and clang require them to be listed explicitly under default(none).
+// Clang self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(array, size, increment, op) default(none)
-#else
-#pragma omp parallel for shared(size, increment, op) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, increment, op) default(none)
 #endif
@@ -125,13 +115,11 @@ namespace AndreiUtils {
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(T *const, std::size_t, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
-// array is predefined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// array (and op) are predetermined shared in gcc <= 8 (and must not be listed explicitly
+// there), but gcc > 8 and clang require them to be listed explicitly under default(none).
+// Clang self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(array, size, increment, op) default(none)
-#else
-#pragma omp parallel for shared(size, increment, op) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, increment, op) default(none)
 #endif
@@ -143,15 +131,13 @@ namespace AndreiUtils {
     template<class T>
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(int, T *const, std::size_t, std::size_t)> const op, std::size_t increment = 1) {
-// array is predefined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// gcc <= 8 also rejects op (a std::function taken by value here) in the shared clause; gcc > 8
+// and clang require it explicitly under default(none). Clang self-reports an old
+// __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(array, size, increment, op) default(none)
 #else
 #pragma omp parallel for shared(size, increment) default(none)
-#endif
-#else
-#pragma omp parallel for shared(size, increment, op) default(none)
 #endif
         for (std::size_t i = 0; i < size; i += increment) {
             op(getOMPActiveThreadNumber(), array, i, increment);
@@ -162,13 +148,11 @@ namespace AndreiUtils {
     void fastForLoop(T *const array, std::size_t size,
                      std::function<void(int, T *const, std::size_t, std::size_t, std::size_t)> const &op,
                      std::size_t increment = 1) {
-// array is predefined shared?!
-#ifdef __GNUG__
-#if __GNUG__ > 8
+// array (and op) are predetermined shared in gcc <= 8 (and must not be listed explicitly
+// there), but gcc > 8 and clang require them to be listed explicitly under default(none).
+// Clang self-reports an old __GNUC__/__GNUG__ for compatibility, so it needs its own check here.
+#if defined(__clang__) || (defined(__GNUG__) && __GNUG__ > 8)
 #pragma omp parallel for shared(array, size, increment, op) default(none)
-#else
-#pragma omp parallel for shared(size, increment, op) default(none)
-#endif
 #else
 #pragma omp parallel for shared(size, increment, op) default(none)
 #endif
