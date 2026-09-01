@@ -20,3 +20,26 @@ fi
 
 # shellcheck disable=SC2086
 clang-format -i $STAGED_CPP_FILES
+
+# clang-format gives no output of its own, so determine which of the staged
+# files it actually changed by diffing the (now reformatted) working tree
+# against what's staged in the index. Files clang-format left alone will
+# show no diff here.
+CHANGED_FILES=""
+for f in $STAGED_CPP_FILES; do
+    if ! git diff --quiet -- "$f"; then
+        CHANGED_FILES="$CHANGED_FILES $f"
+    fi
+done
+
+if [ -n "$CHANGED_FILES" ]; then
+    echo "clang-format reformatted the following file(s):"
+    for f in $CHANGED_FILES; do
+        echo "  - $f"
+    done
+    echo ""
+    echo "--- diff (working tree vs. what you staged) ---"
+    # shellcheck disable=SC2086
+    git --no-pager diff -- $CHANGED_FILES
+    echo "------------------------------------------------"
+fi
