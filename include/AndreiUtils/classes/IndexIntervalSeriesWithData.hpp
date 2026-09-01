@@ -48,10 +48,10 @@ namespace AndreiUtils {
             } else if (prevSeriesSize != 0) {
                 // in the case no new series was created, how much new data to add?
                 for (int i = 0; i < newIndex - prevIndex - 1; ++i) {
-                    sequenceData->template emplace_back(data);
+                    sequenceData->emplace_back(data);
                 }
             }
-            sequenceData->template emplace_back(data);
+            sequenceData->emplace_back(data);
         }
 
         void addIndexAndMoveData(int newIndex, DataType &&data) {
@@ -67,10 +67,10 @@ namespace AndreiUtils {
             } else if (prevSeriesSize != 0) {
                 // in the case no new series was created, how much new data to add?
                 for (int i = 0; i < newIndex - prevIndex - 1; ++i) {
-                    sequenceData->template emplace_back(data);
+                    sequenceData->emplace_back(data);
                 }
             }
-            sequenceData->template emplace_back(std::move(data));
+            sequenceData->emplace_back(std::move(data));
         }
 
         void removeTooShortIntervals(int minIntervalSize) override {

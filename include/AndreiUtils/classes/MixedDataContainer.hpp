@@ -59,19 +59,19 @@ namespace AndreiUtils {
         template<typename T>
         void addDataPassPointerOwnership(std::string const &id, T *x, bool errorOnReplace) {
             this->checkErrorOnReplace(id, errorOnReplace);
-            this->template addDataPassPointerOwnership(id, x);
+            this->addDataPassPointerOwnership(id, x);
         }
 
         template<typename T>
         void addDataPassPointerOwnership(std::string const &id, T *x) {
-            this->template addDataPassPointerOwnership(id, x, this->template defaultDeleter<T>());
+            this->addDataPassPointerOwnership(id, x, this->template defaultDeleter<T>());
         }
 
         template<typename T>
         void addDataPassPointerOwnership(std::string const &id, T *x, std::function<void(void *)> const &deleter,
                                          bool errorOnReplace) {
             this->checkErrorOnReplace(id, errorOnReplace);
-            this->template addDataPassPointerOwnership(id, x, deleter);
+            this->addDataPassPointerOwnership(id, x, deleter);
         }
 
         template<typename T>
@@ -89,7 +89,7 @@ namespace AndreiUtils {
 
         template<typename T>
         void addData(std::string const &id, T const &x) {
-            this->template addData(id, x, this->template defaultDeleter<T>());
+            this->addData(id, x, this->template defaultDeleter<T>());
         }
 
         template<typename T>
@@ -114,7 +114,7 @@ namespace AndreiUtils {
 
         template<typename T>
         void addData(std::string const &id, T &&x) {
-            this->template addData(id, std::forward<T>(x), this->template defaultDeleter<T>());
+            this->addData(id, std::forward<T>(x), this->template defaultDeleter<T>());
         }
 
         template<typename T>

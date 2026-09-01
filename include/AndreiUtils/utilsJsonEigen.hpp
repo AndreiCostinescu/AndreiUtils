@@ -102,9 +102,9 @@ namespace nlohmann {
         }
 
         static void from_json(nlohmann::json const &j, T &data) {
-            if (!(j.template contains("type") && j.template contains("rows") && j.template contains("cols") &&
-                  j.template contains("curRows") && j.template contains("curCols") && j.template contains("options") &&
-                  j.template contains("maxRows") && j.template contains("maxCols") && j.template contains("data"))) {
+            if (!(j.contains("type") && j.contains("rows") && j.contains("cols") && j.contains("curRows") &&
+                  j.contains("curCols") && j.contains("options") && j.contains("maxRows") && j.contains("maxCols") &&
+                  j.contains("data"))) {
                 if (j.is_array()) {
                     std::vector<Scalar> vectorData = j.get<std::vector<Scalar>>();
                     size_t nrVectorElements = vectorData.size();

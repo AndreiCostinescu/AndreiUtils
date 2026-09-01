@@ -192,12 +192,12 @@ namespace AndreiUtils {
             std::cout << dimensionIndex.transpose() << std::endl;
             std::cout << this->subCubeVolume.transpose() << std::endl;
             auto tmp = (dimensionIndex.template cast<double>().
-                    template cwiseProduct(this->subCubeVolume)).matrix();
+                    cwiseProduct(this->subCubeVolume)).matrix();
             std::cout << tmp.transpose() << std::endl;
             std::cout << (this->minCorner + tmp).transpose() << std::endl;
             //*/
             return this->minCorner +
-                   (dimensionIndex.template cast<double>().template cwiseProduct(this->subCubeVolume)).matrix();
+                   (dimensionIndex.template cast<double>().cwiseProduct(this->subCubeVolume)).matrix();
         }
 
         DataIndex getSubCubeMinCorner(DataIndex const &dataIndex) const {
@@ -352,14 +352,12 @@ namespace AndreiUtils {
         }
 
         Data const &getData(DimensionIndex const &localIndex) const override {
-            DataIndex i =
-                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().cwiseProduct(this->volume);
             return this->getData(std::move(i));
         }
 
         Data &getData(DimensionIndex const &localIndex) override {
-            DataIndex i =
-                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().cwiseProduct(this->volume);
             return this->getData(std::move(i));
         }
 
@@ -497,8 +495,7 @@ namespace AndreiUtils {
             if (this->parent == nullptr) {
                 throw SuperCubeOutOfRangeException();
             }
-            DataIndex i =
-                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().cwiseProduct(this->volume);
             // std::cout << "Parent volume: " << this->parent->getVolume().transpose() << std::endl;
             return this->parent->getData(std::move(i));
         }
@@ -510,8 +507,7 @@ namespace AndreiUtils {
             if (this->parent == nullptr) {
                 throw SuperCubeOutOfRangeException();
             }
-            DataIndex i =
-                    this->getCubeMidPoint() + localIndex.template cast<double>().template cwiseProduct(this->volume);
+            DataIndex i = this->getCubeMidPoint() + localIndex.template cast<double>().cwiseProduct(this->volume);
             return this->parent->getData(std::move(i));
         }
 

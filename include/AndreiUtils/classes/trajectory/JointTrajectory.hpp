@@ -101,12 +101,12 @@ namespace AndreiUtils {
 
         void addNewDatum(JointValues const &newJointValues, double const &newTime) {
             TrajectoryBase::addNewDatum(newTime);
-            this->jointValues->template emplace_back(newJointValues);
+            this->jointValues->emplace_back(newJointValues);
         }
 
         void addNewDatum(JointValues &&newJointValues, double &&newTime) {
             TrajectoryBase::addNewDatum(std::move(newTime));
-            this->jointValues->template emplace_back(std::move(newJointValues));
+            this->jointValues->emplace_back(std::move(newJointValues));
         }
 
         [[nodiscard]] std::vector<JointValues> const &getJointValues() const { return *this->jointValues; }
