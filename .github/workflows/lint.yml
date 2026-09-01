@@ -28,8 +28,8 @@ jobs:
             $(git ls-files '*.h' '*.hpp' '*.hh' '*.hxx' '*.c' '*.cc' '*.cpp' '*.cxx')
 
       # Build with every optional module enabled so all source files (core +
-      # eigen + opencv + realsense) are present in compile_commands.json for
-      # clang-tidy.
+      # eigen + opencv + realsense + python) are present in compile_commands.json
+      # for clang-tidy.
       - name: Configure AndreiUtils
         run: >
           cmake -S . -B build
@@ -41,6 +41,7 @@ jobs:
           -DWITH_PTHREAD=ON
           -DWITH_OPENCV=ON
           -DWITH_REALSENSE=ON
+          -DWITH_PYTHON=ON
           -DWITH_PCL_OPTIMIZATION_FLAGS=OFF
           -DWITH_TESTS=ON
 
