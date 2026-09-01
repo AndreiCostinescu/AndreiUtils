@@ -6,3 +6,4 @@ backup
 
 # stray scratch file if scripts/sync-config (in .devtools) is interrupted mid-write
 .devtools-sync.sha256.tmp
+.devtools/
