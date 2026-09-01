@@ -62,7 +62,7 @@ void testFirstExample() {
     std::unique_ptr<A>(new A("1"));
     cout << "After temporary object..." << endl;
     std::unique_ptr<A> a(new A("2"));
-    cout << "After a object..." << endl;
+    cout << "After an object..." << endl;
     a.reset(new A("3"));
     cout << "After a reset..." << endl;
 

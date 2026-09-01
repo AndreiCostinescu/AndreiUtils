@@ -30,34 +30,34 @@
 namespace AndreiUtils {
     bool matEqual(cv::Mat const &m1, cv::Mat const &m2);
 
-    size_t matByteSize(const cv::Mat &mat);
+    size_t matByteSize(cv::Mat const &mat);
 
     void imageRotation(cv::Mat *image, RotationType rotation = RotationType::NO_ROTATION);
 
-    uchar *copyMatData(const cv::Mat &image);
+    uchar *copyMatData(cv::Mat const &mat);
 
-    void matWriteBinary(std::ofstream *fs, const cv::Mat &mat);
+    void matWriteBinary(std::ofstream *fs, cv::Mat const &mat);
 
     bool matReadBinary(std::ifstream *fs, cv::Mat *result);
 
-    void displayImage(const cv::Mat &image, const char *title, bool verbose = false);
+    void displayImage(cv::Mat const &image, const char *title, bool verbose = false);
 
-    void displayImage(const cv::Mat *image, const char *title, bool verbose = false);
+    void displayImage(cv::Mat const *image, const char *title, bool verbose = false);
 
     void displayImages(const std::vector<cv::Mat> &images, const std::vector<std::string> &titles);
 
-    void displayImages(const std::vector<const cv::Mat *> &images, const std::vector<std::string> &titles);
+    void displayImages(const std::vector<cv::Mat const *> &images, const std::vector<std::string> &titles);
 
-    void convertDepthToMillimetersUInt16(const cv::Mat *depthMat, cv::Mat &output);
+    void convertDepthToMillimetersUInt16(cv::Mat const *depthMat, cv::Mat &output);
 
     void convertDepthToMillimetersUInt16(cv::Mat *depthMat);
 
-    void convertDepthToMetersDouble64(const cv::Mat *depthMat, cv::Mat &output);
+    void convertDepthToMetersDouble64(cv::Mat const *depthMat, cv::Mat &output);
 
     void convertDepthToMetersDouble64(cv::Mat *depthMat);
 
     void displayTextOnOpenCVMat(cv::Mat &image, std::string const &text, cv::Point topLeftCorner, float fontSize = 0.6,
-                                const cv::Scalar &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
+                                cv::Scalar const &textColor = {255, 255, 255}, int fontFace = cv::FONT_HERSHEY_SIMPLEX,
                                 int lineType = cv::LINE_AA, int lineContentCap = -1);
 
     void recoverPoseFrom2dAnd3dPoints(cv::Mat &tVec, cv::Mat &rVec, std::vector<cv::Point2f> const &points2d,

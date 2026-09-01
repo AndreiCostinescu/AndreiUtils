@@ -64,42 +64,42 @@ std::string OperationType::convertOperationTypeToString(OperationType::Operation
     }
 }
 
-OperationType::OperationTypeEnum OperationType::convertStringToOperationType(std::string const &stringOp) {
+OperationType::OperationTypeEnum OperationType::convertStringToOperationType(std::string const &operationTypeEnum) {
     OperationType::OperationTypeEnum operation;
-    if (stringOp == "tx") {
+    if (operationTypeEnum == "tx") {
         operation = TRANSLATION_X;
-    } else if (stringOp == "ty") {
+    } else if (operationTypeEnum == "ty") {
         operation = TRANSLATION_Y;
-    } else if (stringOp == "tz") {
+    } else if (operationTypeEnum == "tz") {
         operation = TRANSLATION_Z;
-    } else if (stringOp == "tNorm") {
+    } else if (operationTypeEnum == "tNorm") {
         operation = TRANSLATION_NORM;
-    } else if (stringOp == "qw") {
+    } else if (operationTypeEnum == "qw") {
         operation = ORIENTATION_W;
-    } else if (stringOp == "qx") {
+    } else if (operationTypeEnum == "qx") {
         operation = ORIENTATION_X;
-    } else if (stringOp == "qy") {
+    } else if (operationTypeEnum == "qy") {
         operation = ORIENTATION_Y;
-    } else if (stringOp == "qz") {
+    } else if (operationTypeEnum == "qz") {
         operation = ORIENTATION_Z;
-    } else if (stringOp == "qNorm") {
+    } else if (operationTypeEnum == "qNorm") {
         operation = ORIENTATION_NORM;
-    } else if (stringOp == "qAngle") {
+    } else if (operationTypeEnum == "qAngle") {
         operation = ORIENTATION_ANGLE;
-    } else if (stringOp == "qAxisX") {
+    } else if (operationTypeEnum == "qAxisX") {
         operation = ORIENTATION_AXIS_X;
-    } else if (stringOp == "qAxisY") {
+    } else if (operationTypeEnum == "qAxisY") {
         operation = ORIENTATION_AXIS_Y;
-    } else if (stringOp == "qAxisZ") {
+    } else if (operationTypeEnum == "qAxisZ") {
         operation = ORIENTATION_AXIS_Z;
-    } else if (stringOp == "deltaT") {
+    } else if (operationTypeEnum == "deltaT") {
         operation = DELTA_TRANSLATION;
-    } else if (stringOp == "deltaQ") {
+    } else if (operationTypeEnum == "deltaQ") {
         operation = DELTA_ORIENTATION;
-    } else if (stringOp == "deltaP") {
+    } else if (operationTypeEnum == "deltaP") {
         operation = DELTA_POSE;
     } else {
-        throw std::runtime_error("Unknown pose operation to apply on parameter: " + stringOp);
+        throw std::runtime_error("Unknown pose operation to apply on parameter: " + operationTypeEnum);
     }
     return operation;
 }

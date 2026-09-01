@@ -51,6 +51,7 @@ Posed Symmetry::getSymmetricTransformation() const {
 
 std::vector<Posed> Symmetry::createSymmetricPoses(std::vector<Posed> const &poses, double const &rangeValue) const {
     std::vector<Posed> newPoses;
+    newPoses.reserve(poses.size());
     auto randomPose = this->getSymmetricTransformation(rangeValue);
     for (auto const &pose: poses) {
         newPoses.push_back(randomPose * pose);
@@ -60,6 +61,7 @@ std::vector<Posed> Symmetry::createSymmetricPoses(std::vector<Posed> const &pose
 
 std::vector<Posed> Symmetry::createSymmetricPoses(std::vector<Posed> const &poses) const {
     std::vector<Posed> newPoses;
+    newPoses.reserve(poses.size());
     auto randomPose = this->getSymmetricTransformation();
     for (auto const &pose: poses) {
         newPoses.push_back(randomPose * pose);

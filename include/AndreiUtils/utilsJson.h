@@ -37,5 +37,5 @@ namespace AndreiUtils {
     void collectStringJsonContent(std::stringstream &stringContent, nlohmann::json const &content);
 
     void writeJsonFile(std::string const &path, nlohmann::json const &content, std::string const &originalFilePath = "",
-                       bool keepNewLines = false);
+                       bool keepEmptyLines = false);
 } // namespace AndreiUtils

@@ -29,7 +29,7 @@ MotionDeviceIntrinsicParameters::MotionDeviceIntrinsicParameters() : data(), bia
 
 MotionDeviceIntrinsicParameters::MotionDeviceIntrinsicParameters(MatrixXd data, VectorXd biasVariances,
                                                                  VectorXd noiseVariances) :
-    data(move(data)), biasVariances(move(biasVariances)), noiseVariances(move(noiseVariances)) {}
+    data(std::move(data)), biasVariances(std::move(biasVariances)), noiseVariances(std::move(noiseVariances)) {}
 
 MotionDeviceIntrinsicParameters::~MotionDeviceIntrinsicParameters() = default;
 

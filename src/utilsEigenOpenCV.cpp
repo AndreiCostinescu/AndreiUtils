@@ -104,11 +104,13 @@ void AndreiUtils::read(cv::FileNode const &node, ArrayXf &x, ArrayXf const &defa
 }
 
 void AndreiUtils::write(cv::FileStorage &fs, string const &name, Array<float, 3, 1> const &x) {
-    write(fs, name, (ArrayXf const &) x);
+    write(fs, name, static_cast<ArrayXf const &>(x));
 }
 
 void AndreiUtils::read(cv::FileNode const &node, Array<float, 3, 1> &x, Array<float, 3, 1> const &default_value) {
-    read(node, (ArrayXf &) x, default_value);
+    ArrayXf tmp = x;
+    read(node, tmp, static_cast<ArrayXf const &>(default_value));
+    x = tmp;
 }
 
 Eigen::Matrix4d AndreiUtils::recoverMatPoseFrom2dAnd3dPoints(vector<cv::Point2f> const &points2d,

@@ -78,8 +78,8 @@ public:
         }
     }
 
-    T *getData() const { return data; }
-    bool owns() const { return ownsData; }
+    [[nodiscard]] T *getData() const { return data; }
+    [[nodiscard]] bool owns() const { return ownsData; }
     T *data;
     bool ownsData;
 };

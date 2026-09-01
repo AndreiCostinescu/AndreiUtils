@@ -37,7 +37,7 @@ bool AndreiUtils::matEqual(Mat const &m1, Mat const &m2) {
     return cv::sum(m1 != m2) == cv::Scalar(0, 0, 0, 0);
 }
 
-size_t AndreiUtils::matByteSize(const Mat &mat) {
+size_t AndreiUtils::matByteSize(Mat const &mat) {
     if (mat.isContinuous()) {
         return (mat.dataend - mat.datastart);
     }
@@ -64,7 +64,7 @@ void AndreiUtils::imageRotation(Mat *image, RotationType rotation) {
     }
 }
 
-uchar *AndreiUtils::copyMatData(const Mat &mat) {
+uchar *AndreiUtils::copyMatData(Mat const &mat) {
     auto *dataPtr = new uchar[matByteSize(mat)];
     if (mat.isContinuous()) {
 #ifdef WITH_OPENMP
@@ -85,7 +85,7 @@ uchar *AndreiUtils::copyMatData(const Mat &mat) {
     return dataPtr;
 }
 
-void AndreiUtils::matWriteBinary(ofstream *fs, const Mat &mat) {
+void AndreiUtils::matWriteBinary(ofstream *fs, Mat const &mat) {
     // Header
     int type = mat.type();
     int channels = mat.channels();
@@ -136,7 +136,7 @@ bool AndreiUtils::matReadBinary(ifstream *fs, Mat *result) {
     return !fs->fail();
 }
 
-void AndreiUtils::displayImage(const Mat &image, const char *title, bool verbose) {
+void AndreiUtils::displayImage(Mat const &image, const char *title, bool verbose) {
     if (verbose) {
         cout << "Printing " << title << "... " << image << endl;
     }
@@ -148,7 +148,7 @@ void AndreiUtils::displayImage(const Mat &image, const char *title, bool verbose
     }
 }
 
-void AndreiUtils::displayImage(const Mat *const image, const char *title, bool verbose) {
+void AndreiUtils::displayImage(Mat const *const image, const char *title, bool verbose) {
     if (verbose) {
         cout << "Printing " << title << "... " << image << endl;
     }
@@ -168,7 +168,7 @@ void AndreiUtils::displayImages(const vector<Mat> &images, const vector<string> 
     cout << "Printed!" << endl;
 }
 
-void AndreiUtils::displayImages(const vector<const Mat *> &images, const vector<string> &titles) {
+void AndreiUtils::displayImages(const vector<Mat const *> &images, const vector<string> &titles) {
     assert(images.size() >= titles.size());
     for (int i = 0; i < images.size(); i++) {
         displayImage(images[i], titles[i].c_str());

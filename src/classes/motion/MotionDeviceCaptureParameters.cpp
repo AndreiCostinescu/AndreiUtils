@@ -25,14 +25,14 @@ using namespace std;
 
 MotionDeviceCaptureParameters::MotionDeviceCaptureParameters() : fps(), intrinsics() {}
 
-MotionDeviceCaptureParameters::MotionDeviceCaptureParameters(const double &fps,
-                                                             const MotionDeviceIntrinsicParameters &intrinsics) :
+MotionDeviceCaptureParameters::MotionDeviceCaptureParameters(double const &fps,
+                                                             MotionDeviceIntrinsicParameters const &intrinsics) :
     fps(fps), intrinsics(intrinsics) {}
 
 MotionDeviceCaptureParameters::~MotionDeviceCaptureParameters() = default;
 
 void MotionDeviceCaptureParameters::setMotionDeviceCaptureParameters(
-        const double &_fps, const MotionDeviceIntrinsicParameters &_intrinsics) {
+        double const &_fps, MotionDeviceIntrinsicParameters const &_intrinsics) {
     this->fps = _fps;
     this->intrinsics = _intrinsics;
 }

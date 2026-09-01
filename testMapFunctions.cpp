@@ -283,7 +283,7 @@ void testMapEmplaceMoveCopy() {
 void createTmp(map<std::string, MapEmplaceTestTestClass> &t, std::string name, MapEmplaceTestClass tmp) {
     // mapEmplace<string>(t, "Op1", std::move(name), std::move(tmp));
     t.emplace(std::piecewise_construct, std::forward_as_tuple("key"),
-              std::forward_as_tuple(std::forward<std::string>(name), std::forward<MapEmplaceTestClass>(tmp)));
+              std::forward_as_tuple(std::move(name), std::move(tmp)));
 }
 
 void testMapEmplaceMoveCopy2() {

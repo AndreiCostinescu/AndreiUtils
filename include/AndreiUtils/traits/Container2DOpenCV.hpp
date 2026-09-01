@@ -28,7 +28,7 @@ namespace AndreiUtils {
     template<typename Scalar>
     class TypeMat : public cv::Mat {
     public:
-        explicit TypeMat(const cv::Mat &mat) : cv::Mat(mat) {}
+        explicit TypeMat(cv::Mat const &mat) : cv::Mat(mat) {}
 
         Scalar const &atType(int row, int col) const {
             return static_cast<cv::Mat const &>(*this).at<Scalar>(row, col);

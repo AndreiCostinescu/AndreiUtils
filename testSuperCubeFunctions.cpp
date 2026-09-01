@@ -35,7 +35,7 @@ public:
 
     TmpClass(double x, double y, double z) : v({x, y, z}) {}
 
-    IndexType getIndex() const override {
+    [[nodiscard]] IndexType getIndex() const override {
         if (v.x() < 0 && v.y() < 0 && v.z() < 0) {
             RandomNumberGenerator<double> r(0, 20);
             IndexType sample{r.sample(), r.sample(), r.sample()};

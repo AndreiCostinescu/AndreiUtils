@@ -585,9 +585,23 @@ void testIntervalsPrivate() {
     cout << i.createSampler().sample() << " || " << i2.createSampler().sample() << endl;
     cout << std::numeric_limits<T>::min() << " vs. " << std::numeric_limits<T>::max() << " vs. "
          << -std::numeric_limits<T>::max() << endl;
+// Deliberately overflows signed integer types to print their wraparound behavior at the limits;
+// not a bug, so silence the compiler warnings for just these lines.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winteger-overflow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
     cout << (std::numeric_limits<T>::max() + 1) << " vs. " << (-std::numeric_limits<T>::max() - 1) << " vs. "
          << (std::numeric_limits<T>::min() - 1) << endl;
     cout << std::numeric_limits<T>::max() - (-std::numeric_limits<T>::max()) << endl;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     cout << i.size() << " | " << i2.size() << " | " << i3.size() << endl;
     RandomNumberGenerator<T> sampler = i.createSampler();
     RandomNumberGenerator<T> sampler2 = i2.createSampler();

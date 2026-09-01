@@ -22,18 +22,17 @@
 #define ANDREIUTILS_MOTIONDEVICECAPTUREPARAMETERS_H
 
 #include <AndreiUtils/classes/motion/MotionDeviceIntrinsicParameters.h>
-#include <Eigen/Dense>
 
 namespace AndreiUtils {
     class MotionDeviceCaptureParameters {
     public:
         MotionDeviceCaptureParameters();
 
-        MotionDeviceCaptureParameters(const double &fps, const MotionDeviceIntrinsicParameters &intrinsics);
+        MotionDeviceCaptureParameters(double const &fps, MotionDeviceIntrinsicParameters const &intrinsics);
 
         virtual ~MotionDeviceCaptureParameters();
 
-        void setMotionDeviceCaptureParameters(const double &_fps, const MotionDeviceIntrinsicParameters &_intrinsics);
+        void setMotionDeviceCaptureParameters(double const &_fps, MotionDeviceIntrinsicParameters const &_intrinsics);
 
         double fps;
         MotionDeviceIntrinsicParameters intrinsics;

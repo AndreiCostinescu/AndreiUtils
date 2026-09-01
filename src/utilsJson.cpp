@@ -555,7 +555,7 @@ void AndreiUtils::collectStringJsonContent(std::stringstream &stringContent, nlo
 }
 
 void AndreiUtils::writeJsonFile( // NOLINT(misc-no-recursion)
-        string const &path, json const &content, std::string const &originalFilePath, bool keepEmptyLines) {
+        string const &path, json const &content, std::string const &originalFilePath, bool const keepEmptyLines) {
     if (!originalFilePath.empty()) {
         writeJsonFileKeepOrder(path, content, keepEmptyLines, originalFilePath);
         return;

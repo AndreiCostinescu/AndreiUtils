@@ -120,7 +120,7 @@ SystemTimePoint AndreiUtils::convertStringToChronoWithSubseconds(string const &t
                                "\". Will only use the first two components and try to reconstruct this way...");
     }
     auto res = convertStringToChrono(timeSplits[0], format);
-    string timeString = timeSplits[1];
+    string const &timeString = timeSplits[1];
     size_t subsecondFormatSize = subsecondFormat.size(), timeSize = timeString.size();
     // the -3 is because all subsecond formats are at least 3 characters in length
     for (int formatIndex = 0, timeIndex = 0; formatIndex < subsecondFormatSize - 2 && timeIndex < timeSize;

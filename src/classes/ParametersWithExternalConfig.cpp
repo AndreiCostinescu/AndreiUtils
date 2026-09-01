@@ -363,13 +363,13 @@ std::string ParametersWithExternalConfig::toStringPrivate( // NOLINT(misc-no-rec
         map<ParametersWithExternalConfig const *, bool> processedExternalParameters;
         if (collectOnlyTheseKeys.empty()) {
             for (auto const &jsonDatum: jsonData.items()) {
-                this->toStringMap(ss, jsonDatum.key(), jsonDatum.value(), indent, processedExternalParameters, external,
-                                  verbose);
+                toStringMap(ss, jsonDatum.key(), jsonDatum.value(), indent, processedExternalParameters, external,
+                            verbose);
             }
         } else {
             for (auto const &key: collectOnlyTheseKeys) {
-                this->toStringMap(ss, key.first, jsonData.at(key.first), indent, processedExternalParameters, external,
-                                  verbose);
+                toStringMap(ss, key.first, jsonData.at(key.first), indent, processedExternalParameters, external,
+                            verbose);
             }
         }
     } else {
@@ -434,15 +434,15 @@ void ParametersWithExternalConfig::collectAndUpdateParametersToWriteForThisFile(
         ExternalParameterData const &external = this->getExternalData();
         if (collectOnlyTheseKeys.empty()) {
             for (auto const &datum: jsonData.get<std::map<std::string, nlohmann::json>>()) {
-                this->collectAndUpdateParametersToWriteForThisFileObjectData(datum.first, datum.second, external,
-                                                                             parametersToWrite, recurseSubConfigs,
-                                                                             keepOrder, keepNewLines);
+                collectAndUpdateParametersToWriteForThisFileObjectData(datum.first, datum.second, external,
+                                                                       parametersToWrite, recurseSubConfigs, keepOrder,
+                                                                       keepNewLines);
             }
         } else {
             for (auto const &key: collectOnlyTheseKeys) {
-                this->collectAndUpdateParametersToWriteForThisFileObjectData(
-                        key.first, jsonData.at(key.first), external, parametersToWrite, recurseSubConfigs, keepOrder,
-                        keepNewLines);
+                collectAndUpdateParametersToWriteForThisFileObjectData(key.first, jsonData.at(key.first), external,
+                                                                       parametersToWrite, recurseSubConfigs, keepOrder,
+                                                                       keepNewLines);
             }
         }
     } else {

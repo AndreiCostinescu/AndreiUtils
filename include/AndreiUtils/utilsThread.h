@@ -33,7 +33,7 @@ namespace AndreiUtils {
     void threadBarrier(volatile std::atomic<int> &threadVariable, bool yieldOrSleep = false, bool waitUntilZero = true);
 
     void threadBarrier(volatile std::atomic<bool> &threadVariable, bool yieldOrSleep = false,
-                       bool waitUtilFalse = true);
+                       bool waitUntilFalse = true);
 
     void threadYield();
 } // namespace AndreiUtils

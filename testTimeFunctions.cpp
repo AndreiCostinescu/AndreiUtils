@@ -108,13 +108,12 @@ void testAccessTimeInMapVsVector() {
     vector<int64_t> v(N);
     map<int64_t, bool> m;
     Timer t;
-    double time;
     t.start();
     for (int64_t i = 0; i < N; i++) {
         v[i] = i;
         m[i] = true;
     }
-    time = t.measure(TimeUnit::SECOND);
+    double time = t.measure(TimeUnit::SECOND);
     cout << "Initialization took " << time << endl;
 
     vector<int64_t> queries = {static_cast<int64_t>(1e0), static_cast<int64_t>(1e1),  static_cast<int64_t>(1e2),
@@ -186,7 +185,7 @@ void testSerializeDeserializeTimestamp() {
 }
 
 TEST(TimeTesting, AccessTimeInMapVsVector) {
-    int64_t N = static_cast<int64_t>(1e7);
+    auto N = static_cast<int64_t>(1e7);
     vector<int64_t> v(N);
     map<int64_t, bool> m;
     Timer t;
