@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/AndreiCostinescu/DevTools
-    rev: fba66d8a1f88705d5f3d7ba5c3fef36cc99d4288
+    rev: b8dc86cf13325c0fad39ca464876b91c78779b6e
     hooks:
       - id: license-header-check
         stages: [pre-commit]

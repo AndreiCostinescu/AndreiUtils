@@ -23,9 +23,7 @@ jobs:
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Check formatting (clang-format)
-        run: |
-          clang-format --dry-run --Werror \
-            $(git ls-files '*.h' '*.hpp' '*.hh' '*.hxx' '*.c' '*.cc' '*.cpp' '*.cxx')
+        uses: AndreiCostinescu/DevTools/.github/actions/check-clang-format@b8dc86cf13325c0fad39ca464876b91c78779b6e
 
       # Build with every optional module enabled so all source files (core +
       # eigen + opencv + realsense + python) are present in compile_commands.json
@@ -46,4 +44,4 @@ jobs:
           -DWITH_TESTS=ON
 
       - name: Run clang-tidy
-        run: clang-tidy -p build $(git ls-files '*.c' '*.cc' '*.cpp' '*.cxx')
+        uses: AndreiCostinescu/DevTools/.github/actions/run-clang-tidy@b8dc86cf13325c0fad39ca464876b91c78779b6e
