@@ -1,14 +1,13 @@
-.PHONY: setup format lint
-
-BUILD_DIR ?= build
+.PHONY: setup sync-devtools
 
 setup:
 	-git config --unset-all core.hooksPath
+	git submodule update --init --recursive
 	pip install pre-commit
 	pre-commit install --hook-type pre-commit --hook-type commit-msg
+	$(MAKE) sync-devtools
 
-format:
-	clang-format -i $$(git ls-files '*.h' '*.hpp' '*.hh' '*.hxx' '*.c' '*.cc' '*.cpp' '*.cxx')
+sync-devtools:
+	.devtools/scripts/sync-config .devtools .devtools-sync.sha256 .clang-format .clang-tidy
 
-lint:
-	clang-tidy -p $(BUILD_DIR) $$(git ls-files '*.c' '*.cc' '*.cpp' '*.cxx')
+-include .devtools/common.mk

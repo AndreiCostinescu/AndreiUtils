@@ -1,33 +1,12 @@
 repos:
-  - repo: local
+  - repo: https://github.com/AndreiCostinescu/DevTools
+    rev: fba66d8a1f88705d5f3d7ba5c3fef36cc99d4288
     hooks:
       - id: license-header-check
-        name: Apache 2.0 license header check
-        entry: .githooks/check-license-header
-        language: script
         stages: [pre-commit]
-        files: '\.(h|hpp|hh|hxx|c|cc|cpp|cxx)$'
-        pass_filenames: false
-
       - id: clang-format
-        name: clang-format
-        entry: .githooks/run-clang-format
-        language: script
         stages: [pre-commit]
-        files: '\.(h|hpp|hh|hxx|c|cc|cpp|cxx)$'
-        pass_filenames: false
-
       - id: clang-tidy
-        name: clang-tidy
-        entry: .githooks/run-clang-tidy
-        language: script
         stages: [pre-commit]
-        files: '\.(c|cc|cpp|cxx)$'
-        pass_filenames: false
-
       - id: dco-check
-        name: DCO sign-off check
-        entry: .githooks/commit-msg
-        language: script
         stages: [commit-msg]
-        always_run: true
