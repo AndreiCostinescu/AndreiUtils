@@ -1,8 +1,8 @@
 repos:
   - repo: https://github.com/AndreiCostinescu/DevTools
-    rev: b8dc86cf13325c0fad39ca464876b91c78779b6e
+    rev: b0b747598e766e885d51c4f48ee19a27bae9bfe4
     hooks:
-      - id: license-header-check
+      - id: license-header-check-cpp
         stages: [pre-commit]
       - id: clang-format
         stages: [pre-commit]
